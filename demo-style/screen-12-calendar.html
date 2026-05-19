@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vidify — Content Calendar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg-base: #09090b; --bg-panel: #111113; --bg-surface: #1a1a1f;
+  --bg-elevated: #232329; --bg-input: #0f0f12;
+  --text-primary: #f4f4f5; --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a; --text-muted: #52525b;
+  --gradient: linear-gradient(135deg, #2563eb, #7c3aed);
+  --border: rgba(255,255,255,0.06); --border-default: rgba(255,255,255,0.10);
+  --success: #10b981; --warning: #f59e0b; --error: #ef4444;
+  --tiktok: #00f2ea; --youtube: #ff4444; --instagram: #e6683c; --facebook: #1877f2;
+  --sidebar-w: 260px;
+}
+html, body { height: 100%; overflow: hidden; }
+body { background: var(--bg-base); color: var(--text-primary); font-family: 'DM Sans', sans-serif; font-size: 14px; display: flex; }
+
+/* SIDEBAR */
+.sidebar { width: var(--sidebar-w); flex-shrink: 0; height: 100vh; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; left: 0; top: 0; z-index: 50; }
+.sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 20px 20px 16px; border-bottom: 1px solid var(--border); text-decoration: none; }
+.logo-mark { width: 30px; height: 30px; border-radius: 8px; background: var(--gradient); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 13px; color: #fff; }
+.logo-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; color: var(--text-primary); }
+.sidebar-nav { flex: 1; padding: 12px 10px; overflow-y: auto; }
+.nav-section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding: 10px 10px 6px; }
+.nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; cursor: pointer; transition: all 0.15s; text-decoration: none; color: var(--text-secondary); margin-bottom: 2px; position: relative; }
+.nav-item:hover { background: var(--bg-surface); color: var(--text-primary); }
+.nav-item.active { background: var(--bg-elevated); color: var(--text-primary); }
+.nav-item.active::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px; border-radius: 0 2px 2px 0; background: #2563eb; }
+.nav-icon { font-size: 16px; flex-shrink: 0; width: 20px; text-align: center; }
+.nav-label { font-size: 14px; font-weight: 500; }
+.sidebar-bottom { padding: 12px 10px; border-top: 1px solid var(--border); }
+.credits-pill { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+.credits-bar { height: 3px; border-radius: 9999px; background: var(--bg-elevated); margin: 6px 0 4px; overflow: hidden; }
+.credits-fill { height: 100%; width: 21%; background: var(--gradient); border-radius: 9999px; }
+
+/* MAIN */
+.main-wrapper { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+/* TOPBAR */
+.topbar { height: 60px; background: rgba(17,17,19,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 24px; gap: 12px; flex-shrink: 0; }
+.topbar-nav { display: flex; align-items: center; gap: 8px; }
+.month-nav-btn { width: 32px; height: 32px; border-radius: 7px; border: 1px solid var(--border-default); background: transparent; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.15s; }
+.month-nav-btn:hover { background: var(--bg-surface); color: var(--text-primary); }
+.month-label { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--text-primary); min-width: 160px; text-align: center; }
+.today-btn { padding: 6px 14px; border-radius: 7px; border: 1px solid var(--border-default); background: transparent; color: var(--text-secondary); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+.today-btn:hover { background: var(--bg-surface); color: var(--text-primary); }
+
+.view-btns { display: flex; background: var(--bg-elevated); border-radius: 7px; padding: 3px; gap: 1px; }
+.view-btn { padding: 5px 12px; border-radius: 5px; border: none; background: transparent; color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+.view-btn.active { background: var(--bg-surface); color: var(--text-primary); }
+
+.filter-btns { display: flex; gap: 6px; }
+.filter-plat-btn { width: 28px; height: 28px; border-radius: 7px; border: 2px solid transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; transition: all 0.2s; opacity: 0.5; }
+.filter-plat-btn.on { opacity: 1; }
+
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.btn-new-post { padding: 8px 16px; border-radius: 8px; border: none; background: var(--gradient); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.btn-new-post:hover { filter: brightness(1.08); }
+.avatar { width: 32px; height: 32px; border-radius: 9999px; background: var(--gradient); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px; color: #fff; cursor: pointer; }
+
+/* CALENDAR LAYOUT */
+.calendar-wrapper { flex: 1; display: flex; overflow: hidden; }
+
+/* CALENDAR GRID */
+.calendar-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+.day-headers { display: grid; grid-template-columns: repeat(7, 1fr); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.day-header { padding: 10px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); text-align: center; }
+.day-header.weekend { color: #52525b; }
+
+.calendar-grid { flex: 1; display: grid; grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat(5, 1fr); overflow: hidden; }
+
+.day-cell {
+  border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  padding: 8px; cursor: pointer; transition: background 0.15s; position: relative;
+  overflow: hidden; display: flex; flex-direction: column; min-height: 0;
+}
+.day-cell:nth-child(7n) { border-right: none; }
+.day-cell:hover { background: rgba(255,255,255,0.02); }
+.day-cell.today { border-left: 2px solid #2563eb; }
+.day-cell.other-month { opacity: 0.35; }
+.day-cell.selected { background: rgba(37,99,235,0.05); }
+
+.day-num {
+  font-size: 13px; font-weight: 600; color: var(--text-tertiary);
+  margin-bottom: 5px; display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.day-cell.today .day-num { color: var(--text-primary); }
+.today-marker { width: 22px; height: 22px; border-radius: 9999px; background: #2563eb; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+.day-add { width: 18px; height: 18px; border-radius: 5px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 14px; transition: all 0.15s; }
+.day-cell:hover .day-add { display: flex; }
+.day-add:hover { background: var(--bg-elevated); color: var(--text-primary); }
+
+/* Content items */
+.day-content { display: flex; flex-direction: column; gap: 3px; overflow: hidden; flex: 1; min-height: 0; }
+.content-item {
+  display: flex; align-items: center; gap: 4px;
+  padding: 3px 6px; border-radius: 5px; font-size: 10px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  border: 1px solid transparent;
+}
+.content-item:hover { filter: brightness(1.15); }
+.content-item .ci-dot { width: 5px; height: 5px; border-radius: 9999px; flex-shrink: 0; }
+.content-item .ci-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.content-item .ci-status { width: 5px; height: 5px; border-radius: 9999px; flex-shrink: 0; }
+
+.overflow-badge { font-size: 10px; color: var(--text-muted); padding: 2px 4px; cursor: pointer; flex-shrink: 0; }
+.overflow-badge:hover { color: var(--text-secondary); }
+
+/* SIDE PANEL */
+.side-panel {
+  width: 300px; flex-shrink: 0; border-left: 1px solid var(--border);
+  background: var(--bg-panel); display: flex; flex-direction: column;
+  transform: translateX(100%); transition: transform 0.3s ease;
+}
+.side-panel.open { transform: translateX(0); }
+
+.panel-header { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.panel-date { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text-primary); }
+.panel-close { width: 28px; height: 28px; border-radius: 7px; border: none; background: transparent; color: var(--text-tertiary); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.panel-close:hover { background: var(--bg-elevated); color: var(--text-primary); }
+
+.panel-content { flex: 1; overflow-y: auto; padding: 16px; }
+.panel-content::-webkit-scrollbar { width: 5px; }
+.panel-content::-webkit-scrollbar-thumb { background: var(--bg-elevated); border-radius: 9999px; }
+
+.panel-item { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; }
+.panel-item:hover { border-color: var(--border-default); transform: translateY(-1px); }
+.panel-thumb { aspect-ratio: 16/9; position: relative; }
+.panel-thumb-bg { width: 100%; height: 100%; }
+.panel-thumb-status { position: absolute; top: 8px; left: 8px; height: 20px; padding: 0 8px; border-radius: 9999px; font-size: 10px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+.panel-item-info { padding: 10px 12px 12px; }
+.panel-item-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+.panel-item-meta { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-muted); }
+.panel-item-time { font-weight: 500; color: var(--text-secondary); }
+
+.panel-add-btn { margin: 0 16px 16px; padding: 11px; border-radius: 9px; border: 1px dashed var(--border-default); background: transparent; color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 7px; flex-shrink: 0; }
+.panel-add-btn:hover { border-color: rgba(37,99,235,0.4); color: #60a5fa; background: rgba(37,99,235,0.04); }
+
+/* LEGEND */
+.legend { display: flex; align-items: center; gap: 16px; padding: 8px 24px; border-top: 1px solid var(--border); flex-shrink: 0; background: var(--bg-panel); }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); }
+.legend-dot { width: 8px; height: 8px; border-radius: 9999px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="screen-04-dashboard.html" class="sidebar-logo">
+    <div class="logo-mark">V</div>
+    <span class="logo-text">Vidify</span>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a class="nav-item" href="screen-04-dashboard.html"><span class="nav-icon">⊞</span><span class="nav-label">Dashboard</span></a>
+    <a class="nav-item" href="screen-05-wizard.html"><span class="nav-icon">✦</span><span class="nav-label">Create New</span></a>
+    <a class="nav-item" href="screen-09-library.html"><span class="nav-icon">▣</span><span class="nav-label">My Videos</span></a>
+    <a class="nav-item" href="screen-10-templates.html"><span class="nav-icon">◈</span><span class="nav-label">Templates</span></a>
+    <div class="nav-section-label" style="margin-top:8px;">Publish</div>
+    <a class="nav-item active" href="#"><span class="nav-icon">📅</span><span class="nav-label">Calendar</span></a>
+    <a class="nav-item" href="screen-11-social.html"><span class="nav-icon">◉</span><span class="nav-label">Social Accounts</span></a>
+    <div class="nav-section-label" style="margin-top:8px;">Analyze</div>
+    <a class="nav-item" href="#"><span class="nav-icon">📊</span><span class="nav-label">Analytics</span></a>
+    <div class="nav-section-label" style="margin-top:8px;">Settings</div>
+    <a class="nav-item" href="#"><span class="nav-icon">◆</span><span class="nav-label">Brand Kit</span></a>
+    <a class="nav-item" href="#"><span class="nav-icon">⚙</span><span class="nav-label">Settings</span></a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="credits-pill">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <span style="font-size:11px;color:var(--text-muted);">Credits</span>
+        <span style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;">42</span>
+      </div>
+      <div class="credits-bar"><div class="credits-fill"></div></div>
+      <div style="font-size:11px;color:var(--text-muted);">42 / 200 remaining</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-wrapper">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-nav">
+      <button class="month-nav-btn" onclick="changeMonth(-1)">‹</button>
+      <div class="month-label" id="monthLabel">April 2026</div>
+      <button class="month-nav-btn" onclick="changeMonth(1)">›</button>
+      <button class="today-btn" onclick="goToday()">Today</button>
+    </div>
+
+    <div class="view-btns">
+      <button class="view-btn active">Month</button>
+      <button class="view-btn">Week</button>
+      <button class="view-btn">Day List</button>
+    </div>
+
+    <div class="filter-btns">
+      <div class="filter-plat-btn on" style="background:rgba(0,242,234,0.15);color:#00f2ea;border-color:#00f2ea;" onclick="this.classList.toggle('on')" title="TikTok">T</div>
+      <div class="filter-plat-btn on" style="background:rgba(255,68,68,0.15);color:#ff4444;border-color:#ff4444;" onclick="this.classList.toggle('on')" title="YouTube">Y</div>
+      <div class="filter-plat-btn on" style="background:rgba(230,104,60,0.15);color:#e6683c;border-color:#e6683c;" onclick="this.classList.toggle('on')" title="Instagram">I</div>
+      <div class="filter-plat-btn on" style="background:rgba(24,119,242,0.15);color:#1877f2;border-color:#1877f2;" onclick="this.classList.toggle('on')" title="Facebook">F</div>
+    </div>
+
+    <div class="topbar-right">
+      <button class="btn-new-post" onclick="window.location='screen-05-wizard.html'">+ New Post</button>
+      <div class="avatar">E</div>
+    </div>
+  </header>
+
+  <div class="calendar-wrapper">
+    <div class="calendar-main">
+      <!-- Day headers -->
+      <div class="day-headers">
+        <div class="day-header weekend">Sun</div>
+        <div class="day-header">Mon</div>
+        <div class="day-header">Tue</div>
+        <div class="day-header">Wed</div>
+        <div class="day-header">Thu</div>
+        <div class="day-header">Fri</div>
+        <div class="day-header weekend">Sat</div>
+      </div>
+      <!-- Calendar grid -->
+      <div class="calendar-grid" id="calendarGrid"></div>
+    </div>
+
+    <!-- SIDE PANEL -->
+    <div class="side-panel" id="sidePanel">
+      <div class="panel-header">
+        <div class="panel-date" id="panelDate">April 15, 2026</div>
+        <button class="panel-close" onclick="closePanel()">×</button>
+      </div>
+      <div class="panel-content" id="panelContent"></div>
+      <button class="panel-add-btn" onclick="window.location='screen-05-wizard.html'">+ Schedule New Post for this Day</button>
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#10b981;"></div>Published</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;"></div>Scheduled</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6;"></div>Generating</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ef4444;"></div>Failed</div>
+    <div class="legend-item" style="margin-left:auto;font-size:11px;color:var(--text-muted);">
+      <span style="width:16px;height:16px;border-radius:4px;background:rgba(37,99,235,0.15);border:1px solid rgba(37,99,235,0.3);display:inline-block;margin-right:5px;vertical-align:middle;"></span> Today
+    </div>
+  </div>
+</div>
+
+<script>
+let currentYear = 2026, currentMonth = 3; // April = 3 (0-indexed)
+const today = { y: 2026, m: 3, d: 15 };
+
+const platColors = { T: '#00f2ea', Y: '#ff4444', I: '#e6683c', F: '#1877f2' };
+
+// Sample content data
+const contentData = {
+  '2026-4-3':  [{ title:'Product Launch', plat:'T', status:'published', color:'linear-gradient(135deg,#1e3a5f,#0a1628)', time:'9:00 AM' }],
+  '2026-4-5':  [{ title:'Brand Story', plat:'Y', status:'published', color:'linear-gradient(135deg,#2d1b4e,#110a1e)', time:'12:00 PM' }, { title:'Tutorial Reel', plat:'I', status:'published', color:'linear-gradient(135deg,#0d2e22,#050f0a)', time:'3:00 PM' }],
+  '2026-4-8':  [{ title:'Flash Sale', plat:'T', status:'scheduled', color:'linear-gradient(135deg,#3a2c0d,#1a1200)', time:'10:00 AM' }, { title:'Q2 Promo', plat:'F', status:'scheduled', color:'linear-gradient(135deg,#0f3460,#050f1e)', time:'2:00 PM' }],
+  '2026-4-10': [{ title:'Testimonial', plat:'I', status:'published', color:'linear-gradient(135deg,#0d2e22,#2d1b4e)', time:'11:00 AM' }],
+  '2026-4-12': [{ title:'Holiday Promo', plat:'T', status:'failed', color:'linear-gradient(135deg,#3a1010,#1a0606)', time:'9:00 AM' }],
+  '2026-4-15': [{ title:'Summer Campaign', plat:'T', status:'generating', color:'linear-gradient(135deg,#1e3a5f,#0a1628)', time:'Now' }, { title:'Behind the Scenes', plat:'Y', status:'scheduled', color:'linear-gradient(135deg,#0f3460,#050f1e)', time:'4:00 PM' }],
+  '2026-4-17': [{ title:'Customer Review', plat:'I', status:'scheduled', color:'linear-gradient(135deg,#0d2e22,#050f0a)', time:'10:00 AM' }, { title:'Product Feature', plat:'T', status:'scheduled', color:'linear-gradient(135deg,#2d1b4e,#110a1e)', time:'2:00 PM' }, { title:'Week Recap', plat:'F', status:'scheduled', color:'linear-gradient(135deg,#3a2c0d,#1a1200)', time:'6:00 PM' }],
+  '2026-4-20': [{ title:'Brand Reveal', plat:'Y', status:'scheduled', color:'linear-gradient(135deg,#1e3a5f,#2d1b4e)', time:'12:00 PM' }],
+  '2026-4-22': [{ title:'Tutorial Series', plat:'T', status:'scheduled', color:'linear-gradient(135deg,#0f3460,#050f1e)', time:'11:00 AM' }],
+  '2026-4-25': [{ title:'Weekend Special', plat:'I', status:'scheduled', color:'linear-gradient(135deg,#0d2e22,#2d1b4e)', time:'10:00 AM' }, { title:'Product Q&A', plat:'Y', status:'scheduled', color:'linear-gradient(135deg,#2d1b4e,#110a1e)', time:'3:00 PM' }],
+  '2026-4-28': [{ title:'Month Wrap-up', plat:'F', status:'scheduled', color:'linear-gradient(135deg,#3a2c0d,#0f3460)', time:'9:00 AM' }],
+};
+
+const statusProps = {
+  published:  { bg: 'rgba(16,185,129,0.15)',  text: '#34d399',  dot: '#10b981' },
+  scheduled:  { bg: 'rgba(245,158,11,0.15)', text: '#fbbf24',  dot: '#f59e0b' },
+  generating: { bg: 'rgba(124,58,237,0.15)', text: '#a78bfa',  dot: '#8b5cf6' },
+  failed:     { bg: 'rgba(239,68,68,0.15)',   text: '#f87171',  dot: '#ef4444' },
+};
+
+function renderCalendar() {
+  const grid = document.getElementById('calendarGrid');
+  grid.innerHTML = '';
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('monthLabel').textContent = months[currentMonth] + ' ' + currentYear;
+
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const daysInPrev = new Date(currentYear, currentMonth, 0).getDate();
+  const totalCells = 35;
+
+  for (let i = 0; i < totalCells; i++) {
+    let day, month = currentMonth, year = currentYear, isOther = false;
+    if (i < firstDay) {
+      day = daysInPrev - firstDay + 1 + i;
+      month = currentMonth - 1;
+      if (month < 0) { month = 11; year--; }
+      isOther = true;
+    } else if (i - firstDay + 1 > daysInMonth) {
+      day = i - firstDay + 1 - daysInMonth;
+      month = currentMonth + 1;
+      if (month > 11) { month = 0; year++; }
+      isOther = true;
+    } else {
+      day = i - firstDay + 1;
+    }
+
+    const isToday = day === today.d && month === today.m && year === today.y && !isOther;
+    const key = `${year}-${month+1}-${day}`;
+    const items = contentData[key] || [];
+
+    const cell = document.createElement('div');
+    cell.className = 'day-cell' + (isToday ? ' today' : '') + (isOther ? ' other-month' : '');
+    cell.dataset.key = key;
+    cell.dataset.day = day;
+    cell.dataset.month = month;
+    cell.dataset.year = year;
+
+    const numDiv = document.createElement('div');
+    numDiv.className = 'day-num';
+    if (isToday) {
+      numDiv.innerHTML = `<div class="today-marker">${day}</div><button class="day-add" onclick="event.stopPropagation();window.location='screen-05-wizard.html'">+</button>`;
+    } else {
+      numDiv.innerHTML = `<span>${day}</span><button class="day-add" onclick="event.stopPropagation();window.location='screen-05-wizard.html'">+</button>`;
+    }
+    cell.appendChild(numDiv);
+
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'day-content';
+
+    const maxShow = 2;
+    items.slice(0, maxShow).forEach(item => {
+      const sp = statusProps[item.status];
+      const ci = document.createElement('div');
+      ci.className = 'content-item';
+      ci.style.background = sp.bg;
+      ci.style.borderColor = sp.dot + '33';
+      ci.innerHTML = `
+        <div class="ci-dot" style="background:${platColors[item.plat]};"></div>
+        <span class="ci-text" style="color:${sp.text};">${item.title}</span>
+        <div class="ci-status" style="background:${sp.dot};"></div>
+      `;
+      ci.addEventListener('click', e => { e.stopPropagation(); openPanel(key, day, month, year); });
+      contentDiv.appendChild(ci);
+    });
+
+    if (items.length > maxShow) {
+      const more = document.createElement('div');
+      more.className = 'overflow-badge';
+      more.textContent = `+${items.length - maxShow} more`;
+      more.addEventListener('click', e => { e.stopPropagation(); openPanel(key, day, month, year); });
+      contentDiv.appendChild(more);
+    }
+
+    cell.appendChild(contentDiv);
+    cell.addEventListener('click', () => openPanel(key, day, month, year));
+    grid.appendChild(cell);
+  }
+}
+
+function openPanel(key, day, month, year) {
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('panelDate').textContent = months[month] + ' ' + day + ', ' + year;
+  document.getElementById('sidePanel').classList.add('open');
+
+  const items = contentData[key] || [];
+  const panelContent = document.getElementById('panelContent');
+  panelContent.innerHTML = '';
+
+  if (items.length === 0) {
+    panelContent.innerHTML = `
+      <div style="text-align:center;padding:40px 20px;">
+        <div style="font-size:36px;margin-bottom:12px;">📅</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">No posts scheduled</div>
+        <div style="font-size:13px;color:var(--text-muted);">Click the button below to create content for this day.</div>
+      </div>
+    `;
+    return;
+  }
+
+  items.forEach(item => {
+    const sp = statusProps[item.status];
+    const el = document.createElement('div');
+    el.className = 'panel-item';
+    el.innerHTML = `
+      <div class="panel-thumb">
+        <div class="panel-thumb-bg" style="background:${item.color};height:100%;"></div>
+        <div class="panel-thumb-status" style="background:${sp.bg};">
+          <div style="width:5px;height:5px;border-radius:9999px;background:${sp.dot};"></div>
+          <span style="color:${sp.text};font-size:10px;font-weight:700;">${item.status.charAt(0).toUpperCase()+item.status.slice(1)}</span>
+        </div>
+      </div>
+      <div class="panel-item-info">
+        <div class="panel-item-title">${item.title}</div>
+        <div class="panel-item-meta">
+          <div style="width:14px;height:14px;border-radius:9999px;background:${platColors[item.plat]}22;color:${platColors[item.plat]};display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;">${item.plat}</div>
+          <span class="panel-item-time">${item.time}</span>
+        </div>
+      </div>
+    `;
+    el.addEventListener('click', () => window.location = 'screen-07-result.html');
+    panelContent.appendChild(el);
+  });
+}
+
+function closePanel() {
+  document.getElementById('sidePanel').classList.remove('open');
+}
+
+function changeMonth(dir) {
+  currentMonth += dir;
+  if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+  if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+  closePanel();
+  renderCalendar();
+}
+
+function goToday() {
+  currentYear = today.y;
+  currentMonth = today.m;
+  closePanel();
+  renderCalendar();
+}
+
+document.querySelectorAll('.view-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+
+renderCalendar();
+// Auto-open today's panel
+setTimeout(() => openPanel(`${today.y}-${today.m+1}-${today.d}`, today.d, today.m, today.y), 300);
+</script>
+</body>
+</html>

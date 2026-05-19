@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vidify — Get Started</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg-base: #09090b; --bg-panel: #111113; --bg-surface: #1a1a1f;
+  --bg-elevated: #232329; --bg-input: #0f0f12;
+  --text-primary: #f4f4f5; --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a; --text-muted: #52525b;
+  --accent-blue: #2563eb; --accent-violet: #7c3aed;
+  --gradient: linear-gradient(135deg, #2563eb, #7c3aed);
+  --border: rgba(255,255,255,0.06); --border-default: rgba(255,255,255,0.10);
+  --success: #10b981; --warning: #f59e0b;
+}
+html, body { height: 100%; }
+body {
+  background: var(--bg-base); color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif; font-size: 15px;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; min-height: 100vh; padding: 40px 20px;
+  overflow-x: hidden;
+}
+
+/* Ambient bg */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse at 30% 20%, rgba(37,99,235,0.07) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 80%, rgba(124,58,237,0.07) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* TOP BAR */
+.top-bar {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 60px; background: rgba(17,17,19,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; z-index: 100;
+}
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo-mark {
+  width: 28px; height: 28px; border-radius: 7px; background: var(--gradient);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 12px; color: #fff;
+}
+.logo-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: var(--text-primary); }
+.step-count { font-size: 13px; color: var(--text-tertiary); }
+
+/* STEP PROGRESS */
+.step-indicator {
+  display: flex; align-items: center; gap: 0;
+  margin-bottom: 40px; position: relative;
+}
+.step-item {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  position: relative;
+}
+.step-circle {
+  width: 36px; height: 36px; border-radius: 9999px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; font-family: 'Syne', sans-serif;
+  transition: all 0.3s; z-index: 2; position: relative;
+}
+.step-circle.done { background: var(--accent-blue); color: #fff; }
+.step-circle.active {
+  background: var(--gradient); color: #fff;
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.2);
+}
+.step-circle.future {
+  background: var(--bg-elevated); color: var(--text-muted);
+  border: 1px solid var(--border-default);
+}
+.step-label {
+  font-size: 11px; font-weight: 500;
+  white-space: nowrap;
+}
+.step-label.done, .step-label.active { color: var(--text-secondary); }
+.step-label.future { color: var(--text-muted); }
+
+.step-connector {
+  width: 80px; height: 2px; margin: 0 4px; margin-bottom: 26px;
+  transition: background 0.3s;
+}
+.step-connector.done { background: var(--accent-blue); }
+.step-connector.future { background: var(--bg-elevated); }
+
+/* CARD */
+.card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  width: 100%; max-width: 640px;
+  padding: 40px;
+  position: relative;
+  animation: slideUp 0.4s ease;
+}
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 24px; font-weight: 700;
+  letter-spacing: -0.5px; color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.card-sub {
+  font-size: 15px; color: var(--text-tertiary);
+  margin-bottom: 32px; line-height: 1.55;
+}
+
+/* ── STEP 1: PLATFORMS ── */
+.platform-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+.platform-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-radius: 12px;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  transition: all 0.2s; cursor: pointer;
+}
+.platform-row:hover { border-color: var(--border-default); background: var(--bg-elevated); }
+.platform-row.connected { border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.05); }
+
+.platform-left { display: flex; align-items: center; gap: 16px; }
+.platform-icon-circle {
+  width: 42px; height: 42px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 700;
+}
+.platform-name { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+.platform-desc { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+
+.btn-connect {
+  padding: 7px 18px; border-radius: 7px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+  cursor: pointer; border: 1px solid; transition: all 0.2s;
+}
+.btn-connect:hover { filter: brightness(1.1); }
+.connected-check {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 600; color: var(--success);
+}
+
+/* ── STEP 2: BRAND ── */
+.logo-upload-zone {
+  width: 100px; height: 100px; border-radius: 9999px;
+  border: 2px dashed var(--border-default);
+  background: var(--bg-surface);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; margin: 0 auto 32px;
+  transition: all 0.2s;
+}
+.logo-upload-zone:hover { border-color: rgba(37,99,235,0.4); background: rgba(37,99,235,0.05); }
+.upload-icon { font-size: 24px; margin-bottom: 6px; }
+.upload-text { font-size: 11px; color: var(--text-muted); text-align: center; }
+
+.form-group { margin-bottom: 18px; }
+.form-label { display: block; font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; }
+.form-input {
+  width: 100%; padding: 11px 14px; border-radius: 8px;
+  border: 1px solid var(--border-default); background: var(--bg-input);
+  color: var(--text-primary); font-family: 'DM Sans', sans-serif;
+  font-size: 14px; outline: none; transition: all 0.2s;
+}
+.form-input:focus { border-color: rgba(37,99,235,0.5); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.form-input::placeholder { color: var(--text-muted); }
+
+select.form-input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2371717a' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer; }
+select.form-input option { background: #1a1a1f; }
+
+.color-row { display: flex; align-items: center; gap: 10px; }
+.color-swatch {
+  width: 34px; height: 34px; border-radius: 8px;
+  border: 2px solid transparent; cursor: pointer; transition: all 0.2s;
+}
+.color-swatch:hover { transform: scale(1.1); }
+.color-swatch.selected { border-color: #fff; box-shadow: 0 0 0 3px rgba(255,255,255,0.2); }
+
+/* ── STEP 3: FIRST VIDEO ── */
+.prompt-area {
+  width: 100%; min-height: 120px; padding: 18px;
+  border-radius: 12px; border: 1px solid var(--border-default);
+  background: var(--bg-input); color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif; font-size: 15px;
+  line-height: 1.6; resize: none; outline: none;
+  transition: all 0.2s; margin-bottom: 20px;
+}
+.prompt-area:focus { border-color: rgba(37,99,235,0.5); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.prompt-area::placeholder { color: var(--text-muted); font-style: italic; }
+
+.template-label { font-size: 13px; color: var(--text-tertiary); margin-bottom: 12px; }
+.template-chips { display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; }
+.template-chip {
+  padding: 10px 18px; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+  cursor: pointer; border: 1px solid; transition: all 0.2s; text-align: center;
+}
+.template-chip:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
+.credit-note { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 12px; }
+
+/* BUTTONS */
+.btn-primary-full {
+  width: 100%; padding: 14px; border-radius: 10px; border: none;
+  background: var(--gradient); color: #fff; font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(37,99,235,0.25);
+}
+.btn-primary-full:hover { filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 8px 28px rgba(37,99,235,0.35); }
+
+.btn-skip {
+  display: block; width: 100%; padding: 10px;
+  background: transparent; border: none; color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+  cursor: pointer; margin-top: 12px; transition: color 0.2s; text-align: center;
+}
+.btn-skip:hover { color: var(--text-tertiary); }
+
+/* NAVIGATION BUTTONS */
+.card-nav { display: flex; gap: 12px; margin-top: 28px; }
+.btn-back {
+  flex: 1; padding: 12px; border-radius: 8px;
+  border: 1px solid var(--border-default); background: rgba(255,255,255,0.04);
+  color: var(--text-primary); font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s;
+}
+.btn-back:hover { background: rgba(255,255,255,0.08); }
+.btn-next {
+  flex: 2; padding: 12px; border-radius: 8px; border: none;
+  background: var(--gradient); color: #fff; font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.btn-next:hover { filter: brightness(1.08); }
+
+/* STEP WRAPPER */
+.step-content { display: none; }
+.step-content.active { display: block; animation: slideUp 0.35s ease; }
+
+/* CONFETTI */
+.confetti-container {
+  position: fixed; inset: 0; pointer-events: none; z-index: 999;
+  display: none;
+}
+.confetti-piece {
+  position: absolute;
+  width: 10px; height: 10px;
+  border-radius: 2px;
+  animation: confettiFall 2s ease-in forwards;
+}
+@keyframes confettiFall {
+  0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="confetti-container" id="confetti"></div>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <a href="screen-01-landing.html" class="logo">
+    <div class="logo-mark">V</div>
+    <span class="logo-text">Vidify</span>
+  </a>
+  <span class="step-count" id="stepCount">Step 1 of 3</span>
+</div>
+
+<!-- STEP INDICATOR -->
+<div class="step-indicator" id="stepIndicator" style="margin-top:80px;">
+  <div class="step-item">
+    <div class="step-circle active" id="sc1">1</div>
+    <span class="step-label active" id="sl1">Connect</span>
+  </div>
+  <div class="step-connector future" id="conn1"></div>
+  <div class="step-item">
+    <div class="step-circle future" id="sc2">2</div>
+    <span class="step-label future" id="sl2">Brand</span>
+  </div>
+  <div class="step-connector future" id="conn2"></div>
+  <div class="step-item">
+    <div class="step-circle future" id="sc3">3</div>
+    <span class="step-label future" id="sl3">Create</span>
+  </div>
+</div>
+
+<!-- CARD -->
+<div class="card">
+
+  <!-- ═══ STEP 1: CONNECT SOCIALS ═══ -->
+  <div class="step-content active" id="step1">
+    <h2 class="card-title">Where do you publish?</h2>
+    <p class="card-sub">Connect your social accounts to enable one-click publishing. You can always do this later.</p>
+
+    <div class="platform-list">
+      <div class="platform-row" onclick="toggleConnect(this, 'tiktok')">
+        <div class="platform-left">
+          <div class="platform-icon-circle" style="background:rgba(0,242,234,0.12);">
+            <span style="color:#00f2ea;font-size:20px;">♪</span>
+          </div>
+          <div>
+            <div class="platform-name">TikTok</div>
+            <div class="platform-desc">Short-form videos · 1B+ users</div>
+          </div>
+        </div>
+        <button class="btn-connect" style="background:rgba(0,242,234,0.1);border-color:rgba(0,242,234,0.3);color:#00f2ea;" data-state="disconnected">Connect</button>
+      </div>
+
+      <div class="platform-row" onclick="toggleConnect(this, 'youtube')">
+        <div class="platform-left">
+          <div class="platform-icon-circle" style="background:rgba(255,0,0,0.12);">
+            <span style="color:#ff4444;font-size:20px;">▶</span>
+          </div>
+          <div>
+            <div class="platform-name">YouTube</div>
+            <div class="platform-desc">Long & short-form · 2B+ users</div>
+          </div>
+        </div>
+        <button class="btn-connect" style="background:rgba(255,0,0,0.1);border-color:rgba(255,0,0,0.3);color:#ff5555;" data-state="disconnected">Connect</button>
+      </div>
+
+      <div class="platform-row" onclick="toggleConnect(this, 'instagram')">
+        <div class="platform-left">
+          <div class="platform-icon-circle" style="background:rgba(230,104,60,0.12);">
+            <span style="color:#e6683c;font-size:20px;">◉</span>
+          </div>
+          <div>
+            <div class="platform-name">Instagram</div>
+            <div class="platform-desc">Reels & Stories · 2B+ users</div>
+          </div>
+        </div>
+        <button class="btn-connect" style="background:rgba(230,104,60,0.1);border-color:rgba(230,104,60,0.3);color:#e6683c;" data-state="disconnected">Connect</button>
+      </div>
+
+      <div class="platform-row" onclick="toggleConnect(this, 'facebook')">
+        <div class="platform-left">
+          <div class="platform-icon-circle" style="background:rgba(24,119,242,0.12);">
+            <span style="color:#1877f2;font-size:20px;">f</span>
+          </div>
+          <div>
+            <div class="platform-name">Facebook</div>
+            <div class="platform-desc">Pages & Reels · 3B+ users</div>
+          </div>
+        </div>
+        <button class="btn-connect" style="background:rgba(24,119,242,0.1);border-color:rgba(24,119,242,0.3);color:#1877f2;" data-state="disconnected">Connect</button>
+      </div>
+    </div>
+
+    <button class="btn-primary-full" onclick="goStep(2)">Continue →</button>
+    <button class="btn-skip" onclick="goStep(2)">Skip for now — I'll connect later</button>
+  </div>
+
+  <!-- ═══ STEP 2: BRAND SETUP ═══ -->
+  <div class="step-content" id="step2">
+    <h2 class="card-title">Tell us about your brand</h2>
+    <p class="card-sub">This helps us personalize your videos with your brand identity and tone of voice.</p>
+
+    <div class="logo-upload-zone" onclick="this.style.borderColor='rgba(37,99,235,0.5)'">
+      <div class="upload-icon">⊕</div>
+      <div class="upload-text">Upload Logo<br><span style="color:#3f3f46">PNG, SVG · max 2MB</span></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Brand / Company Name</label>
+      <input type="text" class="form-input" placeholder="e.g. Vidify Studio">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Industry / Niche</label>
+      <select class="form-input">
+        <option value="">Select your niche...</option>
+        <option>E-commerce & Retail</option>
+        <option>Digital Agency</option>
+        <option>Content Creator</option>
+        <option>Education & Coaching</option>
+        <option>SaaS / Tech</option>
+        <option>Real Estate</option>
+        <option>Food & Restaurant</option>
+        <option>Other</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Brand Color</label>
+      <div class="color-row">
+        <div class="color-swatch selected" style="background:#2563eb;" onclick="selectColor(this)"></div>
+        <div class="color-swatch" style="background:#7c3aed;" onclick="selectColor(this)"></div>
+        <div class="color-swatch" style="background:#10b981;" onclick="selectColor(this)"></div>
+        <div class="color-swatch" style="background:#f59e0b;" onclick="selectColor(this)"></div>
+        <div class="color-swatch" style="background:#ef4444;" onclick="selectColor(this)"></div>
+        <div class="color-swatch" style="background:#ec4899;" onclick="selectColor(this)"></div>
+        <input type="color" value="#2563eb" style="width:34px;height:34px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;cursor:pointer;padding:2px;">
+      </div>
+    </div>
+
+    <div class="card-nav">
+      <button class="btn-back" onclick="goStep(1)">← Back</button>
+      <button class="btn-next" onclick="goStep(3)">Continue →</button>
+    </div>
+    <button class="btn-skip" onclick="goStep(3)">Skip for now</button>
+  </div>
+
+  <!-- ═══ STEP 3: FIRST VIDEO ═══ -->
+  <div class="step-content" id="step3">
+    <h2 class="card-title">Let's make something amazing</h2>
+    <p class="card-sub">Describe your first video or choose a template. You have 5 free credits to get started.</p>
+
+    <textarea class="prompt-area" placeholder="A professional product showcase with modern transitions, upbeat background music, and a clear call-to-action at the end..."></textarea>
+
+    <div class="template-label">Or start with a quick template:</div>
+    <div class="template-chips">
+      <div class="template-chip" style="background:rgba(37,99,235,0.1);border-color:rgba(37,99,235,0.3);color:#60a5fa;" onclick="setTemplate(this, 'A compelling product ad with modern transitions for social media')">📦 Product Ad</div>
+      <div class="template-chip" style="background:rgba(124,58,237,0.1);border-color:rgba(124,58,237,0.3);color:#a78bfa;" onclick="setTemplate(this, 'An engaging social media story with text overlays and vibrant visuals')">📱 Social Story</div>
+      <div class="template-chip" style="background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.3);color:#34d399;" onclick="setTemplate(this, 'A step-by-step tutorial video with clear instructions and helpful captions')">🎓 Tutorial</div>
+      <div class="template-chip" style="background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.3);color:#fbbf24;" onclick="setTemplate(this, 'A customer testimonial video with professional visuals and authentic tone')">⭐ Testimonial</div>
+    </div>
+
+    <button class="btn-primary-full" onclick="launchGenerate()" style="font-size:16px;padding:16px;">
+      ✦ &nbsp;Generate My First Video
+    </button>
+    <div class="credit-note">Uses 2 credits &nbsp;·&nbsp; You have 5 free credits remaining</div>
+
+    <div class="card-nav" style="margin-top:16px;">
+      <button class="btn-back" onclick="goStep(2)">← Back</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let currentStep = 1;
+
+function goStep(n) {
+  document.getElementById('step' + currentStep).classList.remove('active');
+  currentStep = n;
+  document.getElementById('step' + currentStep).classList.add('active');
+  document.getElementById('stepCount').textContent = 'Step ' + n + ' of 3';
+  updateIndicator(n);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateIndicator(n) {
+  for (let i = 1; i <= 3; i++) {
+    const sc = document.getElementById('sc' + i);
+    const sl = document.getElementById('sl' + i);
+    sc.className = 'step-circle ' + (i < n ? 'done' : i === n ? 'active' : 'future');
+    sc.textContent = i < n ? '✓' : i;
+    sl.className = 'step-label ' + (i < n ? 'done' : i === n ? 'active' : 'future');
+    if (i < 3) {
+      const conn = document.getElementById('conn' + i);
+      conn.className = 'step-connector ' + (i < n ? 'done' : 'future');
+    }
+  }
+}
+
+function toggleConnect(row, platform) {
+  const btn = row.querySelector('.btn-connect');
+  const state = btn.dataset.state;
+  if (state === 'disconnected') {
+    btn.dataset.state = 'connected';
+    btn.textContent = '✓ Connected';
+    btn.style.background = 'rgba(16,185,129,0.15)';
+    btn.style.borderColor = 'rgba(16,185,129,0.4)';
+    btn.style.color = '#34d399';
+    row.classList.add('connected');
+  } else {
+    btn.dataset.state = 'disconnected';
+    btn.textContent = 'Connect';
+    row.classList.remove('connected');
+    const colors = { tiktok: ['rgba(0,242,234,0.1)','rgba(0,242,234,0.3)','#00f2ea'], youtube: ['rgba(255,0,0,0.1)','rgba(255,0,0,0.3)','#ff5555'], instagram: ['rgba(230,104,60,0.1)','rgba(230,104,60,0.3)','#e6683c'], facebook: ['rgba(24,119,242,0.1)','rgba(24,119,242,0.3)','#1877f2'] };
+    const c = colors[platform];
+    btn.style.background = c[0]; btn.style.borderColor = c[1]; btn.style.color = c[2];
+  }
+}
+
+function selectColor(el) {
+  document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function setTemplate(el, text) {
+  document.querySelectorAll('.template-chip').forEach(c => c.style.opacity = '0.5');
+  el.style.opacity = '1';
+  document.querySelector('.prompt-area').value = text;
+}
+
+function launchGenerate() {
+  showConfetti();
+  setTimeout(() => { window.location.href = 'screen-04-dashboard.html'; }, 2000);
+}
+
+function showConfetti() {
+  const container = document.getElementById('confetti');
+  container.style.display = 'block';
+  const colors = ['#2563eb','#7c3aed','#10b981','#f59e0b','#f4f4f5','#60a5fa'];
+  for (let i = 0; i < 80; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.cssText = `
+      left:${Math.random()*100}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      width:${6+Math.random()*8}px;
+      height:${6+Math.random()*8}px;
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+      animation-delay:${Math.random()*0.5}s;
+      animation-duration:${1.5+Math.random()*1}s;
+    `;
+    container.appendChild(piece);
+  }
+  setTimeout(() => { container.style.display = 'none'; container.innerHTML = ''; }, 3000);
+}
+</script>
+</body>
+</html>

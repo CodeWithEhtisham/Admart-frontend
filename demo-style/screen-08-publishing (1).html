@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vidify — Publish Video</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg-base: #09090b; --bg-panel: #111113; --bg-surface: #1a1a1f;
+  --bg-elevated: #232329; --bg-input: #0f0f12;
+  --text-primary: #f4f4f5; --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a; --text-muted: #52525b;
+  --gradient: linear-gradient(135deg, #2563eb, #7c3aed);
+  --border: rgba(255,255,255,0.06); --border-default: rgba(255,255,255,0.10);
+  --success: #10b981; --warning: #f59e0b; --error: #ef4444;
+  --tiktok: #00f2ea; --youtube: #ff4444; --instagram: #e6683c; --facebook: #1877f2;
+}
+html, body { height: 100%; overflow: hidden; }
+body { background: var(--bg-base); color: var(--text-primary); font-family: 'DM Sans', sans-serif; font-size: 14px; display: flex; flex-direction: column; }
+
+/* NAV */
+.top-nav { height: 60px; background: var(--bg-panel); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 28px; gap: 16px; flex-shrink: 0; }
+.nav-back { display: flex; align-items: center; gap: 8px; color: var(--text-tertiary); font-size: 14px; font-weight: 500; background: none; border: none; cursor: pointer; transition: color 0.2s; text-decoration: none; }
+.nav-back:hover { color: var(--text-primary); }
+.nav-divider { width: 1px; height: 18px; background: var(--border-default); }
+.nav-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; }
+
+/* LAYOUT */
+.main-layout { flex: 1; display: flex; overflow: hidden; }
+
+/* LEFT: VIDEO SUMMARY */
+.left-panel { width: 360px; flex-shrink: 0; border-right: 1px solid var(--border); background: var(--bg-panel); overflow-y: auto; padding: 24px; }
+.left-panel::-webkit-scrollbar { width: 5px; }
+.left-panel::-webkit-scrollbar-thumb { background: var(--bg-elevated); border-radius: 9999px; }
+
+.video-summary-card { border-radius: 14px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 20px; }
+.video-thumb-preview {
+  aspect-ratio: 16/9;
+  background: linear-gradient(135deg, #1a2f5a 0%, #0d1f3c 50%, #1e1540 100%);
+  position: relative; display: flex; align-items: center; justify-content: center;
+}
+.thumb-play-sm { width: 40px; height: 40px; border-radius: 9999px; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); }
+.video-summary-info { padding: 14px; background: var(--bg-surface); }
+.video-summary-title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; line-height: 1.4; }
+.video-summary-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+.summary-chip { padding: 3px 9px; border-radius: 5px; background: var(--bg-elevated); font-size: 11px; color: var(--text-tertiary); }
+
+/* Platform status summary */
+.publish-summary-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 12px; }
+.platform-status-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.plat-status-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; background: var(--bg-surface); border: 1px solid var(--border); }
+.plat-icon-sm { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.plat-name-sm { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.plat-handle { font-size: 11px; color: var(--text-muted); }
+.plat-toggle { margin-left: auto; }
+
+/* Toggle */
+.toggle { width: 38px; height: 22px; border-radius: 9999px; background: var(--bg-elevated); border: 1px solid var(--border-default); cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0; }
+.toggle.on { background: var(--success); border-color: var(--success); }
+.toggle-knob { position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 9999px; background: #fff; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+.toggle.on .toggle-knob { transform: translateX(16px); }
+
+/* Preview strip */
+.preview-strip-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 10px; }
+.preview-strip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.preview-strip::-webkit-scrollbar { height: 4px; }
+.preview-strip::-webkit-scrollbar-thumb { background: var(--bg-elevated); border-radius: 9999px; }
+.preview-phone { flex-shrink: 0; width: 70px; }
+.preview-phone-screen { width: 70px; aspect-ratio: 9/16; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); background: var(--bg-surface); display: flex; flex-direction: column; }
+.preview-phone-top { height: 16px; background: var(--bg-elevated); display: flex; align-items: center; padding: 0 4px; }
+.preview-phone-dot { width: 4px; height: 4px; border-radius: 9999px; }
+.preview-phone-video { flex: 1; background: linear-gradient(135deg, #1a2f5a, #0d1f3c); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.preview-phone-name { font-size: 9px; color: var(--text-muted); text-align: center; margin-top: 4px; }
+
+/* RIGHT: CONFIG PANEL */
+.right-panel { flex: 1; overflow-y: auto; padding: 24px 32px; background: var(--bg-base); }
+.right-panel::-webkit-scrollbar { width: 5px; }
+.right-panel::-webkit-scrollbar-thumb { background: var(--bg-elevated); border-radius: 9999px; }
+
+.section-header { margin-bottom: 16px; }
+.section-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+.section-sub { font-size: 13px; color: var(--text-tertiary); }
+
+/* Schedule toggle */
+.schedule-toggle-row { display: flex; gap: 10px; margin-bottom: 24px; }
+.schedule-option {
+  flex: 1; padding: 14px 16px; border-radius: 10px; cursor: pointer;
+  border: 1px solid var(--border); background: var(--bg-surface); transition: all 0.2s;
+  display: flex; align-items: center; gap: 10px;
+}
+.schedule-option.selected { border-color: rgba(37,99,235,0.4); background: rgba(37,99,235,0.06); }
+.schedule-radio { width: 16px; height: 16px; border-radius: 9999px; border: 2px solid var(--border-default); flex-shrink: 0; transition: all 0.2s; }
+.schedule-option.selected .schedule-radio { background: var(--accent-blue); border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.2); }
+.schedule-option-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.schedule-option-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+/* Date/time picker */
+.datetime-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+.form-group { }
+.form-label { font-size: 12px; font-weight: 600; color: var(--text-tertiary); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.04em; }
+.form-input {
+  width: 100%; padding: 10px 14px; border-radius: 8px;
+  border: 1px solid var(--border-default); background: var(--bg-input);
+  color: var(--text-primary); font-family: 'DM Sans', sans-serif;
+  font-size: 14px; outline: none; transition: all 0.2s;
+}
+.form-input:focus { border-color: rgba(37,99,235,0.4); box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
+select.form-input { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2371717a' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; -webkit-appearance: none; }
+select.form-input option { background: #1a1a1f; }
+
+/* Platform accordions */
+.platform-accordion { margin-bottom: 12px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.accordion-header {
+  display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+  cursor: pointer; background: var(--bg-surface); transition: background 0.15s;
+  user-select: none;
+}
+.accordion-header:hover { background: var(--bg-elevated); }
+.accordion-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; flex-shrink: 0; }
+.accordion-title { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+.accordion-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+.accordion-arrow { margin-left: auto; color: var(--text-muted); font-size: 13px; transition: transform 0.2s; }
+.accordion-arrow.open { transform: rotate(180deg); }
+.accordion-status { padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; }
+
+.accordion-body { display: none; padding: 16px; border-top: 1px solid var(--border); background: var(--bg-panel); }
+.accordion-body.open { display: block; animation: slideDown 0.2s ease; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+.acc-form-group { margin-bottom: 14px; }
+.acc-label { font-size: 12px; font-weight: 600; color: var(--text-tertiary); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+.char-limit-badge { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); }
+.acc-input { width: 100%; padding: 9px 12px; border-radius: 7px; border: 1px solid var(--border-default); background: var(--bg-input); color: var(--text-primary); font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; transition: all 0.2s; }
+.acc-input:focus { border-color: rgba(37,99,235,0.4); }
+.acc-textarea { width: 100%; min-height: 70px; padding: 9px 12px; border-radius: 7px; border: 1px solid var(--border-default); background: var(--bg-input); color: var(--text-secondary); font-family: 'DM Sans', sans-serif; font-size: 13px; line-height: 1.55; resize: none; outline: none; transition: all 0.2s; }
+.acc-textarea:focus { border-color: rgba(37,99,235,0.4); }
+.acc-row { display: flex; gap: 10px; }
+.acc-row .acc-form-group { flex: 1; }
+
+/* BOTTOM ACTION BAR */
+.action-bar { height: 72px; background: var(--bg-panel); border-top: 1px solid var(--border); display: flex; align-items: center; padding: 0 28px; gap: 12px; flex-shrink: 0; }
+.publish-summary { display: flex; align-items: center; gap: 8px; }
+.pub-plat-dots { display: flex; gap: 4px; }
+.pub-dot { width: 20px; height: 20px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; }
+.publish-count-text { font-size: 13px; color: var(--text-secondary); }
+.publish-count-text strong { color: var(--text-primary); }
+
+.btn-publish-now { padding: 12px 32px; border-radius: 9px; border: none; background: var(--gradient); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(37,99,235,0.3); margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.btn-publish-now:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.btn-save-draft { padding: 12px 20px; border-radius: 9px; border: 1px solid var(--border-default); background: transparent; color: var(--text-secondary); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+.btn-save-draft:hover { background: var(--bg-surface); color: var(--text-primary); }
+
+/* CONFIRM MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center; }
+.modal-box { background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: 16px; padding: 32px; max-width: 480px; width: 90%; box-shadow: 0 24px 48px rgba(0,0,0,0.4); animation: modalIn 0.25s ease; }
+@keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+.modal-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.modal-sub { font-size: 14px; color: var(--text-tertiary); margin-bottom: 24px; line-height: 1.55; }
+.modal-platforms { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+.modal-plat-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; background: var(--bg-elevated); }
+.modal-plat-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+.modal-plat-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.modal-plat-handle { font-size: 11px; color: var(--text-muted); margin-left: auto; }
+.modal-actions { display: flex; gap: 10px; }
+.btn-modal-cancel { flex: 1; padding: 11px; border-radius: 8px; border: 1px solid var(--border-default); background: transparent; color: var(--text-primary); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; }
+.btn-modal-confirm { flex: 2; padding: 11px; border-radius: 8px; border: none; background: var(--gradient); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.btn-modal-confirm:hover { filter: brightness(1.08); }
+
+/* SUCCESS TOAST */
+.toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--bg-elevated); border: 1px solid rgba(16,185,129,0.3); border-radius: 10px; padding: 14px 24px; display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; color: var(--text-primary); box-shadow: 0 8px 24px rgba(0,0,0,0.3); z-index: 200; opacity: 0; transition: all 0.3s; pointer-events: none; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirmModal" onclick="closeModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">Confirm Publishing</div>
+    <p class="modal-sub">Your video will be published to the following platforms immediately. This action cannot be undone.</p>
+    <div class="modal-platforms">
+      <div class="modal-plat-row">
+        <div class="modal-plat-icon" style="background:rgba(0,242,234,0.15);color:#00f2ea;">T</div>
+        <span class="modal-plat-name">TikTok</span>
+        <span class="modal-plat-handle">@vidify_brand</span>
+      </div>
+      <div class="modal-plat-row">
+        <div class="modal-plat-icon" style="background:rgba(255,68,68,0.15);color:#ff4444;">Y</div>
+        <span class="modal-plat-name">YouTube</span>
+        <span class="modal-plat-handle">Vidify Studio</span>
+      </div>
+      <div class="modal-plat-row">
+        <div class="modal-plat-icon" style="background:rgba(230,104,60,0.15);color:#e6683c;">I</div>
+        <span class="modal-plat-name">Instagram</span>
+        <span class="modal-plat-handle">@vidify</span>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-modal-confirm" onclick="confirmPublish()">🚀 Publish Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS TOAST -->
+<div class="toast" id="successToast">✅ Published to 3 platforms successfully!</div>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <a href="screen-07-result.html" class="nav-back">← Back</a>
+  <div class="nav-divider"></div>
+  <span class="nav-title">Publish Video</span>
+</nav>
+
+<div class="main-layout">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+
+    <!-- Video summary -->
+    <div class="video-summary-card">
+      <div class="video-thumb-preview">
+        <div class="thumb-play-sm">▶</div>
+      </div>
+      <div class="video-summary-info">
+        <div class="video-summary-title">Summer Product Launch — Cinematic Showcase 2024</div>
+        <div class="video-summary-meta">
+          <span class="summary-chip">0:15</span>
+          <span class="summary-chip">16:9</span>
+          <span class="summary-chip">1080p</span>
+          <span class="summary-chip">8.4 MB</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Platform toggles -->
+    <div class="publish-summary-label">Publishing To</div>
+    <div class="platform-status-list">
+      <div class="plat-status-row">
+        <div class="plat-icon-sm" style="background:rgba(0,242,234,0.15);color:#00f2ea;">T</div>
+        <div><div class="plat-name-sm">TikTok</div><div class="plat-handle">@vidify_brand</div></div>
+        <div class="plat-toggle">
+          <div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+        </div>
+      </div>
+      <div class="plat-status-row">
+        <div class="plat-icon-sm" style="background:rgba(255,68,68,0.15);color:#ff4444;">Y</div>
+        <div><div class="plat-name-sm">YouTube</div><div class="plat-handle">Vidify Studio</div></div>
+        <div class="plat-toggle">
+          <div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+        </div>
+      </div>
+      <div class="plat-status-row">
+        <div class="plat-icon-sm" style="background:rgba(230,104,60,0.15);color:#e6683c;">I</div>
+        <div><div class="plat-name-sm">Instagram</div><div class="plat-handle">@vidify</div></div>
+        <div class="plat-toggle">
+          <div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+        </div>
+      </div>
+      <div class="plat-status-row" style="opacity:0.5;">
+        <div class="plat-icon-sm" style="background:rgba(24,119,242,0.15);color:#1877f2;">F</div>
+        <div><div class="plat-name-sm">Facebook</div><div class="plat-handle" style="color:#ef4444;">Not connected</div></div>
+        <div class="plat-toggle">
+          <div class="toggle" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview strip -->
+    <div class="preview-strip-label">Platform Previews</div>
+    <div class="preview-strip">
+      <div class="preview-phone">
+        <div class="preview-phone-screen">
+          <div class="preview-phone-top"><div class="preview-phone-dot" style="background:#00f2ea;"></div></div>
+          <div class="preview-phone-video">▶</div>
+        </div>
+        <div class="preview-phone-name" style="color:#00f2ea;">TikTok</div>
+      </div>
+      <div class="preview-phone">
+        <div class="preview-phone-screen" style="aspect-ratio:16/9;width:80px;">
+          <div class="preview-phone-top"><div class="preview-phone-dot" style="background:#ff4444;"></div></div>
+          <div class="preview-phone-video">▶</div>
+        </div>
+        <div class="preview-phone-name" style="color:#ff4444;">YouTube</div>
+      </div>
+      <div class="preview-phone">
+        <div class="preview-phone-screen">
+          <div class="preview-phone-top"><div class="preview-phone-dot" style="background:#e6683c;"></div></div>
+          <div class="preview-phone-video">▶</div>
+        </div>
+        <div class="preview-phone-name" style="color:#e6683c;">Instagram</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+
+    <!-- Schedule section -->
+    <div class="section-header" style="margin-bottom:16px;">
+      <div class="section-title">Schedule</div>
+      <div class="section-sub">Choose when to publish your content</div>
+    </div>
+
+    <div class="schedule-toggle-row">
+      <div class="schedule-option selected" id="opt-now" onclick="selectSchedule('now')">
+        <div class="schedule-radio"></div>
+        <div>
+          <div class="schedule-option-title">🚀 Publish Now</div>
+          <div class="schedule-option-sub">Go live immediately on all platforms</div>
+        </div>
+      </div>
+      <div class="schedule-option" id="opt-schedule" onclick="selectSchedule('schedule')">
+        <div class="schedule-radio"></div>
+        <div>
+          <div class="schedule-option-title">📅 Schedule for Later</div>
+          <div class="schedule-option-sub">Set a specific date and time</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="dateTimeSection" style="display:none;">
+      <div class="datetime-row">
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <input type="date" class="form-input" value="2026-04-20">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Time</label>
+          <input type="time" class="form-input" value="09:00">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Timezone</label>
+          <select class="form-input">
+            <option>PKT (UTC+5)</option>
+            <option>UTC</option>
+            <option>EST (UTC-5)</option>
+            <option>PST (UTC-8)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Per-platform configuration -->
+    <div class="section-header" style="margin-bottom:16px;margin-top:8px;">
+      <div class="section-title">Per-Platform Settings</div>
+      <div class="section-sub">Customize content for each platform</div>
+    </div>
+
+    <!-- TikTok accordion -->
+    <div class="platform-accordion">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        <div class="accordion-icon" style="background:rgba(0,242,234,0.12);color:#00f2ea;">T</div>
+        <div>
+          <div class="accordion-title">TikTok</div>
+          <div class="accordion-sub">@vidify_brand · 12.4K followers</div>
+        </div>
+        <span class="accordion-status" style="background:rgba(16,185,129,0.12);color:#34d399;">Ready</span>
+        <span class="accordion-arrow">▼</span>
+      </div>
+      <div class="accordion-body open">
+        <div class="acc-form-group">
+          <div class="acc-label">Caption <span class="char-limit-badge">148 / 2200</span></div>
+          <textarea class="acc-textarea">✨ Summer skincare launch! 🌞 Clinically proven to give glowing skin in 7 days. Limited offer! #skincare #summer #beauty #glowup #luxuryskincare</textarea>
+        </div>
+        <div class="acc-row">
+          <div class="acc-form-group">
+            <div class="acc-label">Privacy</div>
+            <select class="acc-input"><option>Public</option><option>Friends</option><option>Private</option></select>
+          </div>
+          <div class="acc-form-group">
+            <div class="acc-label">Allow Comments</div>
+            <select class="acc-input"><option>Everyone</option><option>Friends</option><option>No one</option></select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- YouTube accordion -->
+    <div class="platform-accordion">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        <div class="accordion-icon" style="background:rgba(255,68,68,0.12);color:#ff4444;">Y</div>
+        <div>
+          <div class="accordion-title">YouTube</div>
+          <div class="accordion-sub">Vidify Studio · 8.2K subscribers</div>
+        </div>
+        <span class="accordion-status" style="background:rgba(16,185,129,0.12);color:#34d399;">Ready</span>
+        <span class="accordion-arrow">▼</span>
+      </div>
+      <div class="accordion-body">
+        <div class="acc-form-group">
+          <div class="acc-label">Title <span class="char-limit-badge">56 / 100</span></div>
+          <input type="text" class="acc-input" value="Summer Product Launch — Cinematic Showcase 2024">
+        </div>
+        <div class="acc-form-group">
+          <div class="acc-label">Description <span class="char-limit-badge">320 / 5000</span></div>
+          <textarea class="acc-textarea" style="min-height:90px;">Introducing our brand new summer skincare collection! Our clinically proven formula delivers visible results in just 7 days. Made with natural ingredients, dermatologist tested. Shop now!
+
+#skincare #beauty #summer2024 #productlaunch</textarea>
+        </div>
+        <div class="acc-row">
+          <div class="acc-form-group">
+            <div class="acc-label">Visibility</div>
+            <select class="acc-input"><option>Public</option><option>Unlisted</option><option>Private</option></select>
+          </div>
+          <div class="acc-form-group">
+            <div class="acc-label">Category</div>
+            <select class="acc-input"><option>People & Blogs</option><option>Howto & Style</option><option>Science & Tech</option></select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Instagram accordion -->
+    <div class="platform-accordion">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        <div class="accordion-icon" style="background:rgba(230,104,60,0.12);color:#e6683c;">I</div>
+        <div>
+          <div class="accordion-title">Instagram</div>
+          <div class="accordion-sub">@vidify · 5.6K followers</div>
+        </div>
+        <span class="accordion-status" style="background:rgba(16,185,129,0.12);color:#34d399;">Ready</span>
+        <span class="accordion-arrow">▼</span>
+      </div>
+      <div class="accordion-body">
+        <div class="acc-form-group">
+          <div class="acc-label">Caption <span class="char-limit-badge">218 / 2200</span></div>
+          <textarea class="acc-textarea">✨ Glow up this summer with our new skincare line! 🌿
+
+Clinically proven. Dermatologist tested. 7-day visible results.
+
+👇 Shop the link in bio!
+
+#skincare #beauty #glowup #summervibes #luxuryskincare #skincaregoals</textarea>
+        </div>
+        <div class="acc-form-group">
+          <div class="acc-label">Post Type</div>
+          <select class="acc-input"><option>Reel</option><option>Feed Post</option><option>Story</option></select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Facebook (disabled) -->
+    <div class="platform-accordion" style="opacity:0.4;pointer-events:none;">
+      <div class="accordion-header">
+        <div class="accordion-icon" style="background:rgba(24,119,242,0.12);color:#1877f2;">F</div>
+        <div>
+          <div class="accordion-title">Facebook</div>
+          <div class="accordion-sub">Not connected</div>
+        </div>
+        <span class="accordion-status" style="background:rgba(239,68,68,0.12);color:#ef4444;">Connect</span>
+        <span class="accordion-arrow">▼</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- BOTTOM ACTION BAR -->
+<div class="action-bar">
+  <div class="publish-summary">
+    <div class="pub-plat-dots">
+      <div class="pub-dot" style="background:rgba(0,242,234,0.2);color:#00f2ea;">T</div>
+      <div class="pub-dot" style="background:rgba(255,68,68,0.2);color:#ff4444;">Y</div>
+      <div class="pub-dot" style="background:rgba(230,104,60,0.2);color:#e6683c;">I</div>
+    </div>
+    <span class="publish-count-text">Publishing to <strong>3 platforms</strong></span>
+  </div>
+  <button class="btn-save-draft">Save as Draft</button>
+  <button class="btn-publish-now" onclick="openModal()">🚀 Publish Now</button>
+</div>
+
+<script>
+function toggleAccordion(header) {
+  const body = header.nextElementSibling;
+  const arrow = header.querySelector('.accordion-arrow');
+  body.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+
+function selectSchedule(type) {
+  document.getElementById('opt-now').classList.toggle('selected', type === 'now');
+  document.getElementById('opt-schedule').classList.toggle('selected', type === 'schedule');
+  document.getElementById('dateTimeSection').style.display = type === 'schedule' ? 'block' : 'none';
+}
+
+function openModal() {
+  document.getElementById('confirmModal').style.display = 'flex';
+}
+function closeModal() {
+  document.getElementById('confirmModal').style.display = 'none';
+}
+function confirmPublish() {
+  closeModal();
+  const toast = document.getElementById('successToast');
+  toast.classList.add('show');
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => window.location.href = 'screen-04-dashboard.html', 300);
+  }, 2500);
+}
+</script>
+</body>
+</html>

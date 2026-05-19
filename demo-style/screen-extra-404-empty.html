@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vidify — Page Not Found</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg-base: #09090b; --bg-panel: #111113; --bg-surface: #1a1a1f;
+  --bg-elevated: #232329;
+  --text-primary: #f4f4f5; --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a; --text-muted: #52525b;
+  --gradient: linear-gradient(135deg, #2563eb, #7c3aed);
+  --border: rgba(255,255,255,0.06); --border-default: rgba(255,255,255,0.10);
+}
+html, body { height: 100%; }
+body { background: var(--bg-base); color: var(--text-primary); font-family: 'DM Sans', sans-serif; font-size: 14px; }
+
+/* NAV */
+nav { height: 60px; background: var(--bg-panel); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 32px; }
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo-mark { width: 28px; height: 28px; border-radius: 7px; background: var(--gradient); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 12px; color: #fff; }
+.logo-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: var(--text-primary); }
+
+/* ═══ 404 PAGE ═══ */
+.page-404 {
+  min-height: calc(100vh - 60px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px; text-align: center; position: relative; overflow: hidden;
+}
+.blob-404-1 { position: absolute; width: 500px; height: 400px; top: -50px; left: -100px; background: radial-gradient(ellipse, rgba(37,99,235,0.07) 0%, transparent 70%); pointer-events: none; }
+.blob-404-2 { position: absolute; width: 400px; height: 400px; bottom: -50px; right: -100px; background: radial-gradient(ellipse, rgba(124,58,237,0.07) 0%, transparent 70%); pointer-events: none; }
+
+.error-num {
+  font-family: 'Syne', sans-serif; font-size: clamp(100px, 18vw, 200px);
+  font-weight: 800; letter-spacing: -8px; line-height: 1;
+  background: var(--gradient); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 16px; position: relative; z-index: 2;
+  animation: floatNum 4s ease-in-out infinite;
+}
+@keyframes floatNum {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.error-title { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; color: var(--text-primary); margin-bottom: 12px; letter-spacing: -0.5px; position: relative; z-index: 2; }
+.error-sub { font-size: 16px; color: var(--text-tertiary); max-width: 420px; line-height: 1.65; margin: 0 auto 36px; position: relative; z-index: 2; }
+
+.error-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative; z-index: 2; margin-bottom: 56px; }
+.btn-home { padding: 12px 28px; border-radius: 10px; border: none; background: var(--gradient); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; box-shadow: 0 4px 16px rgba(37,99,235,0.25); }
+.btn-home:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.btn-back { padding: 12px 24px; border-radius: 10px; border: 1px solid var(--border-default); background: transparent; color: var(--text-primary); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+.btn-back:hover { background: var(--bg-surface); }
+
+/* Quick links */
+.quick-links { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; position: relative; z-index: 2; }
+.quick-link { display: flex; align-items: center; gap: 6px; padding: 10px 16px; border-radius: 9px; border: 1px solid var(--border); background: var(--bg-panel); text-decoration: none; color: var(--text-secondary); font-size: 13px; font-weight: 500; transition: all 0.2s; }
+.quick-link:hover { border-color: var(--border-default); color: var(--text-primary); background: var(--bg-surface); }
+.quick-link-icon { font-size: 16px; }
+
+/* Divider section */
+.section-divider { border: none; border-top: 1px solid var(--border); margin: 60px 32px; }
+.section-heading { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; color: var(--text-primary); text-align: center; margin-bottom: 8px; letter-spacing: -0.5px; }
+.section-sub { font-size: 15px; color: var(--text-tertiary); text-align: center; margin-bottom: 40px; }
+
+/* ═══ EMPTY STATES ═══ */
+.empty-states-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 0 32px 60px; }
+
+.empty-card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 16px; padding: 32px 24px; text-align: center; position: relative; overflow: hidden; transition: border-color 0.2s; }
+.empty-card:hover { border-color: var(--border-default); }
+
+.empty-card-badge { position: absolute; top: 14px; right: 14px; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 9999px; }
+
+.empty-illustration { width: 80px; height: 80px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 20px; }
+
+.empty-card-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+.empty-card-desc { font-size: 13px; color: var(--text-tertiary); line-height: 1.65; margin-bottom: 20px; }
+
+.btn-empty-action { width: 100%; padding: 10px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; }
+.btn-empty-gradient { background: var(--gradient); color: #fff; }
+.btn-empty-gradient:hover { filter: brightness(1.08); }
+.btn-empty-outline { background: transparent; border: 1px solid var(--border-default); color: var(--text-primary); }
+.btn-empty-outline:hover { background: var(--bg-surface); }
+
+/* Subtle shimmer on empty cards */
+.empty-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.01) 50%, transparent 100%);
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="screen-04-dashboard.html" class="logo">
+    <div class="logo-mark">V</div>
+    <span class="logo-text">Vidify</span>
+  </a>
+</nav>
+
+<!-- ═══ 404 PAGE ═══ -->
+<div class="page-404">
+  <div class="blob-404-1"></div>
+  <div class="blob-404-2"></div>
+
+  <div>
+    <div class="error-num">404</div>
+    <h1 class="error-title">This page went off-script</h1>
+    <p class="error-sub">The page you're looking for doesn't exist, was moved, or maybe got lost in the AI generation queue.</p>
+
+    <div class="error-actions">
+      <a href="screen-04-dashboard.html" class="btn-home">⊞ Back to Dashboard</a>
+      <a href="javascript:history.back()" class="btn-back">← Go Back</a>
+    </div>
+
+    <div class="quick-links">
+      <a href="screen-05-wizard.html" class="quick-link"><span class="quick-link-icon">✦</span> Create Video</a>
+      <a href="screen-09-library.html" class="quick-link"><span class="quick-link-icon">▣</span> My Videos</a>
+      <a href="screen-10-templates.html" class="quick-link"><span class="quick-link-icon">◈</span> Templates</a>
+      <a href="screen-13-analytics.html" class="quick-link"><span class="quick-link-icon">📊</span> Analytics</a>
+      <a href="screen-11-social.html" class="quick-link"><span class="quick-link-icon">◉</span> Social Accounts</a>
+    </div>
+  </div>
+</div>
+
+<!-- DIVIDER -->
+<hr class="section-divider">
+<h2 class="section-heading">Empty State Components</h2>
+<p class="section-sub">These components appear when sections have no content yet — first-time user experience</p>
+
+<!-- ═══ EMPTY STATES ═══ -->
+<div class="empty-states-grid">
+
+  <!-- Empty: No Videos -->
+  <div class="empty-card">
+    <span class="empty-card-badge" style="background:rgba(37,99,235,0.12);color:#60a5fa;">My Videos</span>
+    <div class="empty-illustration" style="background:rgba(37,99,235,0.08);">🎬</div>
+    <div class="empty-card-title">No videos yet</div>
+    <p class="empty-card-desc">Your generated videos will appear here. Create your first AI video in under 2 minutes.</p>
+    <button class="btn-empty-action btn-empty-gradient" onclick="window.location='screen-05-wizard.html'">✦ Create Your First Video</button>
+  </div>
+
+  <!-- Empty: No Analytics -->
+  <div class="empty-card">
+    <span class="empty-card-badge" style="background:rgba(124,58,237,0.12);color:#a78bfa;">Analytics</span>
+    <div class="empty-illustration" style="background:rgba(124,58,237,0.08);">📊</div>
+    <div class="empty-card-title">No data to show yet</div>
+    <p class="empty-card-desc">Analytics will appear here once you've published your first video. Publish something to get started.</p>
+    <button class="btn-empty-action btn-empty-outline" onclick="window.location='screen-05-wizard.html'">Create & Publish →</button>
+  </div>
+
+  <!-- Empty: No Social Accounts -->
+  <div class="empty-card">
+    <span class="empty-card-badge" style="background:rgba(16,185,129,0.12);color:#34d399;">Social</span>
+    <div class="empty-illustration" style="background:rgba(16,185,129,0.08);">🔗</div>
+    <div class="empty-card-title">No accounts connected</div>
+    <p class="empty-card-desc">Connect TikTok, YouTube, Instagram, or Facebook to start publishing videos in one click.</p>
+    <button class="btn-empty-action btn-empty-gradient" onclick="window.location='screen-11-social.html'">Connect Accounts →</button>
+  </div>
+
+  <!-- Empty: No Scheduled Posts -->
+  <div class="empty-card">
+    <span class="empty-card-badge" style="background:rgba(245,158,11,0.12);color:#fbbf24;">Calendar</span>
+    <div class="empty-illustration" style="background:rgba(245,158,11,0.08);">📅</div>
+    <div class="empty-card-title">Nothing scheduled</div>
+    <p class="empty-card-desc">Your content calendar is empty. Schedule videos to maintain a consistent posting rhythm across platforms.</p>
+    <button class="btn-empty-action btn-empty-outline" onclick="window.location='screen-05-wizard.html'">Schedule Content →</button>
+  </div>
+
+  <!-- Empty: No Templates Used -->
+  <div class="empty-card">
+    <span class="empty-card-badge" style="background:rgba(82,82,91,0.15);color:#a1a1aa;">Templates</span>
+    <div class="empty-illustration" style="background:rgba(82,82,91,0.08);">◈</div>
+    <div class="empty-card-title">No favourites yet</div>
+    <p class="empty-card-desc">Browse the templates gallery and save your favourites here for quick access during video creation.</p>
+    <button class="btn-empty-action btn-empty-outline" onclick="window.location='screen-10-templates.html'">Browse Templates →</button>
+  </div>
+
+  <!-- Empty: No Notifications -->
+  <div class="empty-card">
+    <span class="empty-card-badge" style="background:rgba(37,99,235,0.12);color:#60a5fa;">Notifications</span>
+    <div class="empty-illustration" style="background:rgba(37,99,235,0.08);">🔔</div>
+    <div class="empty-card-title">All caught up!</div>
+    <p class="empty-card-desc">No notifications right now. We'll alert you when videos are ready, published, or need your attention.</p>
+    <button class="btn-empty-action btn-empty-outline" onclick="window.location='screen-04-dashboard.html'">Back to Dashboard</button>
+  </div>
+
+</div>
+
+</body>
+</html>

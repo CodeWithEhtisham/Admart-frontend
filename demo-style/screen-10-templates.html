@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vidify — Templates Gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg-base: #09090b; --bg-panel: #111113; --bg-surface: #1a1a1f;
+  --bg-elevated: #232329; --bg-input: #0f0f12;
+  --text-primary: #f4f4f5; --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a; --text-muted: #52525b;
+  --gradient: linear-gradient(135deg, #2563eb, #7c3aed);
+  --border: rgba(255,255,255,0.06); --border-default: rgba(255,255,255,0.10);
+  --success: #10b981; --warning: #f59e0b; --sidebar-w: 260px;
+}
+html, body { height: 100%; overflow: hidden; }
+body { background: var(--bg-base); color: var(--text-primary); font-family: 'DM Sans', sans-serif; font-size: 14px; display: flex; }
+
+/* SIDEBAR */
+.sidebar { width: var(--sidebar-w); flex-shrink: 0; height: 100vh; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; left: 0; top: 0; z-index: 50; }
+.sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 20px 20px 16px; border-bottom: 1px solid var(--border); text-decoration: none; }
+.logo-mark { width: 30px; height: 30px; border-radius: 8px; background: var(--gradient); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 13px; color: #fff; flex-shrink: 0; }
+.logo-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; color: var(--text-primary); }
+.sidebar-nav { flex: 1; padding: 12px 10px; overflow-y: auto; }
+.nav-section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding: 10px 10px 6px; }
+.nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; cursor: pointer; transition: all 0.15s; text-decoration: none; color: var(--text-secondary); margin-bottom: 2px; position: relative; }
+.nav-item:hover { background: var(--bg-surface); color: var(--text-primary); }
+.nav-item.active { background: var(--bg-elevated); color: var(--text-primary); }
+.nav-item.active::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px; border-radius: 0 2px 2px 0; background: #2563eb; }
+.nav-icon { font-size: 16px; flex-shrink: 0; width: 20px; text-align: center; }
+.nav-label { font-size: 14px; font-weight: 500; }
+.sidebar-bottom { padding: 12px 10px; border-top: 1px solid var(--border); }
+.credits-pill { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+.credits-bar { height: 3px; border-radius: 9999px; background: var(--bg-elevated); margin: 6px 0 4px; overflow: hidden; }
+.credits-fill { height: 100%; width: 21%; background: var(--gradient); border-radius: 9999px; }
+
+/* MAIN */
+.main-wrapper { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+.topbar { height: 60px; background: rgba(17,17,19,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 28px; gap: 16px; flex-shrink: 0; }
+.topbar-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; }
+.search-wrap { display: flex; align-items: center; gap: 8px; background: var(--bg-input); border: 1px solid var(--border-default); border-radius: 8px; padding: 8px 14px; width: 280px; margin-left: auto; }
+.search-icon { color: var(--text-muted); }
+.search-in { background: none; border: none; color: var(--text-primary); font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; flex: 1; }
+.search-in::placeholder { color: var(--text-muted); }
+.btn-new { padding: 8px 18px; border-radius: 8px; border: none; background: var(--gradient); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.btn-new:hover { filter: brightness(1.08); }
+.avatar { width: 32px; height: 32px; border-radius: 9999px; background: var(--gradient); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px; color: #fff; cursor: pointer; flex-shrink: 0; }
+
+/* CONTENT */
+.content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+.content::-webkit-scrollbar { width: 6px; }
+.content::-webkit-scrollbar-thumb { background: var(--bg-elevated); border-radius: 9999px; }
+
+/* CATEGORY TABS */
+.cat-tabs-wrap { padding: 0 28px; border-bottom: 1px solid var(--border); background: var(--bg-panel); flex-shrink: 0; }
+.cat-tabs { display: flex; gap: 0; overflow-x: auto; }
+.cat-tabs::-webkit-scrollbar { display: none; }
+.cat-tab { padding: 14px 20px; font-size: 13px; font-weight: 500; color: var(--text-tertiary); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.15s; background: none; border-top: none; border-left: none; border-right: none; display: flex; align-items: center; gap: 7px; }
+.cat-tab:hover { color: var(--text-secondary); }
+.cat-tab.active { color: var(--text-primary); border-bottom-color: #2563eb; }
+.cat-count { background: var(--bg-elevated); color: var(--text-muted); font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 9999px; }
+.cat-tab.active .cat-count { background: rgba(37,99,235,0.15); color: #60a5fa; }
+
+/* GALLERY */
+.gallery-area { flex: 1; padding: 24px 28px; }
+.gallery-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.gallery-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text-primary); }
+.gallery-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+.sort-select { padding: 7px 12px; border-radius: 7px; border: 1px solid var(--border-default); background: var(--bg-surface); color: var(--text-secondary); font-family: 'DM Sans', sans-serif; font-size: 12px; cursor: pointer; outline: none; -webkit-appearance: none; padding-right: 28px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%2371717a' d='M5 7L0 2h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+.sort-select option { background: #1a1a1f; }
+
+/* TEMPLATE GRID */
+.template-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+
+.template-card {
+  border-radius: 14px; overflow: hidden;
+  border: 1px solid var(--border); background: var(--bg-panel);
+  cursor: pointer; transition: all 0.25s; position: relative;
+}
+.template-card:hover { border-color: var(--border-default); transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.25); }
+
+.template-thumb {
+  aspect-ratio: 16/10; position: relative; overflow: hidden;
+}
+.thumb-gradient { width: 100%; height: 100%; transition: transform 0.4s ease; }
+.template-card:hover .thumb-gradient { transform: scale(1.04); }
+
+.template-thumb-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.template-card:hover .template-thumb-overlay { background: rgba(0,0,0,0.45); }
+
+.use-template-btn {
+  padding: 9px 20px; border-radius: 8px; border: none;
+  background: var(--gradient); color: #fff;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700;
+  cursor: pointer; opacity: 0; transform: translateY(6px);
+  transition: all 0.2s; white-space: nowrap;
+}
+.template-card:hover .use-template-btn { opacity: 1; transform: translateY(0); }
+
+.premium-badge {
+  position: absolute; top: 10px; right: 10px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff; font-size: 9px; font-weight: 700;
+  padding: 3px 8px; border-radius: 9999px;
+  letter-spacing: 0.04em;
+}
+
+.template-category-badge {
+  position: absolute; top: 10px; left: 10px;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+  color: rgba(255,255,255,0.8); font-size: 10px; font-weight: 600;
+  padding: 3px 9px; border-radius: 9999px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.template-info { padding: 14px 14px 12px; }
+.template-name { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+.template-meta { display: flex; align-items: center; gap: 8px; }
+.template-stat { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 3px; }
+.template-platforms { display: flex; gap: 3px; margin-left: auto; }
+.plat-pill { width: 16px; height: 16px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; font-size: 7px; font-weight: 700; }
+
+/* DETAIL MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--bg-surface); border: 1px solid var(--border-default);
+  border-radius: 20px; width: 100%; max-width: 780px;
+  box-shadow: 0 32px 64px rgba(0,0,0,0.5);
+  animation: modalIn 0.25s ease; overflow: hidden; display: flex;
+}
+@keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+.modal-left { flex: 1; }
+.modal-preview { aspect-ratio: 16/10; position: relative; }
+.modal-preview-bg { width: 100%; height: 100%; }
+.modal-preview-play { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 56px; height: 56px; border-radius: 9999px; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); border: 2px solid rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; transition: all 0.2s; }
+.modal-preview-play:hover { background: rgba(255,255,255,0.25); transform: translate(-50%,-50%) scale(1.08); }
+
+.modal-thumb-row { display: flex; gap: 8px; padding: 12px; background: var(--bg-panel); border-top: 1px solid var(--border); }
+.modal-thumb-sm { width: 64px; aspect-ratio: 16/10; border-radius: 6px; border: 2px solid transparent; cursor: pointer; overflow: hidden; transition: all 0.15s; }
+.modal-thumb-sm.active { border-color: #2563eb; }
+.modal-thumb-sm:hover { border-color: var(--border-default); }
+
+.modal-right { width: 300px; flex-shrink: 0; border-left: 1px solid var(--border); padding: 24px; display: flex; flex-direction: column; background: var(--bg-panel); }
+.modal-close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 8px; background: var(--bg-elevated); border: none; color: var(--text-tertiary); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.modal-close:hover { background: var(--bg-surface); color: var(--text-primary); }
+.modal-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+.modal-category { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 9999px; display: inline-block; margin-bottom: 14px; }
+.modal-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.65; margin-bottom: 20px; }
+.modal-specs-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 10px; }
+.modal-spec-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.modal-spec-key { color: var(--text-tertiary); }
+.modal-spec-val { color: var(--text-primary); font-weight: 500; }
+.modal-actions { margin-top: auto; padding-top: 20px; display: flex; flex-direction: column; gap: 8px; }
+.btn-use-template { padding: 12px; border-radius: 9px; border: none; background: var(--gradient); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(37,99,235,0.25); }
+.btn-use-template:hover { filter: brightness(1.08); }
+.btn-preview-full { padding: 10px; border-radius: 9px; border: 1px solid var(--border-default); background: transparent; color: var(--text-secondary); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+.btn-preview-full:hover { background: var(--bg-elevated); color: var(--text-primary); }
+</style>
+</head>
+<body>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="templateModal" onclick="closeModal(event)">
+  <div class="modal-box" style="position:relative;" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-left">
+      <div class="modal-preview">
+        <div class="modal-preview-bg" id="modalBg" style="background:linear-gradient(135deg,#1e3a5f,#0a1628);height:100%;"></div>
+        <div class="modal-preview-play">▶</div>
+      </div>
+      <div class="modal-thumb-row">
+        <div class="modal-thumb-sm active" style="background:linear-gradient(135deg,#1e3a5f,#0a1628);"></div>
+        <div class="modal-thumb-sm" style="background:linear-gradient(135deg,#2d1b4e,#110a1e);"></div>
+        <div class="modal-thumb-sm" style="background:linear-gradient(135deg,#0d2e22,#050f0a);"></div>
+      </div>
+    </div>
+    <div class="modal-right">
+      <div class="modal-title" id="modalTitle">Product Showcase</div>
+      <span class="modal-category" id="modalCat" style="background:rgba(37,99,235,0.12);color:#60a5fa;">Product Ads</span>
+      <p class="modal-desc" id="modalDesc">A cinematic product showcase with smooth transitions, elegant lighting, and a professional feel. Perfect for e-commerce brands.</p>
+      <div class="modal-specs-label">Template Specs</div>
+      <div class="modal-spec-row"><span class="modal-spec-key">Aspect Ratios</span><span class="modal-spec-val">9:16, 16:9, 1:1</span></div>
+      <div class="modal-spec-row"><span class="modal-spec-key">Duration</span><span class="modal-spec-val">15s – 60s</span></div>
+      <div class="modal-spec-row"><span class="modal-spec-key">Voiceover</span><span class="modal-spec-val">Optional</span></div>
+      <div class="modal-spec-row"><span class="modal-spec-key">Music</span><span class="modal-spec-val">Included</span></div>
+      <div class="modal-spec-row" style="border:none;"><span class="modal-spec-key">Credit Cost</span><span class="modal-spec-val" style="color:#60a5fa;">2 credits</span></div>
+      <div class="modal-actions">
+        <button class="btn-use-template" onclick="window.location='screen-05-wizard.html'">✦ Use This Template</button>
+        <button class="btn-preview-full">Preview Full Video</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="screen-04-dashboard.html" class="sidebar-logo">
+    <div class="logo-mark">V</div>
+    <span class="logo-text">Vidify</span>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a class="nav-item" href="screen-04-dashboard.html"><span class="nav-icon">⊞</span><span class="nav-label">Dashboard</span></a>
+    <a class="nav-item" href="screen-05-wizard.html"><span class="nav-icon">✦</span><span class="nav-label">Create New</span></a>
+    <a class="nav-item" href="screen-09-library.html"><span class="nav-icon">▣</span><span class="nav-label">My Videos</span></a>
+    <a class="nav-item active" href="#"><span class="nav-icon">◈</span><span class="nav-label">Templates</span></a>
+    <div class="nav-section-label" style="margin-top:8px;">Publish</div>
+    <a class="nav-item" href="screen-12-calendar.html"><span class="nav-icon">📅</span><span class="nav-label">Calendar</span></a>
+    <a class="nav-item" href="screen-11-social.html"><span class="nav-icon">◉</span><span class="nav-label">Social Accounts</span></a>
+    <div class="nav-section-label" style="margin-top:8px;">Analyze</div>
+    <a class="nav-item" href="#"><span class="nav-icon">📊</span><span class="nav-label">Analytics</span></a>
+    <div class="nav-section-label" style="margin-top:8px;">Settings</div>
+    <a class="nav-item" href="#"><span class="nav-icon">◆</span><span class="nav-label">Brand Kit</span></a>
+    <a class="nav-item" href="#"><span class="nav-icon">⚙</span><span class="nav-label">Settings</span></a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="credits-pill">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <span style="font-size:11px;color:var(--text-muted);">Credits</span>
+        <span style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;">42</span>
+      </div>
+      <div class="credits-bar"><div class="credits-fill"></div></div>
+      <div style="font-size:11px;color:var(--text-muted);">42 / 200 remaining</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-wrapper">
+  <header class="topbar">
+    <span class="topbar-title">Templates Gallery</span>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" class="search-in" placeholder="Search templates..." oninput="filterTemplates(this.value)">
+    </div>
+    <button class="btn-new" onclick="window.location='screen-05-wizard.html'">✦ New Video</button>
+    <div class="avatar">E</div>
+  </header>
+
+  <div class="content">
+    <!-- CATEGORY TABS -->
+    <div class="cat-tabs-wrap">
+      <div class="cat-tabs">
+        <button class="cat-tab active" onclick="filterCat(this,'all')">All Templates <span class="cat-count">48</span></button>
+        <button class="cat-tab" onclick="filterCat(this,'product')">Product Ads <span class="cat-count">12</span></button>
+        <button class="cat-tab" onclick="filterCat(this,'social')">Social Stories <span class="cat-count">8</span></button>
+        <button class="cat-tab" onclick="filterCat(this,'testimonial')">Testimonials <span class="cat-count">6</span></button>
+        <button class="cat-tab" onclick="filterCat(this,'promo')">Promos <span class="cat-count">7</span></button>
+        <button class="cat-tab" onclick="filterCat(this,'announcement')">Announcements <span class="cat-count">5</span></button>
+        <button class="cat-tab" onclick="filterCat(this,'education')">Education <span class="cat-count">6</span></button>
+        <button class="cat-tab" onclick="filterCat(this,'ecommerce')">E-commerce <span class="cat-count">4</span></button>
+      </div>
+    </div>
+
+    <!-- GALLERY -->
+    <div class="gallery-area">
+      <div class="gallery-header">
+        <div>
+          <div class="gallery-title" id="galleryTitle">All Templates</div>
+          <div class="gallery-sub" id="gallerySub">48 templates · Free & Premium</div>
+        </div>
+        <select class="sort-select">
+          <option>Most Popular</option>
+          <option>Newest First</option>
+          <option>Free First</option>
+        </select>
+      </div>
+
+      <div class="template-grid" id="templateGrid"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const templates = [
+  { id:1, name:"Cinematic Product Showcase", cat:"product", catLabel:"Product Ads", color:"linear-gradient(135deg,#1e3a5f,#0a1628)", icon:"🎬", uses:"2.4K", rating:"4.9", premium:false, platforms:["T","Y","I"], desc:"A cinematic product showcase with smooth transitions and professional feel. Perfect for e-commerce brands." },
+  { id:2, name:"TikTok Story Reel", cat:"social", catLabel:"Social Stories", color:"linear-gradient(135deg,#1a0d30,#0a0516)", icon:"📱", uses:"5.1K", rating:"4.8", premium:false, platforms:["T","I"], desc:"Fast-paced story format optimized for TikTok and Instagram Reels with trending transitions." },
+  { id:3, name:"Customer Testimonial Pro", cat:"testimonial", catLabel:"Testimonials", color:"linear-gradient(135deg,#0d2e22,#050f0a)", icon:"⭐", uses:"1.8K", rating:"4.7", premium:true, platforms:["Y","F","I"], desc:"Professional testimonial format with lower-third graphics and clean typography overlays." },
+  { id:4, name:"Flash Sale Countdown", cat:"promo", catLabel:"Promos", color:"linear-gradient(135deg,#3a1010,#1a0606)", icon:"⚡", uses:"3.2K", rating:"4.9", premium:false, platforms:["T","Y","I","F"], desc:"High-energy promo with countdown timer, bold typography, and urgency-building motion design." },
+  { id:5, name:"Product Unboxing Flow", cat:"product", catLabel:"Product Ads", color:"linear-gradient(135deg,#3a2c0d,#1a1200)", icon:"📦", uses:"1.2K", rating:"4.6", premium:true, platforms:["T","Y"], desc:"Guided unboxing experience with reveal animations and product feature highlights." },
+  { id:6, name:"Educational Explainer", cat:"education", catLabel:"Education", color:"linear-gradient(135deg,#0f3460,#050f1e)", icon:"🎓", uses:"980", rating:"4.5", premium:false, platforms:["Y","F"], desc:"Clean explainer format with whiteboard-style animations and step-by-step breakdowns." },
+  { id:7, name:"Brand Announcement", cat:"announcement", catLabel:"Announcements", color:"linear-gradient(135deg,#2d1b4e,#110a1e)", icon:"📢", uses:"756", rating:"4.7", premium:false, platforms:["T","Y","I","F"], desc:"Bold announcement format with dramatic reveal and brand color integration." },
+  { id:8, name:"E-commerce Carousel", cat:"ecommerce", catLabel:"E-commerce", color:"linear-gradient(135deg,#1e3a5f,#2d1b4e)", icon:"🛒", uses:"2.1K", rating:"4.8", premium:true, platforms:["I","F"], desc:"Multi-product carousel with price tags, CTA buttons, and swipe-friendly transitions." },
+  { id:9, name:"Minimalist Brand Story", cat:"social", catLabel:"Social Stories", color:"linear-gradient(135deg,#1a1a1f,#09090b)", icon:"◻", uses:"1.6K", rating:"4.6", premium:false, platforms:["I","T"], desc:"Clean, minimal brand storytelling with precise typography and restrained motion." },
+  { id:10, name:"Influencer Review Style", cat:"testimonial", catLabel:"Testimonials", color:"linear-gradient(135deg,#0d2e22,#2d1b4e)", icon:"💬", uses:"3.8K", rating:"4.9", premium:false, platforms:["T","I","Y"], desc:"Authentic influencer-style review with reaction overlays and trending caption formats." },
+  { id:11, name:"Dynamic Feature Reveal", cat:"product", catLabel:"Product Ads", color:"linear-gradient(135deg,#0f3460,#2d1b4e)", icon:"✨", uses:"890", rating:"4.5", premium:true, platforms:["Y","T"], desc:"Feature-by-feature product reveal with kinetic typography and split-screen comparisons." },
+  { id:12, name:"Holiday Special Promo", cat:"promo", catLabel:"Promos", color:"linear-gradient(135deg,#3a2c0d,#3a1010)", icon:"🎉", uses:"4.2K", rating:"4.9", premium:false, platforms:["T","Y","I","F"], desc:"Festive promo with seasonal animations, gift reveals, and discount badge overlays." },
+];
+
+const platColors = { T:"#00f2ea", Y:"#ff4444", I:"#e6683c", F:"#1877f2" };
+let currentCat = 'all';
+
+function renderTemplates(data) {
+  const grid = document.getElementById('templateGrid');
+  grid.innerHTML = '';
+  data.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'template-card';
+    card.innerHTML = `
+      <div class="template-thumb">
+        <div class="thumb-gradient" style="background:${t.color};height:100%;"></div>
+        <div class="template-thumb-overlay">
+          <button class="use-template-btn" onclick="event.stopPropagation();window.location='screen-05-wizard.html'">✦ Use Template</button>
+        </div>
+        <span class="template-category-badge">${t.catLabel}</span>
+        ${t.premium ? '<span class="premium-badge">PRO</span>' : ''}
+      </div>
+      <div class="template-info">
+        <div class="template-name">${t.name}</div>
+        <div class="template-meta">
+          <span class="template-stat">▶ ${t.uses} uses</span>
+          <span class="template-stat">★ ${t.rating}</span>
+          <div class="template-platforms">
+            ${t.platforms.map(p=>`<div class="plat-pill" style="background:${platColors[p]}22;color:${platColors[p]};">${p}</div>`).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+    card.addEventListener('click', () => openModal(t));
+    grid.appendChild(card);
+  });
+}
+
+function openModal(t) {
+  document.getElementById('modalTitle').textContent = t.name;
+  document.getElementById('modalBg').style.background = t.color;
+  document.getElementById('modalDesc').textContent = t.desc;
+  const catEl = document.getElementById('modalCat');
+  catEl.textContent = t.catLabel;
+  document.getElementById('templateModal').classList.add('open');
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('templateModal')) {
+    document.getElementById('templateModal').classList.remove('open');
+  }
+}
+
+function filterCat(btn, cat) {
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  currentCat = cat;
+  const filtered = cat === 'all' ? templates : templates.filter(t => t.cat === cat);
+  renderTemplates(filtered);
+  const counts = { all:48, product:12, social:8, testimonial:6, promo:7, announcement:5, education:6, ecommerce:4 };
+  const labels = { all:'All Templates', product:'Product Ads', social:'Social Stories', testimonial:'Testimonials', promo:'Promos', announcement:'Announcements', education:'Education', ecommerce:'E-commerce' };
+  document.getElementById('galleryTitle').textContent = labels[cat];
+  document.getElementById('gallerySub').textContent = `${counts[cat]} templates · Free & Premium`;
+}
+
+function filterTemplates(q) {
+  const filtered = templates.filter(t => t.name.toLowerCase().includes(q.toLowerCase()) || t.catLabel.toLowerCase().includes(q.toLowerCase()));
+  renderTemplates(filtered);
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+document.querySelectorAll('.modal-thumb-sm').forEach((t,i) => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.modal-thumb-sm').forEach(s => s.classList.remove('active'));
+    t.classList.add('active');
+  });
+});
+
+renderTemplates(templates);
+</script>
+</body>
+</html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vidify — Generating...</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg-base: #09090b; --bg-panel: #111113; --bg-surface: #1a1a1f;
+  --bg-elevated: #232329; --bg-input: #0f0f12;
+  --text-primary: #f4f4f5; --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a; --text-muted: #52525b;
+  --accent-blue: #2563eb; --accent-violet: #7c3aed;
+  --gradient: linear-gradient(135deg, #2563eb, #7c3aed);
+  --border: rgba(255,255,255,0.06); --border-default: rgba(255,255,255,0.10);
+  --success: #10b981; --warning: #f59e0b; --error: #ef4444;
+}
+html, body { height: 100%; }
+body {
+  background: var(--bg-base); color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif; font-size: 15px;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; min-height: 100vh; overflow: hidden;
+  position: relative;
+}
+
+/* Animated background particles */
+.bg-particles {
+  position: fixed; inset: 0; pointer-events: none; overflow: hidden;
+}
+.particle {
+  position: absolute; border-radius: 9999px;
+  animation: particleFloat linear infinite;
+  opacity: 0;
+}
+@keyframes particleFloat {
+  0% { transform: translateY(100vh) scale(0); opacity: 0; }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.2; }
+  100% { transform: translateY(-100px) scale(1); opacity: 0; }
+}
+
+/* Ambient gradient blobs */
+.blob {
+  position: fixed; border-radius: 9999px; filter: blur(80px);
+  pointer-events: none; animation: blobPulse 6s ease-in-out infinite;
+}
+.blob-1 { width: 500px; height: 400px; background: rgba(37,99,235,0.08); top: -100px; left: -100px; }
+.blob-2 { width: 400px; height: 400px; background: rgba(124,58,237,0.08); bottom: -100px; right: -100px; animation-delay: 3s; }
+@keyframes blobPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* TOP NAV */
+.top-nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 60px; background: rgba(17,17,19,0.8);
+  backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 32px;
+  z-index: 50;
+}
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo-mark {
+  width: 28px; height: 28px; border-radius: 7px; background: var(--gradient);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 12px; color: #fff;
+}
+.logo-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: var(--text-primary); }
+
+/* MAIN CARD */
+.progress-card {
+  width: 100%; max-width: 600px; padding: 48px 40px;
+  background: var(--bg-panel); border: 1px solid var(--border);
+  border-radius: 20px; text-align: center;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+  position: relative; z-index: 10;
+  animation: cardIn 0.5s ease;
+}
+@keyframes cardIn { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+/* CIRCULAR PROGRESS */
+.circle-container {
+  position: relative; width: 160px; height: 160px;
+  margin: 0 auto 32px;
+}
+.circle-svg { transform: rotate(-90deg); }
+.circle-track { fill: none; stroke: var(--bg-elevated); stroke-width: 6; }
+.circle-fill {
+  fill: none; stroke-width: 6; stroke-linecap: round;
+  stroke-dasharray: 440; stroke-dashoffset: 440;
+  stroke: url(#progressGrad);
+  transition: stroke-dashoffset 0.5s ease;
+}
+.circle-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.circle-pct {
+  font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800;
+  color: var(--text-primary); letter-spacing: -1px;
+  line-height: 1;
+}
+.circle-pct-sign { font-size: 18px; }
+.circle-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+/* CURRENT STAGE */
+.current-stage {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 18px; border-radius: 9999px;
+  background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.25);
+  font-size: 13px; font-weight: 600; color: #a78bfa;
+  margin-bottom: 24px;
+}
+.stage-pulse {
+  width: 7px; height: 7px; border-radius: 9999px; background: #a78bfa;
+  animation: stagePulse 1.2s ease infinite;
+}
+@keyframes stagePulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.5; }
+}
+
+/* STAGE PIPELINE */
+.pipeline {
+  display: flex; align-items: flex-start; justify-content: center;
+  gap: 0; margin-bottom: 32px; overflow-x: auto; padding: 4px 0;
+}
+.pipeline::-webkit-scrollbar { display: none; }
+
+.pipeline-step {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  min-width: 80px;
+}
+.pipeline-circle {
+  width: 28px; height: 28px; border-radius: 9999px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; transition: all 0.3s;
+}
+.pipeline-circle.done { background: var(--success); color: #fff; }
+.pipeline-circle.active {
+  background: var(--gradient); color: #fff;
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.25);
+  animation: activeGlow 1.5s ease infinite;
+}
+.pipeline-circle.future { background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-default); }
+
+@keyframes activeGlow {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(124,58,237,0.25); }
+  50% { box-shadow: 0 0 0 6px rgba(124,58,237,0.12); }
+}
+
+.pipeline-label { font-size: 10px; color: var(--text-muted); text-align: center; max-width: 70px; line-height: 1.3; }
+.pipeline-label.done { color: var(--success); }
+.pipeline-label.active { color: #a78bfa; }
+
+.pipeline-connector {
+  width: 32px; height: 2px; margin-top: 13px; border-radius: 9999px;
+  flex-shrink: 0; transition: background 0.3s;
+}
+.pipeline-connector.done { background: var(--success); }
+.pipeline-connector.future { background: var(--bg-elevated); }
+
+/* ETA */
+.eta-row {
+  display: flex; align-items: center; justify-content: center; gap: 24px;
+  margin-bottom: 28px; padding: 16px;
+  background: var(--bg-surface); border-radius: 10px; border: 1px solid var(--border);
+}
+.eta-item { text-align: center; }
+.eta-val { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700; color: var(--text-primary); }
+.eta-lbl { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.eta-divider { width: 1px; height: 32px; background: var(--border-default); }
+
+/* PREVIEW FRAMES */
+.frames-label { font-size: 13px; color: var(--text-tertiary); margin-bottom: 12px; }
+.frames-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 28px; }
+.frame-thumb {
+  width: 80px; height: 50px; border-radius: 8px;
+  border: 1px solid var(--border); overflow: hidden; position: relative;
+  transition: all 0.3s; cursor: pointer;
+}
+.frame-thumb:hover { border-color: var(--border-default); transform: scale(1.05); }
+.frame-thumb.loaded { animation: frameAppear 0.4s ease; }
+.frame-thumb.pending { background: var(--bg-elevated); animation: shimmer 1.5s ease infinite; }
+@keyframes frameAppear { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+@keyframes shimmer {
+  0%, 100% { background: var(--bg-elevated); }
+  50% { background: var(--bg-surface); }
+}
+
+/* ACTIONS */
+.actions-row { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.btn-cancel {
+  padding: 10px 22px; border-radius: 8px;
+  border: 1px solid rgba(239,68,68,0.25); background: rgba(239,68,68,0.05);
+  color: var(--error); font-family: 'DM Sans', sans-serif; font-size: 14px;
+  font-weight: 500; cursor: pointer; transition: all 0.2s;
+}
+.btn-cancel:hover { background: rgba(239,68,68,0.1); }
+.btn-notify {
+  padding: 10px 22px; border-radius: 8px;
+  border: 1px solid var(--border-default); background: transparent;
+  color: var(--text-secondary); font-family: 'DM Sans', sans-serif; font-size: 14px;
+  font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 7px;
+}
+.btn-notify:hover { background: var(--bg-surface); color: var(--text-primary); }
+.btn-notify.active { background: rgba(37,99,235,0.1); border-color: rgba(37,99,235,0.3); color: #60a5fa; }
+
+/* SUCCESS STATE */
+.success-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  z-index: 100; align-items: center; justify-content: center;
+}
+.success-card {
+  background: var(--bg-panel); border: 1px solid rgba(16,185,129,0.3);
+  border-radius: 20px; padding: 48px 40px; text-align: center;
+  max-width: 480px; width: 90%; animation: successIn 0.4s ease;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(16,185,129,0.1);
+}
+@keyframes successIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+.success-icon { font-size: 60px; margin-bottom: 16px; }
+.success-title { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; letter-spacing: -0.5px; }
+.success-sub { font-size: 15px; color: var(--text-tertiary); margin-bottom: 28px; line-height: 1.55; }
+.success-thumb { width: 100%; aspect-ratio: 16/9; border-radius: 12px; background: linear-gradient(135deg,#1e3a5f,#0a1628); margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.08); }
+.btn-view-result {
+  width: 100%; padding: 14px; border-radius: 10px; border: none;
+  background: var(--gradient); color: #fff; font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.3);
+}
+.btn-view-result:hover { filter: brightness(1.08); }
+</style>
+</head>
+<body>
+
+<div class="bg-particles" id="particles"></div>
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-card">
+    <div class="success-icon">🎉</div>
+    <div class="success-title">Your video is ready!</div>
+    <p class="success-sub">Summer Product Launch Campaign has been generated successfully. Preview, edit, and publish it now.</p>
+    <div class="success-thumb"></div>
+    <button class="btn-view-result" onclick="window.location='screen-07-result.html'">View & Publish Video →</button>
+  </div>
+</div>
+
+<!-- TOP NAV -->
+<div class="top-nav">
+  <a href="screen-04-dashboard.html" class="logo">
+    <div class="logo-mark">V</div>
+    <span class="logo-text">Vidify</span>
+  </a>
+</div>
+
+<!-- PROGRESS CARD -->
+<div class="progress-card">
+
+  <!-- CIRCULAR PROGRESS -->
+  <div class="circle-container">
+    <svg class="circle-svg" width="160" height="160" viewBox="0 0 160 160">
+      <defs>
+        <linearGradient id="progressGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#2563eb"/>
+          <stop offset="100%" style="stop-color:#7c3aed"/>
+        </linearGradient>
+      </defs>
+      <circle class="circle-track" cx="80" cy="80" r="70"/>
+      <circle class="circle-fill" cx="80" cy="80" r="70" id="circleProgress"/>
+    </svg>
+    <div class="circle-center">
+      <div class="circle-pct"><span id="pctNum">0</span><span class="circle-pct-sign">%</span></div>
+      <div class="circle-label">Generating</div>
+    </div>
+  </div>
+
+  <!-- CURRENT STAGE -->
+  <div class="current-stage">
+    <div class="stage-pulse"></div>
+    <span id="stageLabel">Analyzing prompt...</span>
+  </div>
+
+  <!-- PIPELINE -->
+  <div class="pipeline" id="pipeline">
+    <div class="pipeline-step">
+      <div class="pipeline-circle active" id="pipe0">1</div>
+      <div class="pipeline-label active" id="pipenl0">Analyzing<br>Prompt</div>
+    </div>
+    <div class="pipeline-connector future" id="pconn0"></div>
+    <div class="pipeline-step">
+      <div class="pipeline-circle future" id="pipe1">2</div>
+      <div class="pipeline-label" id="pipenl1">Generating<br>Frames</div>
+    </div>
+    <div class="pipeline-connector future" id="pconn1"></div>
+    <div class="pipeline-step">
+      <div class="pipeline-circle future" id="pipe2">3</div>
+      <div class="pipeline-label" id="pipenl2">Rendering<br>Video</div>
+    </div>
+    <div class="pipeline-connector future" id="pconn2"></div>
+    <div class="pipeline-step">
+      <div class="pipeline-circle future" id="pipe3">4</div>
+      <div class="pipeline-label" id="pipenl3">Adding<br>Music</div>
+    </div>
+    <div class="pipeline-connector future" id="pconn3"></div>
+    <div class="pipeline-step">
+      <div class="pipeline-circle future" id="pipe4">5</div>
+      <div class="pipeline-label" id="pipenl4">Burning<br>Captions</div>
+    </div>
+    <div class="pipeline-connector future" id="pconn4"></div>
+    <div class="pipeline-step">
+      <div class="pipeline-circle future" id="pipe5">6</div>
+      <div class="pipeline-label" id="pipenl5">Encoding<br>Output</div>
+    </div>
+  </div>
+
+  <!-- ETA -->
+  <div class="eta-row">
+    <div class="eta-item">
+      <div class="eta-val" id="etaCountdown">0:45</div>
+      <div class="eta-lbl">Time remaining</div>
+    </div>
+    <div class="eta-divider"></div>
+    <div class="eta-item">
+      <div class="eta-val">#1</div>
+      <div class="eta-lbl">Queue position</div>
+    </div>
+    <div class="eta-divider"></div>
+    <div class="eta-item">
+      <div class="eta-val">15s</div>
+      <div class="eta-lbl">Video duration</div>
+    </div>
+  </div>
+
+  <!-- PREVIEW FRAMES -->
+  <div class="frames-label">Preview frames — generating...</div>
+  <div class="frames-row">
+    <div class="frame-thumb pending" id="frame0"></div>
+    <div class="frame-thumb pending" id="frame1"></div>
+    <div class="frame-thumb pending" id="frame2"></div>
+    <div class="frame-thumb pending" id="frame3"></div>
+    <div class="frame-thumb pending" id="frame4"></div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions-row">
+    <button class="btn-cancel" onclick="confirmCancel()">Cancel Generation</button>
+    <button class="btn-notify" id="notifyBtn" onclick="toggleNotify(this)">🔔 Notify when ready</button>
+  </div>
+
+</div>
+
+<script>
+// Progress simulation
+let pct = 0;
+const stages = [
+  { label: 'Analyzing prompt...', pct: 10 },
+  { label: 'Generating video frames...', pct: 40 },
+  { label: 'Rendering video...', pct: 65 },
+  { label: 'Adding background music...', pct: 78 },
+  { label: 'Burning captions...', pct: 90 },
+  { label: 'Encoding final output...', pct: 98 },
+];
+const stageNames = ['Analyzing\nPrompt','Generating\nFrames','Rendering\nVideo','Adding\nMusic','Burning\nCaption','Encoding\nOutput'];
+const frameColors = ['linear-gradient(135deg,#1e3a5f,#0a1628)','linear-gradient(135deg,#2d1b4e,#110a1e)','linear-gradient(135deg,#0d2e22,#050f0a)','linear-gradient(135deg,#3a2c0d,#1a1200)','linear-gradient(135deg,#0f3460,#050f1e)'];
+let stageIdx = 0;
+let totalTime = 45;
+let startTime = Date.now();
+
+// Create particles
+const particleContainer = document.getElementById('particles');
+for (let i = 0; i < 20; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const size = 2 + Math.random() * 4;
+  p.style.cssText = `
+    width:${size}px; height:${size}px;
+    left:${Math.random()*100}%;
+    background:${Math.random() > 0.5 ? '#2563eb' : '#7c3aed'};
+    animation-duration:${4+Math.random()*6}s;
+    animation-delay:${Math.random()*4}s;
+  `;
+  particleContainer.appendChild(p);
+}
+
+function updateProgress() {
+  pct = Math.min(pct + (Math.random() * 1.5 + 0.5), 99);
+
+  // Update circle
+  const circumference = 440;
+  const offset = circumference - (pct / 100) * circumference;
+  document.getElementById('circleProgress').style.strokeDashoffset = offset;
+  document.getElementById('pctNum').textContent = Math.floor(pct);
+
+  // Update stage
+  const newStageIdx = stages.findIndex((s, i) => pct < s.pct || i === stages.length - 1);
+  if (newStageIdx !== stageIdx) {
+    // Mark previous as done
+    for (let i = 0; i < newStageIdx; i++) {
+      document.getElementById('pipe' + i).className = 'pipeline-circle done';
+      document.getElementById('pipe' + i).textContent = '✓';
+      document.getElementById('pipenl' + i).className = 'pipeline-label done';
+      if (i < 5) document.getElementById('pconn' + i).className = 'pipeline-connector done';
+    }
+    // Mark current as active
+    document.getElementById('pipe' + newStageIdx).className = 'pipeline-circle active';
+    document.getElementById('pipenl' + newStageIdx).className = 'pipeline-label active';
+
+    stageIdx = newStageIdx;
+    document.getElementById('stageLabel').textContent = stages[stageIdx].label;
+  }
+
+  // Show preview frames progressively
+  if (pct > 30 && document.getElementById('frame0').classList.contains('pending')) {
+    showFrame(0);
+  }
+  if (pct > 45 && document.getElementById('frame1').classList.contains('pending')) showFrame(1);
+  if (pct > 60 && document.getElementById('frame2').classList.contains('pending')) showFrame(2);
+  if (pct > 75 && document.getElementById('frame3').classList.contains('pending')) showFrame(3);
+  if (pct > 88 && document.getElementById('frame4').classList.contains('pending')) showFrame(4);
+
+  // Update countdown
+  const elapsed = (Date.now() - startTime) / 1000;
+  const remaining = Math.max(0, totalTime - elapsed);
+  const mins = Math.floor(remaining / 60);
+  const secs = Math.floor(remaining % 60);
+  document.getElementById('etaCountdown').textContent = mins + ':' + String(secs).padStart(2,'0');
+
+  if (pct >= 99) {
+    pct = 100;
+    document.getElementById('circleProgress').style.strokeDashoffset = 0;
+    document.getElementById('pctNum').textContent = 100;
+    document.getElementById('stageLabel').textContent = 'Complete!';
+    document.getElementById('etaCountdown').textContent = '0:00';
+    // Mark all done
+    for (let i = 0; i < 6; i++) {
+      document.getElementById('pipe' + i).className = 'pipeline-circle done';
+      document.getElementById('pipe' + i).textContent = '✓';
+      document.getElementById('pipenl' + i).className = 'pipeline-label done';
+      if (i < 5) document.getElementById('pconn' + i).className = 'pipeline-connector done';
+    }
+    setTimeout(showSuccess, 800);
+    return;
+  }
+  setTimeout(updateProgress, 400);
+}
+
+function showFrame(idx) {
+  const frame = document.getElementById('frame' + idx);
+  frame.classList.remove('pending');
+  frame.classList.add('loaded');
+  frame.style.background = frameColors[idx];
+  frame.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:18px;opacity:0.5;">▶</div>';
+}
+
+function showSuccess() {
+  document.getElementById('successOverlay').style.display = 'flex';
+}
+
+function confirmCancel() {
+  if (confirm('Cancel this generation? You will not be charged credits.')) {
+    window.location.href = 'screen-05-wizard.html';
+  }
+}
+
+function toggleNotify(btn) {
+  btn.classList.toggle('active');
+  btn.textContent = btn.classList.contains('active') ? '🔔 You\'ll be notified' : '🔔 Notify when ready';
+}
+
+// Start after small delay
+setTimeout(updateProgress, 500);
+</script>
+</body>
+</html>

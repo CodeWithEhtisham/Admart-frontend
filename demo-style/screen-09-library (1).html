@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vidify — My Videos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg-base: #09090b; --bg-panel: #111113; --bg-surface: #1a1a1f;
+  --bg-elevated: #232329; --bg-input: #0f0f12;
+  --text-primary: #f4f4f5; --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a; --text-muted: #52525b;
+  --gradient: linear-gradient(135deg, #2563eb, #7c3aed);
+  --border: rgba(255,255,255,0.06); --border-default: rgba(255,255,255,0.10);
+  --success: #10b981; --warning: #f59e0b; --error: #ef4444;
+  --sidebar-w: 260px;
+}
+html, body { height: 100%; overflow: hidden; }
+body { background: var(--bg-base); color: var(--text-primary); font-family: 'DM Sans', sans-serif; font-size: 14px; display: flex; }
+
+/* SIDEBAR */
+.sidebar { width: var(--sidebar-w); flex-shrink: 0; height: 100vh; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; left: 0; top: 0; z-index: 50; }
+.sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 20px 20px 16px; border-bottom: 1px solid var(--border); text-decoration: none; }
+.logo-mark { width: 30px; height: 30px; border-radius: 8px; background: var(--gradient); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 13px; color: #fff; flex-shrink: 0; }
+.logo-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; color: var(--text-primary); }
+.sidebar-nav { flex: 1; padding: 12px 10px; overflow-y: auto; }
+.nav-section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding: 10px 10px 6px; }
+.nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; cursor: pointer; transition: all 0.15s; text-decoration: none; color: var(--text-secondary); margin-bottom: 2px; position: relative; }
+.nav-item:hover { background: var(--bg-surface); color: var(--text-primary); }
+.nav-item.active { background: var(--bg-elevated); color: var(--text-primary); }
+.nav-item.active::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px; border-radius: 0 2px 2px 0; background: #2563eb; }
+.nav-icon { font-size: 16px; flex-shrink: 0; width: 20px; text-align: center; }
+.nav-label { font-size: 14px; font-weight: 500; }
+.nav-badge { margin-left: auto; background: #7c3aed; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 9999px; }
+.sidebar-bottom { padding: 12px 10px; border-top: 1px solid var(--border); }
+.credits-pill { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+.credits-num { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--text-primary); }
+.credits-bar { height: 3px; border-radius: 9999px; background: var(--bg-elevated); margin: 6px 0 4px; overflow: hidden; }
+.credits-fill { height: 100%; width: 21%; background: var(--gradient); border-radius: 9999px; }
+.credits-sub { font-size: 11px; color: var(--text-muted); }
+
+/* MAIN */
+.main-wrapper { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+/* TOPBAR */
+.topbar { height: 60px; background: rgba(17,17,19,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 28px; gap: 16px; flex-shrink: 0; }
+.topbar-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; }
+.topbar-count { font-size: 13px; color: var(--text-muted); }
+.topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.btn-new-video { padding: 8px 18px; border-radius: 8px; border: none; background: var(--gradient); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+.btn-new-video:hover { filter: brightness(1.08); }
+.avatar { width: 32px; height: 32px; border-radius: 9999px; background: var(--gradient); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px; color: #fff; cursor: pointer; }
+
+/* CONTENT */
+.content { flex: 1; overflow-y: auto; padding: 24px 28px; }
+.content::-webkit-scrollbar { width: 6px; }
+.content::-webkit-scrollbar-thumb { background: var(--bg-elevated); border-radius: 9999px; }
+
+/* FILTER BAR */
+.filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.search-input-wrap { display: flex; align-items: center; gap: 8px; background: var(--bg-input); border: 1px solid var(--border-default); border-radius: 8px; padding: 9px 14px; flex: 1; min-width: 200px; max-width: 320px; transition: border-color 0.2s; }
+.search-input-wrap:focus-within { border-color: rgba(37,99,235,0.4); }
+.search-icon { color: var(--text-muted); font-size: 14px; }
+.search-input { background: none; border: none; color: var(--text-primary); font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; flex: 1; }
+.search-input::placeholder { color: var(--text-muted); }
+
+.filter-select { padding: 9px 14px; border-radius: 8px; border: 1px solid var(--border-default); background: var(--bg-surface); color: var(--text-secondary); font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; outline: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%2371717a' d='M5 7L0 2h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; transition: border-color 0.2s; }
+.filter-select:hover { border-color: var(--border-default); color: var(--text-primary); }
+.filter-select option { background: #1a1a1f; }
+
+.view-toggle { display: flex; background: var(--bg-elevated); border-radius: 7px; padding: 3px; gap: 1px; }
+.view-btn { width: 32px; height: 30px; border-radius: 5px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--text-muted); transition: all 0.15s; }
+.view-btn.active { background: var(--bg-surface); color: var(--text-primary); }
+
+/* BULK ACTION BAR */
+.bulk-bar { position: sticky; top: 0; z-index: 20; background: var(--bg-elevated); border: 1px solid rgba(37,99,235,0.3); border-radius: 10px; padding: 12px 18px; display: none; align-items: center; gap: 14px; margin-bottom: 16px; animation: slideDown 0.2s ease; box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+.bulk-bar.show { display: flex; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+.bulk-count { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.bulk-actions { display: flex; gap: 8px; margin-left: auto; }
+.bulk-btn { padding: 7px 16px; border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: 1px solid; }
+.bulk-btn-delete { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.3); color: var(--error); }
+.bulk-btn-download { background: rgba(37,99,235,0.08); border-color: rgba(37,99,235,0.3); color: #60a5fa; }
+.bulk-btn-publish { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.3); color: var(--success); }
+.bulk-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; line-height: 1; }
+
+/* SECTION LABEL */
+.grid-section-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+
+/* VIDEO GRID */
+.video-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+.video-card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer; transition: all 0.2s; position: relative; }
+.video-card:hover { border-color: var(--border-default); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+.video-card.selected { border-color: rgba(37,99,235,0.5); box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
+
+/* Checkbox */
+.card-checkbox { position: absolute; top: 10px; right: 10px; z-index: 10; width: 18px; height: 18px; border-radius: 5px; border: 2px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.15s; cursor: pointer; }
+.video-card:hover .card-checkbox, .video-card.selected .card-checkbox { opacity: 1; }
+.video-card.selected .card-checkbox { background: var(--accent-blue); border-color: var(--accent-blue); }
+
+.video-thumb { aspect-ratio: 16/9; position: relative; overflow: hidden; }
+.thumb-bg { width: 100%; height: 100%; }
+.thumb-hover-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0); transition: background 0.2s; display: flex; align-items: center; justify-content: center; }
+.video-card:hover .thumb-hover-overlay { background: rgba(0,0,0,0.3); }
+.thumb-play { width: 40px; height: 40px; border-radius: 9999px; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 14px; opacity: 0; transition: opacity 0.2s; }
+.video-card:hover .thumb-play { opacity: 1; }
+.thumb-duration { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.8); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; }
+.thumb-status { position: absolute; top: 8px; left: 8px; height: 20px; padding: 0 8px; border-radius: 9999px; font-size: 10px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+.status-dot { width: 5px; height: 5px; border-radius: 9999px; }
+
+.video-info { padding: 12px 14px 10px; }
+.video-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.video-meta-row { display: flex; align-items: center; justify-content: space-between; }
+.video-platforms { display: flex; gap: 4px; }
+.plat-dot-sm { width: 15px; height: 15px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; font-size: 7px; font-weight: 700; }
+.video-stats { display: flex; align-items: center; gap: 10px; }
+.stat-text { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 3px; }
+.video-context-menu { position: relative; }
+.ctx-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 17px; padding: 2px 6px; border-radius: 4px; transition: all 0.15s; line-height: 1; }
+.ctx-btn:hover { background: var(--bg-elevated); color: var(--text-secondary); }
+.ctx-menu { position: absolute; right: 0; bottom: 28px; background: var(--bg-elevated); border: 1px solid var(--border-default); border-radius: 10px; padding: 6px; min-width: 160px; z-index: 30; box-shadow: 0 8px 24px rgba(0,0,0,0.3); display: none; animation: popIn 0.15s ease; }
+.ctx-menu.open { display: block; }
+@keyframes popIn { from { opacity: 0; transform: scale(0.95) translateY(4px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.ctx-item { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 6px; font-size: 13px; color: var(--text-secondary); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.ctx-item:hover { background: var(--bg-surface); color: var(--text-primary); }
+.ctx-item.danger { color: var(--error); }
+.ctx-item.danger:hover { background: rgba(239,68,68,0.08); }
+.ctx-divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+/* LIST VIEW */
+.video-list { display: none; flex-direction: column; gap: 2px; margin-bottom: 24px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.video-list.show { display: flex; }
+.list-header { display: grid; grid-template-columns: 2fr 80px 100px 120px 80px 80px 60px; gap: 12px; padding: 10px 16px; background: var(--bg-surface); border-bottom: 1px solid var(--border); }
+.list-col-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+.list-row { display: grid; grid-template-columns: 2fr 80px 100px 120px 80px 80px 60px; gap: 12px; padding: 10px 16px; background: var(--bg-panel); border-bottom: 1px solid var(--border); align-items: center; cursor: pointer; transition: background 0.15s; }
+.list-row:last-child { border-bottom: none; }
+.list-row:hover { background: var(--bg-surface); }
+.list-thumb { width: 64px; height: 36px; border-radius: 5px; flex-shrink: 0; }
+.list-title-cell { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.list-title-text { font-size: 13px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.list-cell { font-size: 12px; color: var(--text-tertiary); }
+.list-status-badge { height: 20px; padding: 0 8px; border-radius: 9999px; font-size: 10px; font-weight: 700; display: flex; align-items: center; gap: 4px; width: fit-content; }
+
+/* PAGINATION */
+.pagination { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 20px 0; }
+.page-btn { width: 34px; height: 34px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); transition: all 0.15s; }
+.page-btn:hover { background: var(--bg-surface); color: var(--text-primary); }
+.page-btn.active { background: var(--accent-blue); border-color: var(--accent-blue); color: #fff; }
+.page-btn.disabled { opacity: 0.3; cursor: default; pointer-events: none; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="screen-04-dashboard.html" class="sidebar-logo">
+    <div class="logo-mark">V</div>
+    <span class="logo-text">Vidify</span>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a class="nav-item" href="screen-04-dashboard.html"><span class="nav-icon">⊞</span><span class="nav-label">Dashboard</span></a>
+    <a class="nav-item" href="screen-05-wizard.html"><span class="nav-icon">✦</span><span class="nav-label">Create New</span></a>
+    <a class="nav-item active" href="#"><span class="nav-icon">▣</span><span class="nav-label">My Videos</span><span class="nav-badge">18</span></a>
+    <a class="nav-item" href="#"><span class="nav-icon">◈</span><span class="nav-label">Templates</span></a>
+    <div class="nav-section-label" style="margin-top:8px;">Publish</div>
+    <a class="nav-item" href="#"><span class="nav-icon">📅</span><span class="nav-label">Calendar</span></a>
+    <a class="nav-item" href="#"><span class="nav-icon">◉</span><span class="nav-label">Social Accounts</span></a>
+    <div class="nav-section-label" style="margin-top:8px;">Analyze</div>
+    <a class="nav-item" href="#"><span class="nav-icon">📊</span><span class="nav-label">Analytics</span></a>
+    <div class="nav-section-label" style="margin-top:8px;">Settings</div>
+    <a class="nav-item" href="#"><span class="nav-icon">◆</span><span class="nav-label">Brand Kit</span></a>
+    <a class="nav-item" href="#"><span class="nav-icon">⚙</span><span class="nav-label">Settings</span></a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="credits-pill">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <span style="font-size:11px;color:var(--text-muted);">Credits</span>
+        <span class="credits-num">42</span>
+      </div>
+      <div class="credits-bar"><div class="credits-fill"></div></div>
+      <div class="credits-sub">42 / 200 remaining</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-wrapper">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <span class="topbar-title">My Videos</span>
+    <span class="topbar-count">18 videos</span>
+    <div class="topbar-actions">
+      <button class="btn-new-video" onclick="window.location='screen-05-wizard.html'">✦ New Video</button>
+      <div class="avatar">E</div>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <!-- BULK ACTION BAR -->
+    <div class="bulk-bar" id="bulkBar">
+      <span class="bulk-count" id="bulkCount">0 selected</span>
+      <div class="bulk-actions">
+        <button class="bulk-btn bulk-btn-publish">🚀 Publish All</button>
+        <button class="bulk-btn bulk-btn-download">↓ Download All</button>
+        <button class="bulk-btn bulk-btn-delete">🗑 Delete</button>
+      </div>
+      <button class="bulk-close" onclick="clearSelection()">×</button>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+      <div class="search-input-wrap">
+        <span class="search-icon">⌕</span>
+        <input type="text" class="search-input" placeholder="Search videos..." oninput="filterVideos(this.value)">
+      </div>
+      <select class="filter-select" onchange="filterByStatus(this.value)">
+        <option value="all">All Status</option>
+        <option value="published">Published</option>
+        <option value="ready">Ready</option>
+        <option value="scheduled">Scheduled</option>
+        <option value="generating">Generating</option>
+        <option value="failed">Failed</option>
+      </select>
+      <select class="filter-select">
+        <option>All Types</option>
+        <option>Video</option>
+        <option>Image</option>
+      </select>
+      <select class="filter-select">
+        <option>All Platforms</option>
+        <option>TikTok</option>
+        <option>YouTube</option>
+        <option>Instagram</option>
+        <option>Facebook</option>
+      </select>
+      <select class="filter-select">
+        <option>Newest First</option>
+        <option>Oldest First</option>
+        <option>Most Views</option>
+        <option>A–Z</option>
+      </select>
+      <div class="view-toggle">
+        <button class="view-btn active" id="gridBtn" onclick="setView('grid')" title="Grid view">⊞</button>
+        <button class="view-btn" id="listBtn" onclick="setView('list')" title="List view">☰</button>
+      </div>
+    </div>
+
+    <!-- GRID LABEL -->
+    <div class="grid-section-label">
+      <span id="gridLabel">All Videos — 18 results</span>
+      <span style="font-size:11px;color:#71717a;">Select all</span>
+    </div>
+
+    <!-- VIDEO GRID -->
+    <div class="video-grid" id="videoGrid">
+    </div>
+
+    <!-- LIST VIEW -->
+    <div class="video-list" id="videoList">
+      <div class="list-header">
+        <div class="list-col-label">Video</div>
+        <div class="list-col-label">Status</div>
+        <div class="list-col-label">Platforms</div>
+        <div class="list-col-label">Views</div>
+        <div class="list-col-label">Duration</div>
+        <div class="list-col-label">Date</div>
+        <div class="list-col-label"></div>
+      </div>
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination">
+      <button class="page-btn disabled">←</button>
+      <button class="page-btn active">1</button>
+      <button class="page-btn">2</button>
+      <button class="page-btn">3</button>
+      <span style="color:var(--text-muted);font-size:13px;">...</span>
+      <button class="page-btn">9</button>
+      <button class="page-btn">→</button>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const videos = [
+  { id: 1, title: "Summer Product Launch Campaign", status: "published", statusColor: "#3b82f6", statusBg: "rgba(37,99,235,0.15)", platforms: ["T","Y"], color: "linear-gradient(135deg,#1e3a5f,#0a1628)", duration: "0:30", views: "12.4K", date: "2h ago" },
+  { id: 2, title: "Brand Story 2024 — Origin", status: "generating", statusColor: "#8b5cf6", statusBg: "rgba(124,58,237,0.15)", platforms: ["I"], color: "linear-gradient(135deg,#2d1b4e,#110a1e)", duration: "1:00", views: "—", date: "5m ago" },
+  { id: 3, title: "Tutorial: Getting Started in 60s", status: "ready", statusColor: "#10b981", statusBg: "rgba(16,185,129,0.15)", platforms: ["Y"], color: "linear-gradient(135deg,#0d2e22,#050f0a)", duration: "0:15", views: "—", date: "Yesterday" },
+  { id: 4, title: "Product Testimonial — Happy Customer", status: "scheduled", statusColor: "#f59e0b", statusBg: "rgba(245,158,11,0.15)", platforms: ["T","F"], color: "linear-gradient(135deg,#3a2c0d,#1a1200)", duration: "0:45", views: "—", date: "2d ago" },
+  { id: 5, title: "Q4 Campaign Ad — Retry", status: "failed", statusColor: "#ef4444", statusBg: "rgba(239,68,68,0.15)", platforms: ["I"], color: "linear-gradient(135deg,#3a1010,#1a0606)", duration: "0:30", views: "—", date: "3d ago" },
+  { id: 6, title: "Holiday Promo Video", status: "ready", statusColor: "#10b981", statusBg: "rgba(16,185,129,0.15)", platforms: ["T","Y","I"], color: "linear-gradient(135deg,#0f3460,#050f1e)", duration: "0:30", views: "—", date: "4d ago" },
+  { id: 7, title: "New Product Reveal — Teasure", status: "published", statusColor: "#3b82f6", statusBg: "rgba(37,99,235,0.15)", platforms: ["T","Y","I","F"], color: "linear-gradient(135deg,#1e3a5f,#2d1b4e)", duration: "0:20", views: "8.1K", date: "5d ago" },
+  { id: 8, title: "Behind the Scenes Look", status: "published", statusColor: "#3b82f6", statusBg: "rgba(37,99,235,0.15)", platforms: ["I"], color: "linear-gradient(135deg,#0d2e22,#2d1b4e)", duration: "0:45", views: "3.2K", date: "1w ago" },
+  { id: 9, title: "Customer Success Story #1", status: "published", statusColor: "#3b82f6", statusBg: "rgba(37,99,235,0.15)", platforms: ["Y","F"], color: "linear-gradient(135deg,#3a2c0d,#0f3460)", duration: "2:00", views: "5.7K", date: "1w ago" },
+];
+
+const platColors = { T: "#00f2ea", Y: "#ff4444", I: "#e6683c", F: "#1877f2" };
+const platNames = { T: "TikTok", Y: "YouTube", I: "Instagram", F: "Facebook" };
+let selectedIds = new Set();
+let activeMenu = null;
+
+function renderGrid(data) {
+  const grid = document.getElementById('videoGrid');
+  grid.innerHTML = '';
+  data.forEach(v => {
+    const card = document.createElement('div');
+    card.className = 'video-card' + (selectedIds.has(v.id) ? ' selected' : '');
+    card.dataset.id = v.id;
+    card.innerHTML = `
+      <div class="card-checkbox" onclick="event.stopPropagation();toggleSelect(${v.id})">
+        ${selectedIds.has(v.id) ? '✓' : ''}
+      </div>
+      <div class="video-thumb">
+        <div class="thumb-bg" style="background:${v.color};height:100%;"></div>
+        <div class="thumb-hover-overlay">
+          <div class="thumb-play">▶</div>
+        </div>
+        <div class="thumb-duration">${v.duration}</div>
+        <div class="thumb-status" style="background:${v.statusBg};">
+          <span class="status-dot" style="background:${v.statusColor};${v.status==='generating'?'animation:pulse 1.2s infinite;':''}"></span>
+          <span style="color:${v.statusColor};font-size:10px;font-weight:700;">${v.status.charAt(0).toUpperCase()+v.status.slice(1)}</span>
+        </div>
+      </div>
+      <div class="video-info">
+        <div class="video-title">${v.title}</div>
+        <div class="video-meta-row">
+          <div class="video-platforms">
+            ${v.platforms.map(p=>`<div class="plat-dot-sm" style="background:${platColors[p]}22;color:${platColors[p]};" title="${platNames[p]}">${p}</div>`).join('')}
+          </div>
+          <div class="video-stats">
+            ${v.views !== '—' ? `<span class="stat-text">👁 ${v.views}</span>` : ''}
+            <span class="stat-text">${v.date}</span>
+            <div class="video-context-menu">
+              <button class="ctx-btn" onclick="event.stopPropagation();toggleMenu(${v.id})">···</button>
+              <div class="ctx-menu" id="menu-${v.id}">
+                <div class="ctx-item" onclick="window.location='screen-07-result.html'">👁 View</div>
+                <div class="ctx-item">✏️ Edit</div>
+                <div class="ctx-item" onclick="window.location='screen-08-publishing.html'">🚀 Publish</div>
+                <div class="ctx-item">↓ Download</div>
+                <div class="ctx-divider"></div>
+                <div class="ctx-item danger">🗑 Delete</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    card.addEventListener('click', () => window.location = 'screen-07-result.html');
+    grid.appendChild(card);
+  });
+}
+
+function toggleSelect(id) {
+  if (selectedIds.has(id)) selectedIds.delete(id);
+  else selectedIds.add(id);
+  renderGrid(videos);
+  updateBulkBar();
+}
+
+function updateBulkBar() {
+  const bar = document.getElementById('bulkBar');
+  document.getElementById('bulkCount').textContent = selectedIds.size + ' selected';
+  bar.classList.toggle('show', selectedIds.size > 0);
+}
+
+function clearSelection() {
+  selectedIds.clear();
+  renderGrid(videos);
+  updateBulkBar();
+}
+
+function toggleMenu(id) {
+  if (activeMenu && activeMenu !== id) {
+    document.getElementById('menu-' + activeMenu).classList.remove('open');
+  }
+  const menu = document.getElementById('menu-' + id);
+  menu.classList.toggle('open');
+  activeMenu = menu.classList.contains('open') ? id : null;
+}
+
+document.addEventListener('click', () => {
+  if (activeMenu) {
+    document.getElementById('menu-' + activeMenu)?.classList.remove('open');
+    activeMenu = null;
+  }
+});
+
+function setView(view) {
+  document.getElementById('videoGrid').style.display = view === 'grid' ? 'grid' : 'none';
+  const list = document.getElementById('videoList');
+  list.classList.toggle('show', view === 'list');
+  document.getElementById('gridBtn').classList.toggle('active', view === 'grid');
+  document.getElementById('listBtn').classList.toggle('active', view === 'list');
+  if (view === 'list') renderList(videos);
+}
+
+function renderList(data) {
+  const list = document.getElementById('videoList');
+  const header = list.querySelector('.list-header');
+  list.innerHTML = '';
+  list.appendChild(header);
+  data.forEach(v => {
+    const row = document.createElement('div');
+    row.className = 'list-row';
+    row.innerHTML = `
+      <div class="list-title-cell">
+        <div class="list-thumb" style="background:${v.color};"></div>
+        <span class="list-title-text">${v.title}</span>
+      </div>
+      <div>
+        <div class="list-status-badge" style="background:${v.statusBg};color:${v.statusColor};">${v.status}</div>
+      </div>
+      <div class="list-cell">
+        <div style="display:flex;gap:4px;">
+          ${v.platforms.map(p=>`<div style="width:14px;height:14px;border-radius:9999px;background:${platColors[p]}22;color:${platColors[p]};display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;">${p}</div>`).join('')}
+        </div>
+      </div>
+      <div class="list-cell">${v.views}</div>
+      <div class="list-cell" style="font-family:'JetBrains Mono',monospace;">${v.duration}</div>
+      <div class="list-cell">${v.date}</div>
+      <div class="list-cell">···</div>
+    `;
+    row.onclick = () => window.location = 'screen-07-result.html';
+    list.appendChild(row);
+  });
+}
+
+function filterVideos(query) {
+  const filtered = videos.filter(v => v.title.toLowerCase().includes(query.toLowerCase()));
+  renderGrid(filtered);
+  document.getElementById('gridLabel').textContent = `Search results — ${filtered.length} found`;
+}
+
+function filterByStatus(status) {
+  const filtered = status === 'all' ? videos : videos.filter(v => v.status === status);
+  renderGrid(filtered);
+  document.getElementById('gridLabel').textContent = status === 'all' ? `All Videos — ${videos.length} results` : `${status.charAt(0).toUpperCase()+status.slice(1)} — ${filtered.length} results`;
+}
+
+document.querySelectorAll('.page-btn:not(.disabled)').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+    if (!this.textContent.includes('←') && !this.textContent.includes('→')) this.classList.add('active');
+  });
+});
+
+// Init
+renderGrid(videos);
+
+// CSS for generating pulse
+const style = document.createElement('style');
+style.textContent = '@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.4)} }';
+document.head.appendChild(style);
+</script>
+</body>
+</html>
