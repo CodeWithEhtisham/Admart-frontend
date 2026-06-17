@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import {
+  GENERATED_ASSETS_EVENT,
+  downloadAsset,
+  downloadFilename,
+  formatAssetDate,
+  getSavedAssets,
+} from '../utils/generatedAssets'
 
 const FILTERS = ['All', 'Published', 'Ready', 'Scheduled', 'Generating']
 
@@ -124,6 +131,8 @@ export default function DashboardPage() {
   const [activeFilter, setActiveFilter] = useState('All')
   const [searchOpen, setSearchOpen] = useState(false)
   const [darkUi, setDarkUi] = useState(true)
+  const [savedAssets, setSavedAssets] = useState(() => getSavedAssets())
+  const [assetMessage, setAssetMessage] = useState('')
 
   const th = darkUi
     ? {
@@ -155,6 +164,35 @@ export default function DashboardPage() {
     window.addEventListener('keydown', onSearchKey)
     return () => window.removeEventListener('keydown', onSearchKey)
   }, [onSearchKey])
+
+  useEffect(() => {
+    const refreshSavedAssets = () => setSavedAssets(getSavedAssets())
+    window.addEventListener('storage', refreshSavedAssets)
+    window.addEventListener(GENERATED_ASSETS_EVENT, refreshSavedAssets)
+    return () => {
+      window.removeEventListener('storage', refreshSavedAssets)
+      window.removeEventListener(GENERATED_ASSETS_EVENT, refreshSavedAssets)
+    }
+  }, [])
+
+  const handleAssetDownload = async (asset) => {
+    setAssetMessage('')
+    try {
+      await downloadAsset(asset.sourceUrl || asset.thumbnailUrl, downloadFilename(asset.title || 'admart-image'))
+      setAssetMessage('Download started.')
+    } catch (error) {
+      setAssetMessage(error instanceof Error ? error.message : 'Could not download asset.')
+    }
+  }
+
+  const handleUseAsset = (asset) => {
+    navigate('/create', {
+      state: {
+        inputTab: 'upload',
+        sourceAsset: asset,
+      },
+    })
+  }
 
   const navCls = (path, opts = {}) => {
     const active = location.pathname === path || opts.partialMatch
@@ -447,14 +485,14 @@ export default function DashboardPage() {
               </Link>
               <button
                 type="button"
-                onClick={() => navigate('/create')}
+                onClick={() => navigate('/create', { state: { inputTab: 'text-image' } })}
                 className="inline-flex items-center gap-2 rounded-xl bg-accent-violet/40 px-5 py-2.5 text-sm font-semibold backdrop-blur transition hover:bg-accent-violet/55"
               >
                 <span>⊕</span> New Image
               </button>
               <button
                 type="button"
-                onClick={() => navigate('/create')}
+                onClick={() => navigate('/create', { state: { inputTab: 'upload' } })}
                 className="inline-flex items-center gap-2 rounded-xl bg-success/35 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-success/50"
               >
                 <span>↑</span> Upload
@@ -519,6 +557,79 @@ export default function DashboardPage() {
               </div>
             ))}
           </section>
+
+          {savedAssets.length > 0 && (
+            <section>
+              <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
+                <div>
+                  <h2 className={`font-heading text-xl font-bold ${primaryText}`}>Saved Assets</h2>
+                  {assetMessage && <p className={`mt-1 text-xs ${th.faint}`}>{assetMessage}</p>}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => navigate('/create', { state: { inputTab: 'upload' } })}
+                  className="text-sm font-medium text-accent-blue hover:underline"
+                >
+                  Upload new
+                </button>
+              </div>
+
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {savedAssets.slice(0, 6).map((asset) => (
+                  <article
+                    key={asset.id}
+                    className={`overflow-hidden rounded-2xl border ${th.surface}`}
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden bg-input">
+                      {asset.type === 'video' ? (
+                        <video
+                          src={asset.thumbnailUrl || asset.sourceUrl}
+                          className="h-full w-full object-cover"
+                          muted
+                        />
+                      ) : (
+                        <img
+                          src={asset.thumbnailUrl || asset.sourceUrl}
+                          alt={asset.title}
+                          className="h-full w-full object-cover"
+                        />
+                      )}
+                      <div className="absolute left-3 top-3">
+                        <StatusBadge status={asset.status || 'Ready'} />
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <h3 className={`truncate font-heading font-semibold ${primaryText}`}>{asset.title}</h3>
+                      <div className="mt-2 flex items-center justify-between gap-3 text-xs">
+                        <span className={th.faint}>
+                          {asset.width && asset.height
+                            ? `${asset.width} x ${asset.height}`
+                            : asset.resolution || 'Image'}
+                        </span>
+                        <time className={th.faint}>{formatAssetDate(asset.createdAt)}</time>
+                      </div>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleUseAsset(asset)}
+                          className="rounded-lg bg-accent-blue px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-accent-blue/90"
+                        >
+                          Use
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleAssetDownload(asset)}
+                          className={`rounded-lg border border-border-default px-3 py-1.5 text-xs font-semibold transition ${th.elevated} ${th.muted} hover:text-text-primary`}
+                        >
+                          Download
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
 
           <section>
             <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
