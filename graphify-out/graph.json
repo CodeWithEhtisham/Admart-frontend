@@ -1,0 +1,6352 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "hyperedges": [
+      {
+        "id": "vidify_sidebar_consumers",
+        "label": "Vidify Sidebar Consumers",
+        "nodes": [
+          "pages_imagegenpage_imagegenpage",
+          "pages_settingspage_settingspage",
+          "pages_brandkitpage_brandkitpage",
+          "pages_notificationspage_notificationspage",
+          "pages_billingpage_billingpage"
+        ],
+        "relation": "participate_in",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "src/App.jsx"
+      },
+      {
+        "id": "ai_asset_generation_flow",
+        "label": "AI Asset Generation Flow",
+        "nodes": [
+          "pages_wizardpage_wizardpage",
+          "pages_imagegenpage_imagegenpage",
+          "pages_brandkitpage_brandkitpage"
+        ],
+        "relation": "participate_in",
+        "confidence": "INFERRED",
+        "confidence_score": 0.85,
+        "source_file": "src/pages/WizardPage.jsx"
+      },
+      {
+        "id": "user_onboarding_flow",
+        "label": "User Onboarding and Dashboard Flow",
+        "nodes": [
+          "pages_authpage_authpage",
+          "pages_onboardingpage_onboardingpage",
+          "pages_dashboardpage_dashboardpage"
+        ],
+        "relation": "form",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "src/pages/OnboardingPage.jsx"
+      },
+      {
+        "id": "video_creation_and_publishing_flow",
+        "label": "Video Creation and Publishing Flow",
+        "nodes": [
+          "pages_progresspage_progresspage",
+          "pages_resultpage_resultpage",
+          "pages_publishingpage_publishingpage"
+        ],
+        "relation": "participate_in",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "src/pages/ProgressPage.jsx"
+      },
+      {
+        "id": "api_design_standards",
+        "label": "API Design Standards and Guidelines",
+        "nodes": [
+          "api_design_principles_skill_main",
+          "resources_implementation_playbook_apidesign",
+          "assets_api_design_checklist_main",
+          "references_rest_best_practices_main",
+          "references_graphql_schema_design_main"
+        ],
+        "relation": "form",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": ".agent/skills/api-design-principles/SKILL.md"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "label": "vite.config.js",
+      "file_type": "code",
+      "source_file": "vite.config.js",
+      "source_location": "L1",
+      "id": "vite_config_js",
+      "community": 2,
+      "norm_label": "vite.config.js"
+    },
+    {
+      "label": "package.json",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L1",
+      "id": "package_json",
+      "community": 2,
+      "norm_label": "package.json"
+    },
+    {
+      "label": "name",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L2",
+      "id": "admart_frontend_package_name",
+      "community": 2,
+      "norm_label": "name"
+    },
+    {
+      "label": "private",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L3",
+      "id": "admart_frontend_package_private",
+      "community": 2,
+      "norm_label": "private"
+    },
+    {
+      "label": "version",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L4",
+      "id": "admart_frontend_package_version",
+      "community": 2,
+      "norm_label": "version"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L5",
+      "id": "admart_frontend_package_type",
+      "community": 2,
+      "norm_label": "type"
+    },
+    {
+      "label": "scripts",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L6",
+      "id": "admart_frontend_package_scripts",
+      "community": 2,
+      "norm_label": "scripts"
+    },
+    {
+      "label": "dev",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L7",
+      "id": "admart_frontend_package_scripts_dev",
+      "community": 2,
+      "norm_label": "dev"
+    },
+    {
+      "label": "build",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L8",
+      "id": "admart_frontend_package_scripts_build",
+      "community": 2,
+      "norm_label": "build"
+    },
+    {
+      "label": "lint",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L9",
+      "id": "admart_frontend_package_scripts_lint",
+      "community": 2,
+      "norm_label": "lint"
+    },
+    {
+      "label": "preview",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L10",
+      "id": "admart_frontend_package_scripts_preview",
+      "community": 2,
+      "norm_label": "preview"
+    },
+    {
+      "label": "dependencies",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L12",
+      "id": "admart_frontend_package_dependencies",
+      "community": 2,
+      "norm_label": "dependencies"
+    },
+    {
+      "label": "@tailwindcss/vite",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L13",
+      "id": "admart_frontend_package_dependencies_tailwindcss_vite",
+      "community": 2,
+      "norm_label": "@tailwindcss/vite"
+    },
+    {
+      "label": "react",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L14",
+      "id": "admart_frontend_package_dependencies_react",
+      "community": 2,
+      "norm_label": "react"
+    },
+    {
+      "label": "react-dom",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L15",
+      "id": "admart_frontend_package_dependencies_react_dom",
+      "community": 2,
+      "norm_label": "react-dom"
+    },
+    {
+      "label": "react-router-dom",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L16",
+      "id": "admart_frontend_package_dependencies_react_router_dom",
+      "community": 2,
+      "norm_label": "react-router-dom"
+    },
+    {
+      "label": "tailwindcss",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L17",
+      "id": "admart_frontend_package_dependencies_tailwindcss",
+      "community": 2,
+      "norm_label": "tailwindcss"
+    },
+    {
+      "label": "devDependencies",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L19",
+      "id": "admart_frontend_package_devdependencies",
+      "community": 2,
+      "norm_label": "devdependencies"
+    },
+    {
+      "label": "@eslint/js",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L20",
+      "id": "admart_frontend_package_devdependencies_eslint_js",
+      "community": 2,
+      "norm_label": "@eslint/js"
+    },
+    {
+      "label": "@types/react",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L21",
+      "id": "admart_frontend_package_devdependencies_types_react",
+      "community": 2,
+      "norm_label": "@types/react"
+    },
+    {
+      "label": "@types/react-dom",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L22",
+      "id": "admart_frontend_package_devdependencies_types_react_dom",
+      "community": 2,
+      "norm_label": "@types/react-dom"
+    },
+    {
+      "label": "@vitejs/plugin-react",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L23",
+      "id": "admart_frontend_package_devdependencies_vitejs_plugin_react",
+      "community": 2,
+      "norm_label": "@vitejs/plugin-react"
+    },
+    {
+      "label": "eslint",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L24",
+      "id": "admart_frontend_package_devdependencies_eslint",
+      "community": 2,
+      "norm_label": "eslint"
+    },
+    {
+      "label": "eslint-plugin-react-hooks",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L25",
+      "id": "admart_frontend_package_devdependencies_eslint_plugin_react_hooks",
+      "community": 2,
+      "norm_label": "eslint-plugin-react-hooks"
+    },
+    {
+      "label": "eslint-plugin-react-refresh",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L26",
+      "id": "admart_frontend_package_devdependencies_eslint_plugin_react_refresh",
+      "community": 2,
+      "norm_label": "eslint-plugin-react-refresh"
+    },
+    {
+      "label": "globals",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L27",
+      "id": "admart_frontend_package_devdependencies_globals",
+      "community": 2,
+      "norm_label": "globals"
+    },
+    {
+      "label": "vite",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L28",
+      "id": "admart_frontend_package_devdependencies_vite",
+      "community": 2,
+      "norm_label": "vite"
+    },
+    {
+      "label": "eslint.config.js",
+      "file_type": "code",
+      "source_file": "eslint.config.js",
+      "source_location": "L1",
+      "id": "eslint_config_js",
+      "community": 2,
+      "norm_label": "eslint.config.js"
+    },
+    {
+      "label": "rest-api-template.py",
+      "file_type": "code",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L1",
+      "id": "agent_skills_api_design_principles_assets_rest_api_template_py",
+      "community": 4,
+      "norm_label": "rest-api-template.py"
+    },
+    {
+      "label": "UserStatus",
+      "file_type": "code",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L38",
+      "id": "assets_rest_api_template_userstatus",
+      "community": 4,
+      "norm_label": "userstatus"
+    },
+    {
+      "label": "str",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "id": "str",
+      "community": 4,
+      "norm_label": "str"
+    },
+    {
+      "label": "Enum",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "id": "enum",
+      "community": 4,
+      "norm_label": "enum"
+    },
+    {
+      "label": "UserBase",
+      "file_type": "code",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L43",
+      "id": "assets_rest_api_template_userbase",
+      "community": 4,
+      "norm_label": "userbase"
+    },
+    {
+      "label": "BaseModel",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "id": "basemodel",
+      "community": 4,
+      "norm_label": "basemodel"
+    },
+    {
+      "label": "UserCreate",
+      "file_type": "code",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L48",
+      "id": "assets_rest_api_template_usercreate",
+      "community": 4,
+      "norm_label": "usercreate"
+    },
+    {
+      "label": "UserUpdate",
+      "file_type": "code",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L51",
+      "id": "assets_rest_api_template_userupdate",
+      "community": 4,
+      "norm_label": "userupdate"
+    },
+    {
+      "label": "User",
+      "file_type": "code",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L56",
+      "id": "assets_rest_api_template_user",
+      "community": 4,
+      "norm_label": "user"
+    },
+    {
+      "label": "PaginationParams",
+      "file_type": "code",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L64",
+      "id": "assets_rest_api_template_paginationparams",
+      "community": 4,
+      "norm_label": "paginationparams"
+    },
+    {
+      "label": "PaginatedResponse",
+      "file_type": "code",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L68",
+      "id": "assets_rest_api_template_paginatedresponse",
+      "community": 4,
+      "norm_label": "paginatedresponse"
+    },
+    {
+      "label": "ErrorDetail",
+      "file_type": "code",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L76",
+      "id": "assets_rest_api_template_errordetail",
+      "community": 4,
+      "norm_label": "errordetail"
+    },
+    {
+      "label": "ErrorResponse",
+      "file_type": "code",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L81",
+      "id": "assets_rest_api_template_errorresponse",
+      "community": 4,
+      "norm_label": "errorresponse"
+    },
+    {
+      "label": "http_exception_handler()",
+      "file_type": "code",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L87",
+      "id": "assets_rest_api_template_http_exception_handler",
+      "community": 4,
+      "norm_label": "http_exception_handler()"
+    },
+    {
+      "label": "list_users()",
+      "file_type": "code",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L99",
+      "id": "assets_rest_api_template_list_users",
+      "community": 4,
+      "norm_label": "list_users()"
+    },
+    {
+      "label": "create_user()",
+      "file_type": "code",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L129",
+      "id": "assets_rest_api_template_create_user",
+      "community": 0,
+      "norm_label": "create_user()"
+    },
+    {
+      "label": "get_user()",
+      "file_type": "code",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L142",
+      "id": "assets_rest_api_template_get_user",
+      "community": 4,
+      "norm_label": "get_user()"
+    },
+    {
+      "label": "update_user()",
+      "file_type": "code",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L161",
+      "id": "assets_rest_api_template_update_user",
+      "community": 4,
+      "norm_label": "update_user()"
+    },
+    {
+      "label": "delete_user()",
+      "file_type": "code",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L175",
+      "id": "assets_rest_api_template_delete_user",
+      "community": 4,
+      "norm_label": "delete_user()"
+    },
+    {
+      "label": "Production-ready REST API template using FastAPI. Includes pagination, filtering",
+      "file_type": "rationale",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L1",
+      "id": "assets_rest_api_template_rationale_1",
+      "community": 4,
+      "norm_label": "production-ready rest api template using fastapi. includes pagination, filtering"
+    },
+    {
+      "label": "List users with pagination and filtering.",
+      "file_type": "rationale",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L105",
+      "id": "assets_rest_api_template_rationale_105",
+      "community": 4,
+      "norm_label": "list users with pagination and filtering."
+    },
+    {
+      "label": "Partially update user.",
+      "file_type": "rationale",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L162",
+      "id": "assets_rest_api_template_rationale_162",
+      "community": 4,
+      "norm_label": "partially update user."
+    },
+    {
+      "label": "App.jsx",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L1",
+      "id": "src_app_jsx",
+      "community": 0,
+      "norm_label": "app.jsx"
+    },
+    {
+      "label": "App()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L22",
+      "id": "src_app_app",
+      "community": 0,
+      "norm_label": "app()"
+    },
+    {
+      "label": "main.jsx",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1",
+      "id": "src_main_jsx",
+      "community": 0,
+      "norm_label": "main.jsx"
+    },
+    {
+      "label": "generatedAssets.js",
+      "file_type": "code",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L1",
+      "id": "src_utils_generatedassets_js",
+      "community": 6,
+      "norm_label": "generatedassets.js"
+    },
+    {
+      "label": "parseAssets()",
+      "file_type": "code",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L6",
+      "id": "utils_generatedassets_parseassets",
+      "community": 6,
+      "norm_label": "parseassets()"
+    },
+    {
+      "label": "notifyAssetsChanged()",
+      "file_type": "code",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L16",
+      "id": "utils_generatedassets_notifyassetschanged",
+      "community": 6,
+      "norm_label": "notifyassetschanged()"
+    },
+    {
+      "label": "getSavedAssets()",
+      "file_type": "code",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L20",
+      "id": "utils_generatedassets_getsavedassets",
+      "community": 6,
+      "norm_label": "getsavedassets()"
+    },
+    {
+      "label": "saveGeneratedAsset()",
+      "file_type": "code",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L25",
+      "id": "utils_generatedassets_savegeneratedasset",
+      "community": 6,
+      "norm_label": "savegeneratedasset()"
+    },
+    {
+      "label": "formatAssetDate()",
+      "file_type": "code",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L51",
+      "id": "utils_generatedassets_formatassetdate",
+      "community": 6,
+      "norm_label": "formatassetdate()"
+    },
+    {
+      "label": "slugify()",
+      "file_type": "code",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L62",
+      "id": "utils_generatedassets_slugify",
+      "community": 6,
+      "norm_label": "slugify()"
+    },
+    {
+      "label": "downloadFilename()",
+      "file_type": "code",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L71",
+      "id": "utils_generatedassets_downloadfilename",
+      "community": 6,
+      "norm_label": "downloadfilename()"
+    },
+    {
+      "label": "downloadAsset()",
+      "file_type": "code",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L75",
+      "id": "utils_generatedassets_downloadasset",
+      "community": 6,
+      "norm_label": "downloadasset()"
+    },
+    {
+      "label": "TemplatesPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/TemplatesPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_templatespage_jsx",
+      "community": 0,
+      "norm_label": "templatespage.jsx"
+    },
+    {
+      "label": "CATEGORIES",
+      "file_type": "code",
+      "source_file": "src/pages/TemplatesPage.jsx",
+      "source_location": "L4",
+      "id": "pages_templatespage_categories",
+      "community": 0,
+      "norm_label": "categories"
+    },
+    {
+      "label": "TEMPLATES",
+      "file_type": "code",
+      "source_file": "src/pages/TemplatesPage.jsx",
+      "source_location": "L15",
+      "id": "pages_templatespage_templates",
+      "community": 0,
+      "norm_label": "templates"
+    },
+    {
+      "label": "CATEGORY_LABELS",
+      "file_type": "code",
+      "source_file": "src/pages/TemplatesPage.jsx",
+      "source_location": "L223",
+      "id": "pages_templatespage_category_labels",
+      "community": 0,
+      "norm_label": "category_labels"
+    },
+    {
+      "label": "PlatformDots()",
+      "file_type": "code",
+      "source_file": "src/pages/TemplatesPage.jsx",
+      "source_location": "L233",
+      "id": "pages_templatespage_platformdots",
+      "community": 0,
+      "norm_label": "platformdots()"
+    },
+    {
+      "label": "Stars()",
+      "file_type": "code",
+      "source_file": "src/pages/TemplatesPage.jsx",
+      "source_location": "L249",
+      "id": "pages_templatespage_stars",
+      "community": 0,
+      "norm_label": "stars()"
+    },
+    {
+      "label": "Sidebar()",
+      "file_type": "code",
+      "source_file": "src/pages/TemplatesPage.jsx",
+      "source_location": "L262",
+      "id": "pages_templatespage_sidebar",
+      "community": 0,
+      "norm_label": "sidebar()"
+    },
+    {
+      "label": "TemplatesPage()",
+      "file_type": "code",
+      "source_file": "src/pages/TemplatesPage.jsx",
+      "source_location": "L380",
+      "id": "pages_templatespage_templatespage",
+      "community": 0,
+      "norm_label": "templatespage()"
+    },
+    {
+      "label": "LibraryPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/LibraryPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_librarypage_jsx",
+      "community": 7,
+      "norm_label": "librarypage.jsx"
+    },
+    {
+      "label": "MOCK_VIDEOS",
+      "file_type": "code",
+      "source_file": "src/pages/LibraryPage.jsx",
+      "source_location": "L4",
+      "id": "pages_librarypage_mock_videos",
+      "community": 7,
+      "norm_label": "mock_videos"
+    },
+    {
+      "label": "PLATFORM_DOT",
+      "file_type": "code",
+      "source_file": "src/pages/LibraryPage.jsx",
+      "source_location": "L88",
+      "id": "pages_librarypage_platform_dot",
+      "community": 7,
+      "norm_label": "platform_dot"
+    },
+    {
+      "label": "parseDurationMmSs()",
+      "file_type": "code",
+      "source_file": "src/pages/LibraryPage.jsx",
+      "source_location": "L95",
+      "id": "pages_librarypage_parsedurationmmss",
+      "community": 7,
+      "norm_label": "parsedurationmmss()"
+    },
+    {
+      "label": "parseViews()",
+      "file_type": "code",
+      "source_file": "src/pages/LibraryPage.jsx",
+      "source_location": "L101",
+      "id": "pages_librarypage_parseviews",
+      "community": 7,
+      "norm_label": "parseviews()"
+    },
+    {
+      "label": "STATUS_STYLES",
+      "file_type": "code",
+      "source_file": "src/pages/LibraryPage.jsx",
+      "source_location": "L108",
+      "id": "pages_librarypage_status_styles",
+      "community": 7,
+      "norm_label": "status_styles"
+    },
+    {
+      "label": "LogoMark()",
+      "file_type": "code",
+      "source_file": "src/pages/LibraryPage.jsx",
+      "source_location": "L116",
+      "id": "pages_librarypage_logomark",
+      "community": 7,
+      "norm_label": "logomark()"
+    },
+    {
+      "label": "SearchIcon()",
+      "file_type": "code",
+      "source_file": "src/pages/LibraryPage.jsx",
+      "source_location": "L127",
+      "id": "pages_librarypage_searchicon",
+      "community": 7,
+      "norm_label": "searchicon()"
+    },
+    {
+      "label": "navLinkClass()",
+      "file_type": "code",
+      "source_file": "src/pages/LibraryPage.jsx",
+      "source_location": "L136",
+      "id": "pages_librarypage_navlinkclass",
+      "community": 7,
+      "norm_label": "navlinkclass()"
+    },
+    {
+      "label": "LibraryPage()",
+      "file_type": "code",
+      "source_file": "src/pages/LibraryPage.jsx",
+      "source_location": "L142",
+      "id": "pages_librarypage_librarypage",
+      "community": 7,
+      "norm_label": "librarypage()"
+    },
+    {
+      "label": "WizardPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_wizardpage_jsx",
+      "community": 3,
+      "norm_label": "wizardpage.jsx"
+    },
+    {
+      "label": "INPUT_TABS",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L5",
+      "id": "pages_wizardpage_input_tabs",
+      "community": 3,
+      "norm_label": "input_tabs"
+    },
+    {
+      "label": "SUGGESTIONS",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L14",
+      "id": "pages_wizardpage_suggestions",
+      "community": 3,
+      "norm_label": "suggestions"
+    },
+    {
+      "label": "IMAGE_SUGGESTIONS",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L24",
+      "id": "pages_wizardpage_image_suggestions",
+      "community": 3,
+      "norm_label": "image_suggestions"
+    },
+    {
+      "label": "TEMPLATES",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L33",
+      "id": "pages_wizardpage_templates",
+      "community": 3,
+      "norm_label": "templates"
+    },
+    {
+      "label": "ASPECTS",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L42",
+      "id": "pages_wizardpage_aspects",
+      "community": 3,
+      "norm_label": "aspects"
+    },
+    {
+      "label": "RESOLUTIONS",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L49",
+      "id": "pages_wizardpage_resolutions",
+      "community": 3,
+      "norm_label": "resolutions"
+    },
+    {
+      "label": "STYLES",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L55",
+      "id": "pages_wizardpage_styles",
+      "community": 3,
+      "norm_label": "styles"
+    },
+    {
+      "label": "VIDEO_MODELS",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L57",
+      "id": "pages_wizardpage_video_models",
+      "community": 3,
+      "norm_label": "video_models"
+    },
+    {
+      "label": "IMAGE_MODELS",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L63",
+      "id": "pages_wizardpage_image_models",
+      "community": 3,
+      "norm_label": "image_models"
+    },
+    {
+      "label": "PLATFORMS",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L69",
+      "id": "pages_wizardpage_platforms",
+      "community": 3,
+      "norm_label": "platforms"
+    },
+    {
+      "label": "STEP_LABELS",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L71",
+      "id": "pages_wizardpage_step_labels",
+      "community": 3,
+      "norm_label": "step_labels"
+    },
+    {
+      "label": "API_BASE_URL",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L73",
+      "id": "pages_wizardpage_api_base_url",
+      "community": 3,
+      "norm_label": "api_base_url"
+    },
+    {
+      "label": "sleep()",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L75",
+      "id": "pages_wizardpage_sleep",
+      "community": 3,
+      "norm_label": "sleep()"
+    },
+    {
+      "label": "resolveApiUrl()",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L79",
+      "id": "pages_wizardpage_resolveapiurl",
+      "community": 3,
+      "norm_label": "resolveapiurl()"
+    },
+    {
+      "label": "readJson()",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L87",
+      "id": "pages_wizardpage_readjson",
+      "community": 3,
+      "norm_label": "readjson()"
+    },
+    {
+      "label": "fetchWithTimeout()",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L95",
+      "id": "pages_wizardpage_fetchwithtimeout",
+      "community": 3,
+      "norm_label": "fetchwithtimeout()"
+    },
+    {
+      "label": "startTextImage()",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L114",
+      "id": "pages_wizardpage_starttextimage",
+      "community": 3,
+      "norm_label": "starttextimage()"
+    },
+    {
+      "label": "getTextImageStatus()",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L129",
+      "id": "pages_wizardpage_gettextimagestatus",
+      "community": 3,
+      "norm_label": "gettextimagestatus()"
+    },
+    {
+      "label": "generateTextImage()",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L140",
+      "id": "pages_wizardpage_generatetextimage",
+      "community": 3,
+      "norm_label": "generatetextimage()"
+    },
+    {
+      "label": "StepProgress()",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L173",
+      "id": "pages_wizardpage_stepprogress",
+      "community": 3,
+      "norm_label": "stepprogress()"
+    },
+    {
+      "label": "UploadDropzone()",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L220",
+      "id": "pages_wizardpage_uploaddropzone",
+      "community": 3,
+      "norm_label": "uploaddropzone()"
+    },
+    {
+      "label": "WizardPage()",
+      "file_type": "code",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L254",
+      "id": "pages_wizardpage_wizardpage",
+      "community": 6,
+      "norm_label": "wizardpage()"
+    },
+    {
+      "label": "ImageGenPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/ImageGenPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_imagegenpage_jsx",
+      "community": 1,
+      "norm_label": "imagegenpage.jsx"
+    },
+    {
+      "label": "MODELS",
+      "file_type": "code",
+      "source_file": "src/pages/ImageGenPage.jsx",
+      "source_location": "L5",
+      "id": "pages_imagegenpage_models",
+      "community": 1,
+      "norm_label": "models"
+    },
+    {
+      "label": "SIZES",
+      "file_type": "code",
+      "source_file": "src/pages/ImageGenPage.jsx",
+      "source_location": "L10",
+      "id": "pages_imagegenpage_sizes",
+      "community": 1,
+      "norm_label": "sizes"
+    },
+    {
+      "label": "STYLES",
+      "file_type": "code",
+      "source_file": "src/pages/ImageGenPage.jsx",
+      "source_location": "L18",
+      "id": "pages_imagegenpage_styles",
+      "community": 1,
+      "norm_label": "styles"
+    },
+    {
+      "label": "IMAGE_COUNTS",
+      "file_type": "code",
+      "source_file": "src/pages/ImageGenPage.jsx",
+      "source_location": "L29",
+      "id": "pages_imagegenpage_image_counts",
+      "community": 1,
+      "norm_label": "image_counts"
+    },
+    {
+      "label": "PLACEHOLDER_GRADIENTS",
+      "file_type": "code",
+      "source_file": "src/pages/ImageGenPage.jsx",
+      "source_location": "L31",
+      "id": "pages_imagegenpage_placeholder_gradients",
+      "community": 1,
+      "norm_label": "placeholder_gradients"
+    },
+    {
+      "label": "HISTORY_GRADIENTS",
+      "file_type": "code",
+      "source_file": "src/pages/ImageGenPage.jsx",
+      "source_location": "L38",
+      "id": "pages_imagegenpage_history_gradients",
+      "community": 1,
+      "norm_label": "history_gradients"
+    },
+    {
+      "label": "ImageGenPage()",
+      "file_type": "code",
+      "source_file": "src/pages/ImageGenPage.jsx",
+      "source_location": "L49",
+      "id": "pages_imagegenpage_imagegenpage",
+      "community": 3,
+      "norm_label": "imagegenpage()"
+    },
+    {
+      "label": "SettingsPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/SettingsPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_settingspage_jsx",
+      "community": 1,
+      "norm_label": "settingspage.jsx"
+    },
+    {
+      "label": "INITIAL",
+      "file_type": "code",
+      "source_file": "src/pages/SettingsPage.jsx",
+      "source_location": "L5",
+      "id": "pages_settingspage_initial",
+      "community": 1,
+      "norm_label": "initial"
+    },
+    {
+      "label": "TEAM",
+      "file_type": "code",
+      "source_file": "src/pages/SettingsPage.jsx",
+      "source_location": "L35",
+      "id": "pages_settingspage_team",
+      "community": 1,
+      "norm_label": "team"
+    },
+    {
+      "label": "TABS",
+      "file_type": "code",
+      "source_file": "src/pages/SettingsPage.jsx",
+      "source_location": "L59",
+      "id": "pages_settingspage_tabs",
+      "community": 1,
+      "norm_label": "tabs"
+    },
+    {
+      "label": "Toggle()",
+      "file_type": "code",
+      "source_file": "src/pages/SettingsPage.jsx",
+      "source_location": "L67",
+      "id": "pages_settingspage_toggle",
+      "community": 1,
+      "norm_label": "toggle()"
+    },
+    {
+      "label": "SettingsPage()",
+      "file_type": "code",
+      "source_file": "src/pages/SettingsPage.jsx",
+      "source_location": "L88",
+      "id": "pages_settingspage_settingspage",
+      "community": 4,
+      "norm_label": "settingspage()"
+    },
+    {
+      "label": "DashboardPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_dashboardpage_jsx",
+      "community": 6,
+      "norm_label": "dashboardpage.jsx"
+    },
+    {
+      "label": "FILTERS",
+      "file_type": "code",
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L11",
+      "id": "pages_dashboardpage_filters",
+      "community": 6,
+      "norm_label": "filters"
+    },
+    {
+      "label": "SPARKLINES",
+      "file_type": "code",
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L13",
+      "id": "pages_dashboardpage_sparklines",
+      "community": 6,
+      "norm_label": "sparklines"
+    },
+    {
+      "label": "VIDEOS",
+      "file_type": "code",
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L20",
+      "id": "pages_dashboardpage_videos",
+      "community": 6,
+      "norm_label": "videos"
+    },
+    {
+      "label": "Sparkline()",
+      "file_type": "code",
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L71",
+      "id": "pages_dashboardpage_sparkline",
+      "community": 6,
+      "norm_label": "sparkline()"
+    },
+    {
+      "label": "StatusBadge()",
+      "file_type": "code",
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L93",
+      "id": "pages_dashboardpage_statusbadge",
+      "community": 6,
+      "norm_label": "statusbadge()"
+    },
+    {
+      "label": "PlatformDot()",
+      "file_type": "code",
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L111",
+      "id": "pages_dashboardpage_platformdot",
+      "community": 6,
+      "norm_label": "platformdot()"
+    },
+    {
+      "label": "DashboardPage()",
+      "file_type": "code",
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L127",
+      "id": "pages_dashboardpage_dashboardpage",
+      "community": 6,
+      "norm_label": "dashboardpage()"
+    },
+    {
+      "label": "OnboardingPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/OnboardingPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_onboardingpage_jsx",
+      "community": 0,
+      "norm_label": "onboardingpage.jsx"
+    },
+    {
+      "label": "PLATFORMS",
+      "file_type": "code",
+      "source_file": "src/pages/OnboardingPage.jsx",
+      "source_location": "L4",
+      "id": "pages_onboardingpage_platforms",
+      "community": 0,
+      "norm_label": "platforms"
+    },
+    {
+      "label": "INDUSTRIES",
+      "file_type": "code",
+      "source_file": "src/pages/OnboardingPage.jsx",
+      "source_location": "L43",
+      "id": "pages_onboardingpage_industries",
+      "community": 0,
+      "norm_label": "industries"
+    },
+    {
+      "label": "PRESET_COLORS",
+      "file_type": "code",
+      "source_file": "src/pages/OnboardingPage.jsx",
+      "source_location": "L54",
+      "id": "pages_onboardingpage_preset_colors",
+      "community": 0,
+      "norm_label": "preset_colors"
+    },
+    {
+      "label": "TEMPLATES",
+      "file_type": "code",
+      "source_file": "src/pages/OnboardingPage.jsx",
+      "source_location": "L56",
+      "id": "pages_onboardingpage_templates",
+      "community": 0,
+      "norm_label": "templates"
+    },
+    {
+      "label": "StepCircle()",
+      "file_type": "code",
+      "source_file": "src/pages/OnboardingPage.jsx",
+      "source_location": "L63",
+      "id": "pages_onboardingpage_stepcircle",
+      "community": 0,
+      "norm_label": "stepcircle()"
+    },
+    {
+      "label": "OnboardingPage()",
+      "file_type": "code",
+      "source_file": "src/pages/OnboardingPage.jsx",
+      "source_location": "L99",
+      "id": "pages_onboardingpage_onboardingpage",
+      "community": 0,
+      "norm_label": "onboardingpage()"
+    },
+    {
+      "label": "BrandKitPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/BrandKitPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_brandkitpage_jsx",
+      "community": 10,
+      "norm_label": "brandkitpage.jsx"
+    },
+    {
+      "label": "INITIAL_COLORS",
+      "file_type": "code",
+      "source_file": "src/pages/BrandKitPage.jsx",
+      "source_location": "L5",
+      "id": "pages_brandkitpage_initial_colors",
+      "community": 10,
+      "norm_label": "initial_colors"
+    },
+    {
+      "label": "HEADING_FONTS",
+      "file_type": "code",
+      "source_file": "src/pages/BrandKitPage.jsx",
+      "source_location": "L13",
+      "id": "pages_brandkitpage_heading_fonts",
+      "community": 10,
+      "norm_label": "heading_fonts"
+    },
+    {
+      "label": "BODY_FONTS",
+      "file_type": "code",
+      "source_file": "src/pages/BrandKitPage.jsx",
+      "source_location": "L14",
+      "id": "pages_brandkitpage_body_fonts",
+      "community": 10,
+      "norm_label": "body_fonts"
+    },
+    {
+      "label": "TONE_PRESETS",
+      "file_type": "code",
+      "source_file": "src/pages/BrandKitPage.jsx",
+      "source_location": "L16",
+      "id": "pages_brandkitpage_tone_presets",
+      "community": 10,
+      "norm_label": "tone_presets"
+    },
+    {
+      "label": "ASPECT_OPTIONS",
+      "file_type": "code",
+      "source_file": "src/pages/BrandKitPage.jsx",
+      "source_location": "L25",
+      "id": "pages_brandkitpage_aspect_options",
+      "community": 10,
+      "norm_label": "aspect_options"
+    },
+    {
+      "label": "STYLE_OPTIONS",
+      "file_type": "code",
+      "source_file": "src/pages/BrandKitPage.jsx",
+      "source_location": "L26",
+      "id": "pages_brandkitpage_style_options",
+      "community": 10,
+      "norm_label": "style_options"
+    },
+    {
+      "label": "VOICE_OPTIONS",
+      "file_type": "code",
+      "source_file": "src/pages/BrandKitPage.jsx",
+      "source_location": "L27",
+      "id": "pages_brandkitpage_voice_options",
+      "community": 10,
+      "norm_label": "voice_options"
+    },
+    {
+      "label": "WATERMARK_OPTIONS",
+      "file_type": "code",
+      "source_file": "src/pages/BrandKitPage.jsx",
+      "source_location": "L28",
+      "id": "pages_brandkitpage_watermark_options",
+      "community": 10,
+      "norm_label": "watermark_options"
+    },
+    {
+      "label": "BrandKitPage()",
+      "file_type": "code",
+      "source_file": "src/pages/BrandKitPage.jsx",
+      "source_location": "L30",
+      "id": "pages_brandkitpage_brandkitpage",
+      "community": 10,
+      "norm_label": "brandkitpage()"
+    },
+    {
+      "label": "SocialAccountsPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/SocialAccountsPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_socialaccountspage_jsx",
+      "community": 0,
+      "norm_label": "socialaccountspage.jsx"
+    },
+    {
+      "label": "Sidebar()",
+      "file_type": "code",
+      "source_file": "src/pages/SocialAccountsPage.jsx",
+      "source_location": "L4",
+      "id": "pages_socialaccountspage_sidebar",
+      "community": 0,
+      "norm_label": "sidebar()"
+    },
+    {
+      "label": "PLATFORM_META",
+      "file_type": "code",
+      "source_file": "src/pages/SocialAccountsPage.jsx",
+      "source_location": "L122",
+      "id": "pages_socialaccountspage_platform_meta",
+      "community": 0,
+      "norm_label": "platform_meta"
+    },
+    {
+      "label": "Toast()",
+      "file_type": "code",
+      "source_file": "src/pages/SocialAccountsPage.jsx",
+      "source_location": "L153",
+      "id": "pages_socialaccountspage_toast",
+      "community": 0,
+      "norm_label": "toast()"
+    },
+    {
+      "label": "SocialAccountsPage()",
+      "file_type": "code",
+      "source_file": "src/pages/SocialAccountsPage.jsx",
+      "source_location": "L168",
+      "id": "pages_socialaccountspage_socialaccountspage",
+      "community": 0,
+      "norm_label": "socialaccountspage()"
+    },
+    {
+      "label": "AuthPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/AuthPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_authpage_jsx",
+      "community": 0,
+      "norm_label": "authpage.jsx"
+    },
+    {
+      "label": "showcaseItems",
+      "file_type": "code",
+      "source_file": "src/pages/AuthPage.jsx",
+      "source_location": "L4",
+      "id": "pages_authpage_showcaseitems",
+      "community": 0,
+      "norm_label": "showcaseitems"
+    },
+    {
+      "label": "GoogleIcon()",
+      "file_type": "code",
+      "source_file": "src/pages/AuthPage.jsx",
+      "source_location": "L11",
+      "id": "pages_authpage_googleicon",
+      "community": 0,
+      "norm_label": "googleicon()"
+    },
+    {
+      "label": "LogoLink()",
+      "file_type": "code",
+      "source_file": "src/pages/AuthPage.jsx",
+      "source_location": "L34",
+      "id": "pages_authpage_logolink",
+      "community": 0,
+      "norm_label": "logolink()"
+    },
+    {
+      "label": "ShowcaseCard()",
+      "file_type": "code",
+      "source_file": "src/pages/AuthPage.jsx",
+      "source_location": "L47",
+      "id": "pages_authpage_showcasecard",
+      "community": 0,
+      "norm_label": "showcasecard()"
+    },
+    {
+      "label": "getPasswordChecks()",
+      "file_type": "code",
+      "source_file": "src/pages/AuthPage.jsx",
+      "source_location": "L82",
+      "id": "pages_authpage_getpasswordchecks",
+      "community": 0,
+      "norm_label": "getpasswordchecks()"
+    },
+    {
+      "label": "strengthMeta()",
+      "file_type": "code",
+      "source_file": "src/pages/AuthPage.jsx",
+      "source_location": "L91",
+      "id": "pages_authpage_strengthmeta",
+      "community": 0,
+      "norm_label": "strengthmeta()"
+    },
+    {
+      "label": "AuthPage()",
+      "file_type": "code",
+      "source_file": "src/pages/AuthPage.jsx",
+      "source_location": "L97",
+      "id": "pages_authpage_authpage",
+      "community": 0,
+      "norm_label": "authpage()"
+    },
+    {
+      "label": "CalendarPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_calendarpage_jsx",
+      "community": 9,
+      "norm_label": "calendarpage.jsx"
+    },
+    {
+      "label": "TODAY",
+      "file_type": "code",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L5",
+      "id": "pages_calendarpage_today",
+      "community": 9,
+      "norm_label": "today"
+    },
+    {
+      "label": "PLATFORMS",
+      "file_type": "code",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L7",
+      "id": "pages_calendarpage_platforms",
+      "community": 9,
+      "norm_label": "platforms"
+    },
+    {
+      "label": "STATUS_STYLES",
+      "file_type": "code",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L14",
+      "id": "pages_calendarpage_status_styles",
+      "community": 9,
+      "norm_label": "status_styles"
+    },
+    {
+      "label": "MOCK_EVENTS",
+      "file_type": "code",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L42",
+      "id": "pages_calendarpage_mock_events",
+      "community": 9,
+      "norm_label": "mock_events"
+    },
+    {
+      "label": "sameCalendarDay()",
+      "file_type": "code",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L59",
+      "id": "pages_calendarpage_samecalendarday",
+      "community": 9,
+      "norm_label": "samecalendarday()"
+    },
+    {
+      "label": "buildMonthGrid()",
+      "file_type": "code",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L63",
+      "id": "pages_calendarpage_buildmonthgrid",
+      "community": 9,
+      "norm_label": "buildmonthgrid()"
+    },
+    {
+      "label": "startOfWeek()",
+      "file_type": "code",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L95",
+      "id": "pages_calendarpage_startofweek",
+      "community": 9,
+      "norm_label": "startofweek()"
+    },
+    {
+      "label": "addDays()",
+      "file_type": "code",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L103",
+      "id": "pages_calendarpage_adddays",
+      "community": 9,
+      "norm_label": "adddays()"
+    },
+    {
+      "label": "MONTH_NAMES",
+      "file_type": "code",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L109",
+      "id": "pages_calendarpage_month_names",
+      "community": 9,
+      "norm_label": "month_names"
+    },
+    {
+      "label": "Sidebar()",
+      "file_type": "code",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L124",
+      "id": "pages_calendarpage_sidebar",
+      "community": 9,
+      "norm_label": "sidebar()"
+    },
+    {
+      "label": "eventToDate()",
+      "file_type": "code",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L242",
+      "id": "pages_calendarpage_eventtodate",
+      "community": 9,
+      "norm_label": "eventtodate()"
+    },
+    {
+      "label": "CalendarPage()",
+      "file_type": "code",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L246",
+      "id": "pages_calendarpage_calendarpage",
+      "community": 1,
+      "norm_label": "calendarpage()"
+    },
+    {
+      "label": "BillingPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/BillingPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_billingpage_jsx",
+      "community": 1,
+      "norm_label": "billingpage.jsx"
+    },
+    {
+      "label": "PACKS",
+      "file_type": "code",
+      "source_file": "src/pages/BillingPage.jsx",
+      "source_location": "L5",
+      "id": "pages_billingpage_packs",
+      "community": 1,
+      "norm_label": "packs"
+    },
+    {
+      "label": "COST_REF",
+      "file_type": "code",
+      "source_file": "src/pages/BillingPage.jsx",
+      "source_location": "L12",
+      "id": "pages_billingpage_cost_ref",
+      "community": 1,
+      "norm_label": "cost_ref"
+    },
+    {
+      "label": "TXNS",
+      "file_type": "code",
+      "source_file": "src/pages/BillingPage.jsx",
+      "source_location": "L21",
+      "id": "pages_billingpage_txns",
+      "community": 1,
+      "norm_label": "txns"
+    },
+    {
+      "label": "TypeBadge()",
+      "file_type": "code",
+      "source_file": "src/pages/BillingPage.jsx",
+      "source_location": "L66",
+      "id": "pages_billingpage_typebadge",
+      "community": 1,
+      "norm_label": "typebadge()"
+    },
+    {
+      "label": "BillingPage()",
+      "file_type": "code",
+      "source_file": "src/pages/BillingPage.jsx",
+      "source_location": "L78",
+      "id": "pages_billingpage_billingpage",
+      "community": 1,
+      "norm_label": "billingpage()"
+    },
+    {
+      "label": "NotFoundPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/NotFoundPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_notfoundpage_jsx",
+      "community": 0,
+      "norm_label": "notfoundpage.jsx"
+    },
+    {
+      "label": "EMPTY_STATES",
+      "file_type": "code",
+      "source_file": "src/pages/NotFoundPage.jsx",
+      "source_location": "L3",
+      "id": "pages_notfoundpage_empty_states",
+      "community": 0,
+      "norm_label": "empty_states"
+    },
+    {
+      "label": "ACCENT_MAP",
+      "file_type": "code",
+      "source_file": "src/pages/NotFoundPage.jsx",
+      "source_location": "L66",
+      "id": "pages_notfoundpage_accent_map",
+      "community": 0,
+      "norm_label": "accent_map"
+    },
+    {
+      "label": "QUICK_LINKS",
+      "file_type": "code",
+      "source_file": "src/pages/NotFoundPage.jsx",
+      "source_location": "L99",
+      "id": "pages_notfoundpage_quick_links",
+      "community": 0,
+      "norm_label": "quick_links"
+    },
+    {
+      "label": "NotFoundPage()",
+      "file_type": "code",
+      "source_file": "src/pages/NotFoundPage.jsx",
+      "source_location": "L107",
+      "id": "pages_notfoundpage_notfoundpage",
+      "community": 0,
+      "norm_label": "notfoundpage()"
+    },
+    {
+      "label": "NotificationsPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/NotificationsPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_notificationspage_jsx",
+      "community": 1,
+      "norm_label": "notificationspage.jsx"
+    },
+    {
+      "label": "INITIAL_NOTIFICATIONS",
+      "file_type": "code",
+      "source_file": "src/pages/NotificationsPage.jsx",
+      "source_location": "L5",
+      "id": "pages_notificationspage_initial_notifications",
+      "community": 1,
+      "norm_label": "initial_notifications"
+    },
+    {
+      "label": "ACCENT_MAP",
+      "file_type": "code",
+      "source_file": "src/pages/NotificationsPage.jsx",
+      "source_location": "L125",
+      "id": "pages_notificationspage_accent_map",
+      "community": 1,
+      "norm_label": "accent_map"
+    },
+    {
+      "label": "FILTER_ITEMS",
+      "file_type": "code",
+      "source_file": "src/pages/NotificationsPage.jsx",
+      "source_location": "L133",
+      "id": "pages_notificationspage_filter_items",
+      "community": 1,
+      "norm_label": "filter_items"
+    },
+    {
+      "label": "NotificationsPage()",
+      "file_type": "code",
+      "source_file": "src/pages/NotificationsPage.jsx",
+      "source_location": "L141",
+      "id": "pages_notificationspage_notificationspage",
+      "community": 1,
+      "norm_label": "notificationspage()"
+    },
+    {
+      "label": "NotificationGroup()",
+      "file_type": "code",
+      "source_file": "src/pages/NotificationsPage.jsx",
+      "source_location": "L318",
+      "id": "pages_notificationspage_notificationgroup",
+      "community": 1,
+      "norm_label": "notificationgroup()"
+    },
+    {
+      "label": "NotificationItem()",
+      "file_type": "code",
+      "source_file": "src/pages/NotificationsPage.jsx",
+      "source_location": "L331",
+      "id": "pages_notificationspage_notificationitem",
+      "community": 1,
+      "norm_label": "notificationitem()"
+    },
+    {
+      "label": "PublishingPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/PublishingPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_publishingpage_jsx",
+      "community": 5,
+      "norm_label": "publishingpage.jsx"
+    },
+    {
+      "label": "PLATFORMS",
+      "file_type": "code",
+      "source_file": "src/pages/PublishingPage.jsx",
+      "source_location": "L4",
+      "id": "pages_publishingpage_platforms",
+      "community": 5,
+      "norm_label": "platforms"
+    },
+    {
+      "label": "ChevronLeftIcon()",
+      "file_type": "code",
+      "source_file": "src/pages/PublishingPage.jsx",
+      "source_location": "L43",
+      "id": "pages_publishingpage_chevronlefticon",
+      "community": 5,
+      "norm_label": "chevronlefticon()"
+    },
+    {
+      "label": "Toggle()",
+      "file_type": "code",
+      "source_file": "src/pages/PublishingPage.jsx",
+      "source_location": "L51",
+      "id": "pages_publishingpage_toggle",
+      "community": 5,
+      "norm_label": "toggle()"
+    },
+    {
+      "label": "PublishingPage()",
+      "file_type": "code",
+      "source_file": "src/pages/PublishingPage.jsx",
+      "source_location": "L72",
+      "id": "pages_publishingpage_publishingpage",
+      "community": 5,
+      "norm_label": "publishingpage()"
+    },
+    {
+      "label": "LandingPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/LandingPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_landingpage_jsx",
+      "community": 7,
+      "norm_label": "landingpage.jsx"
+    },
+    {
+      "label": "showcaseVideos",
+      "file_type": "code",
+      "source_file": "src/pages/LandingPage.jsx",
+      "source_location": "L4",
+      "id": "pages_landingpage_showcasevideos",
+      "community": 7,
+      "norm_label": "showcasevideos"
+    },
+    {
+      "label": "LogoMark()",
+      "file_type": "code",
+      "source_file": "src/pages/LandingPage.jsx",
+      "source_location": "L31",
+      "id": "pages_landingpage_logomark",
+      "community": 7,
+      "norm_label": "logomark()"
+    },
+    {
+      "label": "VideoCard()",
+      "file_type": "code",
+      "source_file": "src/pages/LandingPage.jsx",
+      "source_location": "L44",
+      "id": "pages_landingpage_videocard",
+      "community": 7,
+      "norm_label": "videocard()"
+    },
+    {
+      "label": "LandingPage()",
+      "file_type": "code",
+      "source_file": "src/pages/LandingPage.jsx",
+      "source_location": "L79",
+      "id": "pages_landingpage_landingpage",
+      "community": 7,
+      "norm_label": "landingpage()"
+    },
+    {
+      "label": "AnalyticsPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_analyticspage_jsx",
+      "community": 8,
+      "norm_label": "analyticspage.jsx"
+    },
+    {
+      "label": "SPARK()",
+      "file_type": "code",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L5",
+      "id": "pages_analyticspage_spark",
+      "community": 8,
+      "norm_label": "spark()"
+    },
+    {
+      "label": "Sparkline15()",
+      "file_type": "code",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L11",
+      "id": "pages_analyticspage_sparkline15",
+      "community": 8,
+      "norm_label": "sparkline15()"
+    },
+    {
+      "label": "LINE_POINTS",
+      "file_type": "code",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L35",
+      "id": "pages_analyticspage_line_points",
+      "community": 8,
+      "norm_label": "line_points"
+    },
+    {
+      "label": "APR_LABELS",
+      "file_type": "code",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L42",
+      "id": "pages_analyticspage_apr_labels",
+      "community": 8,
+      "norm_label": "apr_labels"
+    },
+    {
+      "label": "TOP_VIDEOS",
+      "file_type": "code",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L44",
+      "id": "pages_analyticspage_top_videos",
+      "community": 8,
+      "norm_label": "top_videos"
+    },
+    {
+      "label": "PLATFORM_DOT",
+      "file_type": "code",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L119",
+      "id": "pages_analyticspage_platform_dot",
+      "community": 8,
+      "norm_label": "platform_dot"
+    },
+    {
+      "label": "MONTHS",
+      "file_type": "code",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L126",
+      "id": "pages_analyticspage_months",
+      "community": 8,
+      "norm_label": "months"
+    },
+    {
+      "label": "ENG_STACK",
+      "file_type": "code",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L128",
+      "id": "pages_analyticspage_eng_stack",
+      "community": 8,
+      "norm_label": "eng_stack"
+    },
+    {
+      "label": "LineChart()",
+      "file_type": "code",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L134",
+      "id": "pages_analyticspage_linechart",
+      "community": 8,
+      "norm_label": "linechart()"
+    },
+    {
+      "label": "DonutChart()",
+      "file_type": "code",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L225",
+      "id": "pages_analyticspage_donutchart",
+      "community": 8,
+      "norm_label": "donutchart()"
+    },
+    {
+      "label": "AnalyticsPage()",
+      "file_type": "code",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L289",
+      "id": "pages_analyticspage_analyticspage",
+      "community": 8,
+      "norm_label": "analyticspage()"
+    },
+    {
+      "label": "ProgressPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/ProgressPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_progresspage_jsx",
+      "community": 5,
+      "norm_label": "progresspage.jsx"
+    },
+    {
+      "label": "STAGES",
+      "file_type": "code",
+      "source_file": "src/pages/ProgressPage.jsx",
+      "source_location": "L4",
+      "id": "pages_progresspage_stages",
+      "community": 5,
+      "norm_label": "stages"
+    },
+    {
+      "label": "FRAME_THRESHOLDS",
+      "file_type": "code",
+      "source_file": "src/pages/ProgressPage.jsx",
+      "source_location": "L13",
+      "id": "pages_progresspage_frame_thresholds",
+      "community": 5,
+      "norm_label": "frame_thresholds"
+    },
+    {
+      "label": "activeStageIndex()",
+      "file_type": "code",
+      "source_file": "src/pages/ProgressPage.jsx",
+      "source_location": "L16",
+      "id": "pages_progresspage_activestageindex",
+      "community": 5,
+      "norm_label": "activestageindex()"
+    },
+    {
+      "label": "framesLoadedCount()",
+      "file_type": "code",
+      "source_file": "src/pages/ProgressPage.jsx",
+      "source_location": "L26",
+      "id": "pages_progresspage_framesloadedcount",
+      "community": 5,
+      "norm_label": "framesloadedcount()"
+    },
+    {
+      "label": "ProgressPage()",
+      "file_type": "code",
+      "source_file": "src/pages/ProgressPage.jsx",
+      "source_location": "L30",
+      "id": "pages_progresspage_progresspage",
+      "community": 5,
+      "norm_label": "progresspage()"
+    },
+    {
+      "label": "ResultPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/ResultPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_resultpage_jsx",
+      "community": 5,
+      "norm_label": "resultpage.jsx"
+    },
+    {
+      "label": "PLATFORMS",
+      "file_type": "code",
+      "source_file": "src/pages/ResultPage.jsx",
+      "source_location": "L4",
+      "id": "pages_resultpage_platforms",
+      "community": 5,
+      "norm_label": "platforms"
+    },
+    {
+      "label": "DEFAULT_DESCRIPTIONS",
+      "file_type": "code",
+      "source_file": "src/pages/ResultPage.jsx",
+      "source_location": "L11",
+      "id": "pages_resultpage_default_descriptions",
+      "community": 5,
+      "norm_label": "default_descriptions"
+    },
+    {
+      "label": "INITIAL_TAGS",
+      "file_type": "code",
+      "source_file": "src/pages/ResultPage.jsx",
+      "source_location": "L21",
+      "id": "pages_resultpage_initial_tags",
+      "community": 5,
+      "norm_label": "initial_tags"
+    },
+    {
+      "label": "ChevronLeftIcon()",
+      "file_type": "code",
+      "source_file": "src/pages/ResultPage.jsx",
+      "source_location": "L30",
+      "id": "pages_resultpage_chevronlefticon",
+      "community": 5,
+      "norm_label": "chevronlefticon()"
+    },
+    {
+      "label": "PlayIcon()",
+      "file_type": "code",
+      "source_file": "src/pages/ResultPage.jsx",
+      "source_location": "L38",
+      "id": "pages_resultpage_playicon",
+      "community": 5,
+      "norm_label": "playicon()"
+    },
+    {
+      "label": "PauseIcon()",
+      "file_type": "code",
+      "source_file": "src/pages/ResultPage.jsx",
+      "source_location": "L46",
+      "id": "pages_resultpage_pauseicon",
+      "community": 5,
+      "norm_label": "pauseicon()"
+    },
+    {
+      "label": "ResultPage()",
+      "file_type": "code",
+      "source_file": "src/pages/ResultPage.jsx",
+      "source_location": "L54",
+      "id": "pages_resultpage_resultpage",
+      "community": 5,
+      "norm_label": "resultpage()"
+    },
+    {
+      "label": "VidifySidebar.jsx",
+      "file_type": "code",
+      "source_file": "src/components/VidifySidebar.jsx",
+      "source_location": "L1",
+      "id": "src_components_vidifysidebar_jsx",
+      "community": 1,
+      "norm_label": "vidifysidebar.jsx"
+    },
+    {
+      "label": "itemCls()",
+      "file_type": "code",
+      "source_file": "src/components/VidifySidebar.jsx",
+      "source_location": "L3",
+      "id": "components_vidifysidebar_itemcls",
+      "community": 1,
+      "norm_label": "itemcls()"
+    },
+    {
+      "label": "VidifySidebar()",
+      "file_type": "code",
+      "source_file": "src/components/VidifySidebar.jsx",
+      "source_location": "L11",
+      "id": "components_vidifysidebar_vidifysidebar",
+      "community": 1,
+      "norm_label": "vidifysidebar()"
+    },
+    {
+      "label": "f9f268e2-16fb-4a12-b528-0cb53fccd669.json",
+      "file_type": "code",
+      "source_file": ".antigravitycli/f9f268e2-16fb-4a12-b528-0cb53fccd669.json",
+      "source_location": "L1",
+      "id": "antigravitycli_f9f268e2_16fb_4a12_b528_0cb53fccd669_json",
+      "community": 13,
+      "norm_label": "f9f268e2-16fb-4a12-b528-0cb53fccd669.json"
+    },
+    {
+      "label": "id",
+      "file_type": "code",
+      "source_file": ".antigravitycli/f9f268e2-16fb-4a12-b528-0cb53fccd669.json",
+      "source_location": "L2",
+      "id": "antigravitycli_f9f268e2_16fb_4a12_b528_0cb53fccd669_id",
+      "community": 13,
+      "norm_label": "id"
+    },
+    {
+      "label": "name",
+      "file_type": "code",
+      "source_file": ".antigravitycli/f9f268e2-16fb-4a12-b528-0cb53fccd669.json",
+      "source_location": "L3",
+      "id": "antigravitycli_f9f268e2_16fb_4a12_b528_0cb53fccd669_name",
+      "community": 13,
+      "norm_label": "name"
+    },
+    {
+      "label": "projectResources",
+      "file_type": "code",
+      "source_file": ".antigravitycli/f9f268e2-16fb-4a12-b528-0cb53fccd669.json",
+      "source_location": "L4",
+      "id": "antigravitycli_f9f268e2_16fb_4a12_b528_0cb53fccd669_projectresources",
+      "community": 13,
+      "norm_label": "projectresources"
+    },
+    {
+      "label": "resources",
+      "file_type": "code",
+      "source_file": ".antigravitycli/f9f268e2-16fb-4a12-b528-0cb53fccd669.json",
+      "source_location": "L5",
+      "id": "antigravitycli_f9f268e2_16fb_4a12_b528_0cb53fccd669_projectresources_resources",
+      "community": 13,
+      "norm_label": "resources"
+    },
+    {
+      "label": "Secure OAuth 2.0 Integration",
+      "file_type": "rationale",
+      "source_file": "src/pages/SocialAccountsPage.jsx",
+      "source_location": "L203",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "pages_socialaccountspage_oauth2_integration",
+      "community": 0,
+      "norm_label": "secure oauth 2.0 integration"
+    },
+    {
+      "label": "AI Credit Consumption and Billing",
+      "file_type": "concept",
+      "source_file": "src/pages/BillingPage.jsx",
+      "source_location": "L12",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "pages_billingpage_credit_system",
+      "community": 1,
+      "norm_label": "ai credit consumption and billing"
+    },
+    {
+      "label": "Multi-Step Wizard Pattern",
+      "file_type": "rationale",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L71",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "pages_wizardpage_multistep_wizard_flow",
+      "community": 6,
+      "norm_label": "multi-step wizard pattern"
+    },
+    {
+      "label": "Antigravity Project Workspace Config",
+      "file_type": "document",
+      "source_file": ".antigravitycli/f9f268e2-16fb-4a12-b528-0cb53fccd669.json",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "_antigravitycli_f9f268e2_16fb_4a12_b528_0cb53fccd669_workspace",
+      "community": 16,
+      "norm_label": "antigravity project workspace config"
+    },
+    {
+      "label": "Vidify Frontend Overview",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_overview",
+      "community": 7,
+      "norm_label": "vidify frontend overview"
+    },
+    {
+      "label": "Frontend Development Agent Rules",
+      "file_type": "document",
+      "source_file": "AGENT.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "agent_rules",
+      "community": 7,
+      "norm_label": "frontend development agent rules"
+    },
+    {
+      "label": "Vite Entry HTML",
+      "file_type": "code",
+      "source_file": "index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "index_root",
+      "community": 17,
+      "norm_label": "vite entry html"
+    },
+    {
+      "label": "Full-Stack Orchestration Skill",
+      "file_type": "rationale",
+      "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "full_stack_orchestration_full_stack_feature_skill_main",
+      "community": 18,
+      "norm_label": "full-stack orchestration skill"
+    },
+    {
+      "label": "TypeScript Pro Skill",
+      "file_type": "rationale",
+      "source_file": ".agent/skills/typescript-pro/SKILL.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "typescript_pro_skill_main",
+      "community": 19,
+      "norm_label": "typescript pro skill"
+    },
+    {
+      "label": "API Design Principles Skill",
+      "file_type": "rationale",
+      "source_file": ".agent/skills/api-design-principles/SKILL.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "api_design_principles_skill_main",
+      "community": 12,
+      "norm_label": "api design principles skill"
+    },
+    {
+      "label": "API Design Implementation Playbook",
+      "file_type": "rationale",
+      "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "resources_implementation_playbook_apidesign",
+      "community": 12,
+      "norm_label": "api design implementation playbook"
+    },
+    {
+      "label": "API Design Checklist",
+      "file_type": "rationale",
+      "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "assets_api_design_checklist_main",
+      "community": 12,
+      "norm_label": "api design checklist"
+    },
+    {
+      "label": "REST API Best Practices",
+      "file_type": "rationale",
+      "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "references_rest_best_practices_main",
+      "community": 12,
+      "norm_label": "rest api best practices"
+    },
+    {
+      "label": "GraphQL Schema Design Patterns",
+      "file_type": "rationale",
+      "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "references_graphql_schema_design_main",
+      "community": 12,
+      "norm_label": "graphql schema design patterns"
+    },
+    {
+      "label": "Next.js App Router Patterns Skill",
+      "file_type": "rationale",
+      "source_file": ".agent/skills/nextjs-app-router-patterns/SKILL.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "nextjs_app_router_patterns_skill_main",
+      "community": 12,
+      "norm_label": "next.js app router patterns skill"
+    },
+    {
+      "label": "Next.js App Router Patterns Playbook",
+      "file_type": "rationale",
+      "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "resources_implementation_playbook_nextjs",
+      "community": 12,
+      "norm_label": "next.js app router patterns playbook"
+    },
+    {
+      "label": "Security Auditor Skill",
+      "file_type": "rationale",
+      "source_file": ".agent/skills/security-auditor/SKILL.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "security_auditor_skill_main",
+      "community": 20,
+      "norm_label": "security auditor skill"
+    },
+    {
+      "label": "Graphify Workflow",
+      "file_type": "concept",
+      "source_file": ".agents/workflows/graphify.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "workflows_graphify_main",
+      "community": 15,
+      "norm_label": "graphify workflow"
+    },
+    {
+      "label": "Graphify Project Rule",
+      "file_type": "concept",
+      "source_file": ".agents/rules/graphify.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "rules_graphify_main",
+      "community": 15,
+      "norm_label": "graphify project rule"
+    },
+    {
+      "label": "Hero Image",
+      "file_type": "image",
+      "source_file": "src/assets/hero.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "assets_hero_image",
+      "community": 14,
+      "norm_label": "hero image"
+    },
+    {
+      "label": "Isometric Stacked Layers Representation",
+      "file_type": "concept",
+      "source_file": "src/assets/hero.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "hero_isometric_layers",
+      "community": 14,
+      "norm_label": "isometric stacked layers representation"
+    },
+    {
+      "label": "Vite Logo",
+      "file_type": "image",
+      "source_file": "src/assets/vite.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "assets_vite_logo",
+      "community": 21,
+      "norm_label": "vite logo"
+    },
+    {
+      "label": "React Logo",
+      "file_type": "image",
+      "source_file": "src/assets/react.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "assets_react_logo",
+      "community": 22,
+      "norm_label": "react logo"
+    },
+    {
+      "label": "Favicon",
+      "file_type": "image",
+      "source_file": "public/favicon.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "public_favicon",
+      "community": 23,
+      "norm_label": "favicon"
+    },
+    {
+      "label": "Icons Sheet",
+      "file_type": "image",
+      "source_file": "public/icons.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "public_icons",
+      "community": 11,
+      "norm_label": "icons sheet"
+    },
+    {
+      "label": "Bluesky Icon",
+      "file_type": "image",
+      "source_file": "public/icons.svg",
+      "source_location": "L2",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "public_icons_bluesky_icon",
+      "community": 11,
+      "norm_label": "bluesky icon"
+    },
+    {
+      "label": "Discord Icon",
+      "file_type": "image",
+      "source_file": "public/icons.svg",
+      "source_location": "L6",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "public_icons_discord_icon",
+      "community": 11,
+      "norm_label": "discord icon"
+    },
+    {
+      "label": "Documentation Icon",
+      "file_type": "image",
+      "source_file": "public/icons.svg",
+      "source_location": "L9",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "public_icons_documentation_icon",
+      "community": 11,
+      "norm_label": "documentation icon"
+    },
+    {
+      "label": "Github Icon",
+      "file_type": "image",
+      "source_file": "public/icons.svg",
+      "source_location": "L14",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "public_icons_github_icon",
+      "community": 11,
+      "norm_label": "github icon"
+    },
+    {
+      "label": "Social Icon",
+      "file_type": "image",
+      "source_file": "public/icons.svg",
+      "source_location": "L17",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "public_icons_social_icon",
+      "community": 11,
+      "norm_label": "social icon"
+    },
+    {
+      "label": "X Icon",
+      "file_type": "image",
+      "source_file": "public/icons.svg",
+      "source_location": "L21",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "public_icons_x_icon",
+      "community": 11,
+      "norm_label": "x icon"
+    }
+  ],
+  "links": [
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "vite.config.js",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "vite_config_js",
+      "target": "package_json"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "package_json",
+      "target": "admart_frontend_package_name",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "package_json",
+      "target": "admart_frontend_package_private",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "package_json",
+      "target": "admart_frontend_package_version",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "package_json",
+      "target": "admart_frontend_package_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "package_json",
+      "target": "admart_frontend_package_scripts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "package_json",
+      "target": "admart_frontend_package_dependencies",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "package_json",
+      "target": "admart_frontend_package_devdependencies",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "eslint.config.js",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "eslint_config_js",
+      "target": "package_json"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "admart_frontend_package_scripts",
+      "target": "admart_frontend_package_scripts_dev",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "admart_frontend_package_scripts",
+      "target": "admart_frontend_package_scripts_build",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "admart_frontend_package_scripts",
+      "target": "admart_frontend_package_scripts_lint",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "admart_frontend_package_scripts",
+      "target": "admart_frontend_package_scripts_preview",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "admart_frontend_package_dependencies",
+      "target": "admart_frontend_package_dependencies_tailwindcss_vite",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "admart_frontend_package_dependencies",
+      "target": "admart_frontend_package_dependencies_react",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "admart_frontend_package_dependencies",
+      "target": "admart_frontend_package_dependencies_react_dom",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "admart_frontend_package_dependencies",
+      "target": "admart_frontend_package_dependencies_react_router_dom",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "admart_frontend_package_dependencies",
+      "target": "admart_frontend_package_dependencies_tailwindcss",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L20",
+      "weight": 1.0,
+      "source": "admart_frontend_package_devdependencies",
+      "target": "admart_frontend_package_devdependencies_eslint_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "admart_frontend_package_devdependencies",
+      "target": "admart_frontend_package_devdependencies_types_react",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L22",
+      "weight": 1.0,
+      "source": "admart_frontend_package_devdependencies",
+      "target": "admart_frontend_package_devdependencies_types_react_dom",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "admart_frontend_package_devdependencies",
+      "target": "admart_frontend_package_devdependencies_vitejs_plugin_react",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L24",
+      "weight": 1.0,
+      "source": "admart_frontend_package_devdependencies",
+      "target": "admart_frontend_package_devdependencies_eslint",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "admart_frontend_package_devdependencies",
+      "target": "admart_frontend_package_devdependencies_eslint_plugin_react_hooks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L26",
+      "weight": 1.0,
+      "source": "admart_frontend_package_devdependencies",
+      "target": "admart_frontend_package_devdependencies_eslint_plugin_react_refresh",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "admart_frontend_package_devdependencies",
+      "target": "admart_frontend_package_devdependencies_globals",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "admart_frontend_package_devdependencies",
+      "target": "admart_frontend_package_devdependencies_vite",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "agent_skills_api_design_principles_assets_rest_api_template_py",
+      "target": "enum",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "agent_skills_api_design_principles_assets_rest_api_template_py",
+      "target": "assets_rest_api_template_userstatus",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L43",
+      "weight": 1.0,
+      "source": "agent_skills_api_design_principles_assets_rest_api_template_py",
+      "target": "assets_rest_api_template_userbase",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L48",
+      "weight": 1.0,
+      "source": "agent_skills_api_design_principles_assets_rest_api_template_py",
+      "target": "assets_rest_api_template_usercreate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L51",
+      "weight": 1.0,
+      "source": "agent_skills_api_design_principles_assets_rest_api_template_py",
+      "target": "assets_rest_api_template_userupdate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L56",
+      "weight": 1.0,
+      "source": "agent_skills_api_design_principles_assets_rest_api_template_py",
+      "target": "assets_rest_api_template_user",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L64",
+      "weight": 1.0,
+      "source": "agent_skills_api_design_principles_assets_rest_api_template_py",
+      "target": "assets_rest_api_template_paginationparams",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L68",
+      "weight": 1.0,
+      "source": "agent_skills_api_design_principles_assets_rest_api_template_py",
+      "target": "assets_rest_api_template_paginatedresponse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L76",
+      "weight": 1.0,
+      "source": "agent_skills_api_design_principles_assets_rest_api_template_py",
+      "target": "assets_rest_api_template_errordetail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L81",
+      "weight": 1.0,
+      "source": "agent_skills_api_design_principles_assets_rest_api_template_py",
+      "target": "assets_rest_api_template_errorresponse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L87",
+      "weight": 1.0,
+      "source": "agent_skills_api_design_principles_assets_rest_api_template_py",
+      "target": "assets_rest_api_template_http_exception_handler",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L99",
+      "weight": 1.0,
+      "source": "agent_skills_api_design_principles_assets_rest_api_template_py",
+      "target": "assets_rest_api_template_list_users",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L129",
+      "weight": 1.0,
+      "source": "agent_skills_api_design_principles_assets_rest_api_template_py",
+      "target": "assets_rest_api_template_create_user",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L142",
+      "weight": 1.0,
+      "source": "agent_skills_api_design_principles_assets_rest_api_template_py",
+      "target": "assets_rest_api_template_get_user",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L161",
+      "weight": 1.0,
+      "source": "agent_skills_api_design_principles_assets_rest_api_template_py",
+      "target": "assets_rest_api_template_update_user",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L175",
+      "weight": 1.0,
+      "source": "agent_skills_api_design_principles_assets_rest_api_template_py",
+      "target": "assets_rest_api_template_delete_user",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "assets_rest_api_template_rationale_1",
+      "target": "agent_skills_api_design_principles_assets_rest_api_template_py",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "assets_rest_api_template_userstatus",
+      "target": "str",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "assets_rest_api_template_userstatus",
+      "target": "enum",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L110",
+      "weight": 1.0,
+      "source": "assets_rest_api_template_list_users",
+      "target": "str",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L43",
+      "weight": 1.0,
+      "source": "assets_rest_api_template_userbase",
+      "target": "basemodel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L48",
+      "weight": 1.0,
+      "source": "assets_rest_api_template_usercreate",
+      "target": "assets_rest_api_template_userbase",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L56",
+      "weight": 1.0,
+      "source": "assets_rest_api_template_user",
+      "target": "assets_rest_api_template_userbase",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L51",
+      "weight": 1.0,
+      "source": "assets_rest_api_template_userupdate",
+      "target": "basemodel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L64",
+      "weight": 1.0,
+      "source": "assets_rest_api_template_paginationparams",
+      "target": "basemodel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L68",
+      "weight": 1.0,
+      "source": "assets_rest_api_template_paginatedresponse",
+      "target": "basemodel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L76",
+      "weight": 1.0,
+      "source": "assets_rest_api_template_errordetail",
+      "target": "basemodel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L81",
+      "weight": 1.0,
+      "source": "assets_rest_api_template_errorresponse",
+      "target": "basemodel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L109",
+      "weight": 1.0,
+      "source": "assets_rest_api_template_list_users",
+      "target": "assets_rest_api_template_user",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L132",
+      "weight": 1.0,
+      "source": "assets_rest_api_template_create_user",
+      "target": "assets_rest_api_template_user",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L151",
+      "weight": 1.0,
+      "source": "assets_rest_api_template_get_user",
+      "target": "assets_rest_api_template_user",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L120",
+      "weight": 1.0,
+      "source": "assets_rest_api_template_list_users",
+      "target": "assets_rest_api_template_paginatedresponse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L90",
+      "weight": 1.0,
+      "source": "assets_rest_api_template_http_exception_handler",
+      "target": "assets_rest_api_template_errorresponse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L105",
+      "weight": 1.0,
+      "source": "assets_rest_api_template_rationale_105",
+      "target": "assets_rest_api_template_list_users",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "src/pages/AuthPage.jsx",
+      "source_location": "L97",
+      "weight": 1.0,
+      "source": "pages_authpage_authpage",
+      "target": "assets_rest_api_template_create_user"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "src/pages/OnboardingPage.jsx",
+      "source_location": "L99",
+      "weight": 1.0,
+      "source": "pages_onboardingpage_onboardingpage",
+      "target": "assets_rest_api_template_create_user"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L164",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "assets_rest_api_template_update_user",
+      "target": "assets_rest_api_template_get_user"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L177",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "assets_rest_api_template_delete_user",
+      "target": "assets_rest_api_template_get_user"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
+      "source_location": "L162",
+      "weight": 1.0,
+      "source": "assets_rest_api_template_rationale_162",
+      "target": "assets_rest_api_template_update_user",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "src/pages/SettingsPage.jsx",
+      "source_location": "L88",
+      "weight": 1.0,
+      "source": "pages_settingspage_settingspage",
+      "target": "assets_rest_api_template_update_user"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_landingpage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_authpage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_onboardingpage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_dashboardpage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_wizardpage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_progresspage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_resultpage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_publishingpage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_librarypage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_templatespage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_socialaccountspage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_calendarpage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_analyticspage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_billingpage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_settingspage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_brandkitpage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_notificationspage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_imagegenpage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L20",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_notfoundpage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L22",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_app",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_app_jsx"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/App.jsx",
+      "source_location": "L26",
+      "weight": 1.0,
+      "source": "src_app_app",
+      "target": "pages_authpage_authpage"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/App.jsx",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "src_app_app",
+      "target": "pages_onboardingpage_onboardingpage"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/App.jsx",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "src_app_app",
+      "target": "pages_dashboardpage_dashboardpage"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/App.jsx",
+      "source_location": "L29",
+      "weight": 1.0,
+      "source": "src_app_app",
+      "target": "pages_wizardpage_wizardpage"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/App.jsx",
+      "source_location": "L33",
+      "weight": 1.0,
+      "source": "src_app_app",
+      "target": "pages_librarypage_librarypage"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/App.jsx",
+      "source_location": "L34",
+      "weight": 1.0,
+      "source": "src_app_app",
+      "target": "pages_templatespage_templatespage"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/App.jsx",
+      "source_location": "L35",
+      "weight": 1.0,
+      "source": "src_app_app",
+      "target": "pages_socialaccountspage_socialaccountspage"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/App.jsx",
+      "source_location": "L36",
+      "weight": 1.0,
+      "source": "src_app_app",
+      "target": "pages_calendarpage_calendarpage"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/App.jsx",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "src_app_app",
+      "target": "pages_billingpage_billingpage"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/App.jsx",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "src_app_app",
+      "target": "pages_settingspage_settingspage"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/App.jsx",
+      "source_location": "L40",
+      "weight": 1.0,
+      "source": "src_app_app",
+      "target": "pages_brandkitpage_brandkitpage"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/App.jsx",
+      "source_location": "L41",
+      "weight": 1.0,
+      "source": "src_app_app",
+      "target": "pages_notificationspage_notificationspage"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/App.jsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_app_app",
+      "target": "pages_imagegenpage_imagegenpage"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/App.jsx",
+      "source_location": "L43",
+      "weight": 1.0,
+      "source": "src_app_app",
+      "target": "pages_notfoundpage_notfoundpage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "src_utils_generatedassets_js",
+      "target": "utils_generatedassets_parseassets",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "src_utils_generatedassets_js",
+      "target": "utils_generatedassets_notifyassetschanged",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L20",
+      "weight": 1.0,
+      "source": "src_utils_generatedassets_js",
+      "target": "utils_generatedassets_getsavedassets",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "src_utils_generatedassets_js",
+      "target": "utils_generatedassets_savegeneratedasset",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L51",
+      "weight": 1.0,
+      "source": "src_utils_generatedassets_js",
+      "target": "utils_generatedassets_formatassetdate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L62",
+      "weight": 1.0,
+      "source": "src_utils_generatedassets_js",
+      "target": "utils_generatedassets_slugify",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L71",
+      "weight": 1.0,
+      "source": "src_utils_generatedassets_js",
+      "target": "utils_generatedassets_downloadfilename",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L75",
+      "weight": 1.0,
+      "source": "src_utils_generatedassets_js",
+      "target": "utils_generatedassets_downloadasset",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "src_utils_generatedassets_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_pages_dashboardpage_jsx",
+      "target": "src_utils_generatedassets_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L169",
+      "weight": 1.0,
+      "source": "pages_dashboardpage_dashboardpage",
+      "target": "src_utils_generatedassets_js"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L22",
+      "weight": 1.0,
+      "source": "utils_generatedassets_getsavedassets",
+      "target": "utils_generatedassets_parseassets",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L47",
+      "weight": 1.0,
+      "source": "utils_generatedassets_savegeneratedasset",
+      "target": "utils_generatedassets_notifyassetschanged",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L44",
+      "weight": 1.0,
+      "source": "utils_generatedassets_savegeneratedasset",
+      "target": "utils_generatedassets_getsavedassets",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_pages_dashboardpage_jsx",
+      "target": "utils_generatedassets_getsavedassets",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L134",
+      "weight": 1.0,
+      "source": "pages_dashboardpage_dashboardpage",
+      "target": "utils_generatedassets_getsavedassets"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "utils_generatedassets_savegeneratedasset",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L439",
+      "weight": 1.0,
+      "source": "pages_wizardpage_wizardpage",
+      "target": "utils_generatedassets_savegeneratedasset"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_pages_dashboardpage_jsx",
+      "target": "utils_generatedassets_formatassetdate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L609",
+      "weight": 1.0,
+      "source": "pages_dashboardpage_dashboardpage",
+      "target": "utils_generatedassets_formatassetdate"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L72",
+      "weight": 1.0,
+      "source": "utils_generatedassets_downloadfilename",
+      "target": "utils_generatedassets_slugify",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/generatedAssets.js",
+      "source_location": "L89",
+      "weight": 1.0,
+      "source": "utils_generatedassets_downloadasset",
+      "target": "utils_generatedassets_downloadfilename",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "utils_generatedassets_downloadfilename",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_pages_dashboardpage_jsx",
+      "target": "utils_generatedassets_downloadfilename",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L422",
+      "weight": 1.0,
+      "source": "pages_wizardpage_wizardpage",
+      "target": "utils_generatedassets_downloadfilename"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L181",
+      "weight": 1.0,
+      "source": "pages_dashboardpage_dashboardpage",
+      "target": "utils_generatedassets_downloadfilename"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "utils_generatedassets_downloadasset",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_pages_dashboardpage_jsx",
+      "target": "utils_generatedassets_downloadasset",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L422",
+      "weight": 1.0,
+      "source": "pages_wizardpage_wizardpage",
+      "target": "utils_generatedassets_downloadasset"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L181",
+      "weight": 1.0,
+      "source": "pages_dashboardpage_dashboardpage",
+      "target": "utils_generatedassets_downloadasset"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/TemplatesPage.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_pages_templatespage_jsx",
+      "target": "pages_templatespage_categories",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/TemplatesPage.jsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "src_pages_templatespage_jsx",
+      "target": "pages_templatespage_templates",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/TemplatesPage.jsx",
+      "source_location": "L223",
+      "weight": 1.0,
+      "source": "src_pages_templatespage_jsx",
+      "target": "pages_templatespage_category_labels",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/TemplatesPage.jsx",
+      "source_location": "L233",
+      "weight": 1.0,
+      "source": "src_pages_templatespage_jsx",
+      "target": "pages_templatespage_platformdots",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/TemplatesPage.jsx",
+      "source_location": "L249",
+      "weight": 1.0,
+      "source": "src_pages_templatespage_jsx",
+      "target": "pages_templatespage_stars",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/TemplatesPage.jsx",
+      "source_location": "L262",
+      "weight": 1.0,
+      "source": "src_pages_templatespage_jsx",
+      "target": "pages_templatespage_sidebar",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/TemplatesPage.jsx",
+      "source_location": "L380",
+      "weight": 1.0,
+      "source": "src_pages_templatespage_jsx",
+      "target": "pages_templatespage_templatespage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/pages/TemplatesPage.jsx",
+      "source_location": "L262",
+      "weight": 1.0,
+      "source": "pages_templatespage_sidebar",
+      "target": "pages_socialaccountspage_sidebar"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L288",
+      "weight": 1.0,
+      "source": "pages_dashboardpage_dashboardpage",
+      "target": "pages_templatespage_templatespage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/VidifySidebar.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "components_vidifysidebar_vidifysidebar",
+      "target": "pages_templatespage_templatespage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/LibraryPage.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_pages_librarypage_jsx",
+      "target": "pages_librarypage_mock_videos",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/LibraryPage.jsx",
+      "source_location": "L88",
+      "weight": 1.0,
+      "source": "src_pages_librarypage_jsx",
+      "target": "pages_librarypage_platform_dot",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/LibraryPage.jsx",
+      "source_location": "L95",
+      "weight": 1.0,
+      "source": "src_pages_librarypage_jsx",
+      "target": "pages_librarypage_parsedurationmmss",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/LibraryPage.jsx",
+      "source_location": "L101",
+      "weight": 1.0,
+      "source": "src_pages_librarypage_jsx",
+      "target": "pages_librarypage_parseviews",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/LibraryPage.jsx",
+      "source_location": "L108",
+      "weight": 1.0,
+      "source": "src_pages_librarypage_jsx",
+      "target": "pages_librarypage_status_styles",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/LibraryPage.jsx",
+      "source_location": "L116",
+      "weight": 1.0,
+      "source": "src_pages_librarypage_jsx",
+      "target": "pages_librarypage_logomark",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/LibraryPage.jsx",
+      "source_location": "L127",
+      "weight": 1.0,
+      "source": "src_pages_librarypage_jsx",
+      "target": "pages_librarypage_searchicon",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/LibraryPage.jsx",
+      "source_location": "L136",
+      "weight": 1.0,
+      "source": "src_pages_librarypage_jsx",
+      "target": "pages_librarypage_navlinkclass",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/LibraryPage.jsx",
+      "source_location": "L142",
+      "weight": 1.0,
+      "source": "src_pages_librarypage_jsx",
+      "target": "pages_librarypage_librarypage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/LibraryPage.jsx",
+      "source_location": "L214",
+      "weight": 1.0,
+      "source": "pages_librarypage_librarypage",
+      "target": "pages_librarypage_navlinkclass",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L271",
+      "weight": 1.0,
+      "source": "pages_dashboardpage_dashboardpage",
+      "target": "pages_librarypage_librarypage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/LandingPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_landingpage_landingpage",
+      "target": "pages_librarypage_librarypage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/VidifySidebar.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "components_vidifysidebar_vidifysidebar",
+      "target": "pages_librarypage_librarypage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_input_tabs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_suggestions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L24",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_image_suggestions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L33",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_templates",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_aspects",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L49",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_resolutions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L55",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_styles",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L57",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_video_models",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L63",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_image_models",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L69",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_platforms",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L71",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_step_labels",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L73",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_api_base_url",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L75",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_sleep",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L79",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_resolveapiurl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L87",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_readjson",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L95",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_fetchwithtimeout",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L114",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_starttextimage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L129",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_gettextimagestatus",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L140",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_generatetextimage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L173",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_stepprogress",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L220",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_uploaddropzone",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L254",
+      "weight": 1.0,
+      "source": "src_pages_wizardpage_jsx",
+      "target": "pages_wizardpage_wizardpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L153",
+      "weight": 1.0,
+      "source": "pages_wizardpage_generatetextimage",
+      "target": "pages_wizardpage_sleep",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L160",
+      "weight": 1.0,
+      "source": "pages_wizardpage_generatetextimage",
+      "target": "pages_wizardpage_resolveapiurl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L120",
+      "weight": 1.0,
+      "source": "pages_wizardpage_starttextimage",
+      "target": "pages_wizardpage_readjson",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L131",
+      "weight": 1.0,
+      "source": "pages_wizardpage_gettextimagestatus",
+      "target": "pages_wizardpage_readjson",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L115",
+      "weight": 1.0,
+      "source": "pages_wizardpage_starttextimage",
+      "target": "pages_wizardpage_fetchwithtimeout",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L130",
+      "weight": 1.0,
+      "source": "pages_wizardpage_gettextimagestatus",
+      "target": "pages_wizardpage_fetchwithtimeout",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L142",
+      "weight": 1.0,
+      "source": "pages_wizardpage_generatetextimage",
+      "target": "pages_wizardpage_starttextimage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L154",
+      "weight": 1.0,
+      "source": "pages_wizardpage_generatetextimage",
+      "target": "pages_wizardpage_gettextimagestatus",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L140",
+      "weight": 1.0,
+      "source": "pages_wizardpage_generatetextimage",
+      "target": "pages_imagegenpage_imagegenpage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L265",
+      "weight": 1.0,
+      "source": "pages_dashboardpage_dashboardpage",
+      "target": "pages_wizardpage_wizardpage"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/WizardPage.jsx",
+      "source_location": "L254",
+      "weight": 1.0,
+      "source": "pages_wizardpage_wizardpage",
+      "target": "pages_wizardpage_multistep_wizard_flow"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/ProgressPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_progresspage_progresspage",
+      "target": "pages_wizardpage_wizardpage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/VidifySidebar.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "components_vidifysidebar_vidifysidebar",
+      "target": "pages_wizardpage_wizardpage"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ImageGenPage.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_pages_imagegenpage_jsx",
+      "target": "src_components_vidifysidebar_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ImageGenPage.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_pages_imagegenpage_jsx",
+      "target": "pages_imagegenpage_models",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ImageGenPage.jsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "src_pages_imagegenpage_jsx",
+      "target": "pages_imagegenpage_sizes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ImageGenPage.jsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "src_pages_imagegenpage_jsx",
+      "target": "pages_imagegenpage_styles",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ImageGenPage.jsx",
+      "source_location": "L29",
+      "weight": 1.0,
+      "source": "src_pages_imagegenpage_jsx",
+      "target": "pages_imagegenpage_image_counts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ImageGenPage.jsx",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "src_pages_imagegenpage_jsx",
+      "target": "pages_imagegenpage_placeholder_gradients",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ImageGenPage.jsx",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "src_pages_imagegenpage_jsx",
+      "target": "pages_imagegenpage_history_gradients",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ImageGenPage.jsx",
+      "source_location": "L49",
+      "weight": 1.0,
+      "source": "src_pages_imagegenpage_jsx",
+      "target": "pages_imagegenpage_imagegenpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/VidifySidebar.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "components_vidifysidebar_vidifysidebar",
+      "target": "pages_imagegenpage_imagegenpage"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/SettingsPage.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_pages_settingspage_jsx",
+      "target": "src_components_vidifysidebar_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/SettingsPage.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_pages_settingspage_jsx",
+      "target": "pages_settingspage_initial",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/SettingsPage.jsx",
+      "source_location": "L35",
+      "weight": 1.0,
+      "source": "src_pages_settingspage_jsx",
+      "target": "pages_settingspage_team",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/SettingsPage.jsx",
+      "source_location": "L59",
+      "weight": 1.0,
+      "source": "src_pages_settingspage_jsx",
+      "target": "pages_settingspage_tabs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/SettingsPage.jsx",
+      "source_location": "L67",
+      "weight": 1.0,
+      "source": "src_pages_settingspage_jsx",
+      "target": "pages_settingspage_toggle",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/SettingsPage.jsx",
+      "source_location": "L88",
+      "weight": 1.0,
+      "source": "src_pages_settingspage_jsx",
+      "target": "pages_settingspage_settingspage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L354",
+      "weight": 1.0,
+      "source": "pages_dashboardpage_dashboardpage",
+      "target": "pages_settingspage_settingspage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/LandingPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_landingpage_landingpage",
+      "target": "pages_settingspage_settingspage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/VidifySidebar.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "components_vidifysidebar_vidifysidebar",
+      "target": "pages_settingspage_settingspage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "src_pages_dashboardpage_jsx",
+      "target": "pages_dashboardpage_filters",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "src_pages_dashboardpage_jsx",
+      "target": "pages_dashboardpage_sparklines",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L20",
+      "weight": 1.0,
+      "source": "src_pages_dashboardpage_jsx",
+      "target": "pages_dashboardpage_videos",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L71",
+      "weight": 1.0,
+      "source": "src_pages_dashboardpage_jsx",
+      "target": "pages_dashboardpage_sparkline",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L93",
+      "weight": 1.0,
+      "source": "src_pages_dashboardpage_jsx",
+      "target": "pages_dashboardpage_statusbadge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L111",
+      "weight": 1.0,
+      "source": "src_pages_dashboardpage_jsx",
+      "target": "pages_dashboardpage_platformdot",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L127",
+      "weight": 1.0,
+      "source": "src_pages_dashboardpage_jsx",
+      "target": "pages_dashboardpage_dashboardpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/OnboardingPage.jsx",
+      "source_location": "L129",
+      "weight": 1.0,
+      "source": "pages_onboardingpage_onboardingpage",
+      "target": "pages_dashboardpage_dashboardpage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L304",
+      "weight": 1.0,
+      "source": "pages_dashboardpage_dashboardpage",
+      "target": "pages_calendarpage_calendarpage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L310",
+      "weight": 1.0,
+      "source": "pages_dashboardpage_dashboardpage",
+      "target": "pages_socialaccountspage_socialaccountspage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/DashboardPage.jsx",
+      "source_location": "L348",
+      "weight": 1.0,
+      "source": "pages_dashboardpage_dashboardpage",
+      "target": "pages_billingpage_billingpage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/PublishingPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_publishingpage_publishingpage",
+      "target": "pages_dashboardpage_dashboardpage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/LandingPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_landingpage_landingpage",
+      "target": "pages_dashboardpage_dashboardpage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_analyticspage_analyticspage",
+      "target": "pages_dashboardpage_dashboardpage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/ProgressPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_progresspage_progresspage",
+      "target": "pages_dashboardpage_dashboardpage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/ResultPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_resultpage_resultpage",
+      "target": "pages_dashboardpage_dashboardpage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/VidifySidebar.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "components_vidifysidebar_vidifysidebar",
+      "target": "pages_dashboardpage_dashboardpage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/OnboardingPage.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_pages_onboardingpage_jsx",
+      "target": "pages_onboardingpage_platforms",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/OnboardingPage.jsx",
+      "source_location": "L43",
+      "weight": 1.0,
+      "source": "src_pages_onboardingpage_jsx",
+      "target": "pages_onboardingpage_industries",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/OnboardingPage.jsx",
+      "source_location": "L54",
+      "weight": 1.0,
+      "source": "src_pages_onboardingpage_jsx",
+      "target": "pages_onboardingpage_preset_colors",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/OnboardingPage.jsx",
+      "source_location": "L56",
+      "weight": 1.0,
+      "source": "src_pages_onboardingpage_jsx",
+      "target": "pages_onboardingpage_templates",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/OnboardingPage.jsx",
+      "source_location": "L63",
+      "weight": 1.0,
+      "source": "src_pages_onboardingpage_jsx",
+      "target": "pages_onboardingpage_stepcircle",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/OnboardingPage.jsx",
+      "source_location": "L99",
+      "weight": 1.0,
+      "source": "src_pages_onboardingpage_jsx",
+      "target": "pages_onboardingpage_onboardingpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/AuthPage.jsx",
+      "source_location": "L172",
+      "weight": 1.0,
+      "source": "pages_authpage_authpage",
+      "target": "pages_onboardingpage_onboardingpage"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "src/pages/OnboardingPage.jsx",
+      "source_location": "L114",
+      "weight": 1.0,
+      "source": "pages_onboardingpage_onboardingpage",
+      "target": "pages_socialaccountspage_oauth2_integration"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/BrandKitPage.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_pages_brandkitpage_jsx",
+      "target": "src_components_vidifysidebar_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/BrandKitPage.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_pages_brandkitpage_jsx",
+      "target": "pages_brandkitpage_initial_colors",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/BrandKitPage.jsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "src_pages_brandkitpage_jsx",
+      "target": "pages_brandkitpage_heading_fonts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/BrandKitPage.jsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "src_pages_brandkitpage_jsx",
+      "target": "pages_brandkitpage_body_fonts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/BrandKitPage.jsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "src_pages_brandkitpage_jsx",
+      "target": "pages_brandkitpage_tone_presets",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/BrandKitPage.jsx",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "src_pages_brandkitpage_jsx",
+      "target": "pages_brandkitpage_aspect_options",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/BrandKitPage.jsx",
+      "source_location": "L26",
+      "weight": 1.0,
+      "source": "src_pages_brandkitpage_jsx",
+      "target": "pages_brandkitpage_style_options",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/BrandKitPage.jsx",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "src_pages_brandkitpage_jsx",
+      "target": "pages_brandkitpage_voice_options",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/BrandKitPage.jsx",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "src_pages_brandkitpage_jsx",
+      "target": "pages_brandkitpage_watermark_options",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/BrandKitPage.jsx",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "src_pages_brandkitpage_jsx",
+      "target": "pages_brandkitpage_brandkitpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/VidifySidebar.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "components_vidifysidebar_vidifysidebar",
+      "target": "pages_brandkitpage_brandkitpage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/SocialAccountsPage.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_pages_socialaccountspage_jsx",
+      "target": "pages_socialaccountspage_sidebar",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/SocialAccountsPage.jsx",
+      "source_location": "L122",
+      "weight": 1.0,
+      "source": "src_pages_socialaccountspage_jsx",
+      "target": "pages_socialaccountspage_platform_meta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/SocialAccountsPage.jsx",
+      "source_location": "L153",
+      "weight": 1.0,
+      "source": "src_pages_socialaccountspage_jsx",
+      "target": "pages_socialaccountspage_toast",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/SocialAccountsPage.jsx",
+      "source_location": "L168",
+      "weight": 1.0,
+      "source": "src_pages_socialaccountspage_jsx",
+      "target": "pages_socialaccountspage_socialaccountspage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/SocialAccountsPage.jsx",
+      "source_location": "L203",
+      "weight": 1.0,
+      "source": "pages_socialaccountspage_socialaccountspage",
+      "target": "pages_socialaccountspage_oauth2_integration"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/VidifySidebar.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "components_vidifysidebar_vidifysidebar",
+      "target": "pages_socialaccountspage_socialaccountspage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AuthPage.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_pages_authpage_jsx",
+      "target": "pages_authpage_showcaseitems",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AuthPage.jsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "src_pages_authpage_jsx",
+      "target": "pages_authpage_googleicon",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AuthPage.jsx",
+      "source_location": "L34",
+      "weight": 1.0,
+      "source": "src_pages_authpage_jsx",
+      "target": "pages_authpage_logolink",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AuthPage.jsx",
+      "source_location": "L47",
+      "weight": 1.0,
+      "source": "src_pages_authpage_jsx",
+      "target": "pages_authpage_showcasecard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AuthPage.jsx",
+      "source_location": "L82",
+      "weight": 1.0,
+      "source": "src_pages_authpage_jsx",
+      "target": "pages_authpage_getpasswordchecks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AuthPage.jsx",
+      "source_location": "L91",
+      "weight": 1.0,
+      "source": "src_pages_authpage_jsx",
+      "target": "pages_authpage_strengthmeta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AuthPage.jsx",
+      "source_location": "L97",
+      "weight": 1.0,
+      "source": "src_pages_authpage_jsx",
+      "target": "pages_authpage_authpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AuthPage.jsx",
+      "source_location": "L113",
+      "weight": 1.0,
+      "source": "pages_authpage_authpage",
+      "target": "pages_authpage_strengthmeta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/LandingPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_landingpage_landingpage",
+      "target": "pages_authpage_authpage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_pages_calendarpage_jsx",
+      "target": "pages_calendarpage_today",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "src_pages_calendarpage_jsx",
+      "target": "pages_calendarpage_platforms",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "src_pages_calendarpage_jsx",
+      "target": "pages_calendarpage_status_styles",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_pages_calendarpage_jsx",
+      "target": "pages_calendarpage_mock_events",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L59",
+      "weight": 1.0,
+      "source": "src_pages_calendarpage_jsx",
+      "target": "pages_calendarpage_samecalendarday",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L63",
+      "weight": 1.0,
+      "source": "src_pages_calendarpage_jsx",
+      "target": "pages_calendarpage_buildmonthgrid",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L95",
+      "weight": 1.0,
+      "source": "src_pages_calendarpage_jsx",
+      "target": "pages_calendarpage_startofweek",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L103",
+      "weight": 1.0,
+      "source": "src_pages_calendarpage_jsx",
+      "target": "pages_calendarpage_adddays",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L109",
+      "weight": 1.0,
+      "source": "src_pages_calendarpage_jsx",
+      "target": "pages_calendarpage_month_names",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L124",
+      "weight": 1.0,
+      "source": "src_pages_calendarpage_jsx",
+      "target": "pages_calendarpage_sidebar",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L242",
+      "weight": 1.0,
+      "source": "src_pages_calendarpage_jsx",
+      "target": "pages_calendarpage_eventtodate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/CalendarPage.jsx",
+      "source_location": "L246",
+      "weight": 1.0,
+      "source": "src_pages_calendarpage_jsx",
+      "target": "pages_calendarpage_calendarpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/VidifySidebar.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "components_vidifysidebar_vidifysidebar",
+      "target": "pages_calendarpage_calendarpage"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/BillingPage.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_pages_billingpage_jsx",
+      "target": "src_components_vidifysidebar_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/BillingPage.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_pages_billingpage_jsx",
+      "target": "pages_billingpage_packs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/BillingPage.jsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "src_pages_billingpage_jsx",
+      "target": "pages_billingpage_cost_ref",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/BillingPage.jsx",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "src_pages_billingpage_jsx",
+      "target": "pages_billingpage_txns",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/BillingPage.jsx",
+      "source_location": "L66",
+      "weight": 1.0,
+      "source": "src_pages_billingpage_jsx",
+      "target": "pages_billingpage_typebadge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/BillingPage.jsx",
+      "source_location": "L78",
+      "weight": 1.0,
+      "source": "src_pages_billingpage_jsx",
+      "target": "pages_billingpage_billingpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/BillingPage.jsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "pages_billingpage_billingpage",
+      "target": "pages_billingpage_credit_system"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/VidifySidebar.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "components_vidifysidebar_vidifysidebar",
+      "target": "pages_billingpage_billingpage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/NotFoundPage.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_pages_notfoundpage_jsx",
+      "target": "pages_notfoundpage_empty_states",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/NotFoundPage.jsx",
+      "source_location": "L66",
+      "weight": 1.0,
+      "source": "src_pages_notfoundpage_jsx",
+      "target": "pages_notfoundpage_accent_map",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/NotFoundPage.jsx",
+      "source_location": "L99",
+      "weight": 1.0,
+      "source": "src_pages_notfoundpage_jsx",
+      "target": "pages_notfoundpage_quick_links",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/NotFoundPage.jsx",
+      "source_location": "L107",
+      "weight": 1.0,
+      "source": "src_pages_notfoundpage_jsx",
+      "target": "pages_notfoundpage_notfoundpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/NotificationsPage.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_pages_notificationspage_jsx",
+      "target": "src_components_vidifysidebar_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/NotificationsPage.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_pages_notificationspage_jsx",
+      "target": "pages_notificationspage_initial_notifications",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/NotificationsPage.jsx",
+      "source_location": "L125",
+      "weight": 1.0,
+      "source": "src_pages_notificationspage_jsx",
+      "target": "pages_notificationspage_accent_map",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/NotificationsPage.jsx",
+      "source_location": "L133",
+      "weight": 1.0,
+      "source": "src_pages_notificationspage_jsx",
+      "target": "pages_notificationspage_filter_items",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/NotificationsPage.jsx",
+      "source_location": "L141",
+      "weight": 1.0,
+      "source": "src_pages_notificationspage_jsx",
+      "target": "pages_notificationspage_notificationspage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/NotificationsPage.jsx",
+      "source_location": "L318",
+      "weight": 1.0,
+      "source": "src_pages_notificationspage_jsx",
+      "target": "pages_notificationspage_notificationgroup",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/NotificationsPage.jsx",
+      "source_location": "L331",
+      "weight": 1.0,
+      "source": "src_pages_notificationspage_jsx",
+      "target": "pages_notificationspage_notificationitem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/VidifySidebar.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "components_vidifysidebar_vidifysidebar",
+      "target": "pages_notificationspage_notificationspage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/PublishingPage.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_pages_publishingpage_jsx",
+      "target": "pages_publishingpage_platforms",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/PublishingPage.jsx",
+      "source_location": "L43",
+      "weight": 1.0,
+      "source": "src_pages_publishingpage_jsx",
+      "target": "pages_publishingpage_chevronlefticon",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/PublishingPage.jsx",
+      "source_location": "L51",
+      "weight": 1.0,
+      "source": "src_pages_publishingpage_jsx",
+      "target": "pages_publishingpage_toggle",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/PublishingPage.jsx",
+      "source_location": "L72",
+      "weight": 1.0,
+      "source": "src_pages_publishingpage_jsx",
+      "target": "pages_publishingpage_publishingpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/PublishingPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_publishingpage_publishingpage",
+      "target": "pages_publishingpage_platforms"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/PublishingPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_publishingpage_publishingpage",
+      "target": "pages_publishingpage_chevronlefticon"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/pages/PublishingPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_publishingpage_chevronlefticon",
+      "target": "pages_resultpage_chevronlefticon"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/PublishingPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_publishingpage_publishingpage",
+      "target": "pages_publishingpage_toggle"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "src/pages/PublishingPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_publishingpage_publishingpage",
+      "target": "pages_resultpage_resultpage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/LandingPage.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_pages_landingpage_jsx",
+      "target": "pages_landingpage_showcasevideos",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/LandingPage.jsx",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "src_pages_landingpage_jsx",
+      "target": "pages_landingpage_logomark",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/LandingPage.jsx",
+      "source_location": "L44",
+      "weight": 1.0,
+      "source": "src_pages_landingpage_jsx",
+      "target": "pages_landingpage_videocard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/LandingPage.jsx",
+      "source_location": "L79",
+      "weight": 1.0,
+      "source": "src_pages_landingpage_jsx",
+      "target": "pages_landingpage_landingpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/LandingPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_landingpage_landingpage",
+      "target": "pages_landingpage_showcasevideos"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/LandingPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_landingpage_landingpage",
+      "target": "pages_landingpage_logomark"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/LandingPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_landingpage_landingpage",
+      "target": "pages_landingpage_videocard"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "readme_overview",
+      "target": "pages_landingpage_landingpage"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_pages_analyticspage_jsx",
+      "target": "src_components_vidifysidebar_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_pages_analyticspage_jsx",
+      "target": "pages_analyticspage_spark",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "src_pages_analyticspage_jsx",
+      "target": "pages_analyticspage_sparkline15",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L35",
+      "weight": 1.0,
+      "source": "src_pages_analyticspage_jsx",
+      "target": "pages_analyticspage_line_points",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_pages_analyticspage_jsx",
+      "target": "pages_analyticspage_apr_labels",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L44",
+      "weight": 1.0,
+      "source": "src_pages_analyticspage_jsx",
+      "target": "pages_analyticspage_top_videos",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L119",
+      "weight": 1.0,
+      "source": "src_pages_analyticspage_jsx",
+      "target": "pages_analyticspage_platform_dot",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L126",
+      "weight": 1.0,
+      "source": "src_pages_analyticspage_jsx",
+      "target": "pages_analyticspage_months",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L128",
+      "weight": 1.0,
+      "source": "src_pages_analyticspage_jsx",
+      "target": "pages_analyticspage_eng_stack",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L134",
+      "weight": 1.0,
+      "source": "src_pages_analyticspage_jsx",
+      "target": "pages_analyticspage_linechart",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L225",
+      "weight": 1.0,
+      "source": "src_pages_analyticspage_jsx",
+      "target": "pages_analyticspage_donutchart",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": "L289",
+      "weight": 1.0,
+      "source": "src_pages_analyticspage_jsx",
+      "target": "pages_analyticspage_analyticspage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_analyticspage_sparkline15",
+      "target": "pages_analyticspage_spark"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_analyticspage_analyticspage",
+      "target": "pages_analyticspage_sparkline15"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_analyticspage_analyticspage",
+      "target": "pages_analyticspage_linechart"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_analyticspage_analyticspage",
+      "target": "pages_analyticspage_donutchart"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/VidifySidebar.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "components_vidifysidebar_vidifysidebar",
+      "target": "pages_analyticspage_analyticspage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/AnalyticsPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_analyticspage_analyticspage",
+      "target": "pages_resultpage_resultpage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ProgressPage.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_pages_progresspage_jsx",
+      "target": "pages_progresspage_stages",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ProgressPage.jsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "src_pages_progresspage_jsx",
+      "target": "pages_progresspage_frame_thresholds",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ProgressPage.jsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "src_pages_progresspage_jsx",
+      "target": "pages_progresspage_activestageindex",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ProgressPage.jsx",
+      "source_location": "L26",
+      "weight": 1.0,
+      "source": "src_pages_progresspage_jsx",
+      "target": "pages_progresspage_framesloadedcount",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ProgressPage.jsx",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "src_pages_progresspage_jsx",
+      "target": "pages_progresspage_progresspage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/ProgressPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_progresspage_progresspage",
+      "target": "pages_progresspage_activestageindex"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/ProgressPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_progresspage_progresspage",
+      "target": "pages_progresspage_framesloadedcount"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/ProgressPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_progresspage_progresspage",
+      "target": "pages_resultpage_resultpage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ResultPage.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_pages_resultpage_jsx",
+      "target": "pages_resultpage_platforms",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ResultPage.jsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "src_pages_resultpage_jsx",
+      "target": "pages_resultpage_default_descriptions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ResultPage.jsx",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "src_pages_resultpage_jsx",
+      "target": "pages_resultpage_initial_tags",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ResultPage.jsx",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "src_pages_resultpage_jsx",
+      "target": "pages_resultpage_chevronlefticon",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ResultPage.jsx",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "src_pages_resultpage_jsx",
+      "target": "pages_resultpage_playicon",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ResultPage.jsx",
+      "source_location": "L46",
+      "weight": 1.0,
+      "source": "src_pages_resultpage_jsx",
+      "target": "pages_resultpage_pauseicon",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ResultPage.jsx",
+      "source_location": "L54",
+      "weight": 1.0,
+      "source": "src_pages_resultpage_jsx",
+      "target": "pages_resultpage_resultpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/ResultPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_resultpage_resultpage",
+      "target": "pages_resultpage_chevronlefticon"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/ResultPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_resultpage_resultpage",
+      "target": "pages_resultpage_playicon"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/pages/ResultPage.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "pages_resultpage_resultpage",
+      "target": "pages_resultpage_pauseicon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/VidifySidebar.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_components_vidifysidebar_jsx",
+      "target": "components_vidifysidebar_itemcls",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/VidifySidebar.jsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "src_components_vidifysidebar_jsx",
+      "target": "components_vidifysidebar_vidifysidebar",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/VidifySidebar.jsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "components_vidifysidebar_vidifysidebar",
+      "target": "components_vidifysidebar_itemcls"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".antigravitycli/f9f268e2-16fb-4a12-b528-0cb53fccd669.json",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "antigravitycli_f9f268e2_16fb_4a12_b528_0cb53fccd669_json",
+      "target": "antigravitycli_f9f268e2_16fb_4a12_b528_0cb53fccd669_id",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".antigravitycli/f9f268e2-16fb-4a12-b528-0cb53fccd669.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "antigravitycli_f9f268e2_16fb_4a12_b528_0cb53fccd669_json",
+      "target": "antigravitycli_f9f268e2_16fb_4a12_b528_0cb53fccd669_name",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".antigravitycli/f9f268e2-16fb-4a12-b528-0cb53fccd669.json",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "antigravitycli_f9f268e2_16fb_4a12_b528_0cb53fccd669_json",
+      "target": "antigravitycli_f9f268e2_16fb_4a12_b528_0cb53fccd669_projectresources",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".antigravitycli/f9f268e2-16fb-4a12-b528-0cb53fccd669.json",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "antigravitycli_f9f268e2_16fb_4a12_b528_0cb53fccd669_projectresources",
+      "target": "antigravitycli_f9f268e2_16fb_4a12_b528_0cb53fccd669_projectresources_resources",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "AGENT.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "agent_rules",
+      "target": "readme_overview"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agent/skills/api-design-principles/SKILL.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "api_design_principles_skill_main",
+      "target": "resources_implementation_playbook_apidesign"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agent/skills/api-design-principles/SKILL.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "api_design_principles_skill_main",
+      "target": "assets_api_design_checklist_main"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "resources_implementation_playbook_apidesign",
+      "target": "references_rest_best_practices_main"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "resources_implementation_playbook_apidesign",
+      "target": "references_graphql_schema_design_main"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "resources_implementation_playbook_apidesign",
+      "target": "resources_implementation_playbook_nextjs"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agent/skills/nextjs-app-router-patterns/SKILL.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "nextjs_app_router_patterns_skill_main",
+      "target": "resources_implementation_playbook_nextjs"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".agents/workflows/graphify.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "workflows_graphify_main",
+      "target": "rules_graphify_main"
+    },
+    {
+      "type": "INFERRED",
+      "label": "depicts",
+      "source": "assets_hero_image",
+      "target": "hero_isometric_layers",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "public/icons.svg",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "public_icons",
+      "target": "public_icons_bluesky_icon",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "public/icons.svg",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "public_icons",
+      "target": "public_icons_discord_icon",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "public/icons.svg",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "public_icons",
+      "target": "public_icons_documentation_icon",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "public/icons.svg",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "public_icons",
+      "target": "public_icons_github_icon",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "public/icons.svg",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "public_icons",
+      "target": "public_icons_social_icon",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "public/icons.svg",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "public_icons",
+      "target": "public_icons_x_icon",
+      "confidence_score": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "vidify_sidebar_consumers",
+      "label": "Vidify Sidebar Consumers",
+      "nodes": [
+        "pages_imagegenpage_imagegenpage",
+        "pages_settingspage_settingspage",
+        "pages_brandkitpage_brandkitpage",
+        "pages_notificationspage_notificationspage",
+        "pages_billingpage_billingpage"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/App.jsx"
+    },
+    {
+      "id": "ai_asset_generation_flow",
+      "label": "AI Asset Generation Flow",
+      "nodes": [
+        "pages_wizardpage_wizardpage",
+        "pages_imagegenpage_imagegenpage",
+        "pages_brandkitpage_brandkitpage"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "src/pages/WizardPage.jsx"
+    },
+    {
+      "id": "user_onboarding_flow",
+      "label": "User Onboarding and Dashboard Flow",
+      "nodes": [
+        "pages_authpage_authpage",
+        "pages_onboardingpage_onboardingpage",
+        "pages_dashboardpage_dashboardpage"
+      ],
+      "relation": "form",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/pages/OnboardingPage.jsx"
+    },
+    {
+      "id": "video_creation_and_publishing_flow",
+      "label": "Video Creation and Publishing Flow",
+      "nodes": [
+        "pages_progresspage_progresspage",
+        "pages_resultpage_resultpage",
+        "pages_publishingpage_publishingpage"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/pages/ProgressPage.jsx"
+    },
+    {
+      "id": "api_design_standards",
+      "label": "API Design Standards and Guidelines",
+      "nodes": [
+        "api_design_principles_skill_main",
+        "resources_implementation_playbook_apidesign",
+        "assets_api_design_checklist_main",
+        "references_rest_best_practices_main",
+        "references_graphql_schema_design_main"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agent/skills/api-design-principles/SKILL.md"
+    }
+  ],
+  "built_at_commit": "076f2434cf9c4c66f8337535bca74c12630cf045"
+}
