@@ -214,6 +214,16 @@
     "ast_hash": "1926e27ae34f71eff4de2777e41d52be",
     "semantic_hash": "1926e27ae34f71eff4de2777e41d52be"
   },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/.github/dependabot.yml": {
+    "mtime": 1781960302.547711,
+    "ast_hash": "20665084dd866a0c903ea06149b341b0",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/.github/workflows/quality-and-security.yml": {
+    "mtime": 1781960305.4757266,
+    "ast_hash": "fa66097918ed5af819bffea153610e96",
+    "semantic_hash": ""
+  },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/assets/hero.png": {
     "mtime": 1776262085.8454,
     "ast_hash": "5cf2b0762834cdddc0dd3ec1397b5011",
