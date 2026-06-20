@@ -5,9 +5,9 @@
     "semantic_hash": "60b22c6831f3f0493394a9ffb67a7852"
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/package.json": {
-    "mtime": 1776262278.5440516,
-    "ast_hash": "4c8f809b188aa4a319ef926b9e59995b",
-    "semantic_hash": "4c8f809b188aa4a319ef926b9e59995b"
+    "mtime": 1781962406.9595037,
+    "ast_hash": "504733b45f5c02d5b405234d85076d4d",
+    "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/eslint.config.js": {
     "mtime": 1776262085.8425076,
@@ -20,14 +20,19 @@
     "semantic_hash": "555aac62aac8fe64cc1029ac84c9ce95"
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/App.jsx": {
-    "mtime": 1776323535.6926193,
-    "ast_hash": "649e143be4a7ee53ed0522b8fca6404f",
-    "semantic_hash": "649e143be4a7ee53ed0522b8fca6404f"
+    "mtime": 1781962447.0257106,
+    "ast_hash": "056c346b80b2190ca362b06889230913",
+    "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/main.jsx": {
     "mtime": 1776262339.8311877,
     "ast_hash": "294c972051e832cd4622796abc3a3c9e",
     "semantic_hash": "294c972051e832cd4622796abc3a3c9e"
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/src/utils/api.js": {
+    "mtime": 1781962413.4955375,
+    "ast_hash": "4b865bed87449ced3753d2fc19387265",
+    "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/utils/generatedAssets.js": {
     "mtime": 1781903738.916789,
@@ -65,9 +70,9 @@
     "semantic_hash": "c1ef835a30152c33df67f0535cc739fa"
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/OnboardingPage.jsx": {
-    "mtime": 1776262698.9619856,
-    "ast_hash": "0ca4c1a8e2d946b52009227cb232e8bb",
-    "semantic_hash": "0ca4c1a8e2d946b52009227cb232e8bb"
+    "mtime": 1781962488.7069256,
+    "ast_hash": "ee479f5eaebf70a80b567fd87c64f3c7",
+    "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/BrandKitPage.jsx": {
     "mtime": 1776323401.2253842,
@@ -80,9 +85,9 @@
     "semantic_hash": "b18bd323b9ee5d29e9359da2dd36181e"
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/AuthPage.jsx": {
-    "mtime": 1776263193.6969354,
-    "ast_hash": "d26f22f03de60f5ff66fc6d8178db5b4",
-    "semantic_hash": "d26f22f03de60f5ff66fc6d8178db5b4"
+    "mtime": 1781962465.3658051,
+    "ast_hash": "25e59ec8f5ebec3c7be9608a12dd19d0",
+    "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/CalendarPage.jsx": {
     "mtime": 1776278639.5176692,
@@ -109,6 +114,11 @@
     "ast_hash": "490175079baccdf3ab98d234abbab23d",
     "semantic_hash": "490175079baccdf3ab98d234abbab23d"
   },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/ResetPasswordPage.jsx": {
+    "mtime": 1781962440.1906753,
+    "ast_hash": "0a62d0907b29383ec9a0ef3ca7a1bce8",
+    "semantic_hash": ""
+  },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/LandingPage.jsx": {
     "mtime": 1776278425.7674687,
     "ast_hash": "f7d71df8c716085a3e16731c5cc74415",
@@ -123,6 +133,11 @@
     "mtime": 1776262750.2660995,
     "ast_hash": "352e4a9323e75ad3528cee1f675f14d7",
     "semantic_hash": "352e4a9323e75ad3528cee1f675f14d7"
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/AuthCallbackPage.jsx": {
+    "mtime": 1781962435.1356492,
+    "ast_hash": "b8c1fb35f94b3aabdd07a566aeecbcec",
+    "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/ResultPage.jsx": {
     "mtime": 1776262811.6052358,
@@ -215,12 +230,12 @@
     "semantic_hash": "1926e27ae34f71eff4de2777e41d52be"
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/.github/dependabot.yml": {
-    "mtime": 1781960302.547711,
+    "mtime": 1781960728.5878751,
     "ast_hash": "20665084dd866a0c903ea06149b341b0",
     "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/.github/workflows/quality-and-security.yml": {
-    "mtime": 1781960305.4757266,
+    "mtime": 1781960728.5888753,
     "ast_hash": "fa66097918ed5af819bffea153610e96",
     "semantic_hash": ""
   },

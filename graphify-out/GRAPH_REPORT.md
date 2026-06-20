@@ -1,16 +1,16 @@
 # Graph Report - Admart-frontend  (2026-06-20)
 
 ## Corpus Check
-- 42 files · ~47,383 words
+- 45 files · ~49,029 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 549 nodes · 654 edges · 46 communities (34 shown, 12 thin omitted)
+- 560 nodes · 669 edges · 53 communities (41 shown, 12 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 14 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `2c77463d`
+- Built from commit: `20d7190b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -61,6 +61,13 @@
 - [[_COMMUNITY_Community 43|Community 43]]
 - [[_COMMUNITY_Community 44|Community 44]]
 - [[_COMMUNITY_Community 45|Community 45]]
+- [[_COMMUNITY_Community 46|Community 46]]
+- [[_COMMUNITY_Community 47|Community 47]]
+- [[_COMMUNITY_Community 48|Community 48]]
+- [[_COMMUNITY_Community 49|Community 49]]
+- [[_COMMUNITY_Community 50|Community 50]]
+- [[_COMMUNITY_Community 51|Community 51]]
+- [[_COMMUNITY_Community 52|Community 52]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `DashboardPage()` - 21 edges
@@ -77,12 +84,12 @@
 ## Surprising Connections (you probably didn't know these)
 - `Vidify Frontend Overview` --references--> `LandingPage()`  [INFERRED]
   README.md → src/pages/LandingPage.jsx
-- `SettingsPage()` --conceptually_related_to--> `update_user()`  [INFERRED]
-  src/pages/SettingsPage.jsx → .agent/skills/api-design-principles/assets/rest-api-template.py
 - `AuthPage()` --conceptually_related_to--> `create_user()`  [INFERRED]
   src/pages/AuthPage.jsx → .agent/skills/api-design-principles/assets/rest-api-template.py
 - `OnboardingPage()` --conceptually_related_to--> `create_user()`  [INFERRED]
   src/pages/OnboardingPage.jsx → .agent/skills/api-design-principles/assets/rest-api-template.py
+- `SettingsPage()` --conceptually_related_to--> `update_user()`  [INFERRED]
+  src/pages/SettingsPage.jsx → .agent/skills/api-design-principles/assets/rest-api-template.py
 - `generateTextImage()` --semantically_similar_to--> `ImageGenPage()`  [INFERRED] [semantically similar]
   src/pages/WizardPage.jsx → src/pages/ImageGenPage.jsx
 
@@ -93,35 +100,35 @@
 - **Video Creation and Publishing Flow** — pages_progresspage_progresspage, pages_resultpage_resultpage, pages_publishingpage_publishingpage [INFERRED 0.95]
 - **API Design Standards and Guidelines** — api_design_principles_skill_main, resources_implementation_playbook_apidesign, assets_api_design_checklist_main, references_rest_best_practices_main, references_graphql_schema_design_main [EXTRACTED 1.00]
 
-## Communities (46 total, 12 thin omitted)
+## Communities (53 total, 12 thin omitted)
 
 ### Community 0 - "Authentication & User Accounts"
-Cohesion: 0.18
-Nodes (6): PLATFORM_META, Sidebar(), CATEGORIES, CATEGORY_LABELS, Sidebar(), TEMPLATES
+Cohesion: 0.05
+Nodes (22): AuthPage(), showcaseItems, strengthMeta(), ACCENT_MAP, EMPTY_STATES, NotFoundPage(), QUICK_LINKS, INDUSTRIES (+14 more)
 
 ### Community 1 - "App Shell Layout & Billing/Credits"
-Cohesion: 0.05
-Nodes (32): itemCls(), COST_REF, PACKS, TXNS, ASPECT_OPTIONS, BODY_FONTS, HEADING_FONTS, INITIAL_COLORS (+24 more)
+Cohesion: 0.06
+Nodes (24): itemCls(), COST_REF, PACKS, TXNS, ASPECT_OPTIONS, BODY_FONTS, HEADING_FONTS, INITIAL_COLORS (+16 more)
 
 ### Community 2 - "Project Dependencies & Manifests"
 Cohesion: 0.07
-Nodes (25): dependencies, react, react-dom, react-router-dom, tailwindcss, @tailwindcss/vite, devDependencies, eslint (+17 more)
+Nodes (26): dependencies, axios, react, react-dom, react-router-dom, tailwindcss, @tailwindcss/vite, devDependencies (+18 more)
 
 ### Community 3 - "Image Generation & Wizard Forms"
 Cohesion: 0.13
 Nodes (19): API_BASE_URL, ASPECTS, fetchWithTimeout(), generateTextImage(), getTextImageStatus(), IMAGE_MODELS, IMAGE_SUGGESTIONS, INPUT_TABS (+11 more)
 
 ### Community 4 - "REST API Template & User Validation"
-Cohesion: 0.17
-Nodes (20): delete_user(), ErrorDetail, ErrorResponse, get_user(), http_exception_handler(), list_users(), PaginatedResponse, PaginationParams (+12 more)
+Cohesion: 0.16
+Nodes (21): create_user(), delete_user(), ErrorDetail, ErrorResponse, get_user(), http_exception_handler(), list_users(), PaginatedResponse (+13 more)
 
 ### Community 5 - "Progress Tracking & Rendering Pipeline"
 Cohesion: 0.16
 Nodes (16): activeStageIndex(), FRAME_THRESHOLDS, framesLoadedCount(), ProgressPage(), STAGES, ChevronLeftIcon(), PLATFORMS, PublishingPage() (+8 more)
 
 ### Community 6 - "Analytics Dashboard & Status Tracking"
-Cohesion: 0.08
-Nodes (38): Frontend Development Agent Rules, create_user(), VidifySidebar(), AuthPage(), showcaseItems, strengthMeta(), BillingPage(), AI Credit Consumption and Billing (+30 more)
+Cohesion: 0.1
+Nodes (34): Frontend Development Agent Rules, VidifySidebar(), BillingPage(), AI Credit Consumption and Billing, BrandKitPage(), CalendarPage(), DashboardPage(), FILTERS (+26 more)
 
 ### Community 7 - "App Landing & Media Library Navigation"
 Cohesion: 0.22
@@ -152,8 +159,8 @@ Cohesion: 0.4
 Nodes (4): id, name, projectResources, resources
 
 ### Community 24 - "Community 24"
-Cohesion: 0.04
-Nodes (48): 1. Input/Payload Pattern, 2. Optimistic Response Support, 3. Batch Mutations, Arguments and Filtering, Best Practices Summary, Built-in Directives, code:graphql (# user.graphql), code:graphql (input BatchCreateUserInput {) (+40 more)
+Cohesion: 0.2
+Nodes (9): Best Practices Summary, code:graphql (# user.graphql), code:graphql (type Subscription {), code:graphql (scalar DateTime), Custom Scalars, GraphQL Schema Design Patterns, Modular Schema Structure, Schema Organization (+1 more)
 
 ### Community 25 - "Community 25"
 Cohesion: 0.09
@@ -231,8 +238,36 @@ Nodes (3): Cache Headers, Caching, code:block20 (# Client caching)
 Cohesion: 0.67
 Nodes (3): code:block8 (# Filtering), Filtering, Sorting, and Searching, Query Parameters
 
+### Community 46 - "Community 46"
+Cohesion: 0.29
+Nodes (7): 1. Input/Payload Pattern, 2. Optimistic Response Support, 3. Batch Mutations, code:graphql (input BatchCreateUserInput {), code:graphql (input CreatePostInput {), code:graphql (type UpdateUserPayload {), Mutation Design Patterns
+
+### Community 47 - "Community 47"
+Cohesion: 0.29
+Nodes (7): code:python (from aiodataloader import DataLoader), code:python (from graphql import GraphQLError), code:python (def complexity_limit_validator(max_complexity: int):), DataLoader Pattern, N+1 Query Problem Solutions, Query Complexity Analysis, Query Depth Limiting
+
+### Community 48 - "Community 48"
+Cohesion: 0.4
+Nodes (5): Arguments and Filtering, code:graphql (type Query {), code:graphql (type User {), Computed Fields, Field Design
+
+### Community 49 - "Community 49"
+Cohesion: 0.4
+Nodes (5): Built-in Directives, code:graphql (type User {), code:graphql (directive @auth(requires: Role = USER) on FIELD_DEFINITION), Custom Directives, Directives
+
+### Community 50 - "Community 50"
+Cohesion: 0.4
+Nodes (5): code:graphql (type User {), code:graphql (type CreateUserPayload {), Error Handling, Errors in Payload, Union Error Pattern
+
+### Community 51 - "Community 51"
+Cohesion: 0.4
+Nodes (5): code:graphql (type User {), code:graphql (# v1 - Initial), Field Deprecation, Schema Evolution, Schema Versioning
+
+### Community 52 - "Community 52"
+Cohesion: 0.4
+Nodes (5): code:graphql (type UserConnection {), code:graphql (type UserList {), Offset Pagination (Simpler), Pagination Patterns, Relay Cursor Pagination (Recommended)
+
 ## Knowledge Gaps
-- **274 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+269 more)
+- **278 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+273 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -241,15 +276,15 @@ _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `DashboardPage()` connect `Analytics Dashboard & Status Tracking` to `Analytics Charts & User Engagement Data`, `Progress Tracking & Rendering Pipeline`?**
   _High betweenness centrality (0.018) - this node is a cross-community bridge._
-- **Why does `App()` connect `Analytics Dashboard & Status Tracking` to `App Shell Layout & Billing/Credits`?**
-  _High betweenness centrality (0.014) - this node is a cross-community bridge._
-- **Why does `create_user()` connect `Analytics Dashboard & Status Tracking` to `REST API Template & User Validation`?**
+- **Why does `App()` connect `Analytics Dashboard & Status Tracking` to `Authentication & User Accounts`?**
+  _High betweenness centrality (0.015) - this node is a cross-community bridge._
+- **Why does `create_user()` connect `REST API Template & User Validation` to `Authentication & User Accounts`, `Analytics Dashboard & Status Tracking`?**
   _High betweenness centrality (0.013) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _274 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `App Shell Layout & Billing/Credits` be split into smaller, more focused modules?**
+  _278 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Authentication & User Accounts` be split into smaller, more focused modules?**
   _Cohesion score 0.05 - nodes in this community are weakly interconnected._
+- **Should `App Shell Layout & Billing/Credits` be split into smaller, more focused modules?**
+  _Cohesion score 0.06 - nodes in this community are weakly interconnected._
 - **Should `Project Dependencies & Manifests` be split into smaller, more focused modules?**
   _Cohesion score 0.07 - nodes in this community are weakly interconnected._
-- **Should `Image Generation & Wizard Forms` be split into smaller, more focused modules?**
-  _Cohesion score 0.13 - nodes in this community are weakly interconnected._

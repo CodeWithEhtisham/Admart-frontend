@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import api from '../utils/api'
 
 const showcaseItems = [
   { title: 'Launch Hype', duration: '0:28', platform: 'TikTok', badge: 'bg-tiktok text-base' },
@@ -108,9 +109,113 @@ export default function AuthPage() {
   const [signUpPassword, setSignUpPassword] = useState('')
   const [termsAccepted, setTermsAccepted] = useState(false)
 
+  const [forgotEmail, setForgotEmail] = useState('')
+  const [error, setError] = useState(null)
+  const [successMessage, setSuccessMessage] = useState('')
+  const [loading, setLoading] = useState(false)
+
   const checks = useMemo(() => getPasswordChecks(signUpPassword), [signUpPassword])
   const score = checks.filter(Boolean).length
   const strength = strengthMeta(score)
+
+  const handleGoogleSignIn = () => {
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'dummy-google-client-id'
+    const redirectUri = encodeURIComponent(`${window.location.origin}/auth/callback`)
+    const scope = encodeURIComponent('email profile')
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&access_type=offline&prompt=select_account`
+    window.location.href = authUrl
+  }
+
+  const handleSignIn = async (e) => {
+    e.preventDefault()
+    setError(null)
+    setSuccessMessage('')
+    setLoading(true)
+    try {
+      const response = await api.post('/api/auth/login', {
+        email: signInEmail,
+        password: signInPassword,
+      })
+      const { accessToken, refreshToken, user } = response.data
+      localStorage.setItem('accessToken', accessToken)
+      localStorage.setItem('refreshToken', refreshToken)
+      localStorage.setItem('user', JSON.stringify(user))
+
+      if (user.onboardingCompleted) {
+        navigate('/dashboard')
+      } else {
+        navigate('/onboarding')
+      }
+    } catch (err) {
+      console.error(err)
+      setError(err.response?.data?.detail || 'Invalid email or password.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSignUp = async (e) => {
+    e.preventDefault()
+    if (!termsAccepted) {
+      setError('You must agree to the Terms and Privacy Policy.')
+      return
+    }
+    if (score < 4) {
+      setError('Please make sure your password meets all strength requirements.')
+      return
+    }
+    setError(null)
+    setSuccessMessage('')
+    setLoading(true)
+    try {
+      const response = await api.post('/api/auth/register', {
+        email: signUpEmail,
+        password: signUpPassword,
+        firstName,
+        lastName,
+      })
+      const { accessToken, refreshToken, user } = response.data
+      localStorage.setItem('accessToken', accessToken)
+      localStorage.setItem('refreshToken', refreshToken)
+      localStorage.setItem('user', JSON.stringify(user))
+
+      navigate('/onboarding')
+    } catch (err) {
+      console.error(err)
+      const data = err.response?.data
+      if (data && typeof data === 'object') {
+        const firstErrorKey = Object.keys(data)[0]
+        const errVal = data[firstErrorKey]
+        if (Array.isArray(errVal)) {
+          setError(`${firstErrorKey}: ${errVal[0]}`)
+        } else {
+          setError(data.detail || 'Registration failed. Please check your credentials.')
+        }
+      } else {
+        setError('Registration failed. Please try again.')
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault()
+    setError(null)
+    setSuccessMessage('')
+    setLoading(true)
+    try {
+      const response = await api.post('/api/auth/forgot-password', {
+        email: forgotEmail,
+      })
+      setSuccessMessage(response.data.message || 'If the email is registered, a password reset link has been sent.')
+    } catch (err) {
+      console.error(err)
+      setError(err.response?.data?.detail || 'Failed to send password reset email.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-base font-body text-text-primary">
@@ -118,7 +223,11 @@ export default function AuthPage() {
         <div className="flex rounded-full border border-border-default bg-elevated p-1 shadow-xl shadow-black/40">
           <button
             type="button"
-            onClick={() => setTab('signin')}
+            onClick={() => {
+              setTab('signin')
+              setError(null)
+              setSuccessMessage('')
+            }}
             className={`rounded-full px-5 py-2 text-sm font-semibold transition ${
               tab === 'signin'
                 ? 'gradient-bg text-white shadow-md'
@@ -129,7 +238,11 @@ export default function AuthPage() {
           </button>
           <button
             type="button"
-            onClick={() => setTab('signup')}
+            onClick={() => {
+              setTab('signup')
+              setError(null)
+              setSuccessMessage('')
+            }}
             className={`rounded-full px-5 py-2 text-sm font-semibold transition ${
               tab === 'signup'
                 ? 'gradient-bg text-white shadow-md'
@@ -153,6 +266,7 @@ export default function AuthPage() {
 
               <button
                 type="button"
+                onClick={handleGoogleSignIn}
                 className="mt-8 flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-border-default bg-white text-sm font-semibold text-neutral-800 transition hover:bg-neutral-100"
               >
                 <GoogleIcon />
@@ -165,13 +279,13 @@ export default function AuthPage() {
                 <span className="h-px flex-1 bg-border-default" />
               </div>
 
-              <form
-                className="space-y-4"
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  navigate('/onboarding')
-                }}
-              >
+              {error && (
+                <div className="mb-4 rounded-xl border border-error/30 bg-error/10 p-3.5 text-xs font-medium text-error">
+                  {error}
+                </div>
+              )}
+
+              <form className="space-y-4" onSubmit={handleSignIn}>
                 <div>
                   <label htmlFor="signin-email" className="mb-1.5 block text-xs font-medium text-text-tertiary">
                     Email
@@ -184,6 +298,7 @@ export default function AuthPage() {
                     onChange={(e) => setSignInEmail(e.target.value)}
                     className="h-11 w-full rounded-xl border border-border-default bg-input px-4 text-sm text-text-primary outline-none ring-accent-blue/30 transition placeholder:text-text-muted focus:border-accent-blue/50 focus:ring-2"
                     placeholder="you@studio.com"
+                    required
                   />
                 </div>
                 <div>
@@ -198,6 +313,7 @@ export default function AuthPage() {
                     onChange={(e) => setSignInPassword(e.target.value)}
                     className="h-11 w-full rounded-xl border border-border-default bg-input px-4 text-sm text-text-primary outline-none ring-accent-blue/30 transition placeholder:text-text-muted focus:border-accent-blue/50 focus:ring-2"
                     placeholder="••••••••"
+                    required
                   />
                 </div>
                 <div className="flex items-center justify-between gap-4 text-sm">
@@ -210,15 +326,24 @@ export default function AuthPage() {
                     />
                     Remember me
                   </label>
-                  <button type="button" className="text-sm font-medium text-accent-blue hover:underline">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTab('forgot-password')
+                      setError(null)
+                      setSuccessMessage('')
+                    }}
+                    className="text-sm font-medium text-accent-blue hover:underline"
+                  >
                     Forgot password?
                   </button>
                 </div>
                 <button
                   type="submit"
-                  className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-xl gradient-bg text-sm font-semibold text-white shadow-lg shadow-accent-violet/25 transition hover:opacity-95"
+                  disabled={loading}
+                  className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-xl gradient-bg text-sm font-semibold text-white shadow-lg shadow-accent-violet/25 transition hover:opacity-95 disabled:opacity-50"
                 >
-                  Sign In
+                  {loading ? 'Signing In...' : 'Sign In'}
                   <span aria-hidden>→</span>
                 </button>
               </form>
@@ -227,14 +352,18 @@ export default function AuthPage() {
                 Don&apos;t have an account?{' '}
                 <button
                   type="button"
-                  onClick={() => setTab('signup')}
+                  onClick={() => {
+                    setTab('signup')
+                    setError(null)
+                    setSuccessMessage('')
+                  }}
                   className="font-semibold text-accent-violet hover:underline"
                 >
                   Sign up free
                 </button>
               </p>
             </div>
-          ) : (
+          ) : tab === 'signup' ? (
             <div className="mx-auto w-full max-w-md animate-fade-slide-down">
               <LogoLink />
               <h1 className="font-heading text-3xl font-bold text-text-primary">Create your account</h1>
@@ -244,6 +373,7 @@ export default function AuthPage() {
 
               <button
                 type="button"
+                onClick={handleGoogleSignIn}
                 className="mt-8 flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-border-default bg-white text-sm font-semibold text-neutral-800 transition hover:bg-neutral-100"
               >
                 <GoogleIcon />
@@ -256,13 +386,13 @@ export default function AuthPage() {
                 <span className="h-px flex-1 bg-border-default" />
               </div>
 
-              <form
-                className="space-y-4"
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  navigate('/onboarding')
-                }}
-              >
+              {error && (
+                <div className="mb-4 rounded-xl border border-error/30 bg-error/10 p-3.5 text-xs font-medium text-error">
+                  {error}
+                </div>
+              )}
+
+              <form className="space-y-4" onSubmit={handleSignUp}>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label htmlFor="first-name" className="mb-1.5 block text-xs font-medium text-text-tertiary">
@@ -276,6 +406,7 @@ export default function AuthPage() {
                       onChange={(e) => setFirstName(e.target.value)}
                       className="h-11 w-full rounded-xl border border-border-default bg-input px-3 text-sm text-text-primary outline-none ring-accent-blue/30 transition placeholder:text-text-muted focus:border-accent-blue/50 focus:ring-2"
                       placeholder="Alex"
+                      required
                     />
                   </div>
                   <div>
@@ -290,6 +421,7 @@ export default function AuthPage() {
                       onChange={(e) => setLastName(e.target.value)}
                       className="h-11 w-full rounded-xl border border-border-default bg-input px-3 text-sm text-text-primary outline-none ring-accent-blue/30 transition placeholder:text-text-muted focus:border-accent-blue/50 focus:ring-2"
                       placeholder="Rivera"
+                      required
                     />
                   </div>
                 </div>
@@ -305,6 +437,7 @@ export default function AuthPage() {
                     onChange={(e) => setSignUpEmail(e.target.value)}
                     className="h-11 w-full rounded-xl border border-border-default bg-input px-4 text-sm text-text-primary outline-none ring-accent-blue/30 transition placeholder:text-text-muted focus:border-accent-blue/50 focus:ring-2"
                     placeholder="you@studio.com"
+                    required
                   />
                 </div>
                 <div>
@@ -324,6 +457,7 @@ export default function AuthPage() {
                     onChange={(e) => setSignUpPassword(e.target.value)}
                     className="h-11 w-full rounded-xl border border-border-default bg-input px-4 text-sm text-text-primary outline-none ring-accent-blue/30 transition placeholder:text-text-muted focus:border-accent-blue/50 focus:ring-2"
                     placeholder="Create a strong password"
+                    required
                   />
                   <div className="mt-2 flex gap-1.5">
                     {checks.map((ok, i) => (
@@ -345,6 +479,7 @@ export default function AuthPage() {
                     checked={termsAccepted}
                     onChange={(e) => setTermsAccepted(e.target.checked)}
                     className="mt-0.5 h-4 w-4 shrink-0 rounded border-border-default bg-input text-accent-blue focus:ring-accent-blue/40"
+                    required
                   />
                   <span>
                     I agree to the{' '}
@@ -360,9 +495,10 @@ export default function AuthPage() {
                 </label>
                 <button
                   type="submit"
-                  className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-xl gradient-bg text-sm font-semibold text-white shadow-lg shadow-accent-blue/30 transition hover:opacity-95"
+                  disabled={loading}
+                  className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-xl gradient-bg text-sm font-semibold text-white shadow-lg shadow-accent-blue/30 transition hover:opacity-95 disabled:opacity-50"
                 >
-                  Create Account
+                  {loading ? 'Creating Account...' : 'Create Account'}
                   <span aria-hidden>→</span>
                 </button>
               </form>
@@ -371,7 +507,74 @@ export default function AuthPage() {
                 Already have an account?{' '}
                 <button
                   type="button"
-                  onClick={() => setTab('signin')}
+                  onClick={() => {
+                    setTab('signin')
+                    setError(null)
+                    setSuccessMessage('')
+                  }}
+                  className="font-semibold text-accent-violet hover:underline"
+                >
+                  Sign in
+                </button>
+              </p>
+            </div>
+          ) : (
+            <div className="mx-auto w-full max-w-md animate-fade-slide-down">
+              <LogoLink />
+              <h1 className="font-heading text-3xl font-bold text-text-primary">Forgot password</h1>
+              <p className="mt-2 text-sm text-text-secondary">
+                Enter your email address and we&apos;ll send you a link to reset your password.
+              </p>
+
+              {error && (
+                <div className="mt-6 rounded-xl border border-error/30 bg-error/10 p-3.5 text-xs font-medium text-error">
+                  {error}
+                </div>
+              )}
+
+              {successMessage && (
+                <div className="mt-6 rounded-xl border border-success/30 bg-success/10 p-3.5 text-xs font-medium text-success">
+                  {successMessage}
+                  <div className="mt-2 text-[10px] opacity-80">
+                    *Note: In development mode, check your Django terminal logs to find the password reset link.
+                  </div>
+                </div>
+              )}
+
+              <form className="mt-6 space-y-4" onSubmit={handleForgotPassword}>
+                <div>
+                  <label htmlFor="forgot-email" className="mb-1.5 block text-xs font-medium text-text-tertiary">
+                    Email Address
+                  </label>
+                  <input
+                    id="forgot-email"
+                    type="email"
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    className="h-11 w-full rounded-xl border border-border-default bg-input px-4 text-sm text-text-primary outline-none ring-accent-blue/30 transition placeholder:text-text-muted focus:border-accent-blue/50 focus:ring-2"
+                    placeholder="you@studio.com"
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-xl gradient-bg text-sm font-semibold text-white shadow-lg shadow-accent-blue/30 transition hover:opacity-95 disabled:opacity-50"
+                >
+                  {loading ? 'Sending link...' : 'Send Reset Link'}
+                  <span aria-hidden>→</span>
+                </button>
+              </form>
+
+              <p className="mt-8 text-center text-sm text-text-tertiary">
+                Remember your password?{' '}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTab('signin')
+                    setError(null)
+                    setSuccessMessage('')
+                  }}
                   className="font-semibold text-accent-violet hover:underline"
                 >
                   Sign in
@@ -380,6 +583,7 @@ export default function AuthPage() {
             </div>
           )}
         </aside>
+
 
         <main className="relative flex flex-1 items-center justify-center overflow-hidden bg-base px-6 py-16 lg:py-20">
           <div

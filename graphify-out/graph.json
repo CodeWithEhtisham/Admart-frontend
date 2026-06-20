@@ -193,10 +193,19 @@
       "norm_label": "@tailwindcss/vite"
     },
     {
-      "label": "react",
+      "label": "axios",
       "file_type": "code",
       "source_file": "package.json",
       "source_location": "L14",
+      "id": "admart_frontend_package_dependencies_axios",
+      "community": 2,
+      "norm_label": "axios"
+    },
+    {
+      "label": "react",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L15",
       "id": "admart_frontend_package_dependencies_react",
       "community": 2,
       "norm_label": "react"
@@ -205,7 +214,7 @@
       "label": "react-dom",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L15",
+      "source_location": "L16",
       "id": "admart_frontend_package_dependencies_react_dom",
       "community": 2,
       "norm_label": "react-dom"
@@ -214,7 +223,7 @@
       "label": "react-router-dom",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L16",
+      "source_location": "L17",
       "id": "admart_frontend_package_dependencies_react_router_dom",
       "community": 2,
       "norm_label": "react-router-dom"
@@ -223,7 +232,7 @@
       "label": "tailwindcss",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L17",
+      "source_location": "L18",
       "id": "admart_frontend_package_dependencies_tailwindcss",
       "community": 2,
       "norm_label": "tailwindcss"
@@ -232,7 +241,7 @@
       "label": "devDependencies",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L19",
+      "source_location": "L20",
       "id": "admart_frontend_package_devdependencies",
       "community": 2,
       "norm_label": "devdependencies"
@@ -241,7 +250,7 @@
       "label": "@eslint/js",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L20",
+      "source_location": "L21",
       "id": "admart_frontend_package_devdependencies_eslint_js",
       "community": 2,
       "norm_label": "@eslint/js"
@@ -250,7 +259,7 @@
       "label": "@types/react",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L21",
+      "source_location": "L22",
       "id": "admart_frontend_package_devdependencies_types_react",
       "community": 2,
       "norm_label": "@types/react"
@@ -259,7 +268,7 @@
       "label": "@types/react-dom",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L22",
+      "source_location": "L23",
       "id": "admart_frontend_package_devdependencies_types_react_dom",
       "community": 2,
       "norm_label": "@types/react-dom"
@@ -268,7 +277,7 @@
       "label": "@vitejs/plugin-react",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L23",
+      "source_location": "L24",
       "id": "admart_frontend_package_devdependencies_vitejs_plugin_react",
       "community": 2,
       "norm_label": "@vitejs/plugin-react"
@@ -277,7 +286,7 @@
       "label": "eslint",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L24",
+      "source_location": "L25",
       "id": "admart_frontend_package_devdependencies_eslint",
       "community": 2,
       "norm_label": "eslint"
@@ -286,7 +295,7 @@
       "label": "eslint-plugin-react-hooks",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L25",
+      "source_location": "L26",
       "id": "admart_frontend_package_devdependencies_eslint_plugin_react_hooks",
       "community": 2,
       "norm_label": "eslint-plugin-react-hooks"
@@ -295,7 +304,7 @@
       "label": "eslint-plugin-react-refresh",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L26",
+      "source_location": "L27",
       "id": "admart_frontend_package_devdependencies_eslint_plugin_react_refresh",
       "community": 2,
       "norm_label": "eslint-plugin-react-refresh"
@@ -304,7 +313,7 @@
       "label": "globals",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L27",
+      "source_location": "L28",
       "id": "admart_frontend_package_devdependencies_globals",
       "community": 2,
       "norm_label": "globals"
@@ -313,7 +322,7 @@
       "label": "vite",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L28",
+      "source_location": "L29",
       "id": "admart_frontend_package_devdependencies_vite",
       "community": 2,
       "norm_label": "vite"
@@ -468,7 +477,7 @@
       "source_file": ".agent/skills/api-design-principles/assets/rest-api-template.py",
       "source_location": "L129",
       "id": "assets_rest_api_template_create_user",
-      "community": 6,
+      "community": 4,
       "norm_label": "create_user()"
     },
     {
@@ -531,14 +540,14 @@
       "source_file": "src/App.jsx",
       "source_location": "L1",
       "id": "src_app_jsx",
-      "community": 1,
+      "community": 0,
       "norm_label": "app.jsx"
     },
     {
       "label": "App()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L22",
+      "source_location": "L24",
       "id": "src_app_app",
       "community": 6,
       "norm_label": "app()"
@@ -549,8 +558,44 @@
       "source_file": "src/main.jsx",
       "source_location": "L1",
       "id": "src_main_jsx",
-      "community": 1,
+      "community": 0,
       "norm_label": "main.jsx"
+    },
+    {
+      "label": "api.js",
+      "file_type": "code",
+      "source_file": "src/utils/api.js",
+      "source_location": "L1",
+      "id": "src_utils_api_js",
+      "community": 0,
+      "norm_label": "api.js"
+    },
+    {
+      "label": "api",
+      "file_type": "code",
+      "source_file": "src/utils/api.js",
+      "source_location": "L5",
+      "id": "utils_api_api",
+      "community": 0,
+      "norm_label": "api"
+    },
+    {
+      "label": "token",
+      "file_type": "code",
+      "source_file": "src/utils/api.js",
+      "source_location": "L15",
+      "id": "utils_api_token",
+      "community": 0,
+      "norm_label": "token"
+    },
+    {
+      "label": "refreshToken",
+      "file_type": "code",
+      "source_file": "src/utils/api.js",
+      "source_location": "L37",
+      "id": "utils_api_refreshtoken",
+      "community": 0,
+      "norm_label": "refreshtoken"
     },
     {
       "label": "generatedAssets.js",
@@ -1206,59 +1251,59 @@
       "source_file": "src/pages/OnboardingPage.jsx",
       "source_location": "L1",
       "id": "src_pages_onboardingpage_jsx",
-      "community": 1,
+      "community": 0,
       "norm_label": "onboardingpage.jsx"
     },
     {
       "label": "PLATFORMS",
       "file_type": "code",
       "source_file": "src/pages/OnboardingPage.jsx",
-      "source_location": "L4",
+      "source_location": "L5",
       "id": "pages_onboardingpage_platforms",
-      "community": 1,
+      "community": 0,
       "norm_label": "platforms"
     },
     {
       "label": "INDUSTRIES",
       "file_type": "code",
       "source_file": "src/pages/OnboardingPage.jsx",
-      "source_location": "L43",
+      "source_location": "L44",
       "id": "pages_onboardingpage_industries",
-      "community": 1,
+      "community": 0,
       "norm_label": "industries"
     },
     {
       "label": "PRESET_COLORS",
       "file_type": "code",
       "source_file": "src/pages/OnboardingPage.jsx",
-      "source_location": "L54",
+      "source_location": "L55",
       "id": "pages_onboardingpage_preset_colors",
-      "community": 1,
+      "community": 0,
       "norm_label": "preset_colors"
     },
     {
       "label": "TEMPLATES",
       "file_type": "code",
       "source_file": "src/pages/OnboardingPage.jsx",
-      "source_location": "L56",
+      "source_location": "L57",
       "id": "pages_onboardingpage_templates",
-      "community": 1,
+      "community": 0,
       "norm_label": "templates"
     },
     {
       "label": "StepCircle()",
       "file_type": "code",
       "source_file": "src/pages/OnboardingPage.jsx",
-      "source_location": "L63",
+      "source_location": "L64",
       "id": "pages_onboardingpage_stepcircle",
-      "community": 1,
+      "community": 0,
       "norm_label": "stepcircle()"
     },
     {
       "label": "OnboardingPage()",
       "file_type": "code",
       "source_file": "src/pages/OnboardingPage.jsx",
-      "source_location": "L99",
+      "source_location": "L100",
       "id": "pages_onboardingpage_onboardingpage",
       "community": 6,
       "norm_label": "onboardingpage()"
@@ -1404,70 +1449,70 @@
       "source_file": "src/pages/AuthPage.jsx",
       "source_location": "L1",
       "id": "src_pages_authpage_jsx",
-      "community": 6,
+      "community": 0,
       "norm_label": "authpage.jsx"
     },
     {
       "label": "showcaseItems",
       "file_type": "code",
       "source_file": "src/pages/AuthPage.jsx",
-      "source_location": "L4",
+      "source_location": "L5",
       "id": "pages_authpage_showcaseitems",
-      "community": 6,
+      "community": 0,
       "norm_label": "showcaseitems"
     },
     {
       "label": "GoogleIcon()",
       "file_type": "code",
       "source_file": "src/pages/AuthPage.jsx",
-      "source_location": "L11",
+      "source_location": "L12",
       "id": "pages_authpage_googleicon",
-      "community": 6,
+      "community": 0,
       "norm_label": "googleicon()"
     },
     {
       "label": "LogoLink()",
       "file_type": "code",
       "source_file": "src/pages/AuthPage.jsx",
-      "source_location": "L34",
+      "source_location": "L35",
       "id": "pages_authpage_logolink",
-      "community": 6,
+      "community": 0,
       "norm_label": "logolink()"
     },
     {
       "label": "ShowcaseCard()",
       "file_type": "code",
       "source_file": "src/pages/AuthPage.jsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "id": "pages_authpage_showcasecard",
-      "community": 6,
+      "community": 0,
       "norm_label": "showcasecard()"
     },
     {
       "label": "getPasswordChecks()",
       "file_type": "code",
       "source_file": "src/pages/AuthPage.jsx",
-      "source_location": "L82",
+      "source_location": "L83",
       "id": "pages_authpage_getpasswordchecks",
-      "community": 6,
+      "community": 0,
       "norm_label": "getpasswordchecks()"
     },
     {
       "label": "strengthMeta()",
       "file_type": "code",
       "source_file": "src/pages/AuthPage.jsx",
-      "source_location": "L91",
+      "source_location": "L92",
       "id": "pages_authpage_strengthmeta",
-      "community": 6,
+      "community": 0,
       "norm_label": "strengthmeta()"
     },
     {
       "label": "AuthPage()",
       "file_type": "code",
       "source_file": "src/pages/AuthPage.jsx",
-      "source_location": "L97",
+      "source_location": "L98",
       "id": "pages_authpage_authpage",
-      "community": 6,
+      "community": 0,
       "norm_label": "authpage()"
     },
     {
@@ -1647,7 +1692,7 @@
       "source_file": "src/pages/NotFoundPage.jsx",
       "source_location": "L1",
       "id": "src_pages_notfoundpage_jsx",
-      "community": 1,
+      "community": 0,
       "norm_label": "notfoundpage.jsx"
     },
     {
@@ -1656,7 +1701,7 @@
       "source_file": "src/pages/NotFoundPage.jsx",
       "source_location": "L3",
       "id": "pages_notfoundpage_empty_states",
-      "community": 1,
+      "community": 0,
       "norm_label": "empty_states"
     },
     {
@@ -1665,7 +1710,7 @@
       "source_file": "src/pages/NotFoundPage.jsx",
       "source_location": "L66",
       "id": "pages_notfoundpage_accent_map",
-      "community": 1,
+      "community": 0,
       "norm_label": "accent_map"
     },
     {
@@ -1674,7 +1719,7 @@
       "source_file": "src/pages/NotFoundPage.jsx",
       "source_location": "L99",
       "id": "pages_notfoundpage_quick_links",
-      "community": 1,
+      "community": 0,
       "norm_label": "quick_links"
     },
     {
@@ -1683,7 +1728,7 @@
       "source_file": "src/pages/NotFoundPage.jsx",
       "source_location": "L107",
       "id": "pages_notfoundpage_notfoundpage",
-      "community": 1,
+      "community": 0,
       "norm_label": "notfoundpage()"
     },
     {
@@ -1793,6 +1838,42 @@
       "id": "pages_publishingpage_publishingpage",
       "community": 5,
       "norm_label": "publishingpage()"
+    },
+    {
+      "label": "ResetPasswordPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/ResetPasswordPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_resetpasswordpage_jsx",
+      "community": 0,
+      "norm_label": "resetpasswordpage.jsx"
+    },
+    {
+      "label": "getPasswordChecks()",
+      "file_type": "code",
+      "source_file": "src/pages/ResetPasswordPage.jsx",
+      "source_location": "L5",
+      "id": "pages_resetpasswordpage_getpasswordchecks",
+      "community": 0,
+      "norm_label": "getpasswordchecks()"
+    },
+    {
+      "label": "strengthMeta()",
+      "file_type": "code",
+      "source_file": "src/pages/ResetPasswordPage.jsx",
+      "source_location": "L14",
+      "id": "pages_resetpasswordpage_strengthmeta",
+      "community": 0,
+      "norm_label": "strengthmeta()"
+    },
+    {
+      "label": "ResetPasswordPage()",
+      "file_type": "code",
+      "source_file": "src/pages/ResetPasswordPage.jsx",
+      "source_location": "L20",
+      "id": "pages_resetpasswordpage_resetpasswordpage",
+      "community": 0,
+      "norm_label": "resetpasswordpage()"
     },
     {
       "label": "LandingPage.jsx",
@@ -2000,6 +2081,24 @@
       "id": "pages_progresspage_progresspage",
       "community": 5,
       "norm_label": "progresspage()"
+    },
+    {
+      "label": "AuthCallbackPage.jsx",
+      "file_type": "code",
+      "source_file": "src/pages/AuthCallbackPage.jsx",
+      "source_location": "L1",
+      "id": "src_pages_authcallbackpage_jsx",
+      "community": 0,
+      "norm_label": "authcallbackpage.jsx"
+    },
+    {
+      "label": "AuthCallbackPage()",
+      "file_type": "code",
+      "source_file": "src/pages/AuthCallbackPage.jsx",
+      "source_location": "L5",
+      "id": "pages_authcallbackpage_authcallbackpage",
+      "community": 0,
+      "norm_label": "authcallbackpage()"
     },
     {
       "label": "ResultPage.jsx",
@@ -3870,7 +3969,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L131",
       "id": "references_graphql_schema_design_pagination_patterns",
-      "community": 24,
+      "community": 52,
       "norm_label": "pagination patterns"
     },
     {
@@ -3879,7 +3978,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L133",
       "id": "references_graphql_schema_design_relay_cursor_pagination_recommended",
-      "community": 24,
+      "community": 52,
       "norm_label": "relay cursor pagination (recommended)"
     },
     {
@@ -3888,7 +3987,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L135",
       "id": "references_graphql_schema_design_codeblock_6",
-      "community": 24,
+      "community": 52,
       "norm_label": "code:graphql (type userconnection {)"
     },
     {
@@ -3897,7 +3996,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L176",
       "id": "references_graphql_schema_design_offset_pagination_simpler",
-      "community": 24,
+      "community": 52,
       "norm_label": "offset pagination (simpler)"
     },
     {
@@ -3906,7 +4005,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L178",
       "id": "references_graphql_schema_design_codeblock_7",
-      "community": 24,
+      "community": 52,
       "norm_label": "code:graphql (type userlist {)"
     },
     {
@@ -3915,7 +4014,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L191",
       "id": "references_graphql_schema_design_mutation_design_patterns",
-      "community": 24,
+      "community": 46,
       "norm_label": "mutation design patterns"
     },
     {
@@ -3924,7 +4023,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L193",
       "id": "references_graphql_schema_design_1_input_payload_pattern",
-      "community": 24,
+      "community": 46,
       "norm_label": "1. input/payload pattern"
     },
     {
@@ -3933,7 +4032,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L195",
       "id": "references_graphql_schema_design_codeblock_8",
-      "community": 24,
+      "community": 46,
       "norm_label": "code:graphql (input createpostinput {)"
     },
     {
@@ -3942,7 +4041,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L219",
       "id": "references_graphql_schema_design_2_optimistic_response_support",
-      "community": 24,
+      "community": 46,
       "norm_label": "2. optimistic response support"
     },
     {
@@ -3951,7 +4050,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L221",
       "id": "references_graphql_schema_design_codeblock_9",
-      "community": 24,
+      "community": 46,
       "norm_label": "code:graphql (type updateuserpayload {)"
     },
     {
@@ -3960,7 +4059,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L239",
       "id": "references_graphql_schema_design_3_batch_mutations",
-      "community": 24,
+      "community": 46,
       "norm_label": "3. batch mutations"
     },
     {
@@ -3969,7 +4068,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L241",
       "id": "references_graphql_schema_design_codeblock_10",
-      "community": 24,
+      "community": 46,
       "norm_label": "code:graphql (input batchcreateuserinput {)"
     },
     {
@@ -3978,7 +4077,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L263",
       "id": "references_graphql_schema_design_field_design",
-      "community": 24,
+      "community": 48,
       "norm_label": "field design"
     },
     {
@@ -3987,7 +4086,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L265",
       "id": "references_graphql_schema_design_arguments_and_filtering",
-      "community": 24,
+      "community": 48,
       "norm_label": "arguments and filtering"
     },
     {
@@ -3996,7 +4095,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L267",
       "id": "references_graphql_schema_design_codeblock_11",
-      "community": 24,
+      "community": 48,
       "norm_label": "code:graphql (type query {)"
     },
     {
@@ -4005,7 +4104,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L306",
       "id": "references_graphql_schema_design_computed_fields",
-      "community": 24,
+      "community": 48,
       "norm_label": "computed fields"
     },
     {
@@ -4014,7 +4113,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L308",
       "id": "references_graphql_schema_design_codeblock_12",
-      "community": 24,
+      "community": 48,
       "norm_label": "code:graphql (type user {)"
     },
     {
@@ -4059,7 +4158,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L374",
       "id": "references_graphql_schema_design_directives",
-      "community": 24,
+      "community": 49,
       "norm_label": "directives"
     },
     {
@@ -4068,7 +4167,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L376",
       "id": "references_graphql_schema_design_built_in_directives",
-      "community": 24,
+      "community": 49,
       "norm_label": "built-in directives"
     },
     {
@@ -4077,7 +4176,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L378",
       "id": "references_graphql_schema_design_codeblock_15",
-      "community": 24,
+      "community": 49,
       "norm_label": "code:graphql (type user {)"
     },
     {
@@ -4086,7 +4185,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L399",
       "id": "references_graphql_schema_design_custom_directives",
-      "community": 24,
+      "community": 49,
       "norm_label": "custom directives"
     },
     {
@@ -4095,7 +4194,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L401",
       "id": "references_graphql_schema_design_codeblock_16",
-      "community": 24,
+      "community": 49,
       "norm_label": "code:graphql (directive @auth(requires: role = user) on field_definition)"
     },
     {
@@ -4104,7 +4203,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L416",
       "id": "references_graphql_schema_design_error_handling",
-      "community": 24,
+      "community": 50,
       "norm_label": "error handling"
     },
     {
@@ -4113,7 +4212,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L418",
       "id": "references_graphql_schema_design_union_error_pattern",
-      "community": 24,
+      "community": 50,
       "norm_label": "union error pattern"
     },
     {
@@ -4122,7 +4221,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L420",
       "id": "references_graphql_schema_design_codeblock_17",
-      "community": 24,
+      "community": 50,
       "norm_label": "code:graphql (type user {)"
     },
     {
@@ -4131,7 +4230,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L465",
       "id": "references_graphql_schema_design_errors_in_payload",
-      "community": 24,
+      "community": 50,
       "norm_label": "errors in payload"
     },
     {
@@ -4140,7 +4239,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L467",
       "id": "references_graphql_schema_design_codeblock_18",
-      "community": 24,
+      "community": 50,
       "norm_label": "code:graphql (type createuserpayload {)"
     },
     {
@@ -4149,7 +4248,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L488",
       "id": "references_graphql_schema_design_n_1_query_problem_solutions",
-      "community": 24,
+      "community": 47,
       "norm_label": "n+1 query problem solutions"
     },
     {
@@ -4158,7 +4257,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L490",
       "id": "references_graphql_schema_design_dataloader_pattern",
-      "community": 24,
+      "community": 47,
       "norm_label": "dataloader pattern"
     },
     {
@@ -4167,7 +4266,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L492",
       "id": "references_graphql_schema_design_codeblock_19",
-      "community": 24,
+      "community": 47,
       "norm_label": "code:python (from aiodataloader import dataloader)"
     },
     {
@@ -4176,7 +4275,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L508",
       "id": "references_graphql_schema_design_query_depth_limiting",
-      "community": 24,
+      "community": 47,
       "norm_label": "query depth limiting"
     },
     {
@@ -4185,7 +4284,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L510",
       "id": "references_graphql_schema_design_codeblock_20",
-      "community": 24,
+      "community": 47,
       "norm_label": "code:python (from graphql import graphqlerror)"
     },
     {
@@ -4194,7 +4293,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L523",
       "id": "references_graphql_schema_design_query_complexity_analysis",
-      "community": 24,
+      "community": 47,
       "norm_label": "query complexity analysis"
     },
     {
@@ -4203,7 +4302,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L525",
       "id": "references_graphql_schema_design_codeblock_21",
-      "community": 24,
+      "community": 47,
       "norm_label": "code:python (def complexity_limit_validator(max_complexity: int):)"
     },
     {
@@ -4212,7 +4311,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L537",
       "id": "references_graphql_schema_design_schema_versioning",
-      "community": 24,
+      "community": 51,
       "norm_label": "schema versioning"
     },
     {
@@ -4221,7 +4320,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L539",
       "id": "references_graphql_schema_design_field_deprecation",
-      "community": 24,
+      "community": 51,
       "norm_label": "field deprecation"
     },
     {
@@ -4230,7 +4329,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L541",
       "id": "references_graphql_schema_design_codeblock_22",
-      "community": 24,
+      "community": 51,
       "norm_label": "code:graphql (type user {)"
     },
     {
@@ -4239,7 +4338,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L549",
       "id": "references_graphql_schema_design_schema_evolution",
-      "community": 24,
+      "community": 51,
       "norm_label": "schema evolution"
     },
     {
@@ -4248,7 +4347,7 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L551",
       "id": "references_graphql_schema_design_codeblock_23",
-      "community": 24,
+      "community": 51,
       "norm_label": "code:graphql (# v1 - initial)"
     },
     {
@@ -5288,6 +5387,16 @@
       "source_file": "package.json",
       "source_location": "L14",
       "weight": 1.0,
+      "source": "admart_frontend_package_dependencies",
+      "target": "admart_frontend_package_dependencies_axios",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L14",
+      "weight": 1.0,
       "confidence_score": 1.0,
       "source": "admart_frontend_package_dependencies",
       "target": "admart_frontend_package_dependencies_react"
@@ -5850,6 +5959,28 @@
       "source_file": "src/App.jsx",
       "source_location": "L4",
       "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_authcallbackpage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_pages_resetpasswordpage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_app_jsx",
       "target": "src_pages_onboardingpage_jsx"
@@ -6190,6 +6321,80 @@
       "weight": 1.0,
       "source": "src_app_app",
       "target": "pages_notfoundpage_notfoundpage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/api.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_utils_api_js",
+      "target": "utils_api_api",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/api.js",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "src_utils_api_js",
+      "target": "utils_api_token",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/api.js",
+      "source_location": "L37",
+      "weight": 1.0,
+      "source": "src_utils_api_js",
+      "target": "utils_api_refreshtoken",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/OnboardingPage.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_pages_onboardingpage_jsx",
+      "target": "src_utils_api_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AuthPage.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_pages_authpage_jsx",
+      "target": "src_utils_api_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ResetPasswordPage.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_pages_resetpasswordpage_jsx",
+      "target": "src_utils_api_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/AuthCallbackPage.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_pages_authcallbackpage_jsx",
+      "target": "src_utils_api_js",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -8213,6 +8418,47 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "src/pages/ResetPasswordPage.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_pages_resetpasswordpage_jsx",
+      "target": "pages_resetpasswordpage_getpasswordchecks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ResetPasswordPage.jsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "src_pages_resetpasswordpage_jsx",
+      "target": "pages_resetpasswordpage_strengthmeta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ResetPasswordPage.jsx",
+      "source_location": "L20",
+      "weight": 1.0,
+      "source": "src_pages_resetpasswordpage_jsx",
+      "target": "pages_resetpasswordpage_resetpasswordpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ResetPasswordPage.jsx",
+      "source_location": "L33",
+      "weight": 1.0,
+      "source": "pages_resetpasswordpage_resetpasswordpage",
+      "target": "pages_resetpasswordpage_strengthmeta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "src/pages/LandingPage.jsx",
       "source_location": "L4",
       "weight": 1.0,
@@ -8554,6 +8800,16 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "src/pages/AuthCallbackPage.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_pages_authcallbackpage_jsx",
+      "target": "pages_authcallbackpage_authcallbackpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "src/pages/ResultPage.jsx",
       "source_location": "L4",
       "weight": 1.0,
@@ -8727,9 +8983,9 @@
       "source_file": "README.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "readme_md",
-      "target": "admart_frontend_readme_admart_frontend_vidify",
-      "confidence_score": 1.0
+      "target": "admart_frontend_readme_admart_frontend_vidify"
     },
     {
       "relation": "contains",
@@ -8737,9 +8993,9 @@
       "source_file": "README.md",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "admart_frontend_readme_admart_frontend_vidify",
-      "target": "admart_frontend_readme_tech_stack",
-      "confidence_score": 1.0
+      "target": "admart_frontend_readme_tech_stack"
     },
     {
       "relation": "contains",
@@ -8747,9 +9003,9 @@
       "source_file": "README.md",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "admart_frontend_readme_admart_frontend_vidify",
-      "target": "admart_frontend_readme_prerequisites",
-      "confidence_score": 1.0
+      "target": "admart_frontend_readme_prerequisites"
     },
     {
       "relation": "contains",
@@ -8757,9 +9013,9 @@
       "source_file": "README.md",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "admart_frontend_readme_admart_frontend_vidify",
-      "target": "admart_frontend_readme_getting_started",
-      "confidence_score": 1.0
+      "target": "admart_frontend_readme_getting_started"
     },
     {
       "relation": "contains",
@@ -8767,9 +9023,9 @@
       "source_file": "README.md",
       "source_location": "L39",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "admart_frontend_readme_admart_frontend_vidify",
-      "target": "admart_frontend_readme_project_structure",
-      "confidence_score": 1.0
+      "target": "admart_frontend_readme_project_structure"
     },
     {
       "relation": "contains",
@@ -8777,9 +9033,9 @@
       "source_file": "README.md",
       "source_location": "L71",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "admart_frontend_readme_admart_frontend_vidify",
-      "target": "admart_frontend_readme_routes",
-      "confidence_score": 1.0
+      "target": "admart_frontend_readme_routes"
     },
     {
       "relation": "contains",
@@ -8787,9 +9043,9 @@
       "source_file": "README.md",
       "source_location": "L94",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "admart_frontend_readme_admart_frontend_vidify",
-      "target": "admart_frontend_readme_design_system",
-      "confidence_score": 1.0
+      "target": "admart_frontend_readme_design_system"
     },
     {
       "relation": "contains",
@@ -8797,9 +9053,9 @@
       "source_file": "README.md",
       "source_location": "L102",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "admart_frontend_readme_admart_frontend_vidify",
-      "target": "admart_frontend_readme_notes",
-      "confidence_score": 1.0
+      "target": "admart_frontend_readme_notes"
     },
     {
       "relation": "contains",
@@ -8807,9 +9063,9 @@
       "source_file": "README.md",
       "source_location": "L107",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "admart_frontend_readme_admart_frontend_vidify",
-      "target": "admart_frontend_readme_license",
-      "confidence_score": 1.0
+      "target": "admart_frontend_readme_license"
     },
     {
       "relation": "contains",
@@ -8817,9 +9073,9 @@
       "source_file": "README.md",
       "source_location": "L22",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "admart_frontend_readme_getting_started",
-      "target": "admart_frontend_readme_codeblock_1",
-      "confidence_score": 1.0
+      "target": "admart_frontend_readme_codeblock_1"
     },
     {
       "relation": "contains",
@@ -8827,9 +9083,9 @@
       "source_file": "README.md",
       "source_location": "L41",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "admart_frontend_readme_project_structure",
-      "target": "admart_frontend_readme_codeblock_2",
-      "confidence_score": 1.0
+      "target": "admart_frontend_readme_codeblock_2"
     },
     {
       "relation": "contains",
@@ -8837,9 +9093,9 @@
       "source_file": "AGENT.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_md",
-      "target": "admart_frontend_agent_agents_md_frontend_next_js_react",
-      "confidence_score": 1.0
+      "target": "admart_frontend_agent_agents_md_frontend_next_js_react"
     },
     {
       "relation": "contains",
@@ -8847,9 +9103,9 @@
       "source_file": "AGENT.md",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "admart_frontend_agent_agents_md_frontend_next_js_react",
-      "target": "admart_frontend_agent_tech_stack",
-      "confidence_score": 1.0
+      "target": "admart_frontend_agent_tech_stack"
     },
     {
       "relation": "contains",
@@ -8857,9 +9113,9 @@
       "source_file": "AGENT.md",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "admart_frontend_agent_agents_md_frontend_next_js_react",
-      "target": "admart_frontend_agent_commands",
-      "confidence_score": 1.0
+      "target": "admart_frontend_agent_commands"
     },
     {
       "relation": "contains",
@@ -8867,9 +9123,9 @@
       "source_file": "AGENT.md",
       "source_location": "L28",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "admart_frontend_agent_agents_md_frontend_next_js_react",
-      "target": "admart_frontend_agent_code_quality",
-      "confidence_score": 1.0
+      "target": "admart_frontend_agent_code_quality"
     },
     {
       "relation": "contains",
@@ -8877,9 +9133,9 @@
       "source_file": "AGENT.md",
       "source_location": "L39",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "admart_frontend_agent_agents_md_frontend_next_js_react",
-      "target": "admart_frontend_agent_security",
-      "confidence_score": 1.0
+      "target": "admart_frontend_agent_security"
     },
     {
       "relation": "contains",
@@ -8887,9 +9143,9 @@
       "source_file": "AGENT.md",
       "source_location": "L49",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "admart_frontend_agent_agents_md_frontend_next_js_react",
-      "target": "admart_frontend_agent_api_integration_stay_in_sync_with_the_backend",
-      "confidence_score": 1.0
+      "target": "admart_frontend_agent_api_integration_stay_in_sync_with_the_backend"
     },
     {
       "relation": "contains",
@@ -8897,9 +9153,9 @@
       "source_file": "AGENT.md",
       "source_location": "L58",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "admart_frontend_agent_agents_md_frontend_next_js_react",
-      "target": "admart_frontend_agent_code_documentation",
-      "confidence_score": 1.0
+      "target": "admart_frontend_agent_code_documentation"
     },
     {
       "relation": "contains",
@@ -8907,9 +9163,9 @@
       "source_file": "AGENT.md",
       "source_location": "L65",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "admart_frontend_agent_agents_md_frontend_next_js_react",
-      "target": "admart_frontend_agent_accessibility_ux_since_design_is_largely_done",
-      "confidence_score": 1.0
+      "target": "admart_frontend_agent_accessibility_ux_since_design_is_largely_done"
     },
     {
       "relation": "contains",
@@ -8917,9 +9173,9 @@
       "source_file": "AGENT.md",
       "source_location": "L70",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "admart_frontend_agent_agents_md_frontend_next_js_react",
-      "target": "admart_frontend_agent_testing",
-      "confidence_score": 1.0
+      "target": "admart_frontend_agent_testing"
     },
     {
       "relation": "contains",
@@ -8927,9 +9183,9 @@
       "source_file": "AGENT.md",
       "source_location": "L76",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "admart_frontend_agent_agents_md_frontend_next_js_react",
-      "target": "admart_frontend_agent_git_conventions",
-      "confidence_score": 1.0
+      "target": "admart_frontend_agent_git_conventions"
     },
     {
       "relation": "contains",
@@ -8937,9 +9193,9 @@
       "source_file": "AGENT.md",
       "source_location": "L81",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "admart_frontend_agent_agents_md_frontend_next_js_react",
-      "target": "admart_frontend_agent_agent_behavior_guardrails",
-      "confidence_score": 1.0
+      "target": "admart_frontend_agent_agent_behavior_guardrails"
     },
     {
       "relation": "contains",
@@ -8947,9 +9203,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_full_stack_orchestration_full_stack_feature_skill_md",
-      "target": "full_stack_orchestration_full_stack_feature_skill_use_this_skill_when",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_use_this_skill_when"
     },
     {
       "relation": "contains",
@@ -8957,9 +9213,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_full_stack_orchestration_full_stack_feature_skill_md",
-      "target": "full_stack_orchestration_full_stack_feature_skill_do_not_use_this_skill_when",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_do_not_use_this_skill_when"
     },
     {
       "relation": "contains",
@@ -8967,9 +9223,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L16",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_full_stack_orchestration_full_stack_feature_skill_md",
-      "target": "full_stack_orchestration_full_stack_feature_skill_instructions",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_instructions"
     },
     {
       "relation": "contains",
@@ -8977,9 +9233,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L26",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_full_stack_orchestration_full_stack_feature_skill_md",
-      "target": "full_stack_orchestration_full_stack_feature_skill_phase_1_architecture_design_foundation",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_phase_1_architecture_design_foundation"
     },
     {
       "relation": "contains",
@@ -8987,9 +9243,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L46",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_full_stack_orchestration_full_stack_feature_skill_md",
-      "target": "full_stack_orchestration_full_stack_feature_skill_phase_2_parallel_implementation",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_phase_2_parallel_implementation"
     },
     {
       "relation": "contains",
@@ -8997,9 +9253,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L66",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_full_stack_orchestration_full_stack_feature_skill_md",
-      "target": "full_stack_orchestration_full_stack_feature_skill_phase_3_integration_testing",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_phase_3_integration_testing"
     },
     {
       "relation": "contains",
@@ -9007,9 +9263,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L86",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_full_stack_orchestration_full_stack_feature_skill_md",
-      "target": "full_stack_orchestration_full_stack_feature_skill_phase_4_deployment_operations",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_phase_4_deployment_operations"
     },
     {
       "relation": "contains",
@@ -9017,9 +9273,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L106",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_full_stack_orchestration_full_stack_feature_skill_md",
-      "target": "full_stack_orchestration_full_stack_feature_skill_configuration_options",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_configuration_options"
     },
     {
       "relation": "contains",
@@ -9027,9 +9283,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L114",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_full_stack_orchestration_full_stack_feature_skill_md",
-      "target": "full_stack_orchestration_full_stack_feature_skill_success_criteria",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_success_criteria"
     },
     {
       "relation": "contains",
@@ -9037,9 +9293,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L126",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_full_stack_orchestration_full_stack_feature_skill_md",
-      "target": "full_stack_orchestration_full_stack_feature_skill_coordination_notes",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_coordination_notes"
     },
     {
       "relation": "contains",
@@ -9047,9 +9303,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L28",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "full_stack_orchestration_full_stack_feature_skill_phase_1_architecture_design_foundation",
-      "target": "full_stack_orchestration_full_stack_feature_skill_1_database_architecture_design",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_1_database_architecture_design"
     },
     {
       "relation": "contains",
@@ -9057,9 +9313,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L34",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "full_stack_orchestration_full_stack_feature_skill_phase_1_architecture_design_foundation",
-      "target": "full_stack_orchestration_full_stack_feature_skill_2_backend_service_architecture",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_2_backend_service_architecture"
     },
     {
       "relation": "contains",
@@ -9067,9 +9323,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L40",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "full_stack_orchestration_full_stack_feature_skill_phase_1_architecture_design_foundation",
-      "target": "full_stack_orchestration_full_stack_feature_skill_3_frontend_component_architecture",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_3_frontend_component_architecture"
     },
     {
       "relation": "contains",
@@ -9077,9 +9333,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L48",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "full_stack_orchestration_full_stack_feature_skill_phase_2_parallel_implementation",
-      "target": "full_stack_orchestration_full_stack_feature_skill_4_backend_service_implementation",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_4_backend_service_implementation"
     },
     {
       "relation": "contains",
@@ -9087,9 +9343,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L54",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "full_stack_orchestration_full_stack_feature_skill_phase_2_parallel_implementation",
-      "target": "full_stack_orchestration_full_stack_feature_skill_5_frontend_implementation",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_5_frontend_implementation"
     },
     {
       "relation": "contains",
@@ -9097,9 +9353,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L60",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "full_stack_orchestration_full_stack_feature_skill_phase_2_parallel_implementation",
-      "target": "full_stack_orchestration_full_stack_feature_skill_6_database_implementation_optimization",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_6_database_implementation_optimization"
     },
     {
       "relation": "contains",
@@ -9107,9 +9363,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L68",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "full_stack_orchestration_full_stack_feature_skill_phase_3_integration_testing",
-      "target": "full_stack_orchestration_full_stack_feature_skill_7_api_contract_testing",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_7_api_contract_testing"
     },
     {
       "relation": "contains",
@@ -9117,9 +9373,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L74",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "full_stack_orchestration_full_stack_feature_skill_phase_3_integration_testing",
-      "target": "full_stack_orchestration_full_stack_feature_skill_8_end_to_end_testing",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_8_end_to_end_testing"
     },
     {
       "relation": "contains",
@@ -9127,9 +9383,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L80",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "full_stack_orchestration_full_stack_feature_skill_phase_3_integration_testing",
-      "target": "full_stack_orchestration_full_stack_feature_skill_9_security_audit_hardening",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_9_security_audit_hardening"
     },
     {
       "relation": "contains",
@@ -9137,9 +9393,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L88",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "full_stack_orchestration_full_stack_feature_skill_phase_4_deployment_operations",
-      "target": "full_stack_orchestration_full_stack_feature_skill_10_infrastructure_ci_cd_setup",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_10_infrastructure_ci_cd_setup"
     },
     {
       "relation": "contains",
@@ -9147,9 +9403,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L94",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "full_stack_orchestration_full_stack_feature_skill_phase_4_deployment_operations",
-      "target": "full_stack_orchestration_full_stack_feature_skill_11_observability_monitoring",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_11_observability_monitoring"
     },
     {
       "relation": "contains",
@@ -9157,9 +9413,9 @@
       "source_file": ".agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "source_location": "L100",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "full_stack_orchestration_full_stack_feature_skill_phase_4_deployment_operations",
-      "target": "full_stack_orchestration_full_stack_feature_skill_12_performance_optimization",
-      "confidence_score": 1.0
+      "target": "full_stack_orchestration_full_stack_feature_skill_12_performance_optimization"
     },
     {
       "relation": "contains",
@@ -9167,9 +9423,9 @@
       "source_file": ".agent/skills/typescript-pro/SKILL.md",
       "source_location": "L12",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_typescript_pro_skill_md",
-      "target": "typescript_pro_skill_use_this_skill_when",
-      "confidence_score": 1.0
+      "target": "typescript_pro_skill_use_this_skill_when"
     },
     {
       "relation": "contains",
@@ -9177,9 +9433,9 @@
       "source_file": ".agent/skills/typescript-pro/SKILL.md",
       "source_location": "L18",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_typescript_pro_skill_md",
-      "target": "typescript_pro_skill_do_not_use_this_skill_when",
-      "confidence_score": 1.0
+      "target": "typescript_pro_skill_do_not_use_this_skill_when"
     },
     {
       "relation": "contains",
@@ -9187,9 +9443,9 @@
       "source_file": ".agent/skills/typescript-pro/SKILL.md",
       "source_location": "L24",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_typescript_pro_skill_md",
-      "target": "typescript_pro_skill_instructions",
-      "confidence_score": 1.0
+      "target": "typescript_pro_skill_instructions"
     },
     {
       "relation": "contains",
@@ -9197,9 +9453,9 @@
       "source_file": ".agent/skills/typescript-pro/SKILL.md",
       "source_location": "L31",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_typescript_pro_skill_md",
-      "target": "typescript_pro_skill_focus_areas",
-      "confidence_score": 1.0
+      "target": "typescript_pro_skill_focus_areas"
     },
     {
       "relation": "contains",
@@ -9207,9 +9463,9 @@
       "source_file": ".agent/skills/typescript-pro/SKILL.md",
       "source_location": "L39",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_typescript_pro_skill_md",
-      "target": "typescript_pro_skill_approach",
-      "confidence_score": 1.0
+      "target": "typescript_pro_skill_approach"
     },
     {
       "relation": "contains",
@@ -9217,9 +9473,9 @@
       "source_file": ".agent/skills/typescript-pro/SKILL.md",
       "source_location": "L47",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_typescript_pro_skill_md",
-      "target": "typescript_pro_skill_output",
-      "confidence_score": 1.0
+      "target": "typescript_pro_skill_output"
     },
     {
       "relation": "contains",
@@ -9227,9 +9483,9 @@
       "source_file": ".agent/skills/api-design-principles/SKILL.md",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_api_design_principles_skill_md",
-      "target": "api_design_principles_skill_api_design_principles",
-      "confidence_score": 1.0
+      "target": "api_design_principles_skill_api_design_principles"
     },
     {
       "relation": "contains",
@@ -9237,9 +9493,9 @@
       "source_file": ".agent/skills/api-design-principles/SKILL.md",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "api_design_principles_skill_api_design_principles",
-      "target": "api_design_principles_skill_use_this_skill_when",
-      "confidence_score": 1.0
+      "target": "api_design_principles_skill_use_this_skill_when"
     },
     {
       "relation": "contains",
@@ -9247,9 +9503,9 @@
       "source_file": ".agent/skills/api-design-principles/SKILL.md",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "api_design_principles_skill_api_design_principles",
-      "target": "api_design_principles_skill_do_not_use_this_skill_when",
-      "confidence_score": 1.0
+      "target": "api_design_principles_skill_do_not_use_this_skill_when"
     },
     {
       "relation": "contains",
@@ -9257,9 +9513,9 @@
       "source_file": ".agent/skills/api-design-principles/SKILL.md",
       "source_location": "L26",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "api_design_principles_skill_api_design_principles",
-      "target": "api_design_principles_skill_instructions",
-      "confidence_score": 1.0
+      "target": "api_design_principles_skill_instructions"
     },
     {
       "relation": "contains",
@@ -9267,9 +9523,9 @@
       "source_file": ".agent/skills/api-design-principles/SKILL.md",
       "source_location": "L35",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "api_design_principles_skill_api_design_principles",
-      "target": "api_design_principles_skill_resources",
-      "confidence_score": 1.0
+      "target": "api_design_principles_skill_resources"
     },
     {
       "relation": "contains",
@@ -9277,9 +9533,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_api_design_principles_resources_implementation_playbook_md",
-      "target": "resources_implementation_playbook_api_design_principles_implementation_playbook",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_api_design_principles_implementation_playbook"
     },
     {
       "relation": "contains",
@@ -9287,9 +9543,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_api_design_principles_implementation_playbook",
-      "target": "resources_implementation_playbook_core_concepts",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_core_concepts"
     },
     {
       "relation": "contains",
@@ -9297,9 +9553,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L61",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_api_design_principles_implementation_playbook",
-      "target": "resources_implementation_playbook_rest_api_design_patterns",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_rest_api_design_patterns"
     },
     {
       "relation": "contains",
@@ -9307,9 +9563,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L236",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_api_design_principles_implementation_playbook",
-      "target": "resources_implementation_playbook_graphql_design_patterns",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_graphql_design_patterns"
     },
     {
       "relation": "contains",
@@ -9317,9 +9573,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L473",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_api_design_principles_implementation_playbook",
-      "target": "resources_implementation_playbook_best_practices",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_best_practices"
     },
     {
       "relation": "contains",
@@ -9327,9 +9583,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L495",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_api_design_principles_implementation_playbook",
-      "target": "resources_implementation_playbook_common_pitfalls",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_common_pitfalls"
     },
     {
       "relation": "contains",
@@ -9337,9 +9593,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L505",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_api_design_principles_implementation_playbook",
-      "target": "resources_implementation_playbook_resources",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_resources"
     },
     {
       "relation": "contains",
@@ -9347,9 +9603,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_core_concepts",
-      "target": "resources_implementation_playbook_1_restful_design_principles",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_1_restful_design_principles"
     },
     {
       "relation": "contains",
@@ -9357,9 +9613,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L24",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_core_concepts",
-      "target": "resources_implementation_playbook_2_graphql_design_principles",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_2_graphql_design_principles"
     },
     {
       "relation": "contains",
@@ -9367,9 +9623,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L40",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_core_concepts",
-      "target": "resources_implementation_playbook_3_api_versioning_strategies",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_3_api_versioning_strategies"
     },
     {
       "relation": "contains",
@@ -9377,9 +9633,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L18",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_next_js_app_router_patterns",
-      "target": "resources_implementation_playbook_core_concepts",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_core_concepts"
     },
     {
       "relation": "contains",
@@ -9387,9 +9643,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_core_concepts",
-      "target": "resources_implementation_playbook_1_rendering_modes",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_1_rendering_modes"
     },
     {
       "relation": "contains",
@@ -9397,9 +9653,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L30",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_core_concepts",
-      "target": "resources_implementation_playbook_2_file_conventions",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_2_file_conventions"
     },
     {
       "relation": "contains",
@@ -9407,9 +9663,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L44",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_3_api_versioning_strategies",
-      "target": "resources_implementation_playbook_codeblock_1",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_1"
     },
     {
       "relation": "contains",
@@ -9417,9 +9673,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L51",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_3_api_versioning_strategies",
-      "target": "resources_implementation_playbook_codeblock_2",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_2"
     },
     {
       "relation": "contains",
@@ -9427,9 +9683,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L57",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_3_api_versioning_strategies",
-      "target": "resources_implementation_playbook_codeblock_3",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_3"
     },
     {
       "relation": "contains",
@@ -9437,9 +9693,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L32",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_2_file_conventions",
-      "target": "resources_implementation_playbook_codeblock_1",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_1"
     },
     {
       "relation": "contains",
@@ -9447,9 +9703,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L47",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_quick_start",
-      "target": "resources_implementation_playbook_codeblock_2",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_2"
     },
     {
       "relation": "contains",
@@ -9457,9 +9713,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L97",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_pattern_1_server_components_with_data_fetching",
-      "target": "resources_implementation_playbook_codeblock_3",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_3"
     },
     {
       "relation": "contains",
@@ -9467,9 +9723,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L63",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_rest_api_design_patterns",
-      "target": "resources_implementation_playbook_pattern_1_resource_collection_design",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_pattern_1_resource_collection_design"
     },
     {
       "relation": "contains",
@@ -9477,9 +9733,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L84",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_rest_api_design_patterns",
-      "target": "resources_implementation_playbook_pattern_2_pagination_and_filtering",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_pattern_2_pagination_and_filtering"
     },
     {
       "relation": "contains",
@@ -9487,9 +9743,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L145",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_rest_api_design_patterns",
-      "target": "resources_implementation_playbook_pattern_3_error_handling_and_status_codes",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_pattern_3_error_handling_and_status_codes"
     },
     {
       "relation": "contains",
@@ -9497,9 +9753,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L206",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_rest_api_design_patterns",
-      "target": "resources_implementation_playbook_pattern_4_hateoas_hypermedia_as_the_engine_of_application_state",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_pattern_4_hateoas_hypermedia_as_the_engine_of_application_state"
     },
     {
       "relation": "contains",
@@ -9507,9 +9763,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L65",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_pattern_1_resource_collection_design",
-      "target": "resources_implementation_playbook_codeblock_4",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_4"
     },
     {
       "relation": "contains",
@@ -9517,9 +9773,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L161",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_pattern_2_client_components_with_use_client",
-      "target": "resources_implementation_playbook_codeblock_4",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_4"
     },
     {
       "relation": "contains",
@@ -9527,9 +9783,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L86",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_pattern_2_pagination_and_filtering",
-      "target": "resources_implementation_playbook_codeblock_5",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_5"
     },
     {
       "relation": "contains",
@@ -9537,9 +9793,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L199",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_pattern_3_server_actions",
-      "target": "resources_implementation_playbook_codeblock_5",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_5"
     },
     {
       "relation": "contains",
@@ -9547,9 +9803,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L147",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_pattern_3_error_handling_and_status_codes",
-      "target": "resources_implementation_playbook_codeblock_6",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_6"
     },
     {
       "relation": "contains",
@@ -9557,9 +9813,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L248",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_pattern_4_parallel_routes",
-      "target": "resources_implementation_playbook_codeblock_6",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_6"
     },
     {
       "relation": "contains",
@@ -9567,9 +9823,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L208",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_pattern_4_hateoas_hypermedia_as_the_engine_of_application_state",
-      "target": "resources_implementation_playbook_codeblock_7",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_7"
     },
     {
       "relation": "contains",
@@ -9577,9 +9833,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L288",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_pattern_5_intercepting_routes_modal_pattern",
-      "target": "resources_implementation_playbook_codeblock_7",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_7"
     },
     {
       "relation": "contains",
@@ -9587,9 +9843,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L238",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_graphql_design_patterns",
-      "target": "resources_implementation_playbook_pattern_1_schema_design",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_pattern_1_schema_design"
     },
     {
       "relation": "contains",
@@ -9597,9 +9853,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L335",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_graphql_design_patterns",
-      "target": "resources_implementation_playbook_pattern_2_resolver_design",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_pattern_2_resolver_design"
     },
     {
       "relation": "contains",
@@ -9607,9 +9863,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L428",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_graphql_design_patterns",
-      "target": "resources_implementation_playbook_pattern_3_dataloader_n_1_problem_prevention",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_pattern_3_dataloader_n_1_problem_prevention"
     },
     {
       "relation": "contains",
@@ -9617,9 +9873,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L240",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_pattern_1_schema_design",
-      "target": "resources_implementation_playbook_codeblock_8",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_8"
     },
     {
       "relation": "contains",
@@ -9627,9 +9883,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L355",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_pattern_6_streaming_with_suspense",
-      "target": "resources_implementation_playbook_codeblock_8",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_8"
     },
     {
       "relation": "contains",
@@ -9637,9 +9893,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L337",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_pattern_2_resolver_design",
-      "target": "resources_implementation_playbook_codeblock_9",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_9"
     },
     {
       "relation": "contains",
@@ -9647,9 +9903,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L401",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_pattern_7_route_handlers_api_routes",
-      "target": "resources_implementation_playbook_codeblock_9",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_9"
     },
     {
       "relation": "contains",
@@ -9657,9 +9913,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L430",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_pattern_3_dataloader_n_1_problem_prevention",
-      "target": "resources_implementation_playbook_codeblock_10",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_10"
     },
     {
       "relation": "contains",
@@ -9667,9 +9923,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L448",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_pattern_8_metadata_and_seo",
-      "target": "resources_implementation_playbook_codeblock_10",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_10"
     },
     {
       "relation": "contains",
@@ -9677,9 +9933,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L475",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_best_practices",
-      "target": "resources_implementation_playbook_rest_apis",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_rest_apis"
     },
     {
       "relation": "contains",
@@ -9687,9 +9943,9 @@
       "source_file": ".agent/skills/api-design-principles/resources/implementation-playbook.md",
       "source_location": "L485",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_best_practices",
-      "target": "resources_implementation_playbook_graphql_apis",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_graphql_apis"
     },
     {
       "relation": "contains",
@@ -9697,9 +9953,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L523",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_next_js_app_router_patterns",
-      "target": "resources_implementation_playbook_best_practices",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_best_practices"
     },
     {
       "relation": "contains",
@@ -9707,9 +9963,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L525",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_best_practices",
-      "target": "resources_implementation_playbook_do_s",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_do_s"
     },
     {
       "relation": "contains",
@@ -9717,9 +9973,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L532",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_best_practices",
-      "target": "resources_implementation_playbook_don_ts",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_don_ts"
     },
     {
       "relation": "contains",
@@ -9727,9 +9983,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L539",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_next_js_app_router_patterns",
-      "target": "resources_implementation_playbook_resources",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_resources"
     },
     {
       "relation": "contains",
@@ -9737,9 +9993,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_api_design_principles_assets_api_design_checklist_md",
-      "target": "assets_api_design_checklist_api_design_checklist",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_api_design_checklist"
     },
     {
       "relation": "contains",
@@ -9747,9 +10003,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_api_design_checklist",
-      "target": "assets_api_design_checklist_pre_implementation_review",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_pre_implementation_review"
     },
     {
       "relation": "contains",
@@ -9757,9 +10013,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L119",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_api_design_checklist",
-      "target": "assets_api_design_checklist_graphql_specific_checks",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_graphql_specific_checks"
     },
     {
       "relation": "contains",
@@ -9767,9 +10023,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_pre_implementation_review",
-      "target": "assets_api_design_checklist_resource_design",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_resource_design"
     },
     {
       "relation": "contains",
@@ -9777,9 +10033,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L13",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_pre_implementation_review",
-      "target": "assets_api_design_checklist_http_methods",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_http_methods"
     },
     {
       "relation": "contains",
@@ -9787,9 +10043,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L21",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_pre_implementation_review",
-      "target": "assets_api_design_checklist_status_codes",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_status_codes"
     },
     {
       "relation": "contains",
@@ -9797,9 +10053,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L34",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_pre_implementation_review",
-      "target": "assets_api_design_checklist_pagination",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_pagination"
     },
     {
       "relation": "contains",
@@ -9807,9 +10063,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L42",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_pre_implementation_review",
-      "target": "assets_api_design_checklist_filtering_sorting",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_filtering_sorting"
     },
     {
       "relation": "contains",
@@ -9817,9 +10073,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L49",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_pre_implementation_review",
-      "target": "assets_api_design_checklist_versioning",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_versioning"
     },
     {
       "relation": "contains",
@@ -9827,9 +10083,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L55",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_pre_implementation_review",
-      "target": "assets_api_design_checklist_error_handling",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_error_handling"
     },
     {
       "relation": "contains",
@@ -9837,9 +10093,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L63",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_pre_implementation_review",
-      "target": "assets_api_design_checklist_authentication_authorization",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_authentication_authorization"
     },
     {
       "relation": "contains",
@@ -9847,9 +10103,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L70",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_pre_implementation_review",
-      "target": "assets_api_design_checklist_rate_limiting",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_rate_limiting"
     },
     {
       "relation": "contains",
@@ -9857,9 +10113,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L77",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_pre_implementation_review",
-      "target": "assets_api_design_checklist_documentation",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_documentation"
     },
     {
       "relation": "contains",
@@ -9867,9 +10123,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L85",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_pre_implementation_review",
-      "target": "assets_api_design_checklist_testing",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_testing"
     },
     {
       "relation": "contains",
@@ -9877,9 +10133,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L93",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_pre_implementation_review",
-      "target": "assets_api_design_checklist_security",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_security"
     },
     {
       "relation": "contains",
@@ -9887,9 +10143,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L103",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_pre_implementation_review",
-      "target": "assets_api_design_checklist_performance",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_performance"
     },
     {
       "relation": "contains",
@@ -9897,9 +10153,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L111",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_pre_implementation_review",
-      "target": "assets_api_design_checklist_monitoring",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_monitoring"
     },
     {
       "relation": "contains",
@@ -9907,9 +10163,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L121",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_graphql_specific_checks",
-      "target": "assets_api_design_checklist_schema_design",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_schema_design"
     },
     {
       "relation": "contains",
@@ -9917,9 +10173,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L129",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_graphql_specific_checks",
-      "target": "assets_api_design_checklist_queries",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_queries"
     },
     {
       "relation": "contains",
@@ -9927,9 +10183,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L136",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_graphql_specific_checks",
-      "target": "assets_api_design_checklist_mutations",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_mutations"
     },
     {
       "relation": "contains",
@@ -9937,9 +10193,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L143",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_graphql_specific_checks",
-      "target": "assets_api_design_checklist_performance_143",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_performance_143"
     },
     {
       "relation": "contains",
@@ -9947,9 +10203,9 @@
       "source_file": ".agent/skills/api-design-principles/assets/api-design-checklist.md",
       "source_location": "L150",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "assets_api_design_checklist_graphql_specific_checks",
-      "target": "assets_api_design_checklist_documentation_150",
-      "confidence_score": 1.0
+      "target": "assets_api_design_checklist_documentation_150"
     },
     {
       "relation": "contains",
@@ -9957,9 +10213,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_api_design_principles_references_rest_best_practices_md",
-      "target": "references_rest_best_practices_rest_api_best_practices",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_rest_api_best_practices"
     },
     {
       "relation": "contains",
@@ -9967,9 +10223,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_rest_api_best_practices",
-      "target": "references_rest_best_practices_url_structure",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_url_structure"
     },
     {
       "relation": "contains",
@@ -9977,9 +10233,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L32",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_rest_api_best_practices",
-      "target": "references_rest_best_practices_http_methods_and_status_codes",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_http_methods_and_status_codes"
     },
     {
       "relation": "contains",
@@ -9987,9 +10243,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L85",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_rest_api_best_practices",
-      "target": "references_rest_best_practices_filtering_sorting_and_searching",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_filtering_sorting_and_searching"
     },
     {
       "relation": "contains",
@@ -9997,9 +10253,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L107",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_rest_api_best_practices",
-      "target": "references_rest_best_practices_pagination_patterns",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_pagination_patterns"
     },
     {
       "relation": "contains",
@@ -10007,9 +10263,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L149",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_rest_api_best_practices",
-      "target": "references_rest_best_practices_versioning_strategies",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_versioning_strategies"
     },
     {
       "relation": "contains",
@@ -10017,9 +10273,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L180",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_rest_api_best_practices",
-      "target": "references_rest_best_practices_rate_limiting",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_rate_limiting"
     },
     {
       "relation": "contains",
@@ -10027,9 +10283,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L235",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_rest_api_best_practices",
-      "target": "references_rest_best_practices_authentication_and_authorization",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_authentication_and_authorization"
     },
     {
       "relation": "contains",
@@ -10037,9 +10293,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L252",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_rest_api_best_practices",
-      "target": "references_rest_best_practices_error_response_format",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_error_response_format"
     },
     {
       "relation": "contains",
@@ -10047,9 +10303,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L289",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_rest_api_best_practices",
-      "target": "references_rest_best_practices_caching",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_caching"
     },
     {
       "relation": "contains",
@@ -10057,9 +10313,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L306",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_rest_api_best_practices",
-      "target": "references_rest_best_practices_bulk_operations",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_bulk_operations"
     },
     {
       "relation": "contains",
@@ -10067,9 +10323,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L328",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_rest_api_best_practices",
-      "target": "references_rest_best_practices_idempotency",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_idempotency"
     },
     {
       "relation": "contains",
@@ -10077,9 +10333,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L340",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_rest_api_best_practices",
-      "target": "references_rest_best_practices_cors_configuration",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_cors_configuration"
     },
     {
       "relation": "contains",
@@ -10087,9 +10343,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L354",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_rest_api_best_practices",
-      "target": "references_rest_best_practices_documentation_with_openapi",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_documentation_with_openapi"
     },
     {
       "relation": "contains",
@@ -10097,9 +10353,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L387",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_rest_api_best_practices",
-      "target": "references_rest_best_practices_health_and_monitoring_endpoints",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_health_and_monitoring_endpoints"
     },
     {
       "relation": "contains",
@@ -10107,9 +10363,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_url_structure",
-      "target": "references_rest_best_practices_resource_naming",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_resource_naming"
     },
     {
       "relation": "contains",
@@ -10117,9 +10373,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L19",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_url_structure",
-      "target": "references_rest_best_practices_nested_resources",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_nested_resources"
     },
     {
       "relation": "contains",
@@ -10127,9 +10383,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_resource_naming",
-      "target": "references_rest_best_practices_codeblock_1",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_1"
     },
     {
       "relation": "contains",
@@ -10137,9 +10393,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L21",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_nested_resources",
-      "target": "references_rest_best_practices_codeblock_2",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_2"
     },
     {
       "relation": "contains",
@@ -10147,9 +10403,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L34",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_http_methods_and_status_codes",
-      "target": "references_rest_best_practices_get_retrieve_resources",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_get_retrieve_resources"
     },
     {
       "relation": "contains",
@@ -10157,9 +10413,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L42",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_http_methods_and_status_codes",
-      "target": "references_rest_best_practices_post_create_resources",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_post_create_resources"
     },
     {
       "relation": "contains",
@@ -10167,9 +10423,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L56",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_http_methods_and_status_codes",
-      "target": "references_rest_best_practices_put_replace_resources",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_put_replace_resources"
     },
     {
       "relation": "contains",
@@ -10177,9 +10433,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L67",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_http_methods_and_status_codes",
-      "target": "references_rest_best_practices_patch_partial_update",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_patch_partial_update"
     },
     {
       "relation": "contains",
@@ -10187,9 +10443,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L76",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_http_methods_and_status_codes",
-      "target": "references_rest_best_practices_delete_remove_resources",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_delete_remove_resources"
     },
     {
       "relation": "contains",
@@ -10197,9 +10453,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L36",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_get_retrieve_resources",
-      "target": "references_rest_best_practices_codeblock_3",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_3"
     },
     {
       "relation": "contains",
@@ -10207,9 +10463,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L44",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_post_create_resources",
-      "target": "references_rest_best_practices_codeblock_4",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_4"
     },
     {
       "relation": "contains",
@@ -10217,9 +10473,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L58",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_put_replace_resources",
-      "target": "references_rest_best_practices_codeblock_5",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_5"
     },
     {
       "relation": "contains",
@@ -10227,9 +10483,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L69",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_patch_partial_update",
-      "target": "references_rest_best_practices_codeblock_6",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_6"
     },
     {
       "relation": "contains",
@@ -10237,9 +10493,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L78",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_delete_remove_resources",
-      "target": "references_rest_best_practices_codeblock_7",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_7"
     },
     {
       "relation": "contains",
@@ -10247,9 +10503,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L87",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_filtering_sorting_and_searching",
-      "target": "references_rest_best_practices_query_parameters",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_query_parameters"
     },
     {
       "relation": "contains",
@@ -10257,9 +10513,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L89",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_query_parameters",
-      "target": "references_rest_best_practices_codeblock_8",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_8"
     },
     {
       "relation": "contains",
@@ -10267,9 +10523,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L109",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_pagination_patterns",
-      "target": "references_rest_best_practices_offset_based_pagination",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_offset_based_pagination"
     },
     {
       "relation": "contains",
@@ -10277,9 +10533,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L124",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_pagination_patterns",
-      "target": "references_rest_best_practices_cursor_based_pagination_for_large_datasets",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_cursor_based_pagination_for_large_datasets"
     },
     {
       "relation": "contains",
@@ -10287,9 +10543,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L137",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_pagination_patterns",
-      "target": "references_rest_best_practices_link_header_pagination_restful",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_link_header_pagination_restful"
     },
     {
       "relation": "contains",
@@ -10297,9 +10553,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L111",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_offset_based_pagination",
-      "target": "references_rest_best_practices_codeblock_9",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_9"
     },
     {
       "relation": "contains",
@@ -10307,9 +10563,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L126",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_cursor_based_pagination_for_large_datasets",
-      "target": "references_rest_best_practices_codeblock_10",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_10"
     },
     {
       "relation": "contains",
@@ -10317,9 +10573,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L139",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_link_header_pagination_restful",
-      "target": "references_rest_best_practices_codeblock_11",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_11"
     },
     {
       "relation": "contains",
@@ -10327,9 +10583,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L151",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_versioning_strategies",
-      "target": "references_rest_best_practices_url_versioning_recommended",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_url_versioning_recommended"
     },
     {
       "relation": "contains",
@@ -10337,9 +10593,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L161",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_versioning_strategies",
-      "target": "references_rest_best_practices_header_versioning",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_header_versioning"
     },
     {
       "relation": "contains",
@@ -10347,9 +10603,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L171",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_versioning_strategies",
-      "target": "references_rest_best_practices_query_parameter",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_query_parameter"
     },
     {
       "relation": "contains",
@@ -10357,9 +10613,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L153",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_url_versioning_recommended",
-      "target": "references_rest_best_practices_codeblock_12",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_12"
     },
     {
       "relation": "contains",
@@ -10367,9 +10623,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L163",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_header_versioning",
-      "target": "references_rest_best_practices_codeblock_13",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_13"
     },
     {
       "relation": "contains",
@@ -10377,9 +10633,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L173",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_query_parameter",
-      "target": "references_rest_best_practices_codeblock_14",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_14"
     },
     {
       "relation": "contains",
@@ -10387,9 +10643,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L182",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_rate_limiting",
-      "target": "references_rest_best_practices_headers",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_headers"
     },
     {
       "relation": "contains",
@@ -10397,9 +10653,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L194",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_rate_limiting",
-      "target": "references_rest_best_practices_implementation_pattern",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_implementation_pattern"
     },
     {
       "relation": "contains",
@@ -10407,9 +10663,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L184",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_headers",
-      "target": "references_rest_best_practices_codeblock_15",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_15"
     },
     {
       "relation": "contains",
@@ -10417,9 +10673,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L196",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_implementation_pattern",
-      "target": "references_rest_best_practices_codeblock_16",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_16"
     },
     {
       "relation": "contains",
@@ -10427,9 +10683,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L237",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_authentication_and_authorization",
-      "target": "references_rest_best_practices_bearer_token",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_bearer_token"
     },
     {
       "relation": "contains",
@@ -10437,9 +10693,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L246",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_authentication_and_authorization",
-      "target": "references_rest_best_practices_api_keys",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_api_keys"
     },
     {
       "relation": "contains",
@@ -10447,9 +10703,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L239",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_bearer_token",
-      "target": "references_rest_best_practices_codeblock_17",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_17"
     },
     {
       "relation": "contains",
@@ -10457,9 +10713,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L248",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_api_keys",
-      "target": "references_rest_best_practices_codeblock_18",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_18"
     },
     {
       "relation": "contains",
@@ -10467,9 +10723,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L254",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_error_response_format",
-      "target": "references_rest_best_practices_consistent_structure",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_consistent_structure"
     },
     {
       "relation": "contains",
@@ -10477,9 +10733,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L274",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_error_response_format",
-      "target": "references_rest_best_practices_status_code_guidelines",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_status_code_guidelines"
     },
     {
       "relation": "contains",
@@ -10487,9 +10743,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L256",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_consistent_structure",
-      "target": "references_rest_best_practices_codeblock_19",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_19"
     },
     {
       "relation": "contains",
@@ -10497,9 +10753,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L291",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_caching",
-      "target": "references_rest_best_practices_cache_headers",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_cache_headers"
     },
     {
       "relation": "contains",
@@ -10507,9 +10763,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L293",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_cache_headers",
-      "target": "references_rest_best_practices_codeblock_20",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_20"
     },
     {
       "relation": "contains",
@@ -10517,9 +10773,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L308",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_bulk_operations",
-      "target": "references_rest_best_practices_batch_endpoints",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_batch_endpoints"
     },
     {
       "relation": "contains",
@@ -10527,9 +10783,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L310",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_batch_endpoints",
-      "target": "references_rest_best_practices_codeblock_21",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_21"
     },
     {
       "relation": "contains",
@@ -10537,9 +10793,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L330",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_idempotency",
-      "target": "references_rest_best_practices_idempotency_keys",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_idempotency_keys"
     },
     {
       "relation": "contains",
@@ -10547,9 +10803,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L332",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_idempotency_keys",
-      "target": "references_rest_best_practices_codeblock_22",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_22"
     },
     {
       "relation": "contains",
@@ -10557,9 +10813,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L342",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_cors_configuration",
-      "target": "references_rest_best_practices_codeblock_23",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_23"
     },
     {
       "relation": "contains",
@@ -10567,9 +10823,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L356",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_documentation_with_openapi",
-      "target": "references_rest_best_practices_codeblock_24",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_24"
     },
     {
       "relation": "contains",
@@ -10577,9 +10833,9 @@
       "source_file": ".agent/skills/api-design-principles/references/rest-best-practices.md",
       "source_location": "L389",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_rest_best_practices_health_and_monitoring_endpoints",
-      "target": "references_rest_best_practices_codeblock_25",
-      "confidence_score": 1.0
+      "target": "references_rest_best_practices_codeblock_25"
     },
     {
       "relation": "contains",
@@ -10587,9 +10843,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_api_design_principles_references_graphql_schema_design_md",
-      "target": "references_graphql_schema_design_graphql_schema_design_patterns",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_graphql_schema_design_patterns"
     },
     {
       "relation": "contains",
@@ -10597,9 +10853,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_graphql_schema_design_patterns",
-      "target": "references_graphql_schema_design_schema_organization",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_schema_organization"
     },
     {
       "relation": "contains",
@@ -10607,9 +10863,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L38",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_graphql_schema_design_patterns",
-      "target": "references_graphql_schema_design_type_design_patterns",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_type_design_patterns"
     },
     {
       "relation": "contains",
@@ -10617,9 +10873,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L131",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_graphql_schema_design_patterns",
-      "target": "references_graphql_schema_design_pagination_patterns",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_pagination_patterns"
     },
     {
       "relation": "contains",
@@ -10627,9 +10883,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L191",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_graphql_schema_design_patterns",
-      "target": "references_graphql_schema_design_mutation_design_patterns",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_mutation_design_patterns"
     },
     {
       "relation": "contains",
@@ -10637,9 +10893,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L263",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_graphql_schema_design_patterns",
-      "target": "references_graphql_schema_design_field_design",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_field_design"
     },
     {
       "relation": "contains",
@@ -10647,9 +10903,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L324",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_graphql_schema_design_patterns",
-      "target": "references_graphql_schema_design_subscriptions",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_subscriptions"
     },
     {
       "relation": "contains",
@@ -10657,9 +10913,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L353",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_graphql_schema_design_patterns",
-      "target": "references_graphql_schema_design_custom_scalars",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_custom_scalars"
     },
     {
       "relation": "contains",
@@ -10667,9 +10923,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L374",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_graphql_schema_design_patterns",
-      "target": "references_graphql_schema_design_directives",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_directives"
     },
     {
       "relation": "contains",
@@ -10677,9 +10933,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L416",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_graphql_schema_design_patterns",
-      "target": "references_graphql_schema_design_error_handling",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_error_handling"
     },
     {
       "relation": "contains",
@@ -10687,9 +10943,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L488",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_graphql_schema_design_patterns",
-      "target": "references_graphql_schema_design_n_1_query_problem_solutions",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_n_1_query_problem_solutions"
     },
     {
       "relation": "contains",
@@ -10697,9 +10953,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L537",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_graphql_schema_design_patterns",
-      "target": "references_graphql_schema_design_schema_versioning",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_schema_versioning"
     },
     {
       "relation": "contains",
@@ -10707,9 +10963,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L572",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_graphql_schema_design_patterns",
-      "target": "references_graphql_schema_design_best_practices_summary",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_best_practices_summary"
     },
     {
       "relation": "contains",
@@ -10717,9 +10973,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_schema_organization",
-      "target": "references_graphql_schema_design_modular_schema_structure",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_modular_schema_structure"
     },
     {
       "relation": "contains",
@@ -10727,9 +10983,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_modular_schema_structure",
-      "target": "references_graphql_schema_design_codeblock_1",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_1"
     },
     {
       "relation": "contains",
@@ -10737,9 +10993,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L40",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_type_design_patterns",
-      "target": "references_graphql_schema_design_1_non_null_types",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_1_non_null_types"
     },
     {
       "relation": "contains",
@@ -10747,9 +11003,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L52",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_type_design_patterns",
-      "target": "references_graphql_schema_design_2_interfaces_for_polymorphism",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_2_interfaces_for_polymorphism"
     },
     {
       "relation": "contains",
@@ -10757,9 +11013,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L77",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_type_design_patterns",
-      "target": "references_graphql_schema_design_3_unions_for_heterogeneous_results",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_3_unions_for_heterogeneous_results"
     },
     {
       "relation": "contains",
@@ -10767,9 +11023,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L107",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_type_design_patterns",
-      "target": "references_graphql_schema_design_4_input_types",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_4_input_types"
     },
     {
       "relation": "contains",
@@ -10777,9 +11033,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L42",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_1_non_null_types",
-      "target": "references_graphql_schema_design_codeblock_2",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_2"
     },
     {
       "relation": "contains",
@@ -10787,9 +11043,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L54",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_2_interfaces_for_polymorphism",
-      "target": "references_graphql_schema_design_codeblock_3",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_3"
     },
     {
       "relation": "contains",
@@ -10797,9 +11053,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L79",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_3_unions_for_heterogeneous_results",
-      "target": "references_graphql_schema_design_codeblock_4",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_4"
     },
     {
       "relation": "contains",
@@ -10807,9 +11063,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L109",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_4_input_types",
-      "target": "references_graphql_schema_design_codeblock_5",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_5"
     },
     {
       "relation": "contains",
@@ -10817,9 +11073,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L133",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_pagination_patterns",
-      "target": "references_graphql_schema_design_relay_cursor_pagination_recommended",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_relay_cursor_pagination_recommended"
     },
     {
       "relation": "contains",
@@ -10827,9 +11083,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L176",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_pagination_patterns",
-      "target": "references_graphql_schema_design_offset_pagination_simpler",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_offset_pagination_simpler"
     },
     {
       "relation": "contains",
@@ -10837,9 +11093,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L135",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_relay_cursor_pagination_recommended",
-      "target": "references_graphql_schema_design_codeblock_6",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_6"
     },
     {
       "relation": "contains",
@@ -10847,9 +11103,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L178",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_offset_pagination_simpler",
-      "target": "references_graphql_schema_design_codeblock_7",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_7"
     },
     {
       "relation": "contains",
@@ -10857,9 +11113,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L193",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_mutation_design_patterns",
-      "target": "references_graphql_schema_design_1_input_payload_pattern",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_1_input_payload_pattern"
     },
     {
       "relation": "contains",
@@ -10867,9 +11123,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L219",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_mutation_design_patterns",
-      "target": "references_graphql_schema_design_2_optimistic_response_support",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_2_optimistic_response_support"
     },
     {
       "relation": "contains",
@@ -10877,9 +11133,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L239",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_mutation_design_patterns",
-      "target": "references_graphql_schema_design_3_batch_mutations",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_3_batch_mutations"
     },
     {
       "relation": "contains",
@@ -10887,9 +11143,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L195",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_1_input_payload_pattern",
-      "target": "references_graphql_schema_design_codeblock_8",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_8"
     },
     {
       "relation": "contains",
@@ -10897,9 +11153,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L221",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_2_optimistic_response_support",
-      "target": "references_graphql_schema_design_codeblock_9",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_9"
     },
     {
       "relation": "contains",
@@ -10907,9 +11163,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L241",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_3_batch_mutations",
-      "target": "references_graphql_schema_design_codeblock_10",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_10"
     },
     {
       "relation": "contains",
@@ -10917,9 +11173,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L265",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_field_design",
-      "target": "references_graphql_schema_design_arguments_and_filtering",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_arguments_and_filtering"
     },
     {
       "relation": "contains",
@@ -10927,9 +11183,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L306",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_field_design",
-      "target": "references_graphql_schema_design_computed_fields",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_computed_fields"
     },
     {
       "relation": "contains",
@@ -10937,9 +11193,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L267",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_arguments_and_filtering",
-      "target": "references_graphql_schema_design_codeblock_11",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_11"
     },
     {
       "relation": "contains",
@@ -10947,9 +11203,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L308",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_computed_fields",
-      "target": "references_graphql_schema_design_codeblock_12",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_12"
     },
     {
       "relation": "contains",
@@ -10957,9 +11213,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L326",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_subscriptions",
-      "target": "references_graphql_schema_design_codeblock_13",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_13"
     },
     {
       "relation": "contains",
@@ -10967,9 +11223,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L355",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_custom_scalars",
-      "target": "references_graphql_schema_design_codeblock_14",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_14"
     },
     {
       "relation": "contains",
@@ -10977,9 +11233,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L376",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_directives",
-      "target": "references_graphql_schema_design_built_in_directives",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_built_in_directives"
     },
     {
       "relation": "contains",
@@ -10987,9 +11243,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L399",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_directives",
-      "target": "references_graphql_schema_design_custom_directives",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_custom_directives"
     },
     {
       "relation": "contains",
@@ -10997,9 +11253,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L378",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_built_in_directives",
-      "target": "references_graphql_schema_design_codeblock_15",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_15"
     },
     {
       "relation": "contains",
@@ -11007,9 +11263,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L401",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_custom_directives",
-      "target": "references_graphql_schema_design_codeblock_16",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_16"
     },
     {
       "relation": "contains",
@@ -11017,9 +11273,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L418",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_error_handling",
-      "target": "references_graphql_schema_design_union_error_pattern",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_union_error_pattern"
     },
     {
       "relation": "contains",
@@ -11027,9 +11283,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L465",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_error_handling",
-      "target": "references_graphql_schema_design_errors_in_payload",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_errors_in_payload"
     },
     {
       "relation": "contains",
@@ -11037,9 +11293,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L420",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_union_error_pattern",
-      "target": "references_graphql_schema_design_codeblock_17",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_17"
     },
     {
       "relation": "contains",
@@ -11047,9 +11303,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L467",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_errors_in_payload",
-      "target": "references_graphql_schema_design_codeblock_18",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_18"
     },
     {
       "relation": "contains",
@@ -11057,9 +11313,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L490",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_n_1_query_problem_solutions",
-      "target": "references_graphql_schema_design_dataloader_pattern",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_dataloader_pattern"
     },
     {
       "relation": "contains",
@@ -11067,9 +11323,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L508",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_n_1_query_problem_solutions",
-      "target": "references_graphql_schema_design_query_depth_limiting",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_query_depth_limiting"
     },
     {
       "relation": "contains",
@@ -11077,9 +11333,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L523",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_n_1_query_problem_solutions",
-      "target": "references_graphql_schema_design_query_complexity_analysis",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_query_complexity_analysis"
     },
     {
       "relation": "contains",
@@ -11087,9 +11343,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L492",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_dataloader_pattern",
-      "target": "references_graphql_schema_design_codeblock_19",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_19"
     },
     {
       "relation": "contains",
@@ -11097,9 +11353,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L510",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_query_depth_limiting",
-      "target": "references_graphql_schema_design_codeblock_20",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_20"
     },
     {
       "relation": "contains",
@@ -11107,9 +11363,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L525",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_query_complexity_analysis",
-      "target": "references_graphql_schema_design_codeblock_21",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_21"
     },
     {
       "relation": "contains",
@@ -11117,9 +11373,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L539",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_schema_versioning",
-      "target": "references_graphql_schema_design_field_deprecation",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_field_deprecation"
     },
     {
       "relation": "contains",
@@ -11127,9 +11383,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L549",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_schema_versioning",
-      "target": "references_graphql_schema_design_schema_evolution",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_schema_evolution"
     },
     {
       "relation": "contains",
@@ -11137,9 +11393,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L541",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_field_deprecation",
-      "target": "references_graphql_schema_design_codeblock_22",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_22"
     },
     {
       "relation": "contains",
@@ -11147,9 +11403,9 @@
       "source_file": ".agent/skills/api-design-principles/references/graphql-schema-design.md",
       "source_location": "L551",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "references_graphql_schema_design_schema_evolution",
-      "target": "references_graphql_schema_design_codeblock_23",
-      "confidence_score": 1.0
+      "target": "references_graphql_schema_design_codeblock_23"
     },
     {
       "relation": "contains",
@@ -11157,9 +11413,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/SKILL.md",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_nextjs_app_router_patterns_skill_md",
-      "target": "nextjs_app_router_patterns_skill_next_js_app_router_patterns",
-      "confidence_score": 1.0
+      "target": "nextjs_app_router_patterns_skill_next_js_app_router_patterns"
     },
     {
       "relation": "contains",
@@ -11167,9 +11423,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/SKILL.md",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nextjs_app_router_patterns_skill_next_js_app_router_patterns",
-      "target": "nextjs_app_router_patterns_skill_use_this_skill_when",
-      "confidence_score": 1.0
+      "target": "nextjs_app_router_patterns_skill_use_this_skill_when"
     },
     {
       "relation": "contains",
@@ -11177,9 +11433,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/SKILL.md",
       "source_location": "L19",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nextjs_app_router_patterns_skill_next_js_app_router_patterns",
-      "target": "nextjs_app_router_patterns_skill_do_not_use_this_skill_when",
-      "confidence_score": 1.0
+      "target": "nextjs_app_router_patterns_skill_do_not_use_this_skill_when"
     },
     {
       "relation": "contains",
@@ -11187,9 +11443,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/SKILL.md",
       "source_location": "L24",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nextjs_app_router_patterns_skill_next_js_app_router_patterns",
-      "target": "nextjs_app_router_patterns_skill_instructions",
-      "confidence_score": 1.0
+      "target": "nextjs_app_router_patterns_skill_instructions"
     },
     {
       "relation": "contains",
@@ -11197,9 +11453,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/SKILL.md",
       "source_location": "L31",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nextjs_app_router_patterns_skill_next_js_app_router_patterns",
-      "target": "nextjs_app_router_patterns_skill_resources",
-      "confidence_score": 1.0
+      "target": "nextjs_app_router_patterns_skill_resources"
     },
     {
       "relation": "contains",
@@ -11207,9 +11463,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_nextjs_app_router_patterns_resources_implementation_playbook_md",
-      "target": "resources_implementation_playbook_next_js_app_router_patterns_implementation_playbook",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_next_js_app_router_patterns_implementation_playbook"
     },
     {
       "relation": "contains",
@@ -11217,9 +11473,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_nextjs_app_router_patterns_resources_implementation_playbook_md",
-      "target": "resources_implementation_playbook_next_js_app_router_patterns",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_next_js_app_router_patterns"
     },
     {
       "relation": "contains",
@@ -11227,9 +11483,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_next_js_app_router_patterns",
-      "target": "resources_implementation_playbook_when_to_use_this_skill",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_when_to_use_this_skill"
     },
     {
       "relation": "contains",
@@ -11237,9 +11493,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L45",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_next_js_app_router_patterns",
-      "target": "resources_implementation_playbook_quick_start",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_quick_start"
     },
     {
       "relation": "contains",
@@ -11247,9 +11503,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L93",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_next_js_app_router_patterns",
-      "target": "resources_implementation_playbook_patterns",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_patterns"
     },
     {
       "relation": "contains",
@@ -11257,9 +11513,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L495",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_next_js_app_router_patterns",
-      "target": "resources_implementation_playbook_caching_strategies",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_caching_strategies"
     },
     {
       "relation": "contains",
@@ -11267,9 +11523,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L95",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_patterns",
-      "target": "resources_implementation_playbook_pattern_1_server_components_with_data_fetching",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_pattern_1_server_components_with_data_fetching"
     },
     {
       "relation": "contains",
@@ -11277,9 +11533,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L159",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_patterns",
-      "target": "resources_implementation_playbook_pattern_2_client_components_with_use_client",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_pattern_2_client_components_with_use_client"
     },
     {
       "relation": "contains",
@@ -11287,9 +11543,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L197",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_patterns",
-      "target": "resources_implementation_playbook_pattern_3_server_actions",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_pattern_3_server_actions"
     },
     {
       "relation": "contains",
@@ -11297,9 +11553,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L246",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_patterns",
-      "target": "resources_implementation_playbook_pattern_4_parallel_routes",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_pattern_4_parallel_routes"
     },
     {
       "relation": "contains",
@@ -11307,9 +11563,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L286",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_patterns",
-      "target": "resources_implementation_playbook_pattern_5_intercepting_routes_modal_pattern",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_pattern_5_intercepting_routes_modal_pattern"
     },
     {
       "relation": "contains",
@@ -11317,9 +11573,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L353",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_patterns",
-      "target": "resources_implementation_playbook_pattern_6_streaming_with_suspense",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_pattern_6_streaming_with_suspense"
     },
     {
       "relation": "contains",
@@ -11327,9 +11583,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L399",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_patterns",
-      "target": "resources_implementation_playbook_pattern_7_route_handlers_api_routes",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_pattern_7_route_handlers_api_routes"
     },
     {
       "relation": "contains",
@@ -11337,9 +11593,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L446",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_patterns",
-      "target": "resources_implementation_playbook_pattern_8_metadata_and_seo",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_pattern_8_metadata_and_seo"
     },
     {
       "relation": "contains",
@@ -11347,9 +11603,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L497",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_caching_strategies",
-      "target": "resources_implementation_playbook_data_cache",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_data_cache"
     },
     {
       "relation": "contains",
@@ -11357,9 +11613,9 @@
       "source_file": ".agent/skills/nextjs-app-router-patterns/resources/implementation-playbook.md",
       "source_location": "L499",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "resources_implementation_playbook_data_cache",
-      "target": "resources_implementation_playbook_codeblock_11",
-      "confidence_score": 1.0
+      "target": "resources_implementation_playbook_codeblock_11"
     },
     {
       "relation": "contains",
@@ -11367,9 +11623,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L14",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_security_auditor_skill_md",
-      "target": "security_auditor_skill_use_this_skill_when",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_use_this_skill_when"
     },
     {
       "relation": "contains",
@@ -11377,9 +11633,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L21",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_security_auditor_skill_md",
-      "target": "security_auditor_skill_do_not_use_this_skill_when",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_do_not_use_this_skill_when"
     },
     {
       "relation": "contains",
@@ -11387,9 +11643,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L27",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_security_auditor_skill_md",
-      "target": "security_auditor_skill_instructions",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_instructions"
     },
     {
       "relation": "contains",
@@ -11397,9 +11653,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L35",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_security_auditor_skill_md",
-      "target": "security_auditor_skill_safety",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_safety"
     },
     {
       "relation": "contains",
@@ -11407,9 +11663,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L40",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_security_auditor_skill_md",
-      "target": "security_auditor_skill_purpose",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_purpose"
     },
     {
       "relation": "contains",
@@ -11417,9 +11673,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L43",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_security_auditor_skill_md",
-      "target": "security_auditor_skill_capabilities",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_capabilities"
     },
     {
       "relation": "contains",
@@ -11427,9 +11683,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L128",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_security_auditor_skill_md",
-      "target": "security_auditor_skill_behavioral_traits",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_behavioral_traits"
     },
     {
       "relation": "contains",
@@ -11437,9 +11693,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L140",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_security_auditor_skill_md",
-      "target": "security_auditor_skill_knowledge_base",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_knowledge_base"
     },
     {
       "relation": "contains",
@@ -11447,9 +11703,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L150",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_security_auditor_skill_md",
-      "target": "security_auditor_skill_response_approach",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_response_approach"
     },
     {
       "relation": "contains",
@@ -11457,9 +11713,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L161",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agent_skills_security_auditor_skill_md",
-      "target": "security_auditor_skill_example_interactions",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_example_interactions"
     },
     {
       "relation": "contains",
@@ -11467,9 +11723,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L45",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "security_auditor_skill_capabilities",
-      "target": "security_auditor_skill_devsecops_security_automation",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_devsecops_security_automation"
     },
     {
       "relation": "contains",
@@ -11477,9 +11733,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L53",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "security_auditor_skill_capabilities",
-      "target": "security_auditor_skill_modern_authentication_authorization",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_modern_authentication_authorization"
     },
     {
       "relation": "contains",
@@ -11487,9 +11743,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L61",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "security_auditor_skill_capabilities",
-      "target": "security_auditor_skill_owasp_vulnerability_management",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_owasp_vulnerability_management"
     },
     {
       "relation": "contains",
@@ -11497,9 +11753,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L69",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "security_auditor_skill_capabilities",
-      "target": "security_auditor_skill_application_security_testing",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_application_security_testing"
     },
     {
       "relation": "contains",
@@ -11507,9 +11763,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L77",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "security_auditor_skill_capabilities",
-      "target": "security_auditor_skill_cloud_security",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_cloud_security"
     },
     {
       "relation": "contains",
@@ -11517,9 +11773,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L85",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "security_auditor_skill_capabilities",
-      "target": "security_auditor_skill_compliance_governance",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_compliance_governance"
     },
     {
       "relation": "contains",
@@ -11527,9 +11783,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L92",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "security_auditor_skill_capabilities",
-      "target": "security_auditor_skill_secure_coding_development",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_secure_coding_development"
     },
     {
       "relation": "contains",
@@ -11537,9 +11793,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L100",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "security_auditor_skill_capabilities",
-      "target": "security_auditor_skill_network_infrastructure_security",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_network_infrastructure_security"
     },
     {
       "relation": "contains",
@@ -11547,9 +11803,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L107",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "security_auditor_skill_capabilities",
-      "target": "security_auditor_skill_security_monitoring_incident_response",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_security_monitoring_incident_response"
     },
     {
       "relation": "contains",
@@ -11557,9 +11813,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L114",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "security_auditor_skill_capabilities",
-      "target": "security_auditor_skill_emerging_security_technologies",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_emerging_security_technologies"
     },
     {
       "relation": "contains",
@@ -11567,9 +11823,9 @@
       "source_file": ".agent/skills/security-auditor/SKILL.md",
       "source_location": "L121",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "security_auditor_skill_capabilities",
-      "target": "security_auditor_skill_security_testing_validation",
-      "confidence_score": 1.0
+      "target": "security_auditor_skill_security_testing_validation"
     },
     {
       "relation": "contains",
@@ -11577,9 +11833,9 @@
       "source_file": ".agents/workflows/graphify.md",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_workflows_graphify_md",
-      "target": "workflows_graphify_workflow_graphify",
-      "confidence_score": 1.0
+      "target": "workflows_graphify_workflow_graphify"
     },
     {
       "relation": "contains",
@@ -11587,9 +11843,9 @@
       "source_file": ".agents/rules/graphify.md",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_rules_graphify_md",
-      "target": "rules_graphify_graphify",
-      "confidence_score": 1.0
+      "target": "rules_graphify_graphify"
     },
     {
       "relation": "conceptually_related_to",
@@ -11810,5 +12066,5 @@
       "source_file": ".agent/skills/api-design-principles/SKILL.md"
     }
   ],
-  "built_at_commit": "2c77463db27b4bf4e6e6f6fad30662237733ec8d"
+  "built_at_commit": "20d7190b201e0ae164af48b39da051d8b17fe2d1"
 }

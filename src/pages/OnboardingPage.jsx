@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import api from '../utils/api'
 
 const PLATFORMS = [
   {
@@ -125,9 +126,24 @@ export default function OnboardingPage() {
   const goBack = () => setCurrentStep((s) => Math.max(1, s - 1))
   const skip = () => goNext()
 
-  const handleGenerate = () => {
-    navigate('/dashboard')
+  const handleGenerate = async () => {
+    try {
+      const response = await api.patch('/api/auth/me', {
+        onboardingCompleted: true,
+        brand_name: brandName,
+        brand_industry: industry,
+        brand_color_hex: selectedColor,
+      })
+      const user = JSON.parse(localStorage.getItem('user') || '{}')
+      const updatedUser = { ...user, ...response.data }
+      localStorage.setItem('user', JSON.stringify(updatedUser))
+    } catch (err) {
+      console.error('Failed to update profile during onboarding:', err)
+    } finally {
+      navigate('/dashboard')
+    }
   }
+
 
   return (
     <div className="min-h-screen bg-base font-body text-text-primary">
