@@ -1,16 +1,16 @@
-# Graph Report - Admart-frontend  (2026-06-20)
+# Graph Report - Admart-frontend  (2026-06-21)
 
 ## Corpus Check
-- 45 files · ~49,029 words
+- 45 files · ~49,117 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 560 nodes · 669 edges · 53 communities (41 shown, 12 thin omitted)
+- 560 nodes · 670 edges · 60 communities (47 shown, 13 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 14 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `20d7190b`
+- Built from commit: `4182243a`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -68,6 +68,13 @@
 - [[_COMMUNITY_Community 50|Community 50]]
 - [[_COMMUNITY_Community 51|Community 51]]
 - [[_COMMUNITY_Community 52|Community 52]]
+- [[_COMMUNITY_Community 53|Community 53]]
+- [[_COMMUNITY_Community 54|Community 54]]
+- [[_COMMUNITY_Community 55|Community 55]]
+- [[_COMMUNITY_Community 56|Community 56]]
+- [[_COMMUNITY_Community 57|Community 57]]
+- [[_COMMUNITY_Community 58|Community 58]]
+- [[_COMMUNITY_Community 59|Community 59]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `DashboardPage()` - 21 edges
@@ -100,15 +107,15 @@
 - **Video Creation and Publishing Flow** — pages_progresspage_progresspage, pages_resultpage_resultpage, pages_publishingpage_publishingpage [INFERRED 0.95]
 - **API Design Standards and Guidelines** — api_design_principles_skill_main, resources_implementation_playbook_apidesign, assets_api_design_checklist_main, references_rest_best_practices_main, references_graphql_schema_design_main [EXTRACTED 1.00]
 
-## Communities (53 total, 12 thin omitted)
+## Communities (60 total, 13 thin omitted)
 
 ### Community 0 - "Authentication & User Accounts"
-Cohesion: 0.05
-Nodes (22): AuthPage(), showcaseItems, strengthMeta(), ACCENT_MAP, EMPTY_STATES, NotFoundPage(), QUICK_LINKS, INDUSTRIES (+14 more)
+Cohesion: 0.17
+Nodes (9): Frontend Development Agent Rules, AuthPage(), showcaseItems, strengthMeta(), LandingPage(), LogoMark(), showcaseVideos, VideoCard() (+1 more)
 
 ### Community 1 - "App Shell Layout & Billing/Credits"
-Cohesion: 0.06
-Nodes (24): itemCls(), COST_REF, PACKS, TXNS, ASPECT_OPTIONS, BODY_FONTS, HEADING_FONTS, INITIAL_COLORS (+16 more)
+Cohesion: 0.09
+Nodes (21): itemCls(), AnalyticsPage(), APR_LABELS, DonutChart(), ENG_STACK, LINE_POINTS, LineChart(), MONTHS (+13 more)
 
 ### Community 2 - "Project Dependencies & Manifests"
 Cohesion: 0.07
@@ -127,16 +134,16 @@ Cohesion: 0.16
 Nodes (16): activeStageIndex(), FRAME_THRESHOLDS, framesLoadedCount(), ProgressPage(), STAGES, ChevronLeftIcon(), PLATFORMS, PublishingPage() (+8 more)
 
 ### Community 6 - "Analytics Dashboard & Status Tracking"
-Cohesion: 0.1
-Nodes (34): Frontend Development Agent Rules, VidifySidebar(), BillingPage(), AI Credit Consumption and Billing, BrandKitPage(), CalendarPage(), DashboardPage(), FILTERS (+26 more)
+Cohesion: 0.13
+Nodes (28): VidifySidebar(), BillingPage(), AI Credit Consumption and Billing, BrandKitPage(), CalendarPage(), DashboardPage(), FILTERS, SPARKLINES (+20 more)
 
 ### Community 7 - "App Landing & Media Library Navigation"
 Cohesion: 0.22
 Nodes (4): MOCK_VIDEOS, navLinkClass(), PLATFORM_DOT, STATUS_STYLES
 
 ### Community 8 - "Analytics Charts & User Engagement Data"
-Cohesion: 0.23
-Nodes (11): AnalyticsPage(), APR_LABELS, DonutChart(), ENG_STACK, LINE_POINTS, LineChart(), MONTHS, PLATFORM_DOT (+3 more)
+Cohesion: 0.22
+Nodes (8): ASPECT_OPTIONS, BODY_FONTS, HEADING_FONTS, INITIAL_COLORS, STYLE_OPTIONS, TONE_PRESETS, VOICE_OPTIONS, WATERMARK_OPTIONS
 
 ### Community 9 - "Scheduler Calendar & Mock Events"
 Cohesion: 0.17
@@ -266,25 +273,49 @@ Nodes (5): code:graphql (type User {), code:graphql (# v1 - Initial), Field Depr
 Cohesion: 0.4
 Nodes (5): code:graphql (type UserConnection {), code:graphql (type UserList {), Offset Pagination (Simpler), Pagination Patterns, Relay Cursor Pagination (Recommended)
 
+### Community 53 - "Community 53"
+Cohesion: 0.29
+Nodes (5): ResetPasswordPage(), strengthMeta(), api, refreshToken, token
+
+### Community 54 - "Community 54"
+Cohesion: 0.25
+Nodes (5): Sidebar(), CATEGORIES, CATEGORY_LABELS, Sidebar(), TEMPLATES
+
+### Community 56 - "Community 56"
+Cohesion: 0.33
+Nodes (4): INDUSTRIES, PLATFORMS, PRESET_COLORS, TEMPLATES
+
+### Community 57 - "Community 57"
+Cohesion: 0.4
+Nodes (3): COST_REF, PACKS, TXNS
+
+### Community 58 - "Community 58"
+Cohesion: 0.4
+Nodes (4): ACCENT_MAP, EMPTY_STATES, NotFoundPage(), QUICK_LINKS
+
+### Community 59 - "Community 59"
+Cohesion: 0.4
+Nodes (3): INITIAL, TABS, TEAM
+
 ## Knowledge Gaps
 - **278 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+273 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **13 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `DashboardPage()` connect `Analytics Dashboard & Status Tracking` to `Analytics Charts & User Engagement Data`, `Progress Tracking & Rendering Pipeline`?**
+- **Why does `DashboardPage()` connect `Analytics Dashboard & Status Tracking` to `Authentication & User Accounts`, `App Shell Layout & Billing/Credits`, `Progress Tracking & Rendering Pipeline`?**
   _High betweenness centrality (0.018) - this node is a cross-community bridge._
-- **Why does `App()` connect `Analytics Dashboard & Status Tracking` to `Authentication & User Accounts`?**
-  _High betweenness centrality (0.015) - this node is a cross-community bridge._
+- **Why does `App()` connect `Analytics Dashboard & Status Tracking` to `Authentication & User Accounts`, `Community 58`, `Community 55`?**
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **Why does `create_user()` connect `REST API Template & User Validation` to `Authentication & User Accounts`, `Analytics Dashboard & Status Tracking`?**
   _High betweenness centrality (0.013) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
   _278 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Authentication & User Accounts` be split into smaller, more focused modules?**
-  _Cohesion score 0.05 - nodes in this community are weakly interconnected._
 - **Should `App Shell Layout & Billing/Credits` be split into smaller, more focused modules?**
-  _Cohesion score 0.06 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09 - nodes in this community are weakly interconnected._
 - **Should `Project Dependencies & Manifests` be split into smaller, more focused modules?**
   _Cohesion score 0.07 - nodes in this community are weakly interconnected._
+- **Should `Image Generation & Wizard Forms` be split into smaller, more focused modules?**
+  _Cohesion score 0.13 - nodes in this community are weakly interconnected._

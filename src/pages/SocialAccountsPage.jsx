@@ -82,7 +82,7 @@ function Sidebar() {
         <div>
           <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-text-muted">Settings</p>
           <div className="space-y-1">
-            <Link to="/settings" className={navCls('/settings')}>
+            <Link to="/brand-kit" className={navCls('/brand-kit')}>
               <span className="text-lg" aria-hidden>
                 ◇
               </span>
@@ -93,12 +93,6 @@ function Sidebar() {
                 ◫
               </span>
               <span>Billing</span>
-            </Link>
-            <Link to="/settings" className={navCls('/settings')}>
-              <span className="text-lg" aria-hidden>
-                ⚙
-              </span>
-              <span>Settings</span>
             </Link>
           </div>
         </div>

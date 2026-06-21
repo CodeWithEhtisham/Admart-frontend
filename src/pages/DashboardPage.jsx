@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import api from '../utils/api'
 import {
   GENERATED_ASSETS_EVENT,
   downloadAsset,
@@ -133,6 +134,23 @@ export default function DashboardPage() {
   const [darkUi, setDarkUi] = useState(true)
   const [savedAssets, setSavedAssets] = useState(() => getSavedAssets())
   const [assetMessage, setAssetMessage] = useState('')
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
+
+  const handleLogout = async () => {
+    try {
+      const refreshToken = localStorage.getItem('refreshToken')
+      if (refreshToken) {
+        await api.post('/api/auth/logout', { refreshToken })
+      }
+    } catch (err) {
+      console.error('Backend logout error:', err)
+    } finally {
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('refreshToken')
+      localStorage.removeItem('user')
+      navigate('/auth')
+    }
+  }
 
   const th = darkUi
     ? {
@@ -339,7 +357,7 @@ export default function DashboardPage() {
               </p>
             )}
             <div className="space-y-1">
-              <Link to="/settings" className={navCls('/settings')} title="Brand Kit">
+              <Link to="/brand-kit" className={navCls('/brand-kit')} title="Brand Kit">
                 <span className="text-lg" aria-hidden>
                   ◇
                 </span>
@@ -350,12 +368,6 @@ export default function DashboardPage() {
                   $
                 </span>
                 {!sidebarCollapsed && <span>Billing</span>}
-              </Link>
-              <Link to="/settings" className={navCls('/settings')} title="Settings">
-                <span className="text-lg" aria-hidden>
-                  ⚙
-                </span>
-                {!sidebarCollapsed && <span>Settings</span>}
               </Link>
             </div>
           </div>
@@ -457,11 +469,46 @@ export default function DashboardPage() {
             >
               {darkUi ? '🌙' : '☀️'}
             </button>
-            <div
-              className="flex h-9 w-9 items-center justify-center rounded-full font-heading text-sm font-bold text-white gradient-bg"
-              aria-hidden
-            >
-              E
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setUserMenuOpen((o) => !o)}
+                className="flex h-9 w-9 items-center justify-center rounded-full font-heading text-sm font-bold text-white gradient-bg hover:ring-2 hover:ring-accent-blue/50 transition cursor-pointer"
+                aria-haspopup="true"
+                aria-expanded={userMenuOpen}
+              >
+                E
+              </button>
+              
+              {userMenuOpen && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="fixed inset-0 z-40 h-full w-full cursor-default"
+                    aria-label="Close user menu"
+                  />
+                  <div className={`absolute right-0 mt-2 z-50 w-48 rounded-xl border border-border-default p-2 shadow-xl animate-fade-slide-down ${darkUi ? 'bg-panel' : 'bg-white'}`}>
+                    <Link
+                      to="/settings"
+                      className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition ${darkUi ? 'text-text-secondary hover:bg-white/5 hover:text-text-primary' : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900'}`}
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      <span className="text-lg">⚙</span> Settings
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUserMenuOpen(false)
+                        handleLogout()
+                      }}
+                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-error hover:bg-error/10 transition text-left"
+                    >
+                      <span className="text-lg">↪</span> Logout
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </header>

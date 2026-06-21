@@ -272,7 +272,7 @@ export default function LibraryPage() {
           </div>
           <div className="space-y-1">
             <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-text-muted">Settings</p>
-            <Link to="/settings" className={navLinkClass(location.pathname === '/settings')}>
+            <Link to="/brand-kit" className={navLinkClass(location.pathname === '/brand-kit')}>
               <span className="text-lg" aria-hidden>
                 ◇
               </span>
@@ -283,12 +283,6 @@ export default function LibraryPage() {
                 $
               </span>
               Billing
-            </Link>
-            <Link to="/settings" className={navLinkClass(location.pathname === '/settings')}>
-              <span className="text-lg" aria-hidden>
-                ⚙
-              </span>
-              Settings
             </Link>
           </div>
         </nav>

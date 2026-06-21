@@ -30,7 +30,6 @@ export default function VidifySidebar() {
     { to: '/brand-kit', label: 'Brand Kit', icon: '◇' },
     { to: '/billing', label: 'Billing', icon: '💳' },
     { to: '/notifications', label: 'Notifications', icon: '🔔', badge: '6', badgeColor: 'red' },
-    { to: '/settings', label: 'Settings', icon: '⚙', key: 'settings-end' },
   ]
 
   return (
