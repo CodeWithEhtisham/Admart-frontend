@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
+import { getUserInitial } from '../utils/user.js'
 import ProjectDropdown from '../components/ProjectDropdown'
 
 const MOCK_VIDEOS = [
@@ -206,9 +207,11 @@ export default function LibraryPage() {
               ✦ New Video
             </Link>
             <div
-              className="h-9 w-9 rounded-full border border-border-default bg-linear-to-br from-accent-blue to-accent-violet"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-border-default bg-linear-to-br from-accent-blue to-accent-violet font-heading text-sm font-bold text-white"
               title="Account"
-            />
+            >
+              {getUserInitial()}
+            </div>
           </div>
         </header>
 

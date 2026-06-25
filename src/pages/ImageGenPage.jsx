@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
+import { getUserInitial } from '../utils/user.js'
 import ProjectDropdown from '../components/ProjectDropdown'
 
 const MODELS = [
@@ -99,7 +100,7 @@ export default function ImageGenPage() {
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-heading text-sm font-bold text-white gradient-bg"
             aria-hidden
           >
-            E
+            {getUserInitial()}
           </div>
         </header>
 

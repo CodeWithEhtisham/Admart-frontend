@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
+import ProjectDropdown from '../components/ProjectDropdown'
+import { getUserInitial } from '../utils/user.js'
 
 const CATEGORIES = [
   { id: 'all', label: 'All Templates', count: 48 },
@@ -290,7 +292,11 @@ export default function TemplatesPage() {
     <AppLayout>
       <div className="min-h-screen">
         <header className="sticky top-0 z-30 flex h-[60px] items-center justify-between gap-4 border-b border-border bg-panel/90 px-7 backdrop-blur-md">
-          <h1 className="font-heading text-lg font-bold text-text-primary">Templates Gallery</h1>
+          <div className="flex shrink-0 items-center gap-3">
+            <h1 className="font-heading text-lg font-bold text-text-primary">Templates Gallery</h1>
+            <span className="text-text-muted">|</span>
+            <ProjectDropdown />
+          </div>
           <div className="mx-auto max-w-md flex-1 px-2">
             <input
               type="search"
@@ -311,7 +317,7 @@ export default function TemplatesPage() {
               className="flex h-9 w-9 items-center justify-center rounded-full font-heading text-sm font-bold text-white gradient-bg"
               aria-hidden
             >
-              E
+              {getUserInitial()}
             </div>
           </div>
         </header>

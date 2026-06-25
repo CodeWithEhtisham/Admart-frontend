@@ -9,6 +9,7 @@ import {
   getSavedAssets,
 } from '../utils/generatedAssets'
 import AppLayout from '../components/AppLayout.jsx'
+import { getUserInitial } from '../utils/user.js'
 import ProjectDropdown from '../components/ProjectDropdown'
 
 const FILTERS = ['All', 'Published', 'Ready', 'Scheduled', 'Generating']
@@ -267,7 +268,7 @@ export default function DashboardPage() {
               aria-haspopup="true"
               aria-expanded={userMenuOpen}
             >
-              E
+              {getUserInitial()}
             </button>
 
             {userMenuOpen && (
