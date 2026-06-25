@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import VidifySidebar from '../components/VidifySidebar.jsx'
+import { Link } from 'react-router-dom'
+import AppLayout from '../components/AppLayout.jsx'
 import ProjectDropdown from '../components/ProjectDropdown'
 
 const INITIAL_COLORS = [
@@ -29,7 +29,6 @@ const VOICE_OPTIONS = ['Auto', 'Neutral', 'Warm', 'Energetic']
 const WATERMARK_OPTIONS = ['Bottom Right', 'Bottom Left', 'Top Right', 'None']
 
 export default function BrandKitPage() {
-  const navigate = useNavigate()
   const [toast, setToast] = useState(null)
   const [selectedColor, setSelectedColor] = useState(0)
   const [colors, setColors] = useState(INITIAL_COLORS)
@@ -70,9 +69,8 @@ export default function BrandKitPage() {
   }
 
   return (
-    <div className="min-h-screen bg-base font-body text-text-primary">
-      <VidifySidebar />
-      <div className="ml-[260px] flex min-h-screen flex-col">
+    <AppLayout>
+      <div className="flex min-h-screen flex-col">
         {/* Topbar */}
         <header className="sticky top-0 z-30 flex h-[60px] shrink-0 items-center justify-between gap-4 border-b border-border bg-panel/90 px-7 backdrop-blur-md">
           <div className="flex items-center gap-3">
@@ -510,6 +508,6 @@ export default function BrandKitPage() {
           </aside>
         </div>
       </div>
-    </div>
+    </AppLayout>
   )
 }

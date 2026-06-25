@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import VidifySidebar from '../components/VidifySidebar.jsx'
+import AppLayout from '../components/AppLayout.jsx'
 import ProjectDropdown from '../components/ProjectDropdown'
 
 const INITIAL = {
@@ -140,9 +140,8 @@ export default function SettingsPage() {
   const maskedKey = apiKeyVisible ? 'vid_sk_live_7f3a9c2e1b8d4a6f0e2c9b1d' : 'vid_sk_live_••••••••••••••••••••'
 
   return (
-    <div className="min-h-screen bg-base font-body text-text-primary">
-      <VidifySidebar />
-      <div className="ml-[260px] flex min-h-screen flex-col">
+    <AppLayout>
+      <div className="flex min-h-screen flex-col">
         <header className="sticky top-0 z-30 flex h-[60px] shrink-0 items-center justify-between gap-4 border-b border-border bg-panel/90 px-7 backdrop-blur-md">
           <div className="flex items-center gap-4 shrink-0">
             <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-text-secondary">
@@ -627,6 +626,6 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
-    </div>
+    </AppLayout>
   )
 }

@@ -1,147 +1,162 @@
 import { Link, useLocation } from 'react-router-dom'
+import { useAppChrome } from '../utils/appChrome'
 
-function itemCls(isActive) {
+const NAV_SECTIONS = [
+  {
+    label: 'Main',
+    items: [
+      { to: '/dashboard', label: 'Dashboard', icon: '◎' },
+      { to: '/image-gen', label: 'AI Image Gen', icon: '🖼' },
+      { to: '/create', label: 'Create Video', icon: '✦' },
+      { to: '/library', label: 'My Videos', icon: '▤', badge: '18' },
+      { to: '/templates', label: 'Templates', icon: '⧉' },
+    ],
+  },
+  {
+    label: 'Publish',
+    items: [
+      { to: '/calendar', label: 'Calendar', icon: '⌁' },
+      { to: '/social', label: 'Social Accounts', icon: '⚡' },
+    ],
+  },
+  {
+    label: 'Analyze',
+    items: [{ to: '/analytics', label: 'Analytics', icon: '📈' }],
+  },
+  {
+    label: 'Settings',
+    items: [
+      { to: '/brand-kit', label: 'Brand Kit', icon: '◇' },
+      { to: '/billing', label: 'Billing', icon: '💳' },
+      { to: '/notifications', label: 'Notifications', icon: '🔔', badge: '6', badgeColor: 'red' },
+      { to: '/settings', label: 'Settings', icon: '⚙' },
+    ],
+  },
+]
+
+function NavItem({ item, active, collapsed }) {
   const base =
-    'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition w-full'
-  const inactive = 'text-text-secondary hover:bg-white/5 hover:text-text-primary'
-  const activeCls = 'bg-accent-blue/15 text-accent-blue'
-  return `${base} ${isActive ? activeCls : inactive}`
+    'flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition w-full'
+  const state = active
+    ? 'bg-accent-blue/15 text-accent-blue'
+    : 'text-text-secondary hover:bg-white/5 hover:text-text-primary'
+  const layout = collapsed ? 'justify-center gap-0' : item.badge ? 'justify-between gap-3' : 'gap-3'
+
+  const badgeCls =
+    item.badgeColor === 'red'
+      ? 'bg-error/20 text-error'
+      : 'bg-accent-blue/20 text-accent-blue'
+
+  return (
+    <Link to={item.to} className={`${base} ${state} ${layout}`} title={item.label}>
+      <span className="flex items-center gap-3">
+        <span className="text-lg" aria-hidden>
+          {item.icon}
+        </span>
+        {!collapsed && <span>{item.label}</span>}
+      </span>
+      {!collapsed && item.badge && (
+        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${badgeCls}`}>
+          {item.badge}
+        </span>
+      )}
+    </Link>
+  )
 }
 
 export default function VidifySidebar() {
   const { pathname } = useLocation()
-
-  const main = [
-    { to: '/dashboard', label: 'Dashboard', icon: '◎' },
-    { to: '/image-gen', label: 'AI Image Gen', icon: '🖼' },
-    { to: '/create', label: 'Create Video', icon: '✦' },
-    { to: '/library', label: 'My Videos', icon: '▤', badge: '18' },
-    { to: '/templates', label: 'Templates', icon: '⧉' },
-  ]
-
-  const publish = [
-    { to: '/calendar', label: 'Calendar', icon: '⌁' },
-    { to: '/social', label: 'Social Accounts', icon: '⚡' },
-  ]
-
-  const analyze = [{ to: '/analytics', label: 'Analytics', icon: '📈' }]
-
-  const settings = [
-    { to: '/brand-kit', label: 'Brand Kit', icon: '◇' },
-    { to: '/billing', label: 'Billing', icon: '💳' },
-    { to: '/notifications', label: 'Notifications', icon: '🔔', badge: '6', badgeColor: 'red' },
-  ]
+  const { collapsed, theme, toggleCollapsed, toggleTheme } = useAppChrome()
+  const sidebarW = collapsed ? 'w-[72px]' : 'w-[260px]'
 
   return (
-    <aside className="fixed bottom-0 left-0 top-0 z-40 flex w-[260px] flex-col border-r border-border bg-panel">
-      <div className="flex h-[60px] items-center border-b border-border px-4">
-        <Link to="/" className="font-heading text-lg font-bold">
+    <aside
+      className={`fixed bottom-0 left-0 top-0 z-40 flex flex-col border-r border-border bg-panel transition-[width] duration-300 ease-out ${sidebarW}`}
+    >
+      <div className={`flex h-[60px] items-center border-b border-border px-4 ${collapsed ? 'justify-center' : ''}`}>
+        <Link to="/dashboard" className="font-heading text-lg font-bold">
           <span className="gradient-text">V</span>
-          <span className="text-text-primary">idify</span>
+          {!collapsed && <span className="text-text-primary">idify</span>}
         </Link>
       </div>
 
-      <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-4">
-        <div>
-          <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-text-muted">Main</p>
-          <div className="space-y-1">
-            {main.map((item) => (
-              <Link
-                key={item.to + item.label}
-                to={item.to}
-                className={`${itemCls(pathname === item.to)} ${item.badge ? 'justify-between' : ''}`}
-                title={item.label}
-              >
-                <span className="flex items-center gap-3">
-                  <span className="text-lg" aria-hidden>
-                    {item.icon}
-                  </span>
-                  <span>{item.label}</span>
-                </span>
-                {item.badge && (
-                  <span className="rounded-full bg-accent-blue/20 px-2 py-0.5 text-xs font-semibold text-accent-blue">
-                    {item.badge}
-                  </span>
-                )}
-              </Link>
-            ))}
+      <nav className={`flex-1 space-y-6 overflow-y-auto py-4 ${collapsed ? 'px-2' : 'px-3'}`}>
+        {NAV_SECTIONS.map((section) => (
+          <div key={section.label}>
+            {!collapsed && (
+              <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-text-muted">
+                {section.label}
+              </p>
+            )}
+            <div className="space-y-1">
+              {section.items.map((item) => (
+                <NavItem
+                  key={item.to}
+                  item={item}
+                  active={pathname === item.to}
+                  collapsed={collapsed}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-
-        <div>
-          <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-text-muted">Publish</p>
-          <div className="space-y-1">
-            {publish.map((item) => (
-              <Link key={item.to} to={item.to} className={itemCls(pathname === item.to)} title={item.label}>
-                <span className="text-lg" aria-hidden>
-                  {item.icon}
-                </span>
-                <span>{item.label}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-text-muted">Analyze</p>
-          <div className="space-y-1">
-            {analyze.map((item) => (
-              <Link key={item.to} to={item.to} className={itemCls(pathname === item.to)} title={item.label}>
-                <span className="text-lg" aria-hidden>
-                  {item.icon}
-                </span>
-                <span>{item.label}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-text-muted">Settings</p>
-          <div className="space-y-1">
-            {settings.map((item) => (
-              <Link
-                key={item.key || item.label}
-                to={item.to}
-                className={`${itemCls(pathname === item.to)} ${item.badge ? 'justify-between' : ''}`}
-                title={item.label}
-              >
-                <span className="flex items-center gap-3">
-                  <span className="text-lg" aria-hidden>
-                    {item.icon}
-                  </span>
-                  <span>{item.label}</span>
-                </span>
-                {item.badge && (
-                  <span
-                    className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
-                      item.badgeColor === 'red'
-                        ? 'bg-error/20 text-error'
-                        : 'bg-accent-blue/20 text-accent-blue'
-                    }`}
-                  >
-                    {item.badge}
-                  </span>
-                )}
-              </Link>
-            ))}
-          </div>
-        </div>
+        ))}
       </nav>
 
       <div className="mt-auto space-y-3 border-t border-border p-3">
-        <div className="rounded-xl border border-border-default bg-surface p-3">
-          <div className="mb-2 flex items-center justify-between text-xs">
-            <span className="text-text-secondary">Credits</span>
-            <span className="font-mono font-semibold text-text-primary">42</span>
-          </div>
-          <div className="h-1.5 overflow-hidden rounded-full bg-elevated">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-accent-blue to-accent-violet"
-              style={{ width: '21%' }}
-            />
-          </div>
-          <p className="mt-1 text-xs text-text-tertiary">42 / 200</p>
+        <div
+          className={`rounded-xl border border-border-default bg-surface ${
+            collapsed ? 'px-2 py-2 text-center' : 'p-3'
+          }`}
+        >
+          {!collapsed ? (
+            <>
+              <div className="mb-2 flex items-center justify-between text-xs">
+                <span className="text-text-secondary">Credits</span>
+                <span className="font-mono font-semibold text-text-primary">42</span>
+              </div>
+              <div className="h-1.5 overflow-hidden rounded-full bg-elevated">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-accent-blue to-accent-violet"
+                  style={{ width: '21%' }}
+                />
+              </div>
+              <p className="mt-1 text-xs text-text-tertiary">42 / 200</p>
+            </>
+          ) : (
+            <>
+              <p className="font-mono text-sm font-bold text-text-primary">42</p>
+              <div className="mx-auto mt-1 h-8 w-1 overflow-hidden rounded-full bg-elevated">
+                <div
+                  className="w-full bg-gradient-to-b from-accent-blue to-accent-violet"
+                  style={{ height: '21%' }}
+                />
+              </div>
+            </>
+          )}
+        </div>
+
+        <div className={`flex gap-2 ${collapsed ? 'flex-col' : ''}`}>
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-border-default bg-elevated py-2 text-sm text-text-secondary transition hover:text-text-primary"
+            aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+            title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+          >
+            <span aria-hidden>{theme === 'dark' ? '☀️' : '🌙'}</span>
+            {!collapsed && <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>}
+          </button>
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-border-default bg-elevated py-2 text-sm text-text-secondary transition hover:text-text-primary"
+            aria-expanded={!collapsed}
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            title={collapsed ? 'Expand' : 'Collapse'}
+          >
+            <span aria-hidden>{collapsed ? '→' : '←'}</span>
+            {!collapsed && <span>Collapse</span>}
+          </button>
         </div>
       </div>
     </aside>

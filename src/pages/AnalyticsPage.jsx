@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import VidifySidebar from '../components/VidifySidebar.jsx'
+import AppLayout from '../components/AppLayout.jsx'
 import ProjectDropdown from '../components/ProjectDropdown'
 
 const SPARK = (seed, n = 15) =>
@@ -300,9 +300,7 @@ export default function AnalyticsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-base font-body text-text-primary">
-      <VidifySidebar />
-      <div className="ml-[260px] min-h-screen">
+    <AppLayout>
         <header className="sticky top-0 z-30 flex h-[60px] items-center justify-between gap-4 border-b border-border bg-panel/90 px-7 backdrop-blur-md">
           <div className="flex items-center gap-4 shrink-0">
             <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-2 text-sm text-text-secondary">
@@ -529,7 +527,6 @@ export default function AnalyticsPage() {
             </div>
           </section>
         </main>
-      </div>
-    </div>
+    </AppLayout>
   )
 }

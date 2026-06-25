@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import VidifySidebar from '../components/VidifySidebar.jsx'
+import AppLayout from '../components/AppLayout.jsx'
 import ProjectDropdown from '../components/ProjectDropdown'
 
 const MODELS = [
@@ -83,10 +83,8 @@ export default function ImageGenPage() {
   }, [prompt, imageCount, isGenerating])
 
   return (
-    <div className="min-h-screen bg-base font-body text-text-primary">
-      <VidifySidebar />
-
-      <div className="ml-[260px] flex min-h-screen flex-col">
+    <AppLayout>
+      <div className="flex min-h-screen flex-col">
         {/* Topbar */}
         <header className="sticky top-0 z-30 flex h-[60px] items-center justify-between gap-4 border-b border-border bg-panel/90 px-7 backdrop-blur-md">
           <div className="flex items-center gap-3">
@@ -353,6 +351,6 @@ export default function ImageGenPage() {
           </div>
         </div>
       </div>
-    </div>
+    </AppLayout>
   )
 }

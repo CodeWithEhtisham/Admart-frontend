@@ -31,6 +31,25 @@
   --font-mono: 'JetBrains Mono', monospace;
 }
 
+/* Light theme — overrides the semantic color tokens globally.
+   Every utility built on these vars (bg-base, bg-panel, text-text-primary, …)
+   flips automatically, so individual pages don't need light-mode classes. */
+[data-theme='light'] {
+  --color-base: #f4f4f5;
+  --color-panel: #ffffff;
+  --color-surface: #ffffff;
+  --color-elevated: #f1f1f4;
+  --color-input: #ffffff;
+
+  --color-text-primary: #18181b;
+  --color-text-secondary: #3f3f46;
+  --color-text-tertiary: #52525b;
+  --color-text-muted: #71717a;
+
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-border-default: rgba(0, 0, 0, 0.12);
+}
+
 html {
   scroll-behavior: smooth;
 }

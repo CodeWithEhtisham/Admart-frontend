@@ -1,118 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import AppLayout from '../components/AppLayout.jsx'
 import ProjectDropdown from '../components/ProjectDropdown'
-
-function Sidebar() {
-  const location = useLocation()
-  const navCls = (path) => {
-    const active = location.pathname === path
-    return `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-      active ? 'bg-accent-blue/15 text-accent-blue' : 'text-text-secondary hover:bg-white/5 hover:text-text-primary'
-    }`
-  }
-
-  return (
-    <aside className="fixed bottom-0 left-0 top-0 z-40 flex w-[260px] flex-col border-r border-border bg-panel">
-      <div className="flex h-[60px] items-center border-b border-border px-4">
-        <Link to="/" className="font-heading text-lg font-bold">
-          <span className="gradient-text">V</span>
-          <span className="text-text-primary">idify</span>
-        </Link>
-      </div>
-      <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-4">
-        <div>
-          <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-text-muted">Main</p>
-          <div className="space-y-1">
-            <Link to="/dashboard" className={navCls('/dashboard')}>
-              <span className="text-lg" aria-hidden>
-                ◎
-              </span>
-              <span>Dashboard</span>
-            </Link>
-            <Link to="/create" className={navCls('/create')}>
-              <span className="text-lg" aria-hidden>
-                ✦
-              </span>
-              <span>Create New</span>
-            </Link>
-            <Link to="/library" className={`${navCls('/library')} justify-between`}>
-              <span className="flex items-center gap-3">
-                <span className="text-lg" aria-hidden>
-                  ▤
-                </span>
-                <span>My Videos</span>
-              </span>
-              <span className="rounded-full bg-accent-blue/20 px-2 py-0.5 text-xs font-semibold text-accent-blue">18</span>
-            </Link>
-            <Link to="/templates" className={navCls('/templates')}>
-              <span className="text-lg" aria-hidden>
-                ⧉
-              </span>
-              <span>Templates</span>
-            </Link>
-          </div>
-        </div>
-        <div>
-          <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-text-muted">Publish</p>
-          <div className="space-y-1">
-            <Link to="/calendar" className={navCls('/calendar')}>
-              <span className="text-lg" aria-hidden>
-                ⌁
-              </span>
-              <span>Calendar</span>
-            </Link>
-            <Link to="/social" className={navCls('/social')}>
-              <span className="text-lg" aria-hidden>
-                ⚡
-              </span>
-              <span>Social Accounts</span>
-            </Link>
-          </div>
-        </div>
-        <div>
-          <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-text-muted">Analyze</p>
-          <div className="space-y-1">
-            <Link to="/analytics" className={navCls('/analytics')}>
-              <span className="text-lg" aria-hidden>
-                📈
-              </span>
-              <span>Analytics</span>
-            </Link>
-          </div>
-        </div>
-        <div>
-          <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-text-muted">Settings</p>
-          <div className="space-y-1">
-            <Link to="/brand-kit" className={navCls('/brand-kit')}>
-              <span className="text-lg" aria-hidden>
-                ◇
-              </span>
-              <span>Brand Kit</span>
-            </Link>
-            <Link to="/billing" className={navCls('/billing')}>
-              <span className="text-lg" aria-hidden>
-                ◫
-              </span>
-              <span>Billing</span>
-            </Link>
-          </div>
-        </div>
-      </nav>
-      <div className="mt-auto border-t border-border p-3">
-        <div className="rounded-xl border border-border-default bg-surface p-3">
-          <div className="mb-2 flex items-center justify-between text-xs">
-            <span className="text-text-secondary">Credits</span>
-            <span className="font-mono font-semibold text-text-primary">42</span>
-          </div>
-          <div className="h-1.5 overflow-hidden rounded-full bg-elevated">
-            <div className="h-full w-[21%] rounded-full bg-gradient-to-r from-accent-blue to-accent-violet" />
-          </div>
-          <p className="mt-1 text-xs text-text-tertiary">42 / 200</p>
-        </div>
-      </div>
-    </aside>
-  )
-}
 
 const PLATFORM_META = {
   tiktok: {
@@ -175,10 +64,7 @@ export default function SocialAccountsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-base font-body text-text-primary">
-      <Sidebar />
-
-      <div className="ml-[260px] min-h-screen">
+    <AppLayout>
         <header className="sticky top-0 z-30 flex h-[72px] items-center justify-between gap-4 border-b border-border bg-panel/90 px-7 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div>
@@ -513,9 +399,8 @@ export default function SocialAccountsPage() {
             </section>
           </div>
         </main>
-      </div>
 
       <Toast message={toast.message} visible={toast.visible} onDismiss={dismissToast} />
-    </div>
+    </AppLayout>
   )
 }

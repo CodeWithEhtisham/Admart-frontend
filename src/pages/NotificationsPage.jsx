@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import VidifySidebar from '../components/VidifySidebar.jsx'
+import { Link } from 'react-router-dom'
+import AppLayout from '../components/AppLayout.jsx'
 import ProjectDropdown from '../components/ProjectDropdown'
 
 const INITIAL_NOTIFICATIONS = [
@@ -140,7 +140,6 @@ const FILTER_ITEMS = [
 ]
 
 export default function NotificationsPage() {
-  const navigate = useNavigate()
   const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS)
   const [activeFilter, setActiveFilter] = useState('all')
   const [allCleared, setAllCleared] = useState(false)
@@ -176,9 +175,8 @@ export default function NotificationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-base font-body text-text-primary">
-      <VidifySidebar />
-      <div className="ml-[260px] flex min-h-screen flex-col">
+    <AppLayout>
+      <div className="flex min-h-screen flex-col">
         {/* Topbar */}
         <header className="sticky top-0 z-30 flex h-[60px] shrink-0 items-center justify-between gap-4 border-b border-border bg-panel/90 px-7 backdrop-blur-md">
           <div className="flex items-center gap-3">
@@ -314,7 +312,7 @@ export default function NotificationsPage() {
           </aside>
         </div>
       </div>
-    </div>
+    </AppLayout>
   )
 }
 
