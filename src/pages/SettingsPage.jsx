@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import VidifySidebar from '../components/VidifySidebar.jsx'
+import ProjectDropdown from '../components/ProjectDropdown'
 
 const INITIAL = {
   firstName: 'Ehtisham',
@@ -143,13 +144,17 @@ export default function SettingsPage() {
       <VidifySidebar />
       <div className="ml-[260px] flex min-h-screen flex-col">
         <header className="sticky top-0 z-30 flex h-[60px] shrink-0 items-center justify-between gap-4 border-b border-border bg-panel/90 px-7 backdrop-blur-md">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-text-secondary">
-            <Link to="/dashboard" className="hover:text-text-primary">
-              Dashboard
-            </Link>
-            <span className="text-text-muted">/</span>
-            <span className="font-heading text-lg font-bold text-text-primary">Settings</span>
-          </nav>
+          <div className="flex items-center gap-4 shrink-0">
+            <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-text-secondary">
+              <Link to="/dashboard" className="hover:text-text-primary">
+                Dashboard
+              </Link>
+              <span className="text-text-muted">/</span>
+              <span className="font-heading text-lg font-bold text-text-primary">Settings</span>
+            </nav>
+            <span className="text-text-muted">|</span>
+            <ProjectDropdown />
+          </div>
           <div
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-heading text-sm font-bold text-white gradient-bg"
             aria-hidden

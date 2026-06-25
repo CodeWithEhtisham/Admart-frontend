@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import VidifySidebar from '../components/VidifySidebar.jsx'
+import ProjectDropdown from '../components/ProjectDropdown'
 
 const SPARK = (seed, n = 15) =>
   Array.from({ length: n }, (_, i) => {
@@ -303,13 +304,17 @@ export default function AnalyticsPage() {
       <VidifySidebar />
       <div className="ml-[260px] min-h-screen">
         <header className="sticky top-0 z-30 flex h-[60px] items-center justify-between gap-4 border-b border-border bg-panel/90 px-7 backdrop-blur-md">
-          <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-2 text-sm text-text-secondary">
-            <Link to="/dashboard" className="hover:text-text-primary">
-              Dashboard
-            </Link>
-            <span className="text-text-muted">/</span>
-            <span className="font-heading text-lg font-bold text-text-primary">Analytics</span>
-          </nav>
+          <div className="flex items-center gap-4 shrink-0">
+            <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-2 text-sm text-text-secondary">
+              <Link to="/dashboard" className="hover:text-text-primary">
+                Dashboard
+              </Link>
+              <span className="text-text-muted">/</span>
+              <span className="font-heading text-lg font-bold text-text-primary">Analytics</span>
+            </nav>
+            <span className="text-text-muted">|</span>
+            <ProjectDropdown />
+          </div>
 
           <div className="flex flex-1 flex-wrap items-center justify-end gap-3">
             <div className="flex rounded-xl border border-border-default bg-input p-1">

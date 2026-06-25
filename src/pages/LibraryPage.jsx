@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import ProjectDropdown from '../components/ProjectDropdown'
 
 const MOCK_VIDEOS = [
   {
@@ -296,9 +297,13 @@ export default function LibraryPage() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-[60px] shrink-0 items-center justify-between border-b border-border bg-panel px-6">
-          <div>
-            <h1 className="font-heading text-lg font-semibold">My Videos</h1>
-            <p className="text-xs text-text-muted">{totalCount} videos</p>
+          <div className="flex items-center gap-3">
+            <div>
+              <h1 className="font-heading text-lg font-semibold">My Videos</h1>
+              <p className="text-xs text-text-muted">{totalCount} videos</p>
+            </div>
+            <span className="text-text-muted">|</span>
+            <ProjectDropdown />
           </div>
           <div className="flex items-center gap-3">
             <Link

@@ -8,6 +8,7 @@ import {
   formatAssetDate,
   getSavedAssets,
 } from '../utils/generatedAssets'
+import ProjectDropdown from '../components/ProjectDropdown'
 
 const FILTERS = ['All', 'Published', 'Ready', 'Scheduled', 'Generating']
 
@@ -427,11 +428,15 @@ export default function DashboardPage() {
             darkUi ? 'bg-panel/90' : 'bg-white/90'
           }`}
         >
-          <nav aria-label="Breadcrumb" className={`shrink-0 text-sm ${th.muted}`}>
-            <span className={primaryText}>Dashboard</span>
-            <span className={`mx-1 ${darkUi ? 'text-text-muted' : 'text-zinc-400'}`}>/</span>
-            <span>Home</span>
-          </nav>
+          <div className="flex items-center gap-4 shrink-0">
+            <nav aria-label="Breadcrumb" className={`text-sm ${th.muted}`}>
+              <span className={primaryText}>Dashboard</span>
+              <span className={`mx-1 ${darkUi ? 'text-text-muted' : 'text-zinc-400'}`}>/</span>
+              <span>Home</span>
+            </nav>
+            <span className={`${darkUi ? 'text-text-muted' : 'text-zinc-300'}`}>|</span>
+            <ProjectDropdown />
+          </div>
 
           <button
             type="button"

@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import VidifySidebar from '../components/VidifySidebar.jsx'
+import ProjectDropdown from '../components/ProjectDropdown'
 
 const INITIAL_NOTIFICATIONS = [
   {
@@ -191,6 +192,8 @@ export default function NotificationsPage() {
             >
               {unreadCount} unread
             </span>
+            <span className="text-text-muted">|</span>
+            <ProjectDropdown />
           </div>
           <div className="flex items-center gap-3">
             <button

@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import VidifySidebar from '../components/VidifySidebar.jsx'
+import ProjectDropdown from '../components/ProjectDropdown'
 
 const INITIAL_COLORS = [
   { hex: '#2563eb', role: 'Primary' },
@@ -74,9 +75,13 @@ export default function BrandKitPage() {
       <div className="ml-[260px] flex min-h-screen flex-col">
         {/* Topbar */}
         <header className="sticky top-0 z-30 flex h-[60px] shrink-0 items-center justify-between gap-4 border-b border-border bg-panel/90 px-7 backdrop-blur-md">
-          <div>
-            <h1 className="font-heading text-lg font-bold text-text-primary">Brand Kit</h1>
-            <p className="text-xs text-text-tertiary">Auto-applied to every generated video</p>
+          <div className="flex items-center gap-3">
+            <div>
+              <h1 className="font-heading text-lg font-bold text-text-primary">Brand Kit</h1>
+              <p className="text-xs text-text-tertiary">Auto-applied to every generated video</p>
+            </div>
+            <span className="text-text-muted">|</span>
+            <ProjectDropdown />
           </div>
           <div className="flex items-center gap-3">
             <button

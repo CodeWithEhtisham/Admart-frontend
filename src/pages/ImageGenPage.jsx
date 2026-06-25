@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import VidifySidebar from '../components/VidifySidebar.jsx'
+import ProjectDropdown from '../components/ProjectDropdown'
 
 const MODELS = [
   { id: 'sdxl', label: 'SDXL', desc: 'Fast · Great quality', cost: 0.5 },
@@ -93,6 +94,8 @@ export default function ImageGenPage() {
             <span className="rounded-full border border-accent-violet/30 bg-accent-violet/15 px-2.5 py-0.5 text-xs font-semibold text-accent-violet">
               ✦ AI Powered
             </span>
+            <span className="text-text-muted">|</span>
+            <ProjectDropdown />
           </div>
           <div
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-heading text-sm font-bold text-white gradient-bg"

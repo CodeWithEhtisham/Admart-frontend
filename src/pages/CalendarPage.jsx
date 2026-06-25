@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import ProjectDropdown from '../components/ProjectDropdown'
 
 /** Reference "today" for demo (matches product brief) */
 const TODAY = new Date(2026, 3, 15)
@@ -357,6 +358,8 @@ export default function CalendarPage() {
             >
               Today
             </button>
+            <span className="text-text-muted">|</span>
+            <ProjectDropdown />
           </div>
 
           <div className="ml-auto flex flex-wrap items-center justify-end gap-3">

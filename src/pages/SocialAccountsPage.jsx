@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import ProjectDropdown from '../components/ProjectDropdown'
 
 function Sidebar() {
   const location = useLocation()
@@ -179,9 +180,13 @@ export default function SocialAccountsPage() {
 
       <div className="ml-[260px] min-h-screen">
         <header className="sticky top-0 z-30 flex h-[72px] items-center justify-between gap-4 border-b border-border bg-panel/90 px-7 backdrop-blur-md">
-          <div>
-            <h1 className="font-heading text-lg font-bold text-text-primary">Social Accounts</h1>
-            <p className="text-sm text-text-secondary">3 of 4 platforms connected</p>
+          <div className="flex items-center gap-3">
+            <div>
+              <h1 className="font-heading text-lg font-bold text-text-primary">Social Accounts</h1>
+              <p className="text-sm text-text-secondary">3 of 4 platforms connected</p>
+            </div>
+            <span className="text-text-muted">|</span>
+            <ProjectDropdown />
           </div>
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-heading text-sm font-bold text-white gradient-bg" aria-hidden>
             E
