@@ -1,8 +1,7 @@
 import { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
-import { getUserInitial } from '../utils/user.js'
-import ProjectDropdown from '../components/ProjectDropdown'
+import Topbar from '../components/Topbar'
 
 const INITIAL_NOTIFICATIONS = [
   {
@@ -179,49 +178,37 @@ export default function NotificationsPage() {
     <AppLayout>
       <div className="flex min-h-screen flex-col">
         {/* Topbar */}
-        <header className="sticky top-0 z-30 flex h-[60px] shrink-0 items-center justify-between gap-4 border-b border-border bg-panel/90 px-7 backdrop-blur-md">
-          <div className="flex items-center gap-3">
-            <h1 className="font-heading text-lg font-bold text-text-primary">Notifications</h1>
-            <span
-              className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                unreadCount > 0
-                  ? 'bg-error/15 text-error'
-                  : 'bg-elevated text-text-muted'
-              }`}
-            >
-              {unreadCount} unread
-            </span>
-            <span className="text-text-muted">|</span>
-            <ProjectDropdown />
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={markAllRead}
-              className="rounded-xl border border-border-default bg-elevated px-4 py-2 text-sm font-medium text-text-primary hover:border-accent-blue/40"
-            >
-              ✓ Mark All Read
-            </button>
-            <button
-              type="button"
-              onClick={clearAll}
-              className="rounded-xl border border-error/30 px-4 py-2 text-sm font-medium text-error hover:bg-error/10"
-            >
-              Clear All
-            </button>
-            <div
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-heading text-sm font-bold text-white gradient-bg"
-              aria-hidden
-            >
-              {getUserInitial()}
-            </div>
-          </div>
-        </header>
+        <Topbar title="Notifications" />
 
         {/* Split Layout */}
         <div className="flex min-h-0 flex-1">
           {/* Feed */}
           <div className="flex-1 overflow-y-auto p-7">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+              <span
+                className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                  unreadCount > 0 ? 'bg-error/15 text-error' : 'bg-elevated text-text-muted'
+                }`}
+              >
+                {unreadCount} unread
+              </span>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={markAllRead}
+                  className="rounded-xl border border-border-default bg-elevated px-4 py-2 text-sm font-medium text-text-primary hover:border-accent-blue/40"
+                >
+                  ✓ Mark All Read
+                </button>
+                <button
+                  type="button"
+                  onClick={clearAll}
+                  className="rounded-xl border border-error/30 px-4 py-2 text-sm font-medium text-error hover:bg-error/10"
+                >
+                  Clear All
+                </button>
+              </div>
+            </div>
             {allCleared ? (
               <div className="flex flex-col items-center justify-center py-24 text-center">
                 <span className="text-5xl">🔔</span>

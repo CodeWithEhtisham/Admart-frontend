@@ -1,8 +1,7 @@
 import { useCallback, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
-import { getUserInitial } from '../utils/user.js'
-import ProjectDropdown from '../components/ProjectDropdown'
+import Topbar from '../components/Topbar'
 
 const PACKS = [
   { credits: 10, price: 5, per: 0.5, best: false },
@@ -90,25 +89,7 @@ export default function BillingPage() {
 
   return (
     <AppLayout>
-        <header className="sticky top-0 z-30 flex h-[60px] items-center justify-between gap-4 border-b border-border bg-panel/90 px-7 backdrop-blur-md">
-          <div className="flex items-center gap-4 shrink-0">
-            <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-text-secondary">
-              <Link to="/dashboard" className="hover:text-text-primary">
-                Dashboard
-              </Link>
-              <span className="text-text-muted">/</span>
-              <span className="font-heading text-lg font-bold text-text-primary">Billing &amp; Credits</span>
-            </nav>
-            <span className="text-text-muted">|</span>
-            <ProjectDropdown />
-          </div>
-          <div
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-heading text-sm font-bold text-white gradient-bg"
-            aria-hidden
-          >
-            {getUserInitial()}
-          </div>
-        </header>
+        <Topbar title="Billing & Credits" />
 
         {toast && (
           <div

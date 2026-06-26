@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
-import { getUserInitial } from '../utils/user.js'
-import ProjectDropdown from '../components/ProjectDropdown'
+import Topbar from '../components/Topbar'
 
 const PLATFORM_META = {
   tiktok: {
@@ -66,21 +65,10 @@ export default function SocialAccountsPage() {
 
   return (
     <AppLayout>
-        <header className="sticky top-0 z-30 flex h-[72px] items-center justify-between gap-4 border-b border-border bg-panel/90 px-7 backdrop-blur-md">
-          <div className="flex items-center gap-3">
-            <div>
-              <h1 className="font-heading text-lg font-bold text-text-primary">Social Accounts</h1>
-              <p className="text-sm text-text-secondary">3 of 4 platforms connected</p>
-            </div>
-            <span className="text-text-muted">|</span>
-            <ProjectDropdown />
-          </div>
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-heading text-sm font-bold text-white gradient-bg" aria-hidden>
-            {getUserInitial()}
-          </div>
-        </header>
+        <Topbar title="Social Accounts" />
 
         <main className="space-y-6 p-7">
+          <p className="text-sm text-text-secondary">3 of 4 platforms connected</p>
           <div className="flex gap-4 rounded-2xl border border-accent-blue/25 bg-accent-blue/10 px-5 py-4">
             <span className="text-2xl" aria-hidden>
               🔗

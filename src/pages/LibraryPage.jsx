@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
-import { getUserInitial } from '../utils/user.js'
-import ProjectDropdown from '../components/ProjectDropdown'
+import Topbar from '../components/Topbar'
 
 const MOCK_VIDEOS = [
   {
@@ -190,30 +189,7 @@ export default function LibraryPage() {
   return (
     <AppLayout>
       <div className="flex min-h-screen flex-col">
-        <header className="sticky top-0 z-30 flex h-[60px] shrink-0 items-center justify-between border-b border-border bg-panel/90 px-6 backdrop-blur-md">
-          <div className="flex items-center gap-3">
-            <div>
-              <h1 className="font-heading text-lg font-semibold">My Videos</h1>
-              <p className="text-xs text-text-muted">{totalCount} videos</p>
-            </div>
-            <span className="text-text-muted">|</span>
-            <ProjectDropdown />
-          </div>
-          <div className="flex items-center gap-3">
-            <Link
-              to="/create"
-              className="inline-flex items-center gap-2 rounded-lg gradient-bg px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/20"
-            >
-              ✦ New Video
-            </Link>
-            <div
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-border-default bg-linear-to-br from-accent-blue to-accent-violet font-heading text-sm font-bold text-white"
-              title="Account"
-            >
-              {getUserInitial()}
-            </div>
-          </div>
-        </header>
+        <Topbar title="My Videos" />
 
         <div className="relative flex-1">
           {nSelected > 0 && (
@@ -251,6 +227,15 @@ export default function LibraryPage() {
           )}
 
           <div className="space-y-4 p-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-xs text-text-muted">{totalCount} videos</p>
+              <Link
+                to="/create"
+                className="inline-flex items-center gap-2 rounded-lg gradient-bg px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/20"
+              >
+                ✦ New Video
+              </Link>
+            </div>
             <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
               <div className="relative min-w-[200px] flex-1">
                 <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />

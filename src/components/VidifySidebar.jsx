@@ -24,12 +24,10 @@ const NAV_SECTIONS = [
     items: [{ to: '/analytics', label: 'Analytics', icon: '📈' }],
   },
   {
-    label: 'Settings',
+    label: 'Workspace',
     items: [
       { to: '/brand-kit', label: 'Brand Kit', icon: '◇' },
       { to: '/billing', label: 'Billing', icon: '💳' },
-      { to: '/notifications', label: 'Notifications', icon: '🔔', badge: '6', badgeColor: 'red' },
-      { to: '/settings', label: 'Settings', icon: '⚙' },
     ],
   },
 ]

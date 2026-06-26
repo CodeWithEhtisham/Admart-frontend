@@ -1,8 +1,7 @@
 import { useCallback, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
-import { getUserInitial } from '../utils/user.js'
-import ProjectDropdown from '../components/ProjectDropdown'
+import Topbar from '../components/Topbar'
 
 const MODELS = [
   { id: 'sdxl', label: 'SDXL', desc: 'Fast · Great quality', cost: 0.5 },
@@ -87,28 +86,16 @@ export default function ImageGenPage() {
     <AppLayout>
       <div className="flex min-h-screen flex-col">
         {/* Topbar */}
-        <header className="sticky top-0 z-30 flex h-[60px] items-center justify-between gap-4 border-b border-border bg-panel/90 px-7 backdrop-blur-md">
-          <div className="flex items-center gap-3">
-            <h1 className="font-heading text-lg font-bold text-text-primary">AI Image Generator</h1>
-            <span className="rounded-full border border-accent-violet/30 bg-accent-violet/15 px-2.5 py-0.5 text-xs font-semibold text-accent-violet">
-              ✦ AI Powered
-            </span>
-            <span className="text-text-muted">|</span>
-            <ProjectDropdown />
-          </div>
-          <div
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-heading text-sm font-bold text-white gradient-bg"
-            aria-hidden
-          >
-            {getUserInitial()}
-          </div>
-        </header>
+        <Topbar title="AI Image Generator" />
 
         {/* Two-panel layout */}
         <div className="flex flex-1 overflow-hidden">
           {/* Left panel */}
           <div className="flex w-[400px] shrink-0 flex-col border-r border-border bg-panel">
             <div className="flex-1 space-y-6 overflow-y-auto p-5">
+              <span className="inline-flex w-fit items-center rounded-full border border-accent-violet/30 bg-accent-violet/15 px-2.5 py-0.5 text-xs font-semibold text-accent-violet">
+                ✦ AI Powered
+              </span>
               {/* Prompt */}
               <div>
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-text-muted">

@@ -1,8 +1,7 @@
 import { useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
-import { getUserInitial } from '../utils/user.js'
-import ProjectDropdown from '../components/ProjectDropdown'
+import Topbar from '../components/Topbar'
 
 const SPARK = (seed, n = 15) =>
   Array.from({ length: n }, (_, i) => {
@@ -302,20 +301,10 @@ export default function AnalyticsPage() {
 
   return (
     <AppLayout>
-        <header className="sticky top-0 z-30 flex h-[60px] items-center justify-between gap-4 border-b border-border bg-panel/90 px-7 backdrop-blur-md">
-          <div className="flex items-center gap-4 shrink-0">
-            <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-2 text-sm text-text-secondary">
-              <Link to="/dashboard" className="hover:text-text-primary">
-                Dashboard
-              </Link>
-              <span className="text-text-muted">/</span>
-              <span className="font-heading text-lg font-bold text-text-primary">Analytics</span>
-            </nav>
-            <span className="text-text-muted">|</span>
-            <ProjectDropdown />
-          </div>
+        <Topbar title="Analytics" />
 
-          <div className="flex flex-1 flex-wrap items-center justify-end gap-3">
+        <main className="space-y-8 p-7">
+          <div className="flex flex-wrap items-center justify-end gap-3">
             <div className="flex rounded-xl border border-border-default bg-input p-1">
               {ranges.map((r) => (
                 <button
@@ -351,17 +340,7 @@ export default function AnalyticsPage() {
             >
               ↓ Export CSV
             </button>
-
-            <div
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-heading text-sm font-bold text-white gradient-bg"
-            aria-hidden
-          >
-            {getUserInitial()}
           </div>
-          </div>
-        </header>
-
-        <main className="space-y-8 p-7">
           <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {[
               {

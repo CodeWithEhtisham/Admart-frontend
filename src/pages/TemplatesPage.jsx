@@ -1,8 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
-import ProjectDropdown from '../components/ProjectDropdown'
-import { getUserInitial } from '../utils/user.js'
+import Topbar from '../components/Topbar'
 
 const CATEGORIES = [
   { id: 'all', label: 'All Templates', count: 48 },
@@ -291,36 +290,7 @@ export default function TemplatesPage() {
   return (
     <AppLayout>
       <div className="min-h-screen">
-        <header className="sticky top-0 z-30 flex h-[60px] items-center justify-between gap-4 border-b border-border bg-panel/90 px-7 backdrop-blur-md">
-          <div className="flex shrink-0 items-center gap-3">
-            <h1 className="font-heading text-lg font-bold text-text-primary">Templates Gallery</h1>
-            <span className="text-text-muted">|</span>
-            <ProjectDropdown />
-          </div>
-          <div className="mx-auto max-w-md flex-1 px-2">
-            <input
-              type="search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search templates..."
-              className="w-full rounded-xl border border-border-default bg-input px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
-            />
-          </div>
-          <div className="flex shrink-0 items-center gap-3">
-            <Link
-              to="/create"
-              className="inline-flex items-center gap-2 rounded-xl gradient-bg px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/20"
-            >
-              <span aria-hidden>✦</span> New Video
-            </Link>
-            <div
-              className="flex h-9 w-9 items-center justify-center rounded-full font-heading text-sm font-bold text-white gradient-bg"
-              aria-hidden
-            >
-              {getUserInitial()}
-            </div>
-          </div>
-        </header>
+        <Topbar title="Templates Gallery" />
 
         <div className="border-b border-border bg-panel px-7 py-0">
           <div className="-mb-px flex gap-1 overflow-x-auto pb-0">
@@ -346,6 +316,23 @@ export default function TemplatesPage() {
         </div>
 
         <main className="space-y-6 p-7">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="max-w-md flex-1">
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search templates..."
+                className="w-full rounded-xl border border-border-default bg-input px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
+              />
+            </div>
+            <Link
+              to="/create"
+              className="inline-flex items-center gap-2 rounded-xl gradient-bg px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/20"
+            >
+              <span aria-hidden>✦</span> New Video
+            </Link>
+          </div>
           <div className="flex flex-wrap items-center justify-between gap-4">
             <p className="text-sm text-text-secondary">
               {filteredTemplates.length} template{filteredTemplates.length !== 1 ? 's' : ''} shown

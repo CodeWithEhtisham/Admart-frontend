@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
-import ProjectDropdown from '../components/ProjectDropdown'
+import Topbar from '../components/Topbar'
 
 /** Reference "today" for demo (matches product brief) */
 const TODAY = new Date(2026, 3, 15)
@@ -217,7 +217,9 @@ export default function CalendarPage() {
   return (
     <AppLayout>
       <div className="min-h-screen pb-24">
-        <header className="sticky top-0 z-30 flex min-h-[72px] flex-wrap items-center gap-4 border-b border-border bg-panel/90 px-5 py-3 backdrop-blur-md lg:px-7">
+        <Topbar title="Calendar" />
+
+        <div className="flex flex-wrap items-center gap-4 border-b border-border bg-panel/90 px-5 py-3 lg:px-7">
           <div className="flex flex-wrap items-center gap-3">
             <button
               type="button"
@@ -245,8 +247,6 @@ export default function CalendarPage() {
             >
               Today
             </button>
-            <span className="text-text-muted">|</span>
-            <ProjectDropdown />
           </div>
 
           <div className="ml-auto flex flex-wrap items-center justify-end gap-3">
@@ -286,11 +286,8 @@ export default function CalendarPage() {
             >
               + New Post
             </button>
-            <div className="flex h-9 w-9 items-center justify-center rounded-full font-heading text-sm font-bold text-white gradient-bg" aria-hidden>
-              E
-            </div>
           </div>
-        </header>
+        </div>
 
         <main className="p-7">
           {viewMode === 'month' && (

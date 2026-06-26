@@ -1,8 +1,6 @@
 import { useCallback, useState } from 'react'
-import { Link } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
-import { getUserInitial } from '../utils/user.js'
-import ProjectDropdown from '../components/ProjectDropdown'
+import Topbar from '../components/Topbar'
 
 const INITIAL_COLORS = [
   { hex: '#2563eb', role: 'Primary' },
@@ -73,31 +71,7 @@ export default function BrandKitPage() {
     <AppLayout>
       <div className="flex min-h-screen flex-col">
         {/* Topbar */}
-        <header className="sticky top-0 z-30 flex h-[60px] shrink-0 items-center justify-between gap-4 border-b border-border bg-panel/90 px-7 backdrop-blur-md">
-          <div className="flex items-center gap-3">
-            <div>
-              <h1 className="font-heading text-lg font-bold text-text-primary">Brand Kit</h1>
-              <p className="text-xs text-text-tertiary">Auto-applied to every generated video</p>
-            </div>
-            <span className="text-text-muted">|</span>
-            <ProjectDropdown />
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={handleSave}
-              className="rounded-xl bg-gradient-to-r from-accent-blue to-accent-violet px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/20 hover:opacity-90"
-            >
-              Save Brand Kit
-            </button>
-            <div
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-heading text-sm font-bold text-white gradient-bg"
-              aria-hidden
-            >
-              {getUserInitial()}
-            </div>
-          </div>
-        </header>
+        <Topbar title="Brand Kit" />
 
         {toast && (
           <div
@@ -112,6 +86,16 @@ export default function BrandKitPage() {
         <div className="flex min-h-0 flex-1">
           {/* Editor Area */}
           <div className="flex-1 overflow-y-auto p-7 space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-xs text-text-tertiary">Auto-applied to every generated video</p>
+              <button
+                type="button"
+                onClick={handleSave}
+                className="rounded-xl bg-gradient-to-r from-accent-blue to-accent-violet px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/20 hover:opacity-90"
+              >
+                Save Brand Kit
+              </button>
+            </div>
 
             {/* 1. Logo Assets */}
             <section className="rounded-2xl border border-border-default bg-surface p-6">
