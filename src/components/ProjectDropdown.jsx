@@ -1,80 +1,72 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import {
+  PROJECT_CHANGE_EVENT,
+  activateProject,
+  getCachedActiveProject,
+  listProjects,
+  resolveActiveProject,
+  setActiveProject as cacheActiveProject,
+} from '../utils/projects'
 
-// ─── Seed data (will eventually come from an API) ─────────────────────
-const SEED_PROJECTS = [
-  {
-    id: 'proj-1',
-    name: 'Vidify Production',
-    color: '#2563eb',
-    icon: '▶',
-    org: 'Admart',
-    updatedAt: '2026-06-22',
-  },
-  {
-    id: 'proj-2',
-    name: 'Summer Campaign',
-    color: '#7c3aed',
-    icon: '☀',
-    org: 'Admart',
-    updatedAt: '2026-06-20',
-  },
-  {
-    id: 'proj-3',
-    name: 'Client — NovaTech',
-    color: '#10b981',
-    icon: '◇',
-    org: 'External',
-    updatedAt: '2026-06-15',
-  },
-  {
-    id: 'proj-4',
-    name: 'Brand Relaunch 2026',
-    color: '#f59e0b',
-    icon: '✦',
-    org: 'Admart',
-    updatedAt: '2026-06-10',
-  },
-  {
-    id: 'proj-5',
-    name: 'Demo Playground',
-    color: '#ef4444',
-    icon: '⚡',
-    org: 'Personal',
-    updatedAt: '2026-05-30',
-  },
-]
-
-// ─── Custom event so other components can react ───────────────────────
-export const PROJECT_CHANGE_EVENT = 'vidify:project-change'
+// Re-export so existing importers (if any) keep working from this module too.
+export { PROJECT_CHANGE_EVENT }
 
 // ─── Helpers ──────────────────────────────────────────────────────────
-function getStoredProject() {
-  try {
-    const raw = localStorage.getItem('vidify_activeProject')
-    return raw ? JSON.parse(raw) : SEED_PROJECTS[0]
-  } catch {
-    return SEED_PROJECTS[0]
-  }
-}
-
 function getPinnedIds() {
   try {
     const raw = localStorage.getItem('vidify_pinnedProjects')
-    return raw ? JSON.parse(raw) : ['proj-1']
+    return raw ? JSON.parse(raw) : []
   } catch {
-    return ['proj-1']
+    return []
   }
 }
 
 // ─── Component ────────────────────────────────────────────────────────
 export default function ProjectDropdown() {
+  const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
-  const [activeProject, setActiveProject] = useState(getStoredProject)
+  const [projects, setProjects] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [activeProject, setActiveProjectState] = useState(getCachedActiveProject)
   const [pinnedIds, setPinnedIds] = useState(getPinnedIds)
   const [tab, setTab] = useState('recent') // 'recent' | 'all' | 'starred'
   const menuRef = useRef(null)
   const searchRef = useRef(null)
+
+  // Load the user's projects from the backend on mount.
+  useEffect(() => {
+    let cancelled = false
+    listProjects()
+      .then((data) => {
+        if (cancelled) return
+        setProjects(data.projects)
+        const active = resolveActiveProject(data)
+        if (active) {
+          setActiveProjectState(active)
+          cacheActiveProject(active)
+        }
+      })
+      .catch((err) => console.error('Failed to load projects:', err))
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  // Stay in sync if the active project changes elsewhere (other tabs/components).
+  useEffect(() => {
+    const sync = () => setActiveProjectState(getCachedActiveProject())
+    window.addEventListener(PROJECT_CHANGE_EVENT, sync)
+    window.addEventListener('storage', sync)
+    return () => {
+      window.removeEventListener(PROJECT_CHANGE_EVENT, sync)
+      window.removeEventListener('storage', sync)
+    }
+  }, [])
 
   // Close on click outside
   useEffect(() => {
@@ -104,16 +96,15 @@ export default function ProjectDropdown() {
     return () => document.removeEventListener('keydown', handleKey)
   }, [open])
 
-  const selectProject = useCallback(
-    (proj) => {
-      setActiveProject(proj)
-      localStorage.setItem('vidify_activeProject', JSON.stringify(proj))
-      window.dispatchEvent(new CustomEvent(PROJECT_CHANGE_EVENT, { detail: proj }))
-      setOpen(false)
-      setSearch('')
-    },
-    []
-  )
+  const selectProject = useCallback((proj) => {
+    setActiveProjectState(proj)
+    cacheActiveProject(proj) // caches to localStorage + broadcasts PROJECT_CHANGE_EVENT
+    setOpen(false)
+    setSearch('')
+    activateProject(proj.id).catch((err) =>
+      console.error('Failed to mark project active:', err),
+    )
+  }, [])
 
   const togglePin = useCallback(
     (id, e) => {
@@ -128,9 +119,10 @@ export default function ProjectDropdown() {
   )
 
   // Filtering
-  const filtered = SEED_PROJECTS.filter((p) =>
-    p.name.toLowerCase().includes(search.toLowerCase()) ||
-    p.org.toLowerCase().includes(search.toLowerCase())
+  const filtered = projects.filter(
+    (p) =>
+      p.name.toLowerCase().includes(search.toLowerCase()) ||
+      (p.org || '').toLowerCase().includes(search.toLowerCase()),
   )
 
   const pinnedProjects = filtered.filter((p) => pinnedIds.includes(p.id))
@@ -157,13 +149,13 @@ export default function ProjectDropdown() {
         {/* Project color dot */}
         <span
           className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-xs font-bold text-white"
-          style={{ background: activeProject.color }}
+          style={{ background: activeProject?.color || '#3f3f46' }}
         >
-          {activeProject.icon}
+          {activeProject?.icon || '—'}
         </span>
 
         <span className="max-w-[140px] truncate font-medium text-text-primary">
-          {activeProject.name}
+          {activeProject?.name || (loading ? 'Loading…' : 'Select project')}
         </span>
 
         {/* Chevron */}
@@ -239,7 +231,13 @@ export default function ProjectDropdown() {
             <div className="max-h-[320px] overflow-y-auto p-2">
               {displayList.length === 0 && (
                 <div className="px-3 py-6 text-center text-sm text-text-tertiary">
-                  {search ? 'No projects match your search' : 'No projects in this category'}
+                  {loading
+                    ? 'Loading projects…'
+                    : search
+                      ? 'No projects match your search'
+                      : projects.length === 0
+                        ? 'No projects yet — create your first one'
+                        : 'No projects in this category'}
                 </div>
               )}
 
@@ -255,7 +253,7 @@ export default function ProjectDropdown() {
                   <ProjectRow
                     key={proj.id}
                     project={proj}
-                    isActive={activeProject.id === proj.id}
+                    isActive={activeProject?.id === proj.id}
                     isPinned
                     onSelect={() => selectProject(proj)}
                     onTogglePin={(e) => togglePin(proj.id, e)}
@@ -273,7 +271,7 @@ export default function ProjectDropdown() {
                   <ProjectRow
                     key={proj.id}
                     project={proj}
-                    isActive={activeProject.id === proj.id}
+                    isActive={activeProject?.id === proj.id}
                     isPinned={false}
                     onSelect={() => selectProject(proj)}
                     onTogglePin={(e) => togglePin(proj.id, e)}
@@ -285,7 +283,7 @@ export default function ProjectDropdown() {
                   <ProjectRow
                     key={proj.id}
                     project={proj}
-                    isActive={activeProject.id === proj.id}
+                    isActive={activeProject?.id === proj.id}
                     isPinned={pinnedIds.includes(proj.id)}
                     onSelect={() => selectProject(proj)}
                     onTogglePin={(e) => togglePin(proj.id, e)}
@@ -301,6 +299,7 @@ export default function ProjectDropdown() {
                 onClick={() => {
                   setOpen(false)
                   setSearch('')
+                  navigate('/onboarding')
                 }}
               >
                 <span className="flex h-6 w-6 items-center justify-center rounded-md border border-dashed border-accent-blue/50 text-xs">

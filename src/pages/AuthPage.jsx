@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import api from '../utils/api'
+import { needsOnboarding } from '../utils/projects'
 
 const showcaseItems = [
   { title: 'Launch Hype', duration: '0:28', platform: 'TikTok', badge: 'bg-tiktok text-base' },
@@ -141,11 +142,7 @@ export default function AuthPage() {
       localStorage.setItem('refreshToken', refreshToken)
       localStorage.setItem('user', JSON.stringify(user))
 
-      if (user.onboardingCompleted) {
-        navigate('/dashboard')
-      } else {
-        navigate('/onboarding')
-      }
+      navigate(needsOnboarding(user) ? '/onboarding' : '/dashboard')
     } catch (err) {
       console.error(err)
       setError(err.response?.data?.detail || 'Invalid email or password.')
@@ -179,7 +176,7 @@ export default function AuthPage() {
       localStorage.setItem('refreshToken', refreshToken)
       localStorage.setItem('user', JSON.stringify(user))
 
-      navigate('/onboarding')
+      navigate(needsOnboarding(user) ? '/onboarding' : '/dashboard')
     } catch (err) {
       console.error(err)
       const data = err.response?.data

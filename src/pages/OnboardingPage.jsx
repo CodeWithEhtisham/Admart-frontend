@@ -1,49 +1,58 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import api from '../utils/api'
+import { createProject, setActiveProject } from '../utils/projects'
 
 const PRESET_COLORS = ['#2563eb', '#7c3aed', '#10b981', '#f59e0b', '#ef4444', '#ec4899']
 
 const PROJECT_ICONS = ['▶', '✦', '◇', '☀', '⚡', '◎', '◈', '✸']
 
+const DEFAULT_PROJECT_NAME = 'My First Project'
+
+/** Keep the cached user in sync so routing/refresh don't bounce back to onboarding. */
+function markUserHasProject(activeProjectId) {
+  try {
+    const user = JSON.parse(localStorage.getItem('user') || '{}')
+    user.projectCount = (user.projectCount || 0) + 1
+    user.activeProjectId = activeProjectId
+    user.onboardingCompleted = true
+    localStorage.setItem('user', JSON.stringify(user))
+  } catch {
+    // ignore cache write failures
+  }
+}
+
 export default function OnboardingPage() {
   const navigate = useNavigate()
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
 
   const [projectName, setProjectName] = useState('')
   const [projectIcon, setProjectIcon] = useState(PROJECT_ICONS[0])
   const [projectColor, setProjectColor] = useState(PRESET_COLORS[0])
 
-  const persistProject = () => {
-    const project = {
-      id: `proj-${Date.now()}`,
-      name: projectName.trim() || 'My First Project',
-      color: projectColor,
-      icon: projectIcon,
-      org: 'Personal',
-      updatedAt: new Date().toISOString().slice(0, 10),
-    }
-    localStorage.setItem('vidify_activeProject', JSON.stringify(project))
-  }
-
+  // A user needs at least one project to enter the workspace, so "Skip" still
+  // creates a sensibly-named default project rather than leaving them with none.
   const finish = async ({ withProject }) => {
     setSaving(true)
-    if (withProject) {
-      persistProject()
-    }
-
+    setError('')
     try {
-      const response = await api.patch('/api/auth/me', {
-        onboardingCompleted: true,
+      const project = await createProject({
+        name: withProject ? projectName.trim() || DEFAULT_PROJECT_NAME : DEFAULT_PROJECT_NAME,
+        icon: projectIcon,
+        color: projectColor,
+        org: 'Personal',
       })
-      const user = JSON.parse(localStorage.getItem('user') || '{}')
-      const updatedUser = { ...user, ...response.data }
-      localStorage.setItem('user', JSON.stringify(updatedUser))
-    } catch (err) {
-      console.error('Failed to complete project setup:', err)
-    } finally {
-      setSaving(false)
+      setActiveProject(project)
+      markUserHasProject(project.id)
       navigate('/dashboard')
+    } catch (err) {
+      console.error('Failed to create project:', err)
+      setError(
+        err.response?.data?.name?.[0] ||
+          err.response?.data?.detail ||
+          'Could not create your project. Please try again.',
+      )
+      setSaving(false)
     }
   }
 
@@ -143,6 +152,12 @@ export default function OnboardingPage() {
                 </label>
               </div>
             </div>
+
+            {error && (
+              <p className="rounded-xl border border-error/30 bg-error/10 px-4 py-2.5 text-sm text-error">
+                {error}
+              </p>
+            )}
 
             <div className="flex flex-wrap justify-end gap-3 pt-2">
               <button
