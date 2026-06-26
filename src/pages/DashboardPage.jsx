@@ -9,8 +9,25 @@ import {
 } from '../utils/generatedAssets'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
+import { getStoredUser } from '../utils/user.js'
 
 const FILTERS = ['All', 'Published', 'Ready', 'Scheduled', 'Generating']
+
+/** Rotating creative taglines for the dashboard hero. */
+const HERO_TAGLINES = [
+  'Ready to create something scroll-stopping today? ✨',
+  'Your next viral moment starts right here. 🚀',
+  "Let's turn today's idea into tomorrow's trend. 🔥",
+  'Lights, camera, automation — make something great. 🎬',
+  'Time to make content the algorithm loves. 📈',
+  'Big ideas deserve big reach. Let’s ship one. 💫',
+]
+
+/** Pick a tagline that stays stable for the day but changes day to day. */
+function getDailyTagline() {
+  const dayIndex = Math.floor(Date.now() / 86_400_000)
+  return HERO_TAGLINES[dayIndex % HERO_TAGLINES.length]
+}
 
 const SPARKLINES = {
   credits: [40, 52, 48, 55, 50, 42],
@@ -128,6 +145,9 @@ function PlatformDot({ letter }) {
 
 export default function DashboardPage() {
   const navigate = useNavigate()
+  const user = getStoredUser()
+  const firstName = user.firstName || user.first_name || user.name || 'there'
+  const tagline = getDailyTagline()
   const [activeFilter, setActiveFilter] = useState('All')
   const [savedAssets, setSavedAssets] = useState(() => getSavedAssets())
   const [assetMessage, setAssetMessage] = useState('')
@@ -173,8 +193,9 @@ export default function DashboardPage() {
           >
             ✦
           </span>
-          <p className="font-heading text-2xl font-bold">Good morning, Ehtisham 👋</p>
-          <p className="mt-1 text-sm text-white/80">42 credits remaining</p>
+          <p className="font-heading text-2xl font-bold">Welcome back, {firstName} 👋</p>
+          <p className="mt-1 text-sm text-white/90">{tagline}</p>
+          <p className="mt-1 text-xs text-white/70">42 credits remaining</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
               to="/create"
