@@ -63,8 +63,14 @@ export async function listSocialAccounts(projectId) {
   return data // array of social account objects
 }
 
+/**
+ * Begin the OAuth handshake: ask the backend for the provider authorize URL,
+ * then send the browser there. The backend handles the callback and redirects
+ * the user back to /social?connected=<platform> (or ?error=<platform>).
+ */
 export async function connectPlatform(projectId, platform) {
-  const { data } = await api.post(`/api/projects/${projectId}/social/connect/${platform}`)
+  const { data } = await api.get(`/api/projects/${projectId}/social/connect/${platform}/url`)
+  window.location.href = data.authUrl
   return data
 }
 

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import {
@@ -9,7 +10,13 @@ import {
   listSocialAccounts,
 } from '../utils/projects'
 
-const PLATFORMS = ['tiktok', 'youtube', 'instagram', 'facebook']
+// YouTube ships first; the rest light up as the backend implements them.
+const PLATFORMS = [
+  { key: 'youtube', available: true },
+  { key: 'tiktok', available: false },
+  { key: 'instagram', available: false },
+  { key: 'facebook', available: false },
+]
 
 const PLATFORM_META = {
   tiktok: {
@@ -57,7 +64,28 @@ function Toast({ message, visible, onDismiss }) {
   )
 }
 
-function PlatformCard({ platform, account, busy, onConnect, onDisconnect }) {
+function ChannelAvatar({ src, fallback }) {
+  const [errored, setErrored] = useState(false)
+  const showImage = src && !errored
+  return (
+    <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-elevated font-heading text-sm font-bold text-text-primary">
+      {showImage ? (
+        <img
+          src={src}
+          alt=""
+          // Google/YouTube avatar hosts return 403 when hotlinked with a referrer.
+          referrerPolicy="no-referrer"
+          onError={() => setErrored(true)}
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        fallback
+      )}
+    </div>
+  )
+}
+
+function PlatformCard({ platform, account, available, busy, onConnect, onDisconnect }) {
   const meta = PLATFORM_META[platform]
   const connected = Boolean(account?.connected)
 
@@ -94,13 +122,10 @@ function PlatformCard({ platform, account, busy, onConnect, onDisconnect }) {
         {connected ? (
           <>
             <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border-default bg-input p-4">
-              <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-elevated font-heading text-sm font-bold text-text-primary">
-                {account.avatarUrl ? (
-                  <img src={account.avatarUrl} alt="" className="h-full w-full object-cover" />
-                ) : (
-                  (account.displayName || account.handle || meta.name).charAt(0).toUpperCase()
-                )}
-              </div>
+              <ChannelAvatar
+                src={account.avatarUrl}
+                fallback={(account.displayName || account.handle || meta.name).charAt(0).toUpperCase()}
+              />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-medium">{account.displayName || account.handle || '—'}</p>
                 {account.handle && <p className="truncate text-xs text-text-tertiary">{account.handle}</p>}
@@ -123,19 +148,32 @@ function PlatformCard({ platform, account, busy, onConnect, onDisconnect }) {
               🔗
             </span>
             <p className="mt-4 font-heading text-lg font-semibold text-text-primary">
-              Connect your {meta.name} account
+              {available ? `Connect your ${meta.name} account` : `${meta.name} — coming soon`}
             </p>
             <p className="mt-2 max-w-sm text-sm text-text-secondary">
-              Publish directly from Vidify and sync insights for performance tracking.
+              {available
+                ? 'Publish directly from Vidify and sync insights for performance tracking.'
+                : "We're putting the finishing touches on this integration."}
             </p>
-            <button
-              type="button"
-              onClick={() => onConnect(platform)}
-              disabled={busy}
-              className="mt-8 inline-flex items-center gap-2 rounded-xl gradient-bg px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-blue/25 disabled:opacity-50"
-            >
-              {busy ? 'Connecting…' : `Connect ${meta.name} →`}
-            </button>
+            {available ? (
+              <button
+                type="button"
+                onClick={() => onConnect(platform)}
+                disabled={busy}
+                className="mt-8 inline-flex items-center gap-2 rounded-xl gradient-bg px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-blue/25 disabled:opacity-50"
+              >
+                {busy ? 'Connecting…' : `Connect ${meta.name} →`}
+              </button>
+            ) : (
+              <button
+                type="button"
+                disabled
+                title="Coming soon"
+                className="mt-8 inline-flex items-center gap-2 rounded-xl border border-border-default bg-elevated px-6 py-3 text-sm font-semibold text-text-tertiary"
+              >
+                Coming soon
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -144,6 +182,7 @@ function PlatformCard({ platform, account, busy, onConnect, onDisconnect }) {
 }
 
 export default function SocialAccountsPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [activeProject, setActiveProject] = useState(getCachedActiveProject)
   const [accountsByPlatform, setAccountsByPlatform] = useState({})
   const [loading, setLoading] = useState(true)
@@ -189,17 +228,36 @@ export default function SocialAccountsPage() {
     loadAccounts()
   }, [loadAccounts])
 
+  // When the backend redirects back from the provider (/social?connected=… or ?error=…),
+  // show a toast, refresh the list, and strip the query flag from the URL.
+  useEffect(() => {
+    const connected = searchParams.get('connected')
+    const error = searchParams.get('error')
+    if (!connected && !error) return
+    if (connected) {
+      setToast({ message: `${PLATFORM_META[connected]?.name || connected} connected.`, visible: true })
+    } else {
+      setToast({
+        message: `Couldn't connect ${PLATFORM_META[error]?.name || error}. Please try again.`,
+        visible: true,
+      })
+    }
+    loadAccounts()
+    setSearchParams({}, { replace: true })
+  }, [searchParams, loadAccounts, setSearchParams])
+
   const handleConnect = async (platform) => {
     if (!projectId) return
     setBusyPlatform(platform)
     try {
+      // On success this performs a full-page redirect to the provider; the code
+      // below only runs if requesting the authorize URL fails (e.g. 501 not ready).
       await connectPlatform(projectId, platform)
-      await loadAccounts()
-      showToast(`${PLATFORM_META[platform].name} connected.`)
     } catch (err) {
-      console.error('Failed to connect platform:', err)
-      showToast(`Could not connect ${PLATFORM_META[platform].name}.`)
-    } finally {
+      console.error('Failed to start connection:', err)
+      showToast(
+        err.response?.data?.message || `Could not connect ${PLATFORM_META[platform].name}.`,
+      )
       setBusyPlatform('')
     }
   }
@@ -219,7 +277,7 @@ export default function SocialAccountsPage() {
     }
   }
 
-  const connectedCount = PLATFORMS.filter((p) => accountsByPlatform[p]?.connected).length
+  const connectedCount = PLATFORMS.filter((p) => accountsByPlatform[p.key]?.connected).length
 
   return (
     <AppLayout>
@@ -228,7 +286,11 @@ export default function SocialAccountsPage() {
       <main className="space-y-6 p-7">
         {!projectId ? (
           <p className="text-sm text-text-secondary">
-            Select or create a project to manage its social accounts.
+            You need a project before connecting social accounts.{' '}
+            <Link to="/onboarding" className="font-medium text-accent-blue hover:underline">
+              Create a project
+            </Link>
+            .
           </p>
         ) : (
           <p className="text-sm text-text-secondary">
@@ -251,12 +313,13 @@ export default function SocialAccountsPage() {
 
         {projectId && (
           <div className="grid gap-6 lg:grid-cols-2">
-            {PLATFORMS.map((platform) => (
+            {PLATFORMS.map(({ key, available }) => (
               <PlatformCard
-                key={platform}
-                platform={platform}
-                account={accountsByPlatform[platform]}
-                busy={busyPlatform === platform}
+                key={key}
+                platform={key}
+                account={accountsByPlatform[key]}
+                available={available}
+                busy={busyPlatform === key}
                 onConnect={handleConnect}
                 onDisconnect={handleDisconnect}
               />
