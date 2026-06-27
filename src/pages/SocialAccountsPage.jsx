@@ -10,12 +10,12 @@ import {
   listSocialAccounts,
 } from '../utils/projects'
 
-// YouTube ships first; the rest light up as the backend implements them.
+// YouTube, Facebook and Instagram are live; TikTok returns 501 until built.
 const PLATFORMS = [
   { key: 'youtube', available: true },
+  { key: 'facebook', available: true },
+  { key: 'instagram', available: true },
   { key: 'tiktok', available: false },
-  { key: 'instagram', available: false },
-  { key: 'facebook', available: false },
 ]
 
 const PLATFORM_META = {
@@ -131,6 +131,11 @@ function PlatformCard({ platform, account, available, busy, onConnect, onDisconn
                 {account.handle && <p className="truncate text-xs text-text-tertiary">{account.handle}</p>}
               </div>
             </div>
+            {platform === 'instagram' && !account.displayName && !account.handle && (
+              <p className="rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-xs text-warning">
+                Connect a Professional Instagram account linked to a Facebook Page to publish.
+              </p>
+            )}
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
