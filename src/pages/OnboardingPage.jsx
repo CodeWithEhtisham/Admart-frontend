@@ -63,7 +63,7 @@ export default function OnboardingPage() {
           to="/"
           className="font-heading text-lg font-bold tracking-tight text-text-primary"
         >
-          <span className="gradient-text animate-float inline-block">Vidify</span>
+          <span className="gradient-text animate-float inline-block">Admart</span>
         </Link>
         <button
           type="button"

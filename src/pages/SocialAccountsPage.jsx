@@ -157,7 +157,7 @@ function PlatformCard({ platform, account, available, busy, onConnect, onDisconn
             </p>
             <p className="mt-2 max-w-sm text-sm text-text-secondary">
               {available
-                ? 'Publish directly from Vidify and sync insights for performance tracking.'
+                ? 'Publish directly from Admart and sync insights for performance tracking.'
                 : "We're putting the finishing touches on this integration."}
             </p>
             {available ? (
@@ -310,7 +310,7 @@ export default function SocialAccountsPage() {
           <div>
             <p className="font-medium text-text-primary">Secure OAuth 2.0 connections</p>
             <p className="mt-1 text-sm text-text-secondary">
-              Vidify uses industry-standard OAuth so we never store your passwords. Connections are
+              Admart uses industry-standard OAuth so we never store your passwords. Connections are
               per project — switching projects switches the connected accounts.
             </p>
           </div>

@@ -104,7 +104,7 @@ export default function ProgressPage() {
           to="/dashboard"
           className="font-heading text-lg font-bold tracking-tight gradient-text transition-opacity hover:opacity-90"
         >
-          Vidify
+          Admart
         </Link>
       </header>
 

@@ -73,8 +73,8 @@ export default function VidifySidebar() {
     >
       <div className={`flex h-[60px] items-center border-b border-border px-4 ${collapsed ? 'justify-center' : ''}`}>
         <Link to="/dashboard" className="font-heading text-lg font-bold">
-          <span className="gradient-text">V</span>
-          {!collapsed && <span className="text-text-primary">idify</span>}
+          <span className="gradient-text">A</span>
+          {!collapsed && <span className="text-text-primary">dmart</span>}
         </Link>
       </div>
 

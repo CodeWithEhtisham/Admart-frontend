@@ -286,7 +286,7 @@ export default function WizardPage() {
     Instagram: '',
     Facebook: '',
   })
-  const [tags, setTags] = useState(['vidify', 'launch', '2026'])
+  const [tags, setTags] = useState(['admart', 'launch', '2026'])
   const [tagInput, setTagInput] = useState('')
   const [thumbChoice, setThumbChoice] = useState(0)
   const [isGeneratingTextImage, setIsGeneratingTextImage] = useState(false)

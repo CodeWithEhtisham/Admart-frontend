@@ -26,7 +26,7 @@ const EMPTY_STATES = [
     accent: 'green',
     badge: 'Social',
     title: 'No accounts connected',
-    desc: 'Link your TikTok, YouTube, Instagram, or Facebook to publish directly from Vidify.',
+    desc: 'Link your TikTok, YouTube, Instagram, or Facebook to publish directly from Admart.',
     action: 'Connect Accounts →',
     to: '/social',
     variant: 'gradient',
@@ -119,8 +119,8 @@ export default function NotFoundPage() {
       {/* Simple nav bar */}
       <nav className="flex h-[60px] items-center border-b border-border bg-panel px-6">
         <Link to="/dashboard" className="font-heading text-lg font-bold">
-          <span className="gradient-text">V</span>
-          <span className="text-text-primary">idify</span>
+          <span className="gradient-text">A</span>
+          <span className="text-text-primary">dmart</span>
         </Link>
       </nav>
 

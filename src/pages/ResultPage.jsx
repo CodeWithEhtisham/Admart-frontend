@@ -355,7 +355,7 @@ export default function ResultPage() {
                   <div className="flex items-center gap-2 border-b border-border px-3 py-2">
                     <div className="h-8 w-8 rounded-full bg-linear-to-br from-accent-blue to-accent-violet" />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-xs font-semibold text-text-primary">@vidify_brand</p>
+                      <p className="truncate text-xs font-semibold text-text-primary">@admart_brand</p>
                       <p className="text-[10px] text-text-muted">Suggested for you</p>
                     </div>
                     <button

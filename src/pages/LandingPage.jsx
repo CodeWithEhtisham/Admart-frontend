@@ -32,10 +32,10 @@ function LogoMark({ className = '' }) {
   return (
     <Link to="/" className={`flex items-center gap-2.5 ${className}`}>
       <span className="flex h-9 w-9 items-center justify-center rounded-lg gradient-bg font-heading text-lg font-bold text-white shadow-lg shadow-accent-blue/20">
-        V
+        A
       </span>
       <span className="font-heading text-xl font-semibold tracking-tight text-text-primary">
-        Vidify
+        Admart
       </span>
     </Link>
   )
@@ -230,7 +230,7 @@ export default function LandingPage() {
                 n: '01',
                 ring: 'from-accent-blue to-accent-blue/60',
                 title: 'Type Your Idea',
-                desc: 'Describe your hook, audience, and tone. Vidify structures a shot plan automatically.',
+                desc: 'Describe your hook, audience, and tone. Admart structures a shot plan automatically.',
               },
               {
                 n: '02',
@@ -413,7 +413,7 @@ export default function LandingPage() {
             Start creating for free today
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-text-secondary">
-            Join creators shipping weekly without a production crew. Bring your ideas — Vidify handles
+            Join creators shipping weekly without a production crew. Bring your ideas — Admart handles
             the rest.
           </p>
           <Link
@@ -430,7 +430,7 @@ export default function LandingPage() {
           <div className="lg:col-span-1">
             <LogoMark />
             <p className="mt-4 text-sm leading-relaxed text-text-tertiary">
-              Vidify helps teams produce and distribute short-form video with AI — fast, on-brand,
+              Admart helps teams produce and distribute short-form video with AI — fast, on-brand,
               everywhere your audience watches.
             </p>
           </div>
@@ -516,7 +516,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="mx-auto mt-12 flex max-w-7xl flex-col items-center justify-between gap-4 border-t border-border pt-8 text-center text-sm text-text-muted sm:flex-row sm:text-left">
-          <p>© {new Date().getFullYear()} Vidify. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Admart. All rights reserved.</p>
           <p className="text-text-tertiary">Built with ♥ for creators worldwide</p>
         </div>
       </footer>

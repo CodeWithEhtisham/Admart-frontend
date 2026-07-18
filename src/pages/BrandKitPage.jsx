@@ -114,9 +114,9 @@ export default function BrandKitPage() {
                 <div className="group relative flex aspect-video items-center justify-center rounded-xl border border-accent-blue/30 bg-panel overflow-hidden">
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-accent-blue to-accent-violet">
-                      <span className="font-heading text-lg font-bold text-white">V</span>
+                      <span className="font-heading text-lg font-bold text-white">A</span>
                     </div>
-                    <span className="font-heading text-lg font-bold text-text-primary">Vidify</span>
+                    <span className="font-heading text-lg font-bold text-text-primary">Admart</span>
                   </div>
                   <button
                     type="button"
@@ -257,7 +257,7 @@ export default function BrandKitPage() {
                     className="text-sm text-text-primary"
                     style={{ fontFamily: bodyFont }}
                   >
-                    Vidify makes AI video creation simple and powerful.
+                    Admart makes AI video creation simple and powerful.
                   </p>
                   <p className="mt-1 text-xs text-text-tertiary">{bodyFont} — Regular</p>
                   <div className="mt-3 flex flex-wrap gap-2">
@@ -430,9 +430,9 @@ export default function BrandKitPage() {
                   {/* Watermark */}
                   <div className="absolute right-2 bottom-8 flex items-center gap-1 opacity-70">
                     <div className="flex h-5 w-5 items-center justify-center rounded bg-gradient-to-br from-accent-blue to-accent-violet">
-                      <span className="text-[9px] font-bold text-white">V</span>
+                      <span className="text-[9px] font-bold text-white">A</span>
                     </div>
-                    <span className="text-[9px] font-bold text-white/80">Vidify</span>
+                    <span className="text-[9px] font-bold text-white/80">Admart</span>
                   </div>
                   {/* Caption overlay */}
                   <div className="absolute bottom-2 left-2 right-2 rounded-md bg-base/70 px-2 py-1 backdrop-blur-sm">

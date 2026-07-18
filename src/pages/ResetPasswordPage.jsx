@@ -79,10 +79,10 @@ export default function ResetPasswordPage() {
       <div className="relative w-full max-w-md rounded-2xl border border-border-default bg-panel p-8 shadow-xl">
         <Link to="/" className="mb-6 inline-flex items-center gap-2.5">
           <span className="flex h-10 w-10 items-center justify-center rounded-xl gradient-bg font-heading text-lg font-bold text-white shadow-lg">
-            V
+            A
           </span>
           <span className="font-heading text-xl font-semibold tracking-tight text-text-primary">
-            Vidify
+            Admart
           </span>
         </Link>
 

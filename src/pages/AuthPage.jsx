@@ -37,10 +37,10 @@ function LogoLink() {
   return (
     <Link to="/" className="mb-10 inline-flex items-center gap-2.5">
       <span className="flex h-10 w-10 items-center justify-center rounded-xl gradient-bg font-heading text-lg font-bold text-white shadow-lg shadow-accent-blue/25">
-        V
+        A
       </span>
       <span className="font-heading text-xl font-semibold tracking-tight text-text-primary">
-        Vidify
+        Admart
       </span>
     </Link>
   )
@@ -258,7 +258,7 @@ export default function AuthPage() {
               <LogoLink />
               <h1 className="font-heading text-3xl font-bold text-text-primary">Welcome back</h1>
               <p className="mt-2 text-sm text-text-secondary">
-                Sign in to continue creating and publishing with Vidify.
+                Sign in to continue creating and publishing with Admart.
               </p>
 
               <button

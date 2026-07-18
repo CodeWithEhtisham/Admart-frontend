@@ -5,7 +5,7 @@ const PLATFORMS = [
   {
     id: 'tiktok',
     name: 'TikTok',
-    handle: '@vidify_brand',
+    handle: '@admart_brand',
     icon: '🎵',
     color: 'text-tiktok',
     dot: 'bg-tiktok',
@@ -14,7 +14,7 @@ const PLATFORMS = [
   {
     id: 'youtube',
     name: 'YouTube',
-    handle: 'Vidify Brand',
+    handle: 'Admart Brand',
     icon: '▶️',
     color: 'text-youtube',
     dot: 'bg-youtube',
@@ -23,7 +23,7 @@ const PLATFORMS = [
   {
     id: 'instagram',
     name: 'Instagram',
-    handle: '@vidify.brand',
+    handle: '@admart.brand',
     icon: '📸',
     color: 'text-instagram',
     dot: 'bg-instagram',
@@ -32,7 +32,7 @@ const PLATFORMS = [
   {
     id: 'facebook',
     name: 'Facebook',
-    handle: 'Vidify Brand Page',
+    handle: 'Admart Brand Page',
     icon: 'f',
     color: 'text-facebook',
     dot: 'bg-facebook',

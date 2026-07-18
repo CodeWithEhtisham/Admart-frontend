@@ -130,7 +130,7 @@ export default function SettingsPage() {
   const handleDeleteAccount = () => {
     if (
       window.confirm(
-        'Delete your Vidify account permanently? This cannot be undone. Type of action: irreversible data loss.'
+        'Delete your Admart account permanently? This cannot be undone. Type of action: irreversible data loss.'
       )
     ) {
       showToast('Account deletion requested — this is a demo.')
@@ -333,8 +333,8 @@ export default function SettingsPage() {
                           onChange={(e) => update({ aiModel: e.target.value })}
                           className="mt-1 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
                         >
-                          <option value="vidify-v2">Vidify v2 (recommended)</option>
-                          <option value="vidify-v1">Vidify v1</option>
+                          <option value="vidify-v2">Admart v2 (recommended)</option>
+                          <option value="vidify-v1">Admart v1</option>
                         </select>
                       </label>
                       <label className="block text-sm">
@@ -462,7 +462,7 @@ export default function SettingsPage() {
                       </div>
                     </div>
                     <a
-                      href="https://docs.vidify.example"
+                      href="https://docs.admart.example"
                       className="mt-4 inline-flex text-sm font-medium text-accent-blue hover:underline"
                       target="_blank"
                       rel="noreferrer"
@@ -549,7 +549,7 @@ export default function SettingsPage() {
                   <div className="rounded-2xl border border-error/30 bg-error/5 p-6">
                     <h2 className="font-heading text-xl font-bold text-error">Danger Zone</h2>
                     <p className="mt-2 text-sm text-text-secondary">
-                      Irreversible actions for your Vidify workspace. Proceed with care.
+                      Irreversible actions for your Admart workspace. Proceed with care.
                     </p>
                   </div>
                   <div className="rounded-2xl border border-border-default bg-surface p-5">
