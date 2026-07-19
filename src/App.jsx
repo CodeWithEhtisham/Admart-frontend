@@ -5,7 +5,6 @@ import AuthCallbackPage from './pages/AuthCallbackPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import OnboardingPage from './pages/OnboardingPage'
 import DashboardPage from './pages/DashboardPage'
-import WizardPage from './pages/WizardPage'
 import ProgressPage from './pages/ProgressPage'
 import ResultPage from './pages/ResultPage'
 import PublishingPage from './pages/PublishingPage'
@@ -19,6 +18,7 @@ import SettingsPage from './pages/SettingsPage'
 import BrandKitPage from './pages/BrandKitPage'
 import NotificationsPage from './pages/NotificationsPage'
 import ImageGenPage from './pages/ImageGenPage'
+import VideoGenPage from './pages/VideoGenPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 export default function App() {
@@ -30,7 +30,8 @@ export default function App() {
       <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
       <Route path="/onboarding" element={<OnboardingPage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/create" element={<WizardPage />} />
+      <Route path="/create" element={<VideoGenPage />} />
+      <Route path="/video-gen" element={<VideoGenPage />} />
       <Route path="/progress" element={<ProgressPage />} />
       <Route path="/result" element={<ResultPage />} />
       <Route path="/publish" element={<PublishingPage />} />

@@ -5,6 +5,7 @@
 
 import api from './api'
 import { cancelImageJob } from './imageGeneration'
+import { cancelVideoJob } from './videoGeneration'
 import { getCachedActiveProject } from './projects'
 
 export const LIBRARY_TABS = [
@@ -126,6 +127,31 @@ export async function listLibraryAssets(
   }
 }
 
+const LIBRARY_UPLOAD_ACCEPT =
+  'image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/webm'
+
+export function libraryUploadAccept() {
+  return LIBRARY_UPLOAD_ACCEPT
+}
+
+/**
+ * POST /api/projects/:projectId/library/uploads — user image or video.
+ */
+export async function uploadLibraryMedia(file, projectId) {
+  const pid = projectId || getCachedActiveProject()?.id
+  if (!pid) throw new Error('No active project.')
+  if (!file) throw new Error('Choose an image or video file.')
+
+  const form = new FormData()
+  form.append('file', file)
+  const { data } = await api.post(`/api/projects/${pid}/library/uploads`, form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  const asset = normalizeLibraryAsset(data)
+  notifyLibraryChanged({ projectId: pid, action: 'upload', assetId: asset?.id })
+  return asset
+}
+
 /**
  * DELETE /api/projects/:projectId/library/:assetId → 204
  */
@@ -137,8 +163,7 @@ export async function deleteLibraryAsset(assetId, projectId) {
 }
 
 /**
- * Cancel in-progress generation via image job cancel (frontend-library.md § intro).
- * Images only while status=generating and jobId present.
+ * Cancel in-progress generation via image/video job cancel.
  */
 export async function cancelLibraryAsset(asset, projectId) {
   const pid = projectId || getCachedActiveProject()?.id
@@ -149,10 +174,10 @@ export async function cancelLibraryAsset(asset, projectId) {
   if (!asset.jobId) {
     throw new Error('Missing job id for cancel.')
   }
-  if (asset.mediaType !== 'image') {
-    throw new Error('Video cancel is not available yet.')
-  }
-  const data = await cancelImageJob(pid, asset.jobId)
+  const data =
+    asset.mediaType === 'video'
+      ? await cancelVideoJob(pid, asset.jobId)
+      : await cancelImageJob(pid, asset.jobId)
   notifyLibraryChanged({ projectId: pid, action: 'cancel', assetId: asset.id })
   return data
 }
@@ -160,7 +185,7 @@ export async function cancelLibraryAsset(asset, projectId) {
 export function canCancelLibraryAsset(asset) {
   return (
     asset?.status === 'generating' &&
-    asset.mediaType === 'image' &&
+    (asset.mediaType === 'image' || asset.mediaType === 'video') &&
     Boolean(asset.jobId)
   )
 }

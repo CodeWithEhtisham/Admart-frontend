@@ -10,6 +10,9 @@ export const CAPABILITY_LABELS = {
   multiEdit: 'Multi-edit',
   upscale: 'Upscale',
   removeBackground: 'Remove background',
+  textToVideo: 'Text to video',
+  imageToVideo: 'Image to video',
+  firstLastFrame: 'First → last frame',
 }
 
 /** Broadcast balance updates so sidebar / topbar stay in sync. */

@@ -173,12 +173,11 @@ export default function DashboardPage() {
   }
 
   const handleUseAsset = (asset) => {
-    navigate('/create', {
-      state: {
-        inputTab: 'upload',
-        sourceAsset: asset,
-      },
-    })
+    if (asset?.type === 'video') {
+      navigate('/video-gen')
+      return
+    }
+    navigate('/image-gen')
   }
 
   return (
@@ -198,21 +197,20 @@ export default function DashboardPage() {
           <p className="mt-1 text-xs text-white/70">42 credits remaining</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
-              to="/create"
+              to="/video-gen"
               className="inline-flex items-center gap-2 rounded-xl bg-white/15 px-5 py-2.5 text-sm font-semibold backdrop-blur transition hover:bg-white/25"
             >
               <span>✦</span> New Video
             </Link>
-            <button
-              type="button"
-              onClick={() => navigate('/create', { state: { inputTab: 'text-image' } })}
+            <Link
+              to="/image-gen"
               className="inline-flex items-center gap-2 rounded-xl bg-accent-violet/40 px-5 py-2.5 text-sm font-semibold backdrop-blur transition hover:bg-accent-violet/55"
             >
               <span>⊕</span> New Image
-            </button>
+            </Link>
             <button
               type="button"
-              onClick={() => navigate('/create', { state: { inputTab: 'upload' } })}
+              onClick={() => navigate('/library', { state: { openUpload: true } })}
               className="inline-flex items-center gap-2 rounded-xl bg-success/35 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-success/50"
             >
               <span>↑</span> Upload
@@ -285,13 +283,12 @@ export default function DashboardPage() {
                 <h2 className="font-heading text-xl font-bold text-text-primary">Saved Assets</h2>
                 {assetMessage && <p className="mt-1 text-xs text-text-tertiary">{assetMessage}</p>}
               </div>
-              <button
-                type="button"
-                onClick={() => navigate('/create', { state: { inputTab: 'upload' } })}
+              <Link
+                to="/library"
                 className="text-sm font-medium text-accent-blue hover:underline"
               >
-                Upload new
-              </button>
+                View library →
+              </Link>
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

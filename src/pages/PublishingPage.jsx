@@ -74,10 +74,11 @@ export default function PublishingPage() {
   const location = useLocation()
   const publishAsset = location.state || {}
   const isImage = publishAsset.type === 'image' && Boolean(publishAsset.imageUrl)
+  const isVideo = publishAsset.type === 'video' && Boolean(publishAsset.videoUrl)
   const assetTitle =
     publishAsset.title ||
-    (isImage ? 'Untitled image' : 'Summer Product Launch — Cinematic Showcase 2024')
-  const backTo = isImage ? '/image-gen' : '/result'
+    (isImage ? 'Untitled image' : isVideo ? 'Untitled video' : 'Summer Product Launch — Cinematic Showcase 2024')
+  const backTo = isImage ? '/image-gen' : isVideo ? '/video-gen' : '/result'
 
   const [scheduleMode, setScheduleMode] = useState('now')
   const [openAccordion, setOpenAccordion] = useState('tiktok')
@@ -96,10 +97,10 @@ export default function PublishingPage() {
     if (!showToast) return
     const t = setTimeout(() => {
       setShowToast(false)
-      navigate(isImage ? '/image-gen' : '/dashboard')
+      navigate(isImage ? '/image-gen' : isVideo ? '/video-gen' : '/dashboard')
     }, 1800)
     return () => clearTimeout(t)
-  }, [showToast, navigate, isImage])
+  }, [showToast, navigate, isImage, isVideo])
 
   const toggleAccordion = (id) => {
     setOpenAccordion((prev) => (prev === id ? '' : id))
@@ -137,6 +138,12 @@ export default function PublishingPage() {
                     alt=""
                     className="absolute inset-0 h-full w-full object-cover"
                   />
+                ) : isVideo ? (
+                  <video
+                    src={publishAsset.videoUrl}
+                    controls
+                    className="absolute inset-0 h-full w-full bg-black object-contain"
+                  />
                 ) : (
                   <>
                     <div className="absolute inset-0 gradient-bg" />
@@ -158,7 +165,9 @@ export default function PublishingPage() {
                 <div className="flex flex-wrap gap-1.5">
                   {(isImage
                     ? ['Image', publishAsset.capability || 'AI', 'Ready']
-                    : ['0:15', '16:9', '1080p', '8.4MB']
+                    : isVideo
+                      ? ['Video', publishAsset.capability || 'AI', 'Ready']
+                      : ['0:15', '16:9', '1080p', '8.4MB']
                   ).map((c) => (
                     <span
                       key={c}

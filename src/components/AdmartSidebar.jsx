@@ -131,7 +131,7 @@ const NAV_SECTIONS = [
     items: [
       { to: '/dashboard', label: 'Dashboard', icon: Icons.dashboard },
       { to: '/image-gen', label: 'AI Image Gen', icon: Icons.imageGen },
-      { to: '/create', label: 'Create Video', icon: Icons.createVideo },
+      { to: '/video-gen', label: 'AI Video Gen', icon: Icons.createVideo },
       { to: '/library', label: 'Library', icon: Icons.library },
       { to: '/templates', label: 'Templates', icon: Icons.templates },
     ],

@@ -52,7 +52,13 @@ export const ASPECT_RATIOS = [
 
 export const MULTI_EDIT_ROLES = ['Subject', 'Scene', 'Style', 'Extra', 'Extra', 'Extra']
 
-export const MAX_PROMPT_LENGTH = 2000
+/** Live prompt stats for the UI counter (no hard fal limit). */
+export function promptStats(raw) {
+  const text = String(raw || '')
+  const trimmed = text.trim()
+  const words = trimmed ? trimmed.split(/\s+/).filter(Boolean).length : 0
+  return { chars: text.length, words }
+}
 export const MAX_MULTI_IMAGES = 6
 export const MAX_FILE_MB = 15
 export const ACCEPTED_MIME = ['image/jpeg', 'image/png', 'image/webp']
@@ -141,7 +147,7 @@ export function fieldVisible(field, capability, family) {
 
 /**
  * Expand a short text-to-image prompt with composition / lighting cues.
- * Keeps original intent; caps at MAX_PROMPT_LENGTH.
+ * Keeps original intent.
  */
 export function enhanceImagePrompt(raw) {
   const base = String(raw || '').trim()
@@ -149,7 +155,7 @@ export function enhanceImagePrompt(raw) {
 
   const markers = ['soft studio lighting', 'sharp focus', 'professional photography']
   if (markers.every((m) => base.toLowerCase().includes(m))) {
-    return base.slice(0, MAX_PROMPT_LENGTH)
+    return base
   }
 
   const extras = [
@@ -161,10 +167,9 @@ export function enhanceImagePrompt(raw) {
     'natural color grading',
   ]
   const missing = extras.filter((e) => !base.toLowerCase().includes(e.toLowerCase()))
-  const enhanced = missing.length
+  return missing.length
     ? `${base.replace(/[.,\s]+$/, '')}, ${missing.join(', ')}`
     : base
-  return enhanced.slice(0, MAX_PROMPT_LENGTH)
 }
 
 export function canGenerate({ capability, prompt, imageUrls }) {

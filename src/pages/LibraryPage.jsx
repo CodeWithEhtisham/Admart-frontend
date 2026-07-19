@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import {
@@ -10,7 +10,9 @@ import {
   deleteLibraryAsset,
   formatDuration,
   formatLibraryDate,
+  libraryUploadAccept,
   listLibraryAssets,
+  uploadLibraryMedia,
 } from '../utils/library.js'
 import {
   PROJECT_CHANGE_EVENT,
@@ -51,10 +53,33 @@ function AssetThumb({ asset }) {
       </div>
     )
   }
-  if (asset.thumbnailUrl) {
+  const src = asset.sourceUrl || asset.thumbnailUrl
+  if (src && asset.mediaType === 'video') {
+    // Seek hint helps browsers paint a first frame for MP4 thumbs.
+    const thumbSrc = src.includes('#') ? src : `${src}#t=0.1`
+    return (
+      <>
+        <video
+          src={thumbSrc}
+          muted
+          playsInline
+          preload="metadata"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/20">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white">
+            <svg className="ml-0.5 h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+              <path d="M8 5v14l11-7L8 5z" />
+            </svg>
+          </span>
+        </div>
+      </>
+    )
+  }
+  if (src) {
     return (
       <img
-        src={asset.thumbnailUrl}
+        src={src}
         alt=""
         className="absolute inset-0 h-full w-full object-cover"
       />
@@ -65,6 +90,8 @@ function AssetThumb({ asset }) {
 
 export default function LibraryPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const uploadInputRef = useRef(null)
   const [tab, setTab] = useState('all')
   const [items, setItems] = useState([])
   const [nextCursor, setNextCursor] = useState(null)
@@ -80,6 +107,7 @@ export default function LibraryPage() {
   const [activeMenu, setActiveMenu] = useState(null)
   const [cancellingId, setCancellingId] = useState(null)
   const [deleting, setDeleting] = useState(false)
+  const [uploading, setUploading] = useState(false)
 
   const load = useCallback(
     async ({ append = false, cursor } = {}) => {
@@ -149,6 +177,41 @@ export default function LibraryPage() {
     return () => document.removeEventListener('mousedown', onDoc)
   }, [activeMenu])
 
+  useEffect(() => {
+    if (!location.state?.openUpload) return
+    const t = window.setTimeout(() => uploadInputRef.current?.click(), 80)
+    navigate(location.pathname, { replace: true, state: {} })
+    return () => window.clearTimeout(t)
+  }, [location.state, location.pathname, navigate])
+
+  const openUploadPicker = () => {
+    if (!projectId) {
+      setError('Create a project before uploading.')
+      return
+    }
+    uploadInputRef.current?.click()
+  }
+
+  const handleUploadFile = async (e) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    setUploading(true)
+    setError('')
+    try {
+      await uploadLibraryMedia(file, projectId)
+      await load()
+    } catch (err) {
+      setError(
+        err?.response?.data?.message ||
+          err?.message ||
+          'Upload failed. Use jpeg/png/webp or mp4/mov/webm.',
+      )
+    } finally {
+      setUploading(false)
+    }
+  }
+
   const filtered = useMemo(() => {
     let list = [...items]
     if (statusFilter !== 'all') {
@@ -197,12 +260,12 @@ export default function LibraryPage() {
 
   const openAsset = (asset) => {
     if (asset.status === 'generating' || asset.status === 'failed') return
-    if (asset.mediaType === 'image') {
-      if (!asset.sourceUrl) return
+    if (!asset.sourceUrl) return
+    if (asset.mediaType === 'video') {
       navigate('/publish', {
         state: {
-          type: 'image',
-          imageUrl: asset.sourceUrl,
+          type: 'video',
+          videoUrl: asset.sourceUrl,
           title: asset.title,
           prompt: asset.prompt,
           jobId: asset.jobId,
@@ -211,7 +274,16 @@ export default function LibraryPage() {
       })
       return
     }
-    navigate('/result')
+    navigate('/publish', {
+      state: {
+        type: 'image',
+        imageUrl: asset.sourceUrl,
+        title: asset.title,
+        prompt: asset.prompt,
+        jobId: asset.jobId,
+        assetId: asset.id,
+      },
+    })
   }
 
   const handleCancel = async (asset) => {
@@ -279,7 +351,7 @@ export default function LibraryPage() {
             openAsset(asset)
           }}
         >
-          {asset.mediaType === 'image' ? 'Publish' : 'View'}
+          Publish
         </button>
       ) : null}
       {canCancelLibraryAsset(asset) ? (
@@ -378,12 +450,27 @@ export default function LibraryPage() {
                 ))}
               </div>
               <div className="flex flex-wrap gap-2">
+                <input
+                  ref={uploadInputRef}
+                  type="file"
+                  accept={libraryUploadAccept()}
+                  className="hidden"
+                  onChange={handleUploadFile}
+                />
                 <button
                   type="button"
                   onClick={() => load()}
                   className="rounded-lg border border-border-default px-3 py-2 text-sm text-text-secondary hover:text-text-primary"
                 >
                   Refresh
+                </button>
+                <button
+                  type="button"
+                  disabled={uploading || !projectId}
+                  onClick={openUploadPicker}
+                  className="inline-flex items-center gap-2 rounded-lg border border-border-default bg-elevated px-4 py-2 text-sm font-semibold text-text-primary transition hover:border-accent-blue/40 disabled:opacity-50"
+                >
+                  {uploading ? 'Uploading…' : 'Upload'}
                 </button>
                 <Link
                   to="/image-gen"
@@ -392,10 +479,10 @@ export default function LibraryPage() {
                   New Image
                 </Link>
                 <Link
-                  to="/create"
+                  to="/video-gen"
                   className="inline-flex items-center gap-2 rounded-lg gradient-bg px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/20"
                 >
-                  ✦ New Video
+                  New Video
                 </Link>
               </div>
             </div>
@@ -496,26 +583,34 @@ export default function LibraryPage() {
                 <p className="font-heading text-lg text-text-primary">Nothing here yet</p>
                 <p className="mt-2 text-sm text-text-muted">
                   {tab === 'image'
-                    ? 'Generate an image in Image Studio — it will show up here.'
+                    ? 'Generate or upload an image — it will show up here.'
                     : tab === 'video'
-                      ? 'Create a video and it will appear in this tab.'
-                      : 'Create a video or image to fill your library.'}
+                      ? 'Create or upload a video and it will appear in this tab.'
+                      : 'Upload your own media, or create a video or image.'}
                 </p>
                 <div className="mt-6 flex justify-center gap-3">
+                  <button
+                    type="button"
+                    disabled={uploading || !projectId}
+                    onClick={openUploadPicker}
+                    className="rounded-lg border border-border-default px-4 py-2 text-sm font-semibold disabled:opacity-50"
+                  >
+                    {uploading ? 'Uploading…' : 'Upload image or video'}
+                  </button>
                   {(tab === 'all' || tab === 'image') && (
                     <Link
                       to="/image-gen"
                       className="rounded-lg border border-border-default px-4 py-2 text-sm font-semibold"
                     >
-                      Image Studio
+                      New Image
                     </Link>
                   )}
                   {(tab === 'all' || tab === 'video') && (
                     <Link
-                      to="/create"
+                      to="/video-gen"
                       className="rounded-lg gradient-bg px-4 py-2 text-sm font-semibold text-white"
                     >
-                      Create Video
+                      New Video
                     </Link>
                   )}
                 </div>

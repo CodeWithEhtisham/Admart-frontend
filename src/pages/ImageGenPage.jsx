@@ -21,7 +21,6 @@ import {
   IMAGE_CAPABILITIES,
   MAX_FILE_MB,
   MAX_MULTI_IMAGES,
-  MAX_PROMPT_LENGTH,
   MULTI_EDIT_ROLES,
   canGenerate,
   createImageJob,
@@ -37,6 +36,7 @@ import {
   modelFamily,
   modelsForCapability,
   pollImageJob,
+  promptStats,
   sourceRemoteUrl,
   validationMessage,
 } from '../utils/imageGeneration.js'
@@ -777,7 +777,7 @@ export default function ImageGenPage() {
                   <div className="relative">
                     <textarea
                       value={prompt}
-                      onChange={(e) => setPrompt(e.target.value.slice(0, MAX_PROMPT_LENGTH))}
+                      onChange={(e) => setPrompt(e.target.value)}
                       placeholder={
                         capability === 'edit'
                           ? 'e.g. Replace the background with a soft beige studio backdrop'
@@ -801,7 +801,7 @@ export default function ImageGenPage() {
                         <span />
                       )}
                       <span className="font-mono text-xs text-text-muted">
-                        {prompt.length} / {MAX_PROMPT_LENGTH}
+                        {promptStats(prompt).words} words · {promptStats(prompt).chars} chars
                       </span>
                     </div>
                   </div>
@@ -1209,7 +1209,7 @@ export default function ImageGenPage() {
                               <ActionBtn onClick={() => chainTo('removeBackground', [img])}>
                                 Remove BG
                               </ActionBtn>
-                              <ActionBtn onClick={() => navigate('/create')}>Use in video</ActionBtn>
+                              <ActionBtn onClick={() => navigate('/video-gen')}>Use in video</ActionBtn>
                             </div>
                           </div>
                         </div>
@@ -1265,7 +1265,7 @@ export default function ImageGenPage() {
                             </button>
                             <button
                               type="button"
-                              onClick={() => navigate('/create')}
+                              onClick={() => navigate('/video-gen')}
                               className="rounded-lg border border-border-default bg-elevated px-3 py-1.5 text-xs font-medium text-text-secondary"
                             >
                               Use in video
