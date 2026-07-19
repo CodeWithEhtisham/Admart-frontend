@@ -1,16 +1,16 @@
-# Graph Report - Admart-frontend  (2026-06-21)
+# Graph Report - Admart-frontend  (2026-07-19)
 
 ## Corpus Check
-- 45 files · ~49,117 words
+- 57 files · ~171,337 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 560 nodes · 670 edges · 60 communities (47 shown, 13 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 14 edges (avg confidence: 0.85)
+- 701 nodes · 957 edges · 62 communities (50 shown, 12 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 14 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `4182243a`
+- Built from commit: `41901050`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -75,18 +75,20 @@
 - [[_COMMUNITY_Community 57|Community 57]]
 - [[_COMMUNITY_Community 58|Community 58]]
 - [[_COMMUNITY_Community 59|Community 59]]
+- [[_COMMUNITY_Community 60|Community 60]]
+- [[_COMMUNITY_Community 61|Community 61]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `DashboardPage()` - 21 edges
+1. `DashboardPage()` - 23 edges
 2. `App()` - 15 edges
 3. `Pre-Implementation Review` - 15 edges
 4. `REST API Best Practices` - 15 edges
 5. `VidifySidebar()` - 14 edges
 6. `GraphQL Schema Design Patterns` - 13 edges
 7. `Capabilities` - 12 edges
-8. `AGENTS.md — Frontend (Next.js + React)` - 11 edges
-9. `devDependencies` - 10 edges
-10. `WizardPage()` - 9 edges
+8. `ImageGenPage()` - 11 edges
+9. `AGENTS.md — Frontend (Next.js + React)` - 11 edges
+10. `devDependencies` - 10 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Vidify Frontend Overview` --references--> `LandingPage()`  [INFERRED]
@@ -107,47 +109,47 @@
 - **Video Creation and Publishing Flow** — pages_progresspage_progresspage, pages_resultpage_resultpage, pages_publishingpage_publishingpage [INFERRED 0.95]
 - **API Design Standards and Guidelines** — api_design_principles_skill_main, resources_implementation_playbook_apidesign, assets_api_design_checklist_main, references_rest_best_practices_main, references_graphql_schema_design_main [EXTRACTED 1.00]
 
-## Communities (60 total, 13 thin omitted)
+## Communities (62 total, 12 thin omitted)
 
 ### Community 0 - "Authentication & User Accounts"
-Cohesion: 0.17
-Nodes (9): Frontend Development Agent Rules, AuthPage(), showcaseItems, strengthMeta(), LandingPage(), LogoMark(), showcaseVideos, VideoCard() (+1 more)
+Cohesion: 0.05
+Nodes (28): AuthPage(), showcaseItems, strengthMeta(), INDUSTRIES, PLATFORMS, PRESET_COLORS, PROJECT_ICONS, TEMPLATES (+20 more)
 
 ### Community 1 - "App Shell Layout & Billing/Credits"
-Cohesion: 0.09
-Nodes (21): itemCls(), AnalyticsPage(), APR_LABELS, DonutChart(), ENG_STACK, LINE_POINTS, LineChart(), MONTHS (+13 more)
+Cohesion: 0.06
+Nodes (50): BillingPage(), COST_REF, AI Credit Consumption and Billing, PACKS, PLAN_FEATURES, TXNS, HISTORY_GRADIENTS, IMAGE_COUNTS (+42 more)
 
 ### Community 2 - "Project Dependencies & Manifests"
 Cohesion: 0.07
 Nodes (26): dependencies, axios, react, react-dom, react-router-dom, tailwindcss, @tailwindcss/vite, devDependencies (+18 more)
 
 ### Community 3 - "Image Generation & Wizard Forms"
-Cohesion: 0.13
-Nodes (19): API_BASE_URL, ASPECTS, fetchWithTimeout(), generateTextImage(), getTextImageStatus(), IMAGE_MODELS, IMAGE_SUGGESTIONS, INPUT_TABS (+11 more)
+Cohesion: 0.11
+Nodes (21): API_BASE_URL, ASPECTS, fetchWithTimeout(), generateTextImage(), getTextImageStatus(), IMAGE_EDIT_MODELS, IMAGE_GEN_MODELS, IMAGE_MODELS (+13 more)
 
 ### Community 4 - "REST API Template & User Validation"
-Cohesion: 0.16
-Nodes (21): create_user(), delete_user(), ErrorDetail, ErrorResponse, get_user(), http_exception_handler(), list_users(), PaginatedResponse (+13 more)
+Cohesion: 0.18
+Nodes (19): create_user(), delete_user(), ErrorDetail, ErrorResponse, get_user(), http_exception_handler(), list_users(), PaginatedResponse (+11 more)
 
 ### Community 5 - "Progress Tracking & Rendering Pipeline"
-Cohesion: 0.16
-Nodes (16): activeStageIndex(), FRAME_THRESHOLDS, framesLoadedCount(), ProgressPage(), STAGES, ChevronLeftIcon(), PLATFORMS, PublishingPage() (+8 more)
+Cohesion: 0.12
+Nodes (22): AnalyticsPage(), APR_LABELS, DonutChart(), ENG_STACK, LINE_POINTS, LineChart(), MONTHS, PLATFORM_DOT (+14 more)
 
 ### Community 6 - "Analytics Dashboard & Status Tracking"
-Cohesion: 0.13
-Nodes (28): VidifySidebar(), BillingPage(), AI Credit Consumption and Billing, BrandKitPage(), CalendarPage(), DashboardPage(), FILTERS, SPARKLINES (+20 more)
+Cohesion: 0.35
+Nodes (11): DashboardPage(), Multi-Step Wizard Pattern, WizardPage(), downloadAsset(), downloadFilename(), formatAssetDate(), getSavedAssets(), notifyAssetsChanged() (+3 more)
 
 ### Community 7 - "App Landing & Media Library Navigation"
-Cohesion: 0.22
-Nodes (4): MOCK_VIDEOS, navLinkClass(), PLATFORM_DOT, STATUS_STYLES
+Cohesion: 0.14
+Nodes (18): LibraryPage(), MOCK_VIDEOS, navLinkClass(), PLATFORM_DOT, STATUS_STYLES, cancelImageJob(), canCancelLibraryAsset(), cancelLibraryAsset() (+10 more)
 
 ### Community 8 - "Analytics Charts & User Engagement Data"
 Cohesion: 0.22
 Nodes (8): ASPECT_OPTIONS, BODY_FONTS, HEADING_FONTS, INITIAL_COLORS, STYLE_OPTIONS, TONE_PRESETS, VOICE_OPTIONS, WATERMARK_OPTIONS
 
 ### Community 9 - "Scheduler Calendar & Mock Events"
-Cohesion: 0.17
-Nodes (5): MOCK_EVENTS, MONTH_NAMES, PLATFORMS, STATUS_STYLES, TODAY
+Cohesion: 0.09
+Nodes (13): AdmartSidebar(), Icons, NAV_SECTIONS, AppLayout(), MOCK_EVENTS, MONTH_NAMES, PLATFORMS, STATUS_STYLES (+5 more)
 
 ### Community 10 - "Brand Kit Customizer & Theme Fonts"
 Cohesion: 0.05
@@ -183,15 +185,15 @@ Nodes (21): Application Security Testing, Behavioral Traits, Capabilities, Cloud
 
 ### Community 28 - "Community 28"
 Cohesion: 0.14
-Nodes (13): Batch Endpoints, Bulk Operations, code:python (POST /api/users/batch), code:block22 (POST /api/orders), code:python (from fastapi.middleware.cors import CORSMiddleware), code:python (from fastapi import FastAPI), code:python (@app.get("/health")), CORS Configuration (+5 more)
+Nodes (13): Cache Headers, Caching, code:block20 (# Client caching), code:python (from fastapi.middleware.cors import CORSMiddleware), code:python (from fastapi import FastAPI), code:python (@app.get("/health")), code:block8 (# Filtering), CORS Configuration (+5 more)
 
 ### Community 29 - "Community 29"
 Cohesion: 0.17
 Nodes (11): Accessibility & UX (since design is largely done), Agent Behavior & Guardrails, AGENTS.md — Frontend (Next.js + React), API Integration (stay in sync with the backend), Code Documentation, Code Quality, Commands, Git Conventions (+3 more)
 
 ### Community 30 - "Community 30"
-Cohesion: 0.17
-Nodes (11): Admart Frontend (Vidify), code:bash (# Install dependencies), code:block2 (src/), Design system, Getting started, License, Notes, Prerequisites (+3 more)
+Cohesion: 0.07
+Nodes (28): Admart, Admart Frontend (Vidify), API map (authoritative), Backend, code:block1 (User ──owns──► Project ──► SocialAccount (youtube|tiktok|ins), code:block2 (src/), code:bash (# Admart-frontend/.env  (name must match code)), code:bash (cd admart-backend) (+20 more)
 
 ### Community 31 - "Community 31"
 Cohesion: 0.18
@@ -238,12 +240,12 @@ Cohesion: 0.5
 Nodes (4): code:json ({), Consistent Structure, Error Response Format, Status Code Guidelines
 
 ### Community 42 - "Community 42"
-Cohesion: 0.67
-Nodes (3): Cache Headers, Caching, code:block20 (# Client caching)
+Cohesion: 0.2
+Nodes (8): Topbar(), FILTERS, getDailyTagline(), HERO_TAGLINES, SPARKLINES, VIDEOS, getStoredUser(), getUserInitial()
 
 ### Community 43 - "Community 43"
-Cohesion: 0.67
-Nodes (3): code:block8 (# Filtering), Filtering, Sorting, and Searching, Query Parameters
+Cohesion: 0.24
+Nodes (11): Partially update user., update_user(), itemCls(), VidifySidebar(), BrandKitPage(), CalendarPage(), OnboardingPage(), SettingsPage() (+3 more)
 
 ### Community 46 - "Community 46"
 Cohesion: 0.29
@@ -274,48 +276,60 @@ Cohesion: 0.4
 Nodes (5): code:graphql (type UserConnection {), code:graphql (type UserList {), Offset Pagination (Simpler), Pagination Patterns, Relay Cursor Pagination (Recommended)
 
 ### Community 53 - "Community 53"
-Cohesion: 0.29
-Nodes (5): ResetPasswordPage(), strengthMeta(), api, refreshToken, token
+Cohesion: 0.25
+Nodes (6): 1. Think Before Coding, 2. Simplicity First, 3. Surgical Changes, 4. Goal-Driven Execution, code:block1 (1. [Step] → verify: [check]), Project-Specific Guidelines
 
 ### Community 54 - "Community 54"
+Cohesion: 0.29
+Nodes (4): CATEGORIES, CATEGORY_LABELS, TEMPLATES, TemplatesPage()
+
+### Community 55 - "Community 55"
 Cohesion: 0.25
-Nodes (5): Sidebar(), CATEGORIES, CATEGORY_LABELS, Sidebar(), TEMPLATES
+Nodes (6): 1. Think Before Coding, 2. Simplicity First, 3. Surgical Changes, 4. Goal-Driven Execution, code:block1 (1. [Step] → verify: [check]), Karpathy Guidelines
 
 ### Community 56 - "Community 56"
-Cohesion: 0.33
-Nodes (4): INDUSTRIES, PLATFORMS, PRESET_COLORS, TEMPLATES
+Cohesion: 0.43
+Nodes (6): Frontend Development Agent Rules, LandingPage(), LogoMark(), showcaseVideos, VideoCard(), Vidify Frontend Overview
 
 ### Community 57 - "Community 57"
-Cohesion: 0.4
-Nodes (3): COST_REF, PACKS, TXNS
+Cohesion: 0.29
+Nodes (4): ACCENT_MAP, FILTER_ITEMS, INITIAL_NOTIFICATIONS, NotificationsPage()
 
 ### Community 58 - "Community 58"
-Cohesion: 0.4
-Nodes (4): ACCENT_MAP, EMPTY_STATES, NotFoundPage(), QUICK_LINKS
+Cohesion: 0.18
+Nodes (7): ACCENT_MAP, EMPTY_STATES, NotFoundPage(), QUICK_LINKS, INITIAL, TABS, TEAM
 
 ### Community 59 - "Community 59"
-Cohesion: 0.4
-Nodes (3): INITIAL, TABS, TEAM
+Cohesion: 0.47
+Nodes (5): activeStageIndex(), FRAME_THRESHOLDS, framesLoadedCount(), ProgressPage(), STAGES
+
+### Community 60 - "Community 60"
+Cohesion: 0.67
+Nodes (3): Batch Endpoints, Bulk Operations, code:python (POST /api/users/batch)
+
+### Community 61 - "Community 61"
+Cohesion: 0.67
+Nodes (3): code:block22 (POST /api/orders), Idempotency, Idempotency Keys
 
 ## Knowledge Gaps
-- **278 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+273 more)
+- **307 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+302 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **13 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `DashboardPage()` connect `Analytics Dashboard & Status Tracking` to `Authentication & User Accounts`, `App Shell Layout & Billing/Credits`, `Progress Tracking & Rendering Pipeline`?**
-  _High betweenness centrality (0.018) - this node is a cross-community bridge._
-- **Why does `App()` connect `Analytics Dashboard & Status Tracking` to `Authentication & User Accounts`, `Community 58`, `Community 55`?**
-  _High betweenness centrality (0.014) - this node is a cross-community bridge._
-- **Why does `create_user()` connect `REST API Template & User Validation` to `Authentication & User Accounts`, `Analytics Dashboard & Status Tracking`?**
+- **Why does `DashboardPage()` connect `Analytics Dashboard & Status Tracking` to `App Shell Layout & Billing/Credits`, `Progress Tracking & Rendering Pipeline`, `App Landing & Media Library Navigation`, `Community 42`, `Community 43`, `Community 54`, `Community 56`, `Community 59`?**
+  _High betweenness centrality (0.015) - this node is a cross-community bridge._
+- **Why does `create_user()` connect `REST API Template & User Validation` to `Authentication & User Accounts`, `Community 43`?**
+  _High betweenness centrality (0.013) - this node is a cross-community bridge._
+- **Why does `SettingsPage()` connect `Community 43` to `Community 56`, `Community 58`, `Analytics Dashboard & Status Tracking`?**
   _High betweenness centrality (0.013) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _278 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _307 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Authentication & User Accounts` be split into smaller, more focused modules?**
+  _Cohesion score 0.05 - nodes in this community are weakly interconnected._
 - **Should `App Shell Layout & Billing/Credits` be split into smaller, more focused modules?**
-  _Cohesion score 0.09 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06 - nodes in this community are weakly interconnected._
 - **Should `Project Dependencies & Manifests` be split into smaller, more focused modules?**
   _Cohesion score 0.07 - nodes in this community are weakly interconnected._
-- **Should `Image Generation & Wizard Forms` be split into smaller, more focused modules?**
-  _Cohesion score 0.13 - nodes in this community are weakly interconnected._

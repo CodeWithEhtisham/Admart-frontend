@@ -3,7 +3,6 @@ import api from './api'
 // Broadcast when the active project changes so any component can react.
 export const PROJECT_CHANGE_EVENT = 'admart:project-change'
 const ACTIVE_KEY = 'admart_activeProject'
-const LEGACY_ACTIVE_KEY = 'vidify_activeProject'
 
 // Sensible visual fallbacks for projects the backend created without icon/color.
 export const DEFAULT_PROJECT_COLOR = '#2563eb'
@@ -83,14 +82,7 @@ export async function disconnectPlatform(projectId, platform) {
 // ─── Active-project cache (keeps the switcher instant across reloads) ──
 export function getCachedActiveProject() {
   try {
-    let raw = localStorage.getItem(ACTIVE_KEY)
-    if (!raw) {
-      raw = localStorage.getItem(LEGACY_ACTIVE_KEY)
-      if (raw) {
-        localStorage.setItem(ACTIVE_KEY, raw)
-        localStorage.removeItem(LEGACY_ACTIVE_KEY)
-      }
-    }
+    const raw = localStorage.getItem(ACTIVE_KEY)
     return raw ? JSON.parse(raw) : null
   } catch {
     return null
@@ -101,14 +93,12 @@ export function setActiveProject(project) {
   if (!project) return
   const normalized = normalizeProject(project)
   localStorage.setItem(ACTIVE_KEY, JSON.stringify(normalized))
-  localStorage.removeItem(LEGACY_ACTIVE_KEY)
   window.dispatchEvent(new CustomEvent(PROJECT_CHANGE_EVENT, { detail: normalized }))
   return normalized
 }
 
 export function clearActiveProject() {
   localStorage.removeItem(ACTIVE_KEY)
-  localStorage.removeItem(LEGACY_ACTIVE_KEY)
 }
 
 /**

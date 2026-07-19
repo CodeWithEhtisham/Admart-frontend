@@ -14,18 +14,10 @@ export { PROJECT_CHANGE_EVENT }
 
 // ─── Helpers ──────────────────────────────────────────────────────────
 const PINNED_KEY = 'admart_pinnedProjects'
-const LEGACY_PINNED_KEY = 'vidify_pinnedProjects'
 
 function getPinnedIds() {
   try {
-    let raw = localStorage.getItem(PINNED_KEY)
-    if (!raw) {
-      raw = localStorage.getItem(LEGACY_PINNED_KEY)
-      if (raw) {
-        localStorage.setItem(PINNED_KEY, raw)
-        localStorage.removeItem(LEGACY_PINNED_KEY)
-      }
-    }
+    const raw = localStorage.getItem(PINNED_KEY)
     return raw ? JSON.parse(raw) : []
   } catch {
     return []
@@ -122,7 +114,6 @@ export default function ProjectDropdown() {
       setPinnedIds((prev) => {
         const next = prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
         localStorage.setItem(PINNED_KEY, JSON.stringify(next))
-        localStorage.removeItem(LEGACY_PINNED_KEY)
         return next
       })
     },

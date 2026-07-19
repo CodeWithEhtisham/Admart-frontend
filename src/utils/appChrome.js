@@ -4,28 +4,13 @@ const COLLAPSE_KEY = 'admart_sidebarCollapsed'
 const THEME_KEY = 'admart_theme'
 const CHROME_EVENT = 'admart:chrome-change'
 
-const LEGACY_COLLAPSE_KEY = 'vidify_sidebarCollapsed'
-const LEGACY_THEME_KEY = 'vidify_theme'
-
-function migrateKey(nextKey, legacyKey) {
-  if (typeof window === 'undefined') return
-  if (window.localStorage.getItem(nextKey) != null) return
-  const legacy = window.localStorage.getItem(legacyKey)
-  if (legacy != null) {
-    window.localStorage.setItem(nextKey, legacy)
-    window.localStorage.removeItem(legacyKey)
-  }
-}
-
 export function getCollapsed() {
   if (typeof window === 'undefined') return false
-  migrateKey(COLLAPSE_KEY, LEGACY_COLLAPSE_KEY)
   return window.localStorage.getItem(COLLAPSE_KEY) === '1'
 }
 
 export function getTheme() {
   if (typeof window === 'undefined') return 'dark'
-  migrateKey(THEME_KEY, LEGACY_THEME_KEY)
   return window.localStorage.getItem(THEME_KEY) === 'light' ? 'light' : 'dark'
 }
 

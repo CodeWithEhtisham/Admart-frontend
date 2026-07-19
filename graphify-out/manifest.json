@@ -5,8 +5,8 @@
     "semantic_hash": "60b22c6831f3f0493394a9ffb67a7852"
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/package.json": {
-    "mtime": 1781962406.9595037,
-    "ast_hash": "504733b45f5c02d5b405234d85076d4d",
+    "mtime": 1784463892.6719458,
+    "ast_hash": "b78179ac4e9c6dfa9462a89283df76f2",
     "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/eslint.config.js": {
@@ -20,18 +20,48 @@
     "semantic_hash": "555aac62aac8fe64cc1029ac84c9ce95"
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/App.jsx": {
-    "mtime": 1781962447.0257106,
+    "mtime": 1782051623.7014508,
     "ast_hash": "056c346b80b2190ca362b06889230913",
     "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/main.jsx": {
-    "mtime": 1776262339.8311877,
-    "ast_hash": "294c972051e832cd4622796abc3a3c9e",
-    "semantic_hash": "294c972051e832cd4622796abc3a3c9e"
+    "mtime": 1782406875.1281228,
+    "ast_hash": "dfc0e4b214ea7ce5d7983492ac4eb24e",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/src/utils/imageGeneration.js": {
+    "mtime": 1784462919.9533842,
+    "ast_hash": "ce5c2d26283e7baf5d6ee7331ce97518",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/src/utils/appChrome.js": {
+    "mtime": 1784464614.2990885,
+    "ast_hash": "a53a12ebb383a0543764fd2c816fdd94",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/src/utils/user.js": {
+    "mtime": 1782412280.4138775,
+    "ast_hash": "f0f5199b4a005d40b636c1c2232dc8e0",
+    "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/utils/api.js": {
-    "mtime": 1781962413.4955375,
+    "mtime": 1782051623.7061574,
     "ast_hash": "4b865bed87449ced3753d2fc19387265",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/src/utils/credits.js": {
+    "mtime": 1784461705.5041556,
+    "ast_hash": "3f02e5842b721ebdffd3324fd8a7e616",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/src/utils/library.js": {
+    "mtime": 1784463653.8711684,
+    "ast_hash": "314edb05a0f0d4224da4a5b970340d2f",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/src/utils/projects.js": {
+    "mtime": 1784464617.375772,
+    "ast_hash": "24fe87063116265f3b16f6aa079a7d20",
     "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/utils/generatedAssets.js": {
@@ -40,113 +70,128 @@
     "semantic_hash": "246b7650d079cf969e314c0318cc61e7"
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/TemplatesPage.jsx": {
-    "mtime": 1782051036.5683808,
-    "ast_hash": "30c9fd399b1ca85b3442c425657d1946",
+    "mtime": 1782429759.4728577,
+    "ast_hash": "6c2b09bab939c49bb204391db97a86e6",
     "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/LibraryPage.jsx": {
-    "mtime": 1782051028.352304,
-    "ast_hash": "c8ade86f0acfb9cb134619d25428cd61",
+    "mtime": 1784463645.7895942,
+    "ast_hash": "abf65b22ba9c5a5b090650f379a79eb3",
     "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/WizardPage.jsx": {
-    "mtime": 1781903738.9165115,
-    "ast_hash": "4f5035c0da5e6ee89e978aec2735057f",
-    "semantic_hash": "4f5035c0da5e6ee89e978aec2735057f"
+    "mtime": 1784379388.7105713,
+    "ast_hash": "85c0d7e61f4e29cc548a81bdc719d60a",
+    "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/ImageGenPage.jsx": {
-    "mtime": 1776323386.326373,
-    "ast_hash": "4c85bc12dad545177b3d7383779a3bbc",
-    "semantic_hash": "4c85bc12dad545177b3d7383779a3bbc"
+    "mtime": 1784463647.1698346,
+    "ast_hash": "9deaf2e9b0e6e034bb985e20016d5eec",
+    "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/SettingsPage.jsx": {
-    "mtime": 1776278768.5163937,
-    "ast_hash": "2362b0db6333b9cdd922e1439f584b43",
-    "semantic_hash": "2362b0db6333b9cdd922e1439f584b43"
+    "mtime": 1784463875.1778243,
+    "ast_hash": "54f4ac7a574b04306ebab09ac3daffe4",
+    "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/DashboardPage.jsx": {
-    "mtime": 1782051019.9822257,
-    "ast_hash": "81dacb53c0048e9efad5998ac01a9136",
+    "mtime": 1784372061.2048101,
+    "ast_hash": "e5102b4f15a0d05bbe26a6721812bd71",
     "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/OnboardingPage.jsx": {
-    "mtime": 1781962488.7069256,
-    "ast_hash": "ee479f5eaebf70a80b567fd87c64f3c7",
+    "mtime": 1783251722.552398,
+    "ast_hash": "59286f752a916e5b6faad5d06427f397",
     "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/BrandKitPage.jsx": {
-    "mtime": 1776323401.2253842,
-    "ast_hash": "47116fa1a019902056134e11af189c3c",
-    "semantic_hash": "47116fa1a019902056134e11af189c3c"
+    "mtime": 1783251722.7543974,
+    "ast_hash": "2ffd456c04bf7199c6f1f038c48219c2",
+    "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/SocialAccountsPage.jsx": {
-    "mtime": 1782051032.2713408,
-    "ast_hash": "bd0017ebbcebb2e0d21595a520bd602b",
+    "mtime": 1783251722.8173974,
+    "ast_hash": "2f2f6147a1c183ac435456f988897be0",
     "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/AuthPage.jsx": {
-    "mtime": 1781962465.3658051,
-    "ast_hash": "25e59ec8f5ebec3c7be9608a12dd19d0",
+    "mtime": 1783251722.5023983,
+    "ast_hash": "851c6fd8240dbf4f74b906a66d1d7feb",
     "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/CalendarPage.jsx": {
-    "mtime": 1782051023.9082625,
-    "ast_hash": "57a10ad2f557e92268fa89cba2c3f74e",
+    "mtime": 1782429848.828338,
+    "ast_hash": "6d629522d12b6889f0769498dd2d9270",
     "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/BillingPage.jsx": {
-    "mtime": 1776278687.2649374,
-    "ast_hash": "ce3a8095109fa3f2560803011c198d50",
-    "semantic_hash": "ce3a8095109fa3f2560803011c198d50"
+    "mtime": 1784461732.429844,
+    "ast_hash": "34caff5990aaef2b7d590169529b5d18",
+    "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/NotFoundPage.jsx": {
-    "mtime": 1776323426.3484032,
-    "ast_hash": "1e01de0a26908a08be68d52c49b98a9e",
-    "semantic_hash": "1e01de0a26908a08be68d52c49b98a9e"
+    "mtime": 1783251722.245399,
+    "ast_hash": "c8c22a81670ca79e52669d3fad14678e",
+    "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/NotificationsPage.jsx": {
-    "mtime": 1776323459.7334282,
-    "ast_hash": "4e81184e89a5dd1c5ada80c581b37039",
-    "semantic_hash": "4e81184e89a5dd1c5ada80c581b37039"
+    "mtime": 1782429694.9735236,
+    "ast_hash": "59b2bd1f6486f62a8830c2a57e7c3187",
+    "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/PublishingPage.jsx": {
-    "mtime": 1776262786.941181,
-    "ast_hash": "490175079baccdf3ab98d234abbab23d",
-    "semantic_hash": "490175079baccdf3ab98d234abbab23d"
+    "mtime": 1784462481.832087,
+    "ast_hash": "95e10284ee2586209b517ac82ce104fc",
+    "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/ResetPasswordPage.jsx": {
-    "mtime": 1781962440.1906753,
-    "ast_hash": "0a62d0907b29383ec9a0ef3ca7a1bce8",
+    "mtime": 1783251722.559398,
+    "ast_hash": "b856d3b08ed377a9451c96c563b2c481",
     "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/LandingPage.jsx": {
-    "mtime": 1776278425.7674687,
-    "ast_hash": "f7d71df8c716085a3e16731c5cc74415",
-    "semantic_hash": "f7d71df8c716085a3e16731c5cc74415"
+    "mtime": 1783251722.230399,
+    "ast_hash": "c3d484e69e737782fcab973b5ac3cef3",
+    "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/AnalyticsPage.jsx": {
-    "mtime": 1776278719.2971172,
-    "ast_hash": "21dfea9ce7dc1fe918caf38b5cdd6aad",
-    "semantic_hash": "21dfea9ce7dc1fe918caf38b5cdd6aad"
+    "mtime": 1782429536.6847124,
+    "ast_hash": "4248116279df6df76c44ec6a6c7a02c0",
+    "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/ProgressPage.jsx": {
-    "mtime": 1776262750.2660995,
-    "ast_hash": "352e4a9323e75ad3528cee1f675f14d7",
-    "semantic_hash": "352e4a9323e75ad3528cee1f675f14d7"
+    "mtime": 1784463876.7988417,
+    "ast_hash": "ff7da7ff33005b0dd82d0dd7f2f058fc",
+    "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/AuthCallbackPage.jsx": {
-    "mtime": 1781962435.1356492,
-    "ast_hash": "b8c1fb35f94b3aabdd07a566aeecbcec",
+    "mtime": 1782506446.1974232,
+    "ast_hash": "5240dd1fc2e9b3f0f05e22349735163e",
     "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/pages/ResultPage.jsx": {
-    "mtime": 1776262811.6052358,
-    "ast_hash": "6cbc10c56ff1049cc34c3ad31c5e17fe",
-    "semantic_hash": "6cbc10c56ff1049cc34c3ad31c5e17fe"
+    "mtime": 1783251722.7843974,
+    "ast_hash": "de9f9a0137c81d4bd10182c1898e0ced",
+    "semantic_hash": ""
   },
-  "/media/koraspond/DataDrive/admart/Admart-frontend/src/components/VidifySidebar.jsx": {
-    "mtime": 1782050984.6328948,
-    "ast_hash": "ea0ec2df9a6a8685be533652de00f774",
+  "/media/koraspond/DataDrive/admart/Admart-frontend/src/components/AppLayout.jsx": {
+    "mtime": 1784463860.50868,
+    "ast_hash": "d282b6067a6b50377a260e0514df3d2e",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/src/components/AdmartSidebar.jsx": {
+    "mtime": 1784463859.2176058,
+    "ast_hash": "804e798b9397bce80334b3e71d44c40d",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/src/components/Topbar.jsx": {
+    "mtime": 1784461746.8720825,
+    "ast_hash": "ee2e7f5cba231129e635ca570f330e98",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/src/components/ProjectDropdown.jsx": {
+    "mtime": 1784464627.8297021,
+    "ast_hash": "b00affbece7a03314481bc97a6442474",
     "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/.antigravitycli/f9f268e2-16fb-4a12-b528-0cb53fccd669.json": {
@@ -155,9 +200,14 @@
     "semantic_hash": "77cf2736af4ffe0d5afd169506e2df12"
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/README.md": {
-    "mtime": 1779172319.102727,
-    "ast_hash": "c35d651098e5826413abe3a744593f7b",
-    "semantic_hash": "c35d651098e5826413abe3a744593f7b"
+    "mtime": 1784464629.9967153,
+    "ast_hash": "5616e8cf099e933c181439ecc4802f94",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/CLAUDE.md": {
+    "mtime": 1784372447.7515152,
+    "ast_hash": "bc9dd8b9d539cc5de6f73657634fe33a",
+    "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/AGENT.md": {
     "mtime": 1781903894.1082726,
@@ -165,9 +215,9 @@
     "semantic_hash": "3bb3fee7bb31b180342813418489f067"
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/index.html": {
-    "mtime": 1776262329.6861653,
-    "ast_hash": "17db998e877158f73f1cfcb657f17327",
-    "semantic_hash": "17db998e877158f73f1cfcb657f17327"
+    "mtime": 1783251722.220399,
+    "ast_hash": "448da0f634ebdc55c94c599ce7039c44",
+    "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/.agent/skills/full-stack-orchestration-full-stack-feature/SKILL.md": {
     "mtime": 1781904918.90162,
@@ -237,6 +287,121 @@
   "/media/koraspond/DataDrive/admart/Admart-frontend/.github/workflows/quality-and-security.yml": {
     "mtime": 1781960728.5888753,
     "ast_hash": "fa66097918ed5af819bffea153610e96",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/skills/karpathy-guidelines/SKILL.md": {
+    "mtime": 1784372447.752515,
+    "ast_hash": "568fe33228692e85543530ce376f695f",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/.cursor/skills/karpathy-guidelines/SKILL.md": {
+    "mtime": 1784372447.7561011,
+    "ast_hash": "a34d6976dfb235e066991b0fc5d19d56",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/billing.png": {
+    "mtime": 1783512361.459135,
+    "ast_hash": "792018e847b3e9813a6c038720f5c2f2",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/create-generate.png": {
+    "mtime": 1783512367.6598358,
+    "ast_hash": "2eb263932b92bca7045c52832b10ba78",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/landing.png": {
+    "mtime": 1783512334.2260568,
+    "ast_hash": "d3ceb8df02ea54ea8fb2a6157147d357",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/social.png": {
+    "mtime": 1783512353.9258087,
+    "ast_hash": "7e084c3e11814dc68fcadc8eca88ee61",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/library.png": {
+    "mtime": 1783512348.430535,
+    "ast_hash": "b8fb8aaa1428cf6ae7a342194de8b590",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/progress.png": {
+    "mtime": 1783512343.0374272,
+    "ast_hash": "a35b69fabfd96d685a4e04c725798539",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/publish.png": {
+    "mtime": 1783512346.5163217,
+    "ast_hash": "fd684e5f557de38cacc6460c2a130964",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/create-configure.png": {
+    "mtime": 1783512366.5096028,
+    "ast_hash": "63efcc583ce09dfd7c344b919eb47511",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/dashboard.png": {
+    "mtime": 1783512339.6378846,
+    "ast_hash": "2db2fe3c98004c21edba166485e82aa7",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/onboarding.png": {
+    "mtime": 1783512337.6895642,
+    "ast_hash": "84029ea098a43c663e098e37c17815f1",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/result.png": {
+    "mtime": 1783512344.8237193,
+    "ast_hash": "87dd790b7a651bd443c28aeeee359889",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/auth.png": {
+    "mtime": 1783512335.995311,
+    "ast_hash": "3334685582b29ded6ce1118a42b80bd5",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/brand-kit.png": {
+    "mtime": 1783512359.633533,
+    "ast_hash": "257c78cc2b30b15d95c8c8f9413a7bfa",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/notifications.png": {
+    "mtime": 1783512363.2262416,
+    "ast_hash": "74658c80f094ae2556339b35c4b30c5a",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/calendar.png": {
+    "mtime": 1783512355.8105304,
+    "ast_hash": "438fcac37a22fa44a9a4582ca6b03242",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/create-input.png": {
+    "mtime": 1783512341.323868,
+    "ast_hash": "63efcc583ce09dfd7c344b919eb47511",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/image-gen.png": {
+    "mtime": 1783512352.1545732,
+    "ast_hash": "4ef184fee970ead60a89ae0eb45cd1e2",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/settings.png": {
+    "mtime": 1783512364.9989378,
+    "ast_hash": "488d42ec009a1e591b6d8ab97c8482ca",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/analytics.png": {
+    "mtime": 1783512357.8185227,
+    "ast_hash": "beb900898d5bbec88406870249b9723c",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/create-enhance.png": {
+    "mtime": 1783512367.5813344,
+    "ast_hash": "2eb263932b92bca7045c52832b10ba78",
+    "semantic_hash": ""
+  },
+  "/media/koraspond/DataDrive/admart/Admart-frontend/docs/admart-guide/images/templates.png": {
+    "mtime": 1783512350.3962102,
+    "ast_hash": "26ec2bdd81ceef469259b0fa056167d0",
     "semantic_hash": ""
   },
   "/media/koraspond/DataDrive/admart/Admart-frontend/src/assets/hero.png": {
