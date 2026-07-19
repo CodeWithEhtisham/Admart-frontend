@@ -7,6 +7,15 @@ import {
   getCachedActiveProject,
 } from '../utils/projects'
 import {
+  CREDITS_CHANGE_EVENT,
+  creditsFromApiError,
+  estimateJobCost,
+  getCreditCosts,
+  getCredits,
+  notifyCreditsChanged,
+  syncCreditsFromPayload,
+} from '../utils/credits.js'
+import {
   ACCEPTED_MIME,
   ASPECT_RATIOS,
   IMAGE_CAPABILITIES,
@@ -17,8 +26,11 @@ import {
   canGenerate,
   createImageJob,
   defaultModel,
+  enhanceImagePrompt,
   ensureRemoteImageUrls,
   fieldVisible,
+  flattenJobImages,
+  formatGenerationError,
   imageApiError,
   isRemoteUrl,
   listImageJobs,
@@ -28,6 +40,8 @@ import {
   sourceRemoteUrl,
   validationMessage,
 } from '../utils/imageGeneration.js'
+import { saveGeneratedAsset } from '../utils/generatedAssets.js'
+import { notifyLibraryChanged } from '../utils/library.js'
 
 function Label({ children }) {
   return (
@@ -79,6 +93,122 @@ function ActionBtn({ children, onClick }) {
   )
 }
 
+function ChevronDown({ open }) {
+  return (
+    <svg
+      className={`h-4 w-4 shrink-0 text-text-muted transition ${open ? 'rotate-180' : ''}`}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden
+    >
+      <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function ModelPicker({ models, value, onChange }) {
+  const rootRef = useRef(null)
+  const [open, setOpen] = useState(false)
+  const selected = models.find((m) => m.id === value) || models[0]
+
+  useEffect(() => {
+    if (!open) return
+    const onDoc = (e) => {
+      if (!rootRef.current?.contains(e.target)) setOpen(false)
+    }
+    const onKey = (e) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('mousedown', onDoc)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDoc)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+
+  useEffect(() => {
+    setOpen(false)
+  }, [models])
+
+  return (
+    <div ref={rootRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className={`flex w-full items-center gap-3 rounded-xl border bg-input px-3 py-2.5 text-left transition ${
+          open
+            ? 'border-accent-blue ring-1 ring-accent-blue'
+            : 'border-border-default hover:border-white/15'
+        }`}
+      >
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold text-text-primary">
+            {selected?.label || 'Select model'}
+          </p>
+          {selected?.strength ? (
+            <p className="mt-0.5 truncate text-[11px] text-text-tertiary">{selected.strength}</p>
+          ) : selected?.family ? (
+            <p className="mt-0.5 truncate text-[11px] capitalize text-text-tertiary">
+              {selected.family}
+            </p>
+          ) : null}
+        </div>
+        <ChevronDown open={open} />
+      </button>
+
+      {open ? (
+        <ul
+          role="listbox"
+          className="absolute left-0 right-0 z-40 mt-1.5 max-h-64 overflow-y-auto rounded-xl border border-border-default bg-panel p-1 shadow-xl shadow-black/40"
+        >
+          {models.map((m) => {
+            const active = m.id === value
+            return (
+              <li key={m.id} role="option" aria-selected={active}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onChange(m.id)
+                    setOpen(false)
+                  }}
+                  className={`flex w-full items-start gap-2 rounded-lg px-3 py-2.5 text-left transition ${
+                    active
+                      ? 'bg-accent-blue/15 text-accent-blue'
+                      : 'text-text-secondary hover:bg-elevated hover:text-text-primary'
+                  }`}
+                >
+                  <span
+                    className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${
+                      active ? 'bg-accent-blue' : 'bg-text-muted/50'
+                    }`}
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-medium">{m.label}</span>
+                    {m.strength ? (
+                      <span
+                        className={`mt-0.5 block text-[11px] ${
+                          active ? 'text-accent-blue/80' : 'text-text-tertiary'
+                        }`}
+                      >
+                        {m.strength}
+                      </span>
+                    ) : null}
+                  </span>
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+      ) : null}
+    </div>
+  )
+}
+
 function previewSrc(img) {
   if (!img) return null
   if (img.previewUrl) return img.previewUrl
@@ -112,6 +242,7 @@ export default function ImageGenPage() {
   const [capability, setCapability] = useState('textToImage')
   const [model, setModel] = useState(defaultModel('textToImage'))
   const [prompt, setPrompt] = useState('')
+  const [enhancingPrompt, setEnhancingPrompt] = useState(false)
   const [negativePrompt, setNegativePrompt] = useState('')
   const [aspectRatio, setAspectRatio] = useState('1:1')
   const [numImages, setNumImages] = useState(1)
@@ -136,8 +267,59 @@ export default function ImageGenPage() {
   const [jobStatus, setJobStatus] = useState('idle')
   const [jobError, setJobError] = useState(null)
   const [results, setResults] = useState([])
-  const [history, setHistory] = useState([])
+  const [savedResultKeys, setSavedResultKeys] = useState(() => new Set())
+  const [gallery, setGallery] = useState([])
+  const [galleryLoading, setGalleryLoading] = useState(false)
   const [lastPrompt, setLastPrompt] = useState('')
+  const [creditsRemaining, setCreditsRemaining] = useState(null)
+  const [canGenerateCredits, setCanGenerateCredits] = useState(true)
+  const [byCapability, setByCapability] = useState(null)
+
+  const reloadGallery = async (pid) => {
+    if (!pid) return
+    setGalleryLoading(true)
+    try {
+      const jobs = await listImageJobs(pid, { limit: 50 })
+      setGallery(flattenJobImages(jobs))
+    } catch {
+      /* keep previous gallery */
+    } finally {
+      setGalleryLoading(false)
+    }
+  }
+
+  const goPublish = (img) => {
+    if (!img?.url) return
+    navigate('/publish', {
+      state: {
+        type: 'image',
+        imageUrl: img.url,
+        title: (img._prompt || lastPrompt || img.fileName || 'Admart image').slice(0, 120),
+        prompt: img._prompt || lastPrompt || '',
+        model: img.model,
+        capability: img.capability || capability,
+      },
+    })
+  }
+
+  const resultKey = (img) => img?.url || img?.fileName || img?.jobId || ''
+
+  const saveResult = (img) => {
+    if (!img?.url) return
+    const key = resultKey(img)
+    saveGeneratedAsset({
+      id: key,
+      type: 'image',
+      title: (img._prompt || lastPrompt || img.fileName || 'Admart image').slice(0, 120),
+      prompt: img._prompt || lastPrompt || '',
+      thumbnailUrl: img.url,
+      sourceUrl: img.url,
+      jobId: img.jobId,
+      status: 'Ready',
+    })
+    setSavedResultKeys((prev) => new Set(prev).add(key))
+    if (projectId) reloadGallery(projectId)
+  }
 
   const family = modelFamily(model)
   const models = modelsForCapability(capability)
@@ -157,10 +339,16 @@ export default function ImageGenPage() {
     () => ({ capability, prompt, imageUrls }),
     [capability, prompt, imageUrls],
   )
-  const ready = Boolean(projectId) && canGenerate(formState)
+  const estimatedCost = estimateJobCost(byCapability, capability, numImages)
+  const formReady = Boolean(projectId) && canGenerate(formState)
+  const hasCredits =
+    canGenerateCredits && (creditsRemaining == null || creditsRemaining > 0)
+  const ready = formReady && hasCredits
   const blockReason = !projectId
     ? 'Select or create a project first.'
-    : validationMessage(formState)
+    : !hasCredits
+      ? 'Insufficient credits. Buy more on Billing.'
+      : validationMessage(formState)
   const isBusy =
     jobStatus === 'queued' ||
     jobStatus === 'running' ||
@@ -173,22 +361,50 @@ export default function ImageGenPage() {
   }, [])
 
   useEffect(() => {
-    if (!projectId) return undefined
     let cancelled = false
     ;(async () => {
-      const jobs = await listImageJobs(projectId, { limit: 12 })
-      if (cancelled || !Array.isArray(jobs)) return
-      const thumbs = jobs
-        .filter((j) => j.status === 'succeeded' && j.images?.length)
-        .flatMap((j) =>
-          j.images.map((img) => ({
-            ...img,
-            _transparent: j.capability === 'removeBackground',
-            _prompt: j.prompt,
-          })),
-        )
-        .slice(0, 12)
-      if (thumbs.length) setHistory(thumbs)
+      try {
+        const [bal, costs] = await Promise.all([getCredits(), getCreditCosts()])
+        if (cancelled) return
+        if (bal) {
+          setCreditsRemaining(bal.creditsRemaining)
+          setCanGenerateCredits(bal.canGenerate ?? bal.creditsRemaining > 0)
+          notifyCreditsChanged(bal)
+        }
+        if (costs?.byCapability) setByCapability(costs.byCapability)
+      } catch {
+        /* badge stays optional if credits API down */
+      }
+    })()
+    const onCredits = (e) => {
+      if (e.detail?.creditsRemaining != null) {
+        setCreditsRemaining(e.detail.creditsRemaining)
+      }
+      if (e.detail?.canGenerate != null) {
+        setCanGenerateCredits(e.detail.canGenerate)
+      }
+    }
+    window.addEventListener(CREDITS_CHANGE_EVENT, onCredits)
+    return () => {
+      cancelled = true
+      window.removeEventListener(CREDITS_CHANGE_EVENT, onCredits)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!projectId) {
+      setGallery([])
+      return undefined
+    }
+    let cancelled = false
+    ;(async () => {
+      setGalleryLoading(true)
+      try {
+        const jobs = await listImageJobs(projectId, { limit: 50 })
+        if (!cancelled) setGallery(flattenJobImages(jobs))
+      } finally {
+        if (!cancelled) setGalleryLoading(false)
+      }
     })()
     return () => {
       cancelled = true
@@ -209,8 +425,26 @@ export default function ImageGenPage() {
     setCapability(id)
     setModel(defaultModel(id))
     setJobError(null)
-    if (id === 'multiEdit' && imageUrls.length > MAX_MULTI_IMAGES) {
+    // Text to image never uses uploads — clear any leftover sources
+    if (id === 'textToImage') {
+      setImageUrls((prev) => {
+        prev.forEach((img) => {
+          if (img?.previewUrl?.startsWith('blob:')) URL.revokeObjectURL(img.previewUrl)
+        })
+        return []
+      })
+    } else if (id === 'multiEdit' && imageUrls.length > MAX_MULTI_IMAGES) {
       setImageUrls((prev) => prev.slice(0, MAX_MULTI_IMAGES))
+    }
+  }
+
+  const handleEnhancePrompt = () => {
+    if (!prompt.trim() || enhancingPrompt) return
+    setEnhancingPrompt(true)
+    try {
+      setPrompt(enhanceImagePrompt(prompt))
+    } finally {
+      setEnhancingPrompt(false)
     }
   }
 
@@ -330,6 +564,7 @@ export default function ImageGenPage() {
 
     setJobError(null)
     setResults([])
+    setSavedResultKeys(new Set())
     setLastPrompt(prompt.trim())
 
     try {
@@ -352,6 +587,13 @@ export default function ImageGenPage() {
       const job = await createImageJob(projectId, payload)
       const jobId = job.id || job.jobId
       if (!jobId) throw new Error('No job id returned from server.')
+      notifyLibraryChanged({ projectId, action: 'job-created', jobId })
+
+      syncCreditsFromPayload(job)
+      if (job.creditsRemaining != null) {
+        setCreditsRemaining(job.creditsRemaining)
+        setCanGenerateCredits(job.canGenerate ?? job.creditsRemaining > 0)
+      }
 
       if (job.status === 'running') setJobStatus('running')
 
@@ -360,12 +602,14 @@ export default function ImageGenPage() {
         onUpdate: (j) => {
           if (j.status === 'running') setJobStatus('running')
           else if (j.status === 'queued') setJobStatus('queued')
+          syncCreditsFromPayload(j)
         },
       })
 
       if (done.status === 'failed') {
         setJobStatus('failed')
-        setJobError(done.error || 'Generation failed. Adjust settings and try again.')
+        setJobError(formatGenerationError(done.error))
+        notifyLibraryChanged({ projectId, action: 'job-failed', jobId })
         return
       }
 
@@ -375,10 +619,26 @@ export default function ImageGenPage() {
         _prompt: done.prompt || prompt.trim(),
       }))
       setResults(images)
-      setHistory((h) => [...images, ...h].slice(0, 12))
       setJobStatus('succeeded')
+      notifyLibraryChanged({ projectId, action: 'job-succeeded', jobId })
+      await reloadGallery(projectId)
+
+      try {
+        const bal = await getCredits()
+        setCreditsRemaining(bal.creditsRemaining)
+        setCanGenerateCredits(bal.canGenerate ?? bal.creditsRemaining > 0)
+        notifyCreditsChanged(bal)
+      } catch {
+        /* ignore refresh errors */
+      }
     } catch (err) {
       if (err?.name === 'AbortError') return
+      creditsFromApiError(err)
+      const data = err?.response?.data
+      if (data?.creditsRemaining != null) {
+        setCreditsRemaining(data.creditsRemaining)
+        setCanGenerateCredits(data.canGenerate ?? data.creditsRemaining > 0)
+      }
       setJobStatus('failed')
       setJobError(imageApiError(err))
     }
@@ -391,10 +651,12 @@ export default function ImageGenPage() {
 
   return (
     <AppLayout>
-      <div className="flex min-h-screen flex-col">
-        <Topbar title="Image Studio" />
+      <div className="flex h-dvh flex-col overflow-hidden">
+        <div className="shrink-0">
+          <Topbar title="Image Studio" />
+        </div>
 
-        <div className="border-b border-border bg-panel px-6">
+        <div className="shrink-0 border-b border-border bg-panel px-6">
           <div className="flex flex-wrap items-center justify-between gap-2 py-2">
             <div className="flex gap-1 overflow-x-auto">
               {IMAGE_CAPABILITIES.map((c) => {
@@ -424,9 +686,9 @@ export default function ImageGenPage() {
           </div>
         </div>
 
-        <div className="flex flex-1 overflow-hidden">
-          <div className="flex w-[380px] shrink-0 flex-col border-r border-border bg-panel">
-            <div className="flex-1 space-y-5 overflow-y-auto p-5">
+        <div className="flex min-h-0 flex-1 overflow-hidden">
+          <div className="flex min-h-0 w-[380px] shrink-0 flex-col border-r border-border bg-panel">
+            <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-5">
               {!projectId && (
                 <div className="rounded-xl border border-warning/30 bg-warning/10 px-3 py-2.5 text-xs text-warning">
                   No active project.{' '}
@@ -523,29 +785,32 @@ export default function ImageGenPage() {
                             ? 'e.g. Place the person from image 1 into the cafe from image 2…'
                             : 'e.g. Product shot of a matte black water bottle on marble, soft studio light'
                       }
-                      className="min-h-[110px] w-full resize-y rounded-xl border border-border-default bg-input p-3 pb-7 text-sm text-text-primary placeholder:text-text-muted focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
+                      className="min-h-[110px] w-full resize-y rounded-xl border border-border-default bg-input p-3 pb-10 text-sm text-text-primary placeholder:text-text-muted focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
                     />
-                    <span className="pointer-events-none absolute bottom-2 right-3 font-mono text-xs text-text-muted">
-                      {prompt.length} / {MAX_PROMPT_LENGTH}
-                    </span>
+                    <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between gap-2">
+                      {capability === 'textToImage' ? (
+                        <button
+                          type="button"
+                          onClick={handleEnhancePrompt}
+                          disabled={!prompt.trim() || enhancingPrompt}
+                          className="rounded-lg bg-accent-violet px-2.5 py-1 text-[11px] font-semibold text-white shadow-sm shadow-accent-violet/25 transition hover:bg-accent-violet/90 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          {enhancingPrompt ? 'Enhancing…' : '✦ Enhance prompt'}
+                        </button>
+                      ) : (
+                        <span />
+                      )}
+                      <span className="font-mono text-xs text-text-muted">
+                        {prompt.length} / {MAX_PROMPT_LENGTH}
+                      </span>
+                    </div>
                   </div>
                 </div>
               )}
 
               <div>
                 <Label>Model</Label>
-                <select
-                  value={model}
-                  onChange={(e) => setModel(e.target.value)}
-                  className="w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-sm text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
-                >
-                  {models.map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.label}
-                      {m.strength ? ` — ${m.strength}` : ''}
-                    </option>
-                  ))}
-                </select>
+                <ModelPicker models={models} value={model} onChange={setModel} />
               </div>
 
               {showAspect && (
@@ -796,7 +1061,7 @@ export default function ImageGenPage() {
               )}
             </div>
 
-            <div className="border-t border-border bg-panel p-4">
+            <div className="shrink-0 border-t border-border bg-panel/95 p-4 backdrop-blur-sm">
               {jobError && (
                 <p className="mb-2 rounded-lg border border-error/30 bg-error/10 px-3 py-2 text-xs text-error">
                   {jobError}
@@ -811,7 +1076,17 @@ export default function ImageGenPage() {
                 </p>
               )}
               {!ready && blockReason && (
-                <p className="mb-2 text-center text-xs text-text-tertiary">{blockReason}</p>
+                <p className="mb-2 text-center text-xs text-text-tertiary">
+                  {blockReason}
+                  {!hasCredits && (
+                    <>
+                      {' '}
+                      <Link to="/billing" className="text-accent-blue underline">
+                        Billing
+                      </Link>
+                    </>
+                  )}
+                </p>
               )}
               <button
                 type="button"
@@ -832,25 +1107,37 @@ export default function ImageGenPage() {
                       : 'Generate'}
               </button>
               <p className="mt-2 text-center font-mono text-[11px] text-text-muted">
-                {capMeta?.label} · live API
+                {capMeta?.label}
+                {estimatedCost != null ? ` · ~${estimatedCost} cr` : ''}
+                {creditsRemaining != null ? ` · ${creditsRemaining} left` : ''}
               </p>
             </div>
           </div>
 
-          <div className="flex flex-1 flex-col overflow-y-auto bg-base p-7">
-            <div className="mb-6">
-              <h2 className="font-heading text-lg font-semibold text-text-primary">Canvas</h2>
-              <p className="text-sm text-text-tertiary">
-                {capability === 'textToImage' && 'Prompt → new image'}
-                {capability === 'edit' && 'Prompt + image → edited result'}
-                {capability === 'multiEdit' && 'Compose / transfer across multiple images'}
-                {capability === 'upscale' && 'Higher resolution'}
-                {capability === 'removeBackground' && 'Transparent PNG · checkerboard preview'}
-              </p>
+          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-base p-7">
+            <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 className="font-heading text-lg font-semibold text-text-primary">Canvas</h2>
+                <p className="text-sm text-text-tertiary">
+                  {capability === 'textToImage' && 'Prompt → new image'}
+                  {capability === 'edit' && 'Prompt + image → image to image'}
+                  {capability === 'multiEdit' && 'Compose / transfer across multiple images'}
+                  {capability === 'upscale' && 'Higher resolution'}
+                  {capability === 'removeBackground' && 'Transparent PNG · checkerboard preview'}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => reloadGallery(projectId)}
+                disabled={!projectId || galleryLoading}
+                className="rounded-lg border border-border-default bg-surface px-3 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary disabled:opacity-50"
+              >
+                {galleryLoading ? 'Loading…' : 'Refresh gallery'}
+              </button>
             </div>
 
-            {jobStatus === 'idle' && results.length === 0 && (
-              <div className="flex flex-1 flex-col items-center justify-center pb-16">
+            {jobStatus === 'idle' && results.length === 0 && gallery.length === 0 && !galleryLoading && (
+              <div className="mb-10 flex flex-col items-center justify-center py-12">
                 <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-border-default bg-surface text-3xl text-text-muted">
                   {showImages ? '⇪' : '✦'}
                 </div>
@@ -858,13 +1145,13 @@ export default function ImageGenPage() {
                   {showImages ? 'Add a source image to start' : 'Describe what you want to create'}
                 </h3>
                 <p className="mt-1 max-w-sm text-center text-sm text-text-tertiary">
-                  Results appear here. Chain any output into Edit, Upscale, or Remove BG.
+                  New results appear here. All project images show in My images below.
                 </p>
               </div>
             )}
 
             {isBusy && (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="mb-8 grid grid-cols-2 gap-4">
                 {Array.from({ length: showNumImages ? numImages : 1 }).map((_, i) => (
                   <div
                     key={i}
@@ -884,84 +1171,213 @@ export default function ImageGenPage() {
             )}
 
             {jobStatus === 'succeeded' && results.length > 0 && (
-              <>
+              <section className="mb-10">
+                <h3 className="mb-3 text-sm font-semibold text-text-primary">Just created</h3>
                 <div className="grid grid-cols-2 gap-4">
-                  {results.map((img, i) => (
+                  {results.map((img, i) => {
+                    const key = resultKey(img) || String(i)
+                    const saved = savedResultKeys.has(key)
+                    return (
+                      <div
+                        key={key}
+                        className="group overflow-hidden rounded-2xl border border-accent-blue/30 bg-surface"
+                      >
+                        <div className="relative aspect-square bg-elevated">
+                          {(img._transparent || capability === 'removeBackground') && (
+                            <Checkerboard />
+                          )}
+                          {img.url ? (
+                            <img
+                              src={img.url}
+                              alt=""
+                              className="absolute inset-0 h-full w-full object-contain"
+                            />
+                          ) : null}
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/35 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100">
+                            <div className="flex flex-wrap items-center justify-center gap-2 px-3">
+                              <ActionBtn
+                                onClick={() => saveResult(img)}
+                              >
+                                {saved ? 'Saved' : 'Save'}
+                              </ActionBtn>
+                              <ActionBtn onClick={() => goPublish(img)}>Publish</ActionBtn>
+                              <ActionBtn onClick={() => downloadAsset(img)}>Download</ActionBtn>
+                              <ActionBtn onClick={() => chainTo('edit', [img])}>
+                                Image to image
+                              </ActionBtn>
+                              <ActionBtn onClick={() => chainTo('upscale', [img])}>Upscale</ActionBtn>
+                              <ActionBtn onClick={() => chainTo('removeBackground', [img])}>
+                                Remove BG
+                              </ActionBtn>
+                              <ActionBtn onClick={() => navigate('/create')}>Use in video</ActionBtn>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="space-y-2 border-t border-border p-3">
+                          <p className="truncate text-xs text-text-secondary">
+                            {lastPrompt?.slice(0, 80) ||
+                              img._prompt?.slice(0, 80) ||
+                              img.fileName ||
+                              'Result'}
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              type="button"
+                              onClick={() => saveResult(img)}
+                              className="rounded-lg bg-accent-blue px-3 py-1.5 text-xs font-semibold text-white hover:bg-accent-blue/90"
+                            >
+                              {saved ? 'Saved' : 'Save'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => goPublish(img)}
+                              className="rounded-lg border border-border-default bg-elevated px-3 py-1.5 text-xs font-medium text-text-primary"
+                            >
+                              Publish
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => downloadAsset(img)}
+                              className="rounded-lg border border-border-default bg-elevated px-3 py-1.5 text-xs font-medium text-text-primary"
+                            >
+                              Download
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => chainTo('edit', [img])}
+                              className="rounded-lg border border-border-default bg-elevated px-3 py-1.5 text-xs font-medium text-text-secondary"
+                            >
+                              Image to image
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => chainTo('upscale', [img])}
+                              className="rounded-lg border border-border-default bg-elevated px-3 py-1.5 text-xs font-medium text-text-secondary"
+                            >
+                              Upscale
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => chainTo('removeBackground', [img])}
+                              className="rounded-lg border border-border-default bg-elevated px-3 py-1.5 text-xs font-medium text-text-secondary"
+                            >
+                              Remove BG
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => navigate('/create')}
+                              className="rounded-lg border border-border-default bg-elevated px-3 py-1.5 text-xs font-medium text-text-secondary"
+                            >
+                              Use in video
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </section>
+            )}
+
+            {jobStatus === 'failed' && !jobError && (
+              <div className="mb-6 rounded-xl border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+                Generation failed. Adjust settings and try again.
+              </div>
+            )}
+
+            {/* All project images — current + previous */}
+            <section>
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <h3 className="text-sm font-semibold text-text-primary">
+                  My images
+                  {gallery.length > 0 ? (
+                    <span className="ml-2 font-mono text-text-muted">({gallery.length})</span>
+                  ) : null}
+                </h3>
+              </div>
+
+              {galleryLoading && gallery.length === 0 ? (
+                <p className="text-sm text-text-tertiary">Loading your images…</p>
+              ) : gallery.length === 0 ? (
+                <p className="rounded-xl border border-dashed border-border-default bg-panel/50 px-4 py-8 text-center text-sm text-text-tertiary">
+                  No saved images for this project yet. Generate one to fill this gallery.
+                </p>
+              ) : (
+                <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+                  {gallery.map((img) => (
                     <div
-                      key={img.url || img.fileName || i}
-                      className="group relative overflow-hidden rounded-2xl border border-border-default bg-surface"
+                      key={img._key || img.url}
+                      className="group overflow-hidden rounded-xl border border-border-default bg-surface"
                     >
                       <div className="relative aspect-square bg-elevated">
-                        {(img._transparent || capability === 'removeBackground') && (
-                          <Checkerboard />
-                        )}
-                        {img.url ? (
-                          <img
-                            src={img.url}
-                            alt=""
-                            className="absolute inset-0 h-full w-full object-contain"
-                          />
-                        ) : null}
+                        {img._transparent && <Checkerboard />}
+                        <img
+                          src={img.url}
+                          alt=""
+                          className="absolute inset-0 h-full w-full object-cover"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/35 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100">
+                          <div className="flex flex-wrap items-center justify-center gap-1.5 px-2">
+                            <ActionBtn onClick={() => saveResult(img)}>Save</ActionBtn>
+                            <ActionBtn onClick={() => goPublish(img)}>Publish</ActionBtn>
+                            <ActionBtn onClick={() => downloadAsset(img)}>Download</ActionBtn>
+                            <ActionBtn onClick={() => chainTo('edit', [img])}>
+                              Image to image
+                            </ActionBtn>
+                            <ActionBtn onClick={() => chainTo('upscale', [img])}>Upscale</ActionBtn>
+                            <ActionBtn onClick={() => chainTo('removeBackground', [img])}>
+                              Remove BG
+                            </ActionBtn>
+                          </div>
+                        </div>
                       </div>
-
-                      <div className="pointer-events-none absolute inset-0 flex flex-wrap items-center justify-center gap-1.5 bg-black/65 p-3 opacity-0 transition group-hover:pointer-events-auto group-hover:opacity-100">
-                        <ActionBtn onClick={() => downloadAsset(img)}>Download</ActionBtn>
-                        <ActionBtn onClick={() => chainTo('edit', [img])}>Edit</ActionBtn>
-                        <ActionBtn onClick={() => chainTo('upscale', [img])}>Upscale</ActionBtn>
-                        <ActionBtn onClick={() => chainTo('removeBackground', [img])}>
-                          Remove BG
-                        </ActionBtn>
-                        <ActionBtn
-                          onClick={() =>
-                            chainTo(capability === 'multiEdit' ? 'multiEdit' : 'edit', [img])
-                          }
-                        >
-                          Use as input
-                        </ActionBtn>
-                        <ActionBtn onClick={() => navigate('/create')}>Use in video</ActionBtn>
-                      </div>
-
-                      <div className="border-t border-border px-3 py-2">
-                        <p className="truncate text-xs text-text-secondary">
-                          {lastPrompt?.slice(0, 80) ||
-                            img._prompt?.slice(0, 80) ||
-                            img.fileName ||
-                            'Result'}
+                      <div className="border-t border-border px-2.5 py-2">
+                        <p className="truncate text-[11px] text-text-secondary">
+                          {img._prompt || img.fileName || img.capability || 'Image'}
                         </p>
+                        <div className="mt-1.5 flex flex-wrap gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => saveResult(img)}
+                            className="rounded-md bg-accent-blue/15 px-2 py-0.5 text-[10px] font-semibold text-accent-blue hover:bg-accent-blue/25"
+                          >
+                            Save
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => goPublish(img)}
+                            className="rounded-md bg-elevated px-2 py-0.5 text-[10px] font-medium text-text-tertiary hover:text-text-primary"
+                          >
+                            Publish
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => chainTo('edit', [img])}
+                            className="rounded-md bg-elevated px-2 py-0.5 text-[10px] font-medium text-text-tertiary hover:text-text-primary"
+                          >
+                            Image to image
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => chainTo('upscale', [img])}
+                            className="rounded-md bg-elevated px-2 py-0.5 text-[10px] font-medium text-text-tertiary hover:text-text-primary"
+                          >
+                            Upscale
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => chainTo('removeBackground', [img])}
+                            className="rounded-md bg-elevated px-2 py-0.5 text-[10px] font-medium text-text-tertiary hover:text-text-primary"
+                          >
+                            Remove BG
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
-
-                {history.length > 0 && (
-                  <div className="mt-8">
-                    <h3 className="mb-3 text-sm font-semibold text-text-secondary">Recent</h3>
-                    <div className="flex gap-2 overflow-x-auto pb-2">
-                      {history.map((img, i) => (
-                        <button
-                          key={`${img.url}_${i}`}
-                          type="button"
-                          onClick={() => chainTo('edit', [img])}
-                          title="Use as edit input"
-                          className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-elevated transition hover:ring-2 hover:ring-accent-blue/50"
-                        >
-                          {img._transparent && <Checkerboard />}
-                          {img.url ? (
-                            <img src={img.url} alt="" className="h-full w-full object-cover" />
-                          ) : null}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-
-            {jobStatus === 'failed' && !jobError && (
-              <div className="rounded-xl border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
-                Generation failed. Adjust settings and try again.
-              </div>
-            )}
+              )}
+            </section>
           </div>
         </div>
       </div>

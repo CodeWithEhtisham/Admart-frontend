@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import ProjectDropdown from './ProjectDropdown'
 import { getUserInitial } from '../utils/user.js'
 import api from '../utils/api'
+import { CREDITS_CHANGE_EVENT, getCredits } from '../utils/credits.js'
 
 /**
  * Shared top navigation bar used by every in-app page.
@@ -14,6 +15,28 @@ export default function Topbar({ title }) {
   const navigate = useNavigate()
   const [searchOpen, setSearchOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [creditsRemaining, setCreditsRemaining] = useState(null)
+
+  useEffect(() => {
+    let cancelled = false
+    getCredits()
+      .then((bal) => {
+        if (!cancelled && bal?.creditsRemaining != null) {
+          setCreditsRemaining(bal.creditsRemaining)
+        }
+      })
+      .catch(() => {})
+    const onChange = (e) => {
+      if (e.detail?.creditsRemaining != null) {
+        setCreditsRemaining(e.detail.creditsRemaining)
+      }
+    }
+    window.addEventListener(CREDITS_CHANGE_EVENT, onChange)
+    return () => {
+      cancelled = true
+      window.removeEventListener(CREDITS_CHANGE_EVENT, onChange)
+    }
+  }, [])
 
   const handleLogout = async () => {
     try {
@@ -95,6 +118,16 @@ export default function Topbar({ title }) {
         </button>
 
         <div className="flex shrink-0 items-center gap-2">
+          <Link
+            to="/billing"
+            className="hidden items-center gap-1.5 rounded-xl border border-border-default bg-surface px-3 py-2 font-mono text-sm font-semibold text-text-primary transition hover:border-accent-blue/40 sm:inline-flex"
+            title="Credits remaining"
+          >
+            <span className="text-accent-blue" aria-hidden>
+              ◆
+            </span>
+            {creditsRemaining == null ? '…' : creditsRemaining}
+          </Link>
           <button
             type="button"
             onClick={() => setSearchOpen(true)}

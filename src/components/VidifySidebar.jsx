@@ -1,5 +1,10 @@
+import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAppChrome } from '../utils/appChrome'
+import {
+  CREDITS_CHANGE_EVENT,
+  getCredits,
+} from '../utils/credits.js'
 
 const NAV_SECTIONS = [
   {
@@ -8,7 +13,7 @@ const NAV_SECTIONS = [
       { to: '/dashboard', label: 'Dashboard', icon: '◎' },
       { to: '/image-gen', label: 'AI Image Gen', icon: '🖼' },
       { to: '/create', label: 'Create Video', icon: '✦' },
-      { to: '/library', label: 'My Videos', icon: '▤', badge: '18' },
+      { to: '/library', label: 'Library', icon: '▤' },
       { to: '/templates', label: 'Templates', icon: '⧉' },
     ],
   },
@@ -66,6 +71,36 @@ export default function VidifySidebar() {
   const { pathname } = useLocation()
   const { collapsed, theme, toggleCollapsed, toggleTheme } = useAppChrome()
   const sidebarW = collapsed ? 'w-[72px]' : 'w-[260px]'
+  const [remaining, setRemaining] = useState(null)
+  const [total, setTotal] = useState(null)
+
+  useEffect(() => {
+    let cancelled = false
+    getCredits()
+      .then((bal) => {
+        if (cancelled || !bal) return
+        setRemaining(bal.creditsRemaining)
+        setTotal(bal.creditsTotal)
+      })
+      .catch(() => {})
+    const onChange = (e) => {
+      const d = e.detail
+      if (d?.creditsRemaining != null) setRemaining(d.creditsRemaining)
+      if (d?.creditsTotal != null) setTotal(d.creditsTotal)
+    }
+    window.addEventListener(CREDITS_CHANGE_EVENT, onChange)
+    return () => {
+      cancelled = true
+      window.removeEventListener(CREDITS_CHANGE_EVENT, onChange)
+    }
+  }, [])
+
+  const rem = remaining ?? '—'
+  const tot = total ?? '—'
+  const pct =
+    typeof remaining === 'number' && typeof total === 'number' && total > 0
+      ? Math.min(100, Math.round((remaining / total) * 100))
+      : 0
 
   return (
     <aside
@@ -101,8 +136,10 @@ export default function VidifySidebar() {
       </nav>
 
       <div className="mt-auto space-y-3 border-t border-border p-3">
-        <div
-          className={`rounded-xl border border-border-default bg-surface ${
+        <Link
+          to="/billing"
+          title="Billing & credits"
+          className={`block rounded-xl border border-border-default bg-surface transition hover:border-accent-blue/40 ${
             collapsed ? 'px-2 py-2 text-center' : 'p-3'
           }`}
         >
@@ -110,28 +147,30 @@ export default function VidifySidebar() {
             <>
               <div className="mb-2 flex items-center justify-between text-xs">
                 <span className="text-text-secondary">Credits</span>
-                <span className="font-mono font-semibold text-text-primary">42</span>
+                <span className="font-mono font-semibold text-text-primary">{rem}</span>
               </div>
               <div className="h-1.5 overflow-hidden rounded-full bg-elevated">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-accent-blue to-accent-violet"
-                  style={{ width: '21%' }}
+                  className="h-full rounded-full bg-gradient-to-r from-accent-blue to-accent-violet transition-all"
+                  style={{ width: `${pct}%` }}
                 />
               </div>
-              <p className="mt-1 text-xs text-text-tertiary">42 / 200</p>
+              <p className="mt-1 text-xs text-text-tertiary">
+                {rem} / {tot}
+              </p>
             </>
           ) : (
             <>
-              <p className="font-mono text-sm font-bold text-text-primary">42</p>
+              <p className="font-mono text-sm font-bold text-text-primary">{rem}</p>
               <div className="mx-auto mt-1 h-8 w-1 overflow-hidden rounded-full bg-elevated">
                 <div
-                  className="w-full bg-gradient-to-b from-accent-blue to-accent-violet"
-                  style={{ height: '21%' }}
+                  className="w-full bg-gradient-to-b from-accent-blue to-accent-violet transition-all"
+                  style={{ height: `${pct}%` }}
                 />
               </div>
             </>
           )}
-        </div>
+        </Link>
 
         <div className={`flex gap-2 ${collapsed ? 'flex-col' : ''}`}>
           <button

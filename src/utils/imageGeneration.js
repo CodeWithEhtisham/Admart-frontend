@@ -4,7 +4,7 @@ import api from './api'
 
 export const IMAGE_CAPABILITIES = [
   { id: 'textToImage', label: 'Text to image', needsPrompt: true, minImages: 0 },
-  { id: 'edit', label: 'Edit', needsPrompt: true, minImages: 1 },
+  { id: 'edit', label: 'Image to image', needsPrompt: true, minImages: 1 },
   { id: 'multiEdit', label: 'Multi-edit', needsPrompt: true, minImages: 2 },
   { id: 'upscale', label: 'Upscale', needsPrompt: false, minImages: 1 },
   { id: 'removeBackground', label: 'Remove BG', needsPrompt: false, minImages: 1 },
@@ -131,7 +131,40 @@ export function fieldVisible(field, capability, family) {
   if (field === 'seed') {
     return ['textToImage', 'edit', 'multiEdit'].includes(capability)
   }
-  return !!matrix[field]?.[capability] || !!matrix[field]
+
+  const entry = matrix[field]
+  if (entry == null) return false
+  // Boolean entries (guidance / ideogram / opts) already encode capability+family
+  if (typeof entry === 'boolean') return entry
+  return !!entry[capability]
+}
+
+/**
+ * Expand a short text-to-image prompt with composition / lighting cues.
+ * Keeps original intent; caps at MAX_PROMPT_LENGTH.
+ */
+export function enhanceImagePrompt(raw) {
+  const base = String(raw || '').trim()
+  if (!base) return ''
+
+  const markers = ['soft studio lighting', 'sharp focus', 'professional photography']
+  if (markers.every((m) => base.toLowerCase().includes(m))) {
+    return base.slice(0, MAX_PROMPT_LENGTH)
+  }
+
+  const extras = [
+    'professional photography',
+    'soft studio lighting',
+    'sharp focus',
+    'clean composition',
+    'high detail',
+    'natural color grading',
+  ]
+  const missing = extras.filter((e) => !base.toLowerCase().includes(e.toLowerCase()))
+  const enhanced = missing.length
+    ? `${base.replace(/[.,\s]+$/, '')}, ${missing.join(', ')}`
+    : base
+  return enhanced.slice(0, MAX_PROMPT_LENGTH)
 }
 
 export function canGenerate({ capability, prompt, imageUrls }) {
@@ -176,21 +209,50 @@ export function sourceRemoteUrl(img) {
   return null
 }
 
+/** Friendlier copy for fal / OpenAI content-safety blocks. */
+export function formatGenerationError(raw) {
+  const text = String(raw || '').trim()
+  if (!text) return 'Generation failed. Adjust settings and try again.'
+
+  const lower = text.toLowerCase()
+  const isSafety =
+    lower.includes('content checker') ||
+    lower.includes('flagged') ||
+    lower.includes('safety') ||
+    lower.includes('nsfw') ||
+    lower.includes('moderat') ||
+    lower.includes('policy') ||
+    lower.includes('sensitive')
+
+  if (isSafety) {
+    return (
+      'This prompt or source image was blocked by the model’s content safety filter. ' +
+      'Try a clearer, non-sensitive description (avoid violence, adult content, or real-person deepfakes), ' +
+      'or use a different model such as Flux Dev / Nano Banana 2.'
+    )
+  }
+
+  return text
+}
+
 export function imageApiError(err) {
   const status = err?.response?.status
   const data = err?.response?.data
   const message =
-    data?.message || data?.detail || (typeof data === 'string' ? data : null) || err?.message
+    data?.message || data?.detail || data?.error || (typeof data === 'string' ? data : null) || err?.message
 
   if (status === 402 || data?.code === 'INSUFFICIENT_CREDITS') {
-    return 'Insufficient credits. Buy more on Billing, then try again.'
+    const left = data?.creditsRemaining
+    return left != null
+      ? `Insufficient credits (${left} remaining). Buy more on Billing.`
+      : 'Insufficient credits. Buy more on Billing, then try again.'
   }
   if (status === 401) return 'Session expired. Please sign in again.'
   if (status === 404) return 'Project or job not found. Select a project and try again.'
   if (status === 413) return 'File too large. Max 15 MB per image.'
   if (status === 429) return 'Too many requests. Wait a moment and retry.'
   if (status === 502 || status === 503) return 'Image service is temporarily unavailable.'
-  return message || 'Something went wrong. Try again.'
+  return formatGenerationError(message)
 }
 
 function sleep(ms) {
@@ -233,15 +295,57 @@ export async function getImageJob(projectId, jobId) {
  * GET /api/projects/:projectId/images/jobs?limit=
  * Optional — returns [] if endpoint missing.
  */
-export async function listImageJobs(projectId, { limit = 20 } = {}) {
+export async function listImageJobs(projectId, { limit = 50 } = {}) {
   try {
     const { data } = await api.get(`/api/projects/${projectId}/images/jobs`, {
       params: { limit },
     })
-    return data?.items ?? data ?? []
+    if (Array.isArray(data)) return data
+    if (Array.isArray(data?.items)) return data.items
+    if (Array.isArray(data?.results)) return data.results
+    if (Array.isArray(data?.jobs)) return data.jobs
+    return []
   } catch {
     return []
   }
+}
+
+/** Flatten succeeded jobs into gallery cards (newest first). */
+export function flattenJobImages(jobs) {
+  if (!Array.isArray(jobs)) return []
+  const items = []
+  for (const job of jobs) {
+    if (!job || (job.status && job.status !== 'succeeded')) continue
+    const images = job.images || []
+    for (let i = 0; i < images.length; i++) {
+      const img = images[i]
+      const url = img?.url
+      if (!url) continue
+      items.push({
+        ...img,
+        url,
+        jobId: job.id,
+        capability: job.capability,
+        model: job.model,
+        _prompt: job.prompt,
+        _transparent: job.capability === 'removeBackground',
+        createdAt: job.createdAt || job.updatedAt,
+        _key: `${job.id || 'job'}_${i}_${url}`,
+      })
+    }
+  }
+  return items
+}
+
+/**
+ * POST /api/projects/:projectId/images/jobs/:jobId/cancel
+ * Best-effort; returns updated job or null if endpoint missing.
+ */
+export async function cancelImageJob(projectId, jobId) {
+  const { data } = await api.post(
+    `/api/projects/${projectId}/images/jobs/${jobId}/cancel`,
+  )
+  return data
 }
 
 /**

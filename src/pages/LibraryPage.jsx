@@ -1,111 +1,21 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
-
-const MOCK_VIDEOS = [
-  {
-    id: '1',
-    title: 'Summer Product Launch Campaign',
-    status: 'published',
-    platforms: ['T', 'Y'],
-    duration: '0:30',
-    views: '12.4K',
-    date: '2h ago',
-  },
-  {
-    id: '2',
-    title: 'Brand Story 2024 — Origin',
-    status: 'generating',
-    platforms: ['I'],
-    duration: '1:00',
-    views: null,
-    date: '5m ago',
-  },
-  {
-    id: '3',
-    title: 'Tutorial: Getting Started in 60s',
-    status: 'ready',
-    platforms: ['Y'],
-    duration: '0:15',
-    views: null,
-    date: 'Yesterday',
-  },
-  {
-    id: '4',
-    title: 'Product Testimonial — Happy Customer',
-    status: 'scheduled',
-    platforms: ['T', 'F'],
-    duration: '0:45',
-    views: null,
-    date: '2d ago',
-  },
-  {
-    id: '5',
-    title: 'Q4 Campaign Ad — Retry',
-    status: 'failed',
-    platforms: ['I'],
-    duration: '0:30',
-    views: null,
-    date: '3d ago',
-  },
-  {
-    id: '6',
-    title: 'Holiday Promo Video',
-    status: 'ready',
-    platforms: ['T', 'Y', 'I'],
-    duration: '0:30',
-    views: null,
-    date: '4d ago',
-  },
-  {
-    id: '7',
-    title: 'New Product Reveal — Teasure',
-    status: 'published',
-    platforms: ['T', 'Y', 'I', 'F'],
-    duration: '0:20',
-    views: '8.1K',
-    date: '5d ago',
-  },
-  {
-    id: '8',
-    title: 'Behind the Scenes Look',
-    status: 'published',
-    platforms: ['I'],
-    duration: '0:45',
-    views: '3.2K',
-    date: '1w ago',
-  },
-  {
-    id: '9',
-    title: 'Customer Success Story #1',
-    status: 'published',
-    platforms: ['Y', 'F'],
-    duration: '2:00',
-    views: '5.7K',
-    date: '1w ago',
-  },
-]
-
-const PLATFORM_DOT = {
-  T: 'bg-tiktok',
-  Y: 'bg-youtube',
-  I: 'bg-instagram',
-  F: 'bg-facebook',
-}
-
-function parseDurationMmSs(s) {
-  const parts = s.split(':').map(Number)
-  if (parts.length !== 2 || parts.some(Number.isNaN)) return 0
-  return parts[0] * 60 + parts[1]
-}
-
-function parseViews(v) {
-  if (!v) return 0
-  const n = parseFloat(v.replace('K', ''))
-  if (Number.isNaN(n)) return 0
-  return v.includes('K') ? n * 1000 : n
-}
+import {
+  LIBRARY_CHANGE_EVENT,
+  LIBRARY_TABS,
+  canCancelLibraryAsset,
+  cancelLibraryAsset,
+  deleteLibraryAsset,
+  formatDuration,
+  formatLibraryDate,
+  listLibraryAssets,
+} from '../utils/library.js'
+import {
+  PROJECT_CHANGE_EVENT,
+  getCachedActiveProject,
+} from '../utils/projects'
 
 const STATUS_STYLES = {
   published: 'border-success/30 bg-success/10 text-success',
@@ -124,16 +34,111 @@ function SearchIcon({ className }) {
   )
 }
 
+function AssetThumb({ asset }) {
+  if (asset.status === 'generating') {
+    return (
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-elevated">
+        <div className="h-9 w-9 animate-spin rounded-full border-[3px] border-accent-violet/20 border-t-accent-violet" />
+        <p className="mt-2 text-[11px] text-text-tertiary">Generating…</p>
+      </div>
+    )
+  }
+  if (asset.status === 'failed') {
+    return (
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-error/10 px-3 text-center">
+        <p className="text-xs font-semibold text-error">Failed</p>
+        <p className="mt-1 line-clamp-2 text-[11px] text-text-muted">{asset.title}</p>
+      </div>
+    )
+  }
+  if (asset.thumbnailUrl) {
+    return (
+      <img
+        src={asset.thumbnailUrl}
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+    )
+  }
+  return <div className="absolute inset-0 gradient-bg opacity-80" />
+}
+
 export default function LibraryPage() {
   const navigate = useNavigate()
+  const [tab, setTab] = useState('all')
+  const [items, setItems] = useState([])
+  const [nextCursor, setNextCursor] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [error, setError] = useState('')
+  const [projectId, setProjectId] = useState(() => getCachedActiveProject()?.id || null)
   const [selectedIds, setSelectedIds] = useState(() => new Set())
   const [viewMode, setViewMode] = useState('grid')
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
-  const [typeFilter, setTypeFilter] = useState('all')
-  const [platformFilter, setPlatformFilter] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
   const [activeMenu, setActiveMenu] = useState(null)
+  const [cancellingId, setCancellingId] = useState(null)
+  const [deleting, setDeleting] = useState(false)
+
+  const load = useCallback(
+    async ({ append = false, cursor } = {}) => {
+      if (append) setLoadingMore(true)
+      else setLoading(true)
+      setError('')
+      try {
+        const result = await listLibraryAssets(tab, {
+          projectId: getCachedActiveProject()?.id,
+          limit: 50,
+          cursor: append ? cursor : undefined,
+        })
+        setProjectId(result.projectId)
+        setNextCursor(result.nextCursor)
+        setItems((prev) => (append ? [...prev, ...result.items] : result.items))
+      } catch (err) {
+        setError(
+          err?.response?.data?.message ||
+            err?.response?.data?.error ||
+            err?.message ||
+            'Failed to load library.',
+        )
+        if (!append) setItems([])
+        setNextCursor(null)
+      } finally {
+        setLoading(false)
+        setLoadingMore(false)
+      }
+    },
+    [tab],
+  )
+
+  useEffect(() => {
+    clearSelection()
+    load()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reload on tab only
+  }, [tab, load])
+
+  useEffect(() => {
+    const onProject = () => {
+      setProjectId(getCachedActiveProject()?.id || null)
+      load()
+    }
+    const onLibrary = () => load()
+    window.addEventListener(PROJECT_CHANGE_EVENT, onProject)
+    window.addEventListener(LIBRARY_CHANGE_EVENT, onLibrary)
+    return () => {
+      window.removeEventListener(PROJECT_CHANGE_EVENT, onProject)
+      window.removeEventListener(LIBRARY_CHANGE_EVENT, onLibrary)
+    }
+  }, [load])
+
+  // Poll while any generating items so cards flip to ready/failed
+  useEffect(() => {
+    const hasGenerating = items.some((i) => i.status === 'generating')
+    if (!hasGenerating) return undefined
+    const id = window.setInterval(() => load(), 4000)
+    return () => window.clearInterval(id)
+  }, [items, load])
 
   useEffect(() => {
     const onDoc = (e) => {
@@ -144,29 +149,34 @@ export default function LibraryPage() {
     return () => document.removeEventListener('mousedown', onDoc)
   }, [activeMenu])
 
-  const filteredVideos = useMemo(() => {
-    let list = [...MOCK_VIDEOS]
+  const filtered = useMemo(() => {
+    let list = [...items]
     if (statusFilter !== 'all') {
       list = list.filter((v) => v.status === statusFilter)
     }
-    if (platformFilter !== 'all') {
-      const code = platformFilter
-      list = list.filter((v) => v.platforms.includes(code))
-    }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase()
-      list = list.filter((v) => v.title.toLowerCase().includes(q))
-    }
-    if (typeFilter !== 'all') {
-      if (typeFilter === 'short') list = list.filter((v) => parseDurationMmSs(v.duration) <= 45)
-      if (typeFilter === 'long') list = list.filter((v) => parseDurationMmSs(v.duration) > 45)
+      list = list.filter(
+        (v) =>
+          v.title.toLowerCase().includes(q) ||
+          (v.prompt && v.prompt.toLowerCase().includes(q)),
+      )
     }
     if (sortBy === 'az') list.sort((a, b) => a.title.localeCompare(b.title))
-    if (sortBy === 'newest') list.sort((a, b) => Number(a.id) - Number(b.id))
-    if (sortBy === 'oldest') list.sort((a, b) => Number(b.id) - Number(a.id))
-    if (sortBy === 'views') list.sort((a, b) => parseViews(b.views) - parseViews(a.views))
+    if (sortBy === 'newest') {
+      list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    }
+    if (sortBy === 'oldest') {
+      list.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+    }
     return list
-  }, [searchQuery, statusFilter, typeFilter, platformFilter, sortBy])
+  }, [items, searchQuery, statusFilter, sortBy])
+
+  const counts = useMemo(() => {
+    const videos = items.filter((i) => i.mediaType === 'video').length
+    const images = items.filter((i) => i.mediaType === 'image').length
+    return { all: items.length, video: videos, image: images }
+  }, [items])
 
   const toggleSelect = (id) => {
     setSelectedIds((prev) => {
@@ -178,42 +188,156 @@ export default function LibraryPage() {
   }
 
   const selectAllVisible = () => {
-    setSelectedIds(new Set(filteredVideos.map((v) => v.id)))
+    setSelectedIds(new Set(filtered.map((v) => v.id)))
   }
 
-  const clearSelection = () => setSelectedIds(new Set())
+  function clearSelection() {
+    setSelectedIds(new Set())
+  }
+
+  const openAsset = (asset) => {
+    if (asset.status === 'generating' || asset.status === 'failed') return
+    if (asset.mediaType === 'image') {
+      if (!asset.sourceUrl) return
+      navigate('/publish', {
+        state: {
+          type: 'image',
+          imageUrl: asset.sourceUrl,
+          title: asset.title,
+          prompt: asset.prompt,
+          jobId: asset.jobId,
+          assetId: asset.id,
+        },
+      })
+      return
+    }
+    navigate('/result')
+  }
+
+  const handleCancel = async (asset) => {
+    if (!canCancelLibraryAsset(asset)) return
+    setCancellingId(asset.id)
+    setActiveMenu(null)
+    try {
+      await cancelLibraryAsset(asset, projectId)
+      await load()
+    } catch (err) {
+      setError(err?.response?.data?.message || err?.message || 'Cancel failed.')
+    } finally {
+      setCancellingId(null)
+    }
+  }
+
+  const handleDeleteOne = async (asset) => {
+    setActiveMenu(null)
+    setDeleting(true)
+    setError('')
+    try {
+      await deleteLibraryAsset(asset.id, projectId)
+      setItems((prev) => prev.filter((i) => i.id !== asset.id))
+      setSelectedIds((prev) => {
+        const next = new Set(prev)
+        next.delete(asset.id)
+        return next
+      })
+    } catch (err) {
+      setError(err?.response?.data?.message || err?.message || 'Delete failed.')
+    } finally {
+      setDeleting(false)
+    }
+  }
+
+  const handleDeleteSelected = async () => {
+    if (!selectedIds.size) return
+    setDeleting(true)
+    setError('')
+    const ids = [...selectedIds]
+    try {
+      await Promise.all(ids.map((id) => deleteLibraryAsset(id, projectId)))
+      setItems((prev) => prev.filter((i) => !selectedIds.has(i.id)))
+      clearSelection()
+    } catch (err) {
+      setError(err?.response?.data?.message || err?.message || 'Delete failed.')
+      await load()
+    } finally {
+      setDeleting(false)
+    }
+  }
 
   const nSelected = selectedIds.size
-  const totalCount = 18
+  const tabLabel = LIBRARY_TABS.find((t) => t.id === tab)?.label || 'All'
+
+  const menuActions = (asset) => (
+    <div className="absolute right-0 z-30 mt-1 w-44 overflow-hidden rounded-lg border border-border-default bg-panel py-1 text-sm shadow-xl">
+      {asset.status === 'ready' || asset.status === 'published' ? (
+        <button
+          type="button"
+          className="block w-full px-3 py-2 text-left hover:bg-elevated"
+          onClick={(e) => {
+            e.stopPropagation()
+            setActiveMenu(null)
+            openAsset(asset)
+          }}
+        >
+          {asset.mediaType === 'image' ? 'Publish' : 'View'}
+        </button>
+      ) : null}
+      {canCancelLibraryAsset(asset) ? (
+        <button
+          type="button"
+          disabled={cancellingId === asset.id}
+          className="block w-full px-3 py-2 text-left text-warning hover:bg-warning/10 disabled:opacity-50"
+          onClick={(e) => {
+            e.stopPropagation()
+            handleCancel(asset)
+          }}
+        >
+          {cancellingId === asset.id ? 'Cancelling…' : 'Cancel'}
+        </button>
+      ) : null}
+      {asset.sourceUrl && asset.status === 'ready' ? (
+        <a
+          href={asset.sourceUrl}
+          download
+          target="_blank"
+          rel="noreferrer"
+          className="block px-3 py-2 text-text-secondary hover:bg-elevated hover:text-text-primary"
+          onClick={(e) => e.stopPropagation()}
+        >
+          Download
+        </a>
+      ) : null}
+      <div className="my-1 h-px bg-border" />
+      <button
+        type="button"
+        disabled={deleting}
+        className="block w-full px-3 py-2 text-left text-error hover:bg-error/10 disabled:opacity-50"
+        onClick={(e) => {
+          e.stopPropagation()
+          handleDeleteOne(asset)
+        }}
+      >
+        Delete
+      </button>
+    </div>
+  )
 
   return (
     <AppLayout>
       <div className="flex min-h-screen flex-col">
-        <Topbar title="My Videos" />
+        <Topbar title="Library" />
 
         <div className="relative flex-1">
           {nSelected > 0 && (
             <div className="sticky top-0 z-20 flex items-center gap-3 border-b-2 border-accent-blue bg-elevated px-6 py-3 shadow-lg shadow-accent-blue/10">
-              <span className="text-sm font-medium text-text-primary">
-                {nSelected} selected
-              </span>
+              <span className="text-sm font-medium text-text-primary">{nSelected} selected</span>
               <button
                 type="button"
-                className="rounded-lg bg-success/15 px-3 py-1.5 text-sm font-semibold text-success transition hover:bg-success/25"
+                disabled={deleting}
+                onClick={handleDeleteSelected}
+                className="rounded-lg bg-error/10 px-3 py-1.5 text-sm font-semibold text-error transition hover:bg-error/20 disabled:opacity-50"
               >
-                Publish All
-              </button>
-              <button
-                type="button"
-                className="rounded-lg bg-accent-blue/15 px-3 py-1.5 text-sm font-semibold text-accent-blue transition hover:bg-accent-blue/25"
-              >
-                Download All
-              </button>
-              <button
-                type="button"
-                className="rounded-lg bg-error/10 px-3 py-1.5 text-sm font-semibold text-error transition hover:bg-error/20"
-              >
-                Delete
+                {deleting ? 'Deleting…' : 'Delete'}
               </button>
               <button
                 type="button"
@@ -228,14 +352,54 @@ export default function LibraryPage() {
 
           <div className="space-y-4 p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-xs text-text-muted">{totalCount} videos</p>
-              <Link
-                to="/create"
-                className="inline-flex items-center gap-2 rounded-lg gradient-bg px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/20"
+              <div
+                className="inline-flex rounded-lg border border-border-default bg-input p-1"
+                role="tablist"
+                aria-label="Media type"
               >
-                ✦ New Video
-              </Link>
+                {LIBRARY_TABS.map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={tab === t.id}
+                    onClick={() => setTab(t.id)}
+                    className={`rounded-md px-3 py-1.5 text-xs font-semibold transition ${
+                      tab === t.id
+                        ? 'bg-elevated text-text-primary shadow-sm'
+                        : 'text-text-muted hover:text-text-primary'
+                    }`}
+                  >
+                    {t.label}
+                    {!loading && tab === t.id ? (
+                      <span className="ml-1.5 font-mono text-text-tertiary">{filtered.length}</span>
+                    ) : null}
+                  </button>
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => load()}
+                  className="rounded-lg border border-border-default px-3 py-2 text-sm text-text-secondary hover:text-text-primary"
+                >
+                  Refresh
+                </button>
+                <Link
+                  to="/image-gen"
+                  className="inline-flex items-center gap-2 rounded-lg border border-border-default bg-elevated px-4 py-2 text-sm font-semibold text-text-primary transition hover:border-accent-blue/40"
+                >
+                  New Image
+                </Link>
+                <Link
+                  to="/create"
+                  className="inline-flex items-center gap-2 rounded-lg gradient-bg px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/20"
+                >
+                  ✦ New Video
+                </Link>
+              </div>
             </div>
+
             <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
               <div className="relative min-w-[200px] flex-1">
                 <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
@@ -243,7 +407,7 @@ export default function LibraryPage() {
                   type="search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search videos..."
+                  placeholder="Search library…"
                   className="w-full rounded-lg border border-border-default bg-input py-2 pl-10 pr-3 text-sm outline-none focus:border-accent-blue/50"
                 />
               </div>
@@ -253,31 +417,11 @@ export default function LibraryPage() {
                 className="rounded-lg border border-border-default bg-input px-3 py-2 text-sm outline-none focus:border-accent-blue/50"
               >
                 <option value="all">All statuses</option>
-                <option value="published">Published</option>
                 <option value="ready">Ready</option>
-                <option value="scheduled">Scheduled</option>
                 <option value="generating">Generating</option>
                 <option value="failed">Failed</option>
-              </select>
-              <select
-                value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value)}
-                className="rounded-lg border border-border-default bg-input px-3 py-2 text-sm outline-none focus:border-accent-blue/50"
-              >
-                <option value="all">All types</option>
-                <option value="short">Short (≤0:45)</option>
-                <option value="long">Long (&gt;0:45)</option>
-              </select>
-              <select
-                value={platformFilter}
-                onChange={(e) => setPlatformFilter(e.target.value)}
-                className="rounded-lg border border-border-default bg-input px-3 py-2 text-sm outline-none focus:border-accent-blue/50"
-              >
-                <option value="all">All platforms</option>
-                <option value="T">TikTok</option>
-                <option value="Y">YouTube</option>
-                <option value="I">Instagram</option>
-                <option value="F">Facebook</option>
+                <option value="published">Published</option>
+                <option value="scheduled">Scheduled</option>
               </select>
               <select
                 value={sortBy}
@@ -286,7 +430,6 @@ export default function LibraryPage() {
               >
                 <option value="newest">Newest</option>
                 <option value="oldest">Oldest</option>
-                <option value="views">Most Views</option>
                 <option value="az">A–Z</option>
               </select>
               <div className="ml-auto flex rounded-lg border border-border-default bg-input p-1">
@@ -309,38 +452,106 @@ export default function LibraryPage() {
 
             <div className="flex items-center justify-between">
               <p className="text-sm text-text-secondary">
-                All Videos — <span className="font-mono text-text-primary">{filteredVideos.length}</span> results
+                {tabLabel} —{' '}
+                <span className="font-mono text-text-primary">{loading ? '…' : filtered.length}</span> results
+                {tab === 'all' && !loading ? (
+                  <span className="ml-2 text-text-muted">
+                    ({counts.video} videos · {counts.image} images)
+                  </span>
+                ) : null}
               </p>
-              <button type="button" onClick={selectAllVisible} className="text-sm font-medium text-accent-blue hover:underline">
+              <button
+                type="button"
+                onClick={selectAllVisible}
+                className="text-sm font-medium text-accent-blue hover:underline"
+                disabled={!filtered.length}
+              >
                 Select all
               </button>
             </div>
 
-            {viewMode === 'grid' ? (
+            {error ? (
+              <div className="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+                {error}
+                <button type="button" onClick={() => load()} className="ml-3 underline">
+                  Retry
+                </button>
+              </div>
+            ) : null}
+
+            {!projectId && !loading ? (
+              <div className="rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-warning">
+                No active project.{' '}
+                <Link to="/onboarding" className="underline">
+                  Create one
+                </Link>{' '}
+                to use the library.
+              </div>
+            ) : null}
+
+            {loading ? (
+              <p className="py-16 text-center text-sm text-text-muted">Loading library…</p>
+            ) : filtered.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-border-default px-6 py-16 text-center">
+                <p className="font-heading text-lg text-text-primary">Nothing here yet</p>
+                <p className="mt-2 text-sm text-text-muted">
+                  {tab === 'image'
+                    ? 'Generate an image in Image Studio — it will show up here.'
+                    : tab === 'video'
+                      ? 'Create a video and it will appear in this tab.'
+                      : 'Create a video or image to fill your library.'}
+                </p>
+                <div className="mt-6 flex justify-center gap-3">
+                  {(tab === 'all' || tab === 'image') && (
+                    <Link
+                      to="/image-gen"
+                      className="rounded-lg border border-border-default px-4 py-2 text-sm font-semibold"
+                    >
+                      Image Studio
+                    </Link>
+                  )}
+                  {(tab === 'all' || tab === 'video') && (
+                    <Link
+                      to="/create"
+                      className="rounded-lg gradient-bg px-4 py-2 text-sm font-semibold text-white"
+                    >
+                      Create Video
+                    </Link>
+                  )}
+                </div>
+              </div>
+            ) : viewMode === 'grid' ? (
               <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                {filteredVideos.map((video) => {
-                  const selected = selectedIds.has(video.id)
+                {filtered.map((asset) => {
+                  const selected = selectedIds.has(asset.id)
+                  const duration = formatDuration(asset.durationSeconds)
+                  const clickable = asset.status === 'ready' || asset.status === 'published'
                   return (
                     <div
-                      key={video.id}
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => navigate('/result')}
+                      key={asset.id}
+                      role={clickable ? 'button' : 'article'}
+                      tabIndex={clickable ? 0 : undefined}
+                      onClick={() => clickable && openAsset(asset)}
                       onKeyDown={(e) => {
+                        if (!clickable) return
                         if (e.key === 'Enter' || e.key === ' ') {
                           e.preventDefault()
-                          navigate('/result')
+                          openAsset(asset)
                         }
                       }}
-                      className={`group relative cursor-pointer overflow-hidden rounded-xl border bg-surface transition ${
+                      className={`group relative overflow-hidden rounded-xl border bg-surface transition ${
+                        clickable ? 'cursor-pointer' : 'cursor-default'
+                      } ${
                         selected
                           ? 'border-accent-blue shadow-[0_0_0_1px_rgba(37,99,235,0.45)] shadow-accent-blue/20'
-                          : 'border-border hover:-translate-y-0.5 hover:border-border-default hover:shadow-lg'
-                      }`}
+                          : 'border-border hover:border-border-default hover:shadow-lg'
+                      } ${asset.status === 'failed' ? 'border-error/30' : ''}`}
                     >
-                      <div className="relative aspect-video overflow-hidden">
-                        <div className="absolute inset-0 gradient-bg opacity-80 transition group-hover:opacity-95" />
-                        <div className="absolute inset-0 bg-linear-to-t from-base via-base/30 to-transparent" />
+                      <div className="relative aspect-video overflow-hidden bg-elevated">
+                        <AssetThumb asset={asset} />
+                        {asset.status === 'ready' || asset.status === 'published' ? (
+                          <div className="absolute inset-0 bg-linear-to-t from-base via-base/30 to-transparent" />
+                        ) : null}
                         <label
                           onClick={(e) => e.stopPropagation()}
                           className={`absolute left-3 top-3 z-10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-white/20 bg-black/40 text-white backdrop-blur-sm transition ${
@@ -350,81 +561,64 @@ export default function LibraryPage() {
                           <input
                             type="checkbox"
                             checked={selected}
-                            onChange={() => toggleSelect(video.id)}
+                            onChange={() => toggleSelect(asset.id)}
                             className="h-4 w-4 accent-accent-blue"
                           />
                         </label>
+                        <span className="absolute bottom-3 left-3 rounded-md bg-black/70 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white backdrop-blur-sm">
+                          {asset.mediaType}
+                        </span>
                         <span
-                          className={`absolute right-3 top-3 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase ${STATUS_STYLES[video.status]}`}
+                          className={`absolute right-3 top-3 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase ${STATUS_STYLES[asset.status] || STATUS_STYLES.ready}`}
                         >
-                          {video.status}
+                          {asset.status}
                         </span>
-                        <div
-                          className="pointer-events-none absolute inset-0 m-auto flex h-14 w-14 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white opacity-0 backdrop-blur-md transition group-hover:opacity-100"
-                          aria-hidden
-                        >
-                          <svg className="ml-1 h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                            <path d="M8 5v14l11-7L8 5z" />
-                          </svg>
-                        </div>
-                        <span className="absolute bottom-3 right-3 rounded-md bg-black/70 px-2 py-0.5 font-mono text-[11px] text-white backdrop-blur-sm">
-                          {video.duration}
-                        </span>
+                        {canCancelLibraryAsset(asset) ? (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleCancel(asset)
+                            }}
+                            disabled={cancellingId === asset.id}
+                            className="absolute bottom-3 right-3 z-10 rounded-md bg-warning/90 px-2.5 py-1 text-[11px] font-semibold text-black disabled:opacity-50"
+                          >
+                            {cancellingId === asset.id ? '…' : 'Cancel'}
+                          </button>
+                        ) : null}
+                        {duration ? (
+                          <span className="absolute bottom-3 right-3 rounded-md bg-black/70 px-2 py-0.5 font-mono text-[11px] text-white backdrop-blur-sm">
+                            {duration}
+                          </span>
+                        ) : null}
                       </div>
                       <div className="space-y-2 p-4">
                         <div className="flex items-start justify-between gap-2">
-                          <p className="line-clamp-2 font-heading text-sm font-semibold leading-snug">{video.title}</p>
+                          <p className="line-clamp-2 font-heading text-sm font-semibold leading-snug">
+                            {asset.title}
+                          </p>
                           <div className="relative shrink-0" data-video-menu-root>
                             <button
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation()
-                                setActiveMenu((m) => (m === video.id ? null : video.id))
+                                setActiveMenu((m) => (m === asset.id ? null : asset.id))
                               }}
                               className="rounded-md p-1 text-text-muted transition hover:bg-elevated hover:text-text-primary"
                               aria-label="Open menu"
                             >
                               ···
                             </button>
-                            {activeMenu === video.id && (
-                              <div className="absolute right-0 z-30 mt-1 w-44 overflow-hidden rounded-lg border border-border-default bg-panel py-1 text-sm shadow-xl">
-                                <Link
-                                  to="/result"
-                                  className="block px-3 py-2 text-text-secondary hover:bg-elevated hover:text-text-primary"
-                                  onClick={() => setActiveMenu(null)}
-                                >
-                                  View
-                                </Link>
-                                <button type="button" className="block w-full px-3 py-2 text-left hover:bg-elevated">
-                                  Edit
-                                </button>
-                                <Link
-                                  to="/publish"
-                                  className="block px-3 py-2 text-text-secondary hover:bg-elevated hover:text-text-primary"
-                                  onClick={() => setActiveMenu(null)}
-                                >
-                                  Publish
-                                </Link>
-                                <button type="button" className="block w-full px-3 py-2 text-left hover:bg-elevated">
-                                  Download
-                                </button>
-                                <div className="my-1 h-px bg-border" />
-                                <button type="button" className="block w-full px-3 py-2 text-left text-error hover:bg-error/10">
-                                  Delete
-                                </button>
-                              </div>
-                            )}
+                            {activeMenu === asset.id ? menuActions(asset) : null}
                           </div>
                         </div>
                         <div className="flex flex-wrap items-center gap-2 text-xs text-text-muted">
-                          <span className="flex items-center gap-1">
-                            {video.platforms.map((p) => (
-                              <span key={p} className={`h-2 w-2 rounded-full ${PLATFORM_DOT[p]}`} title={p} />
-                            ))}
-                          </span>
-                          {video.views && <span>{video.views} views</span>}
-                          <span>·</span>
-                          <span>{video.date}</span>
+                          <span>{formatLibraryDate(asset.createdAt)}</span>
+                          {asset.width && asset.height ? (
+                            <span>
+                              · {asset.width}×{asset.height}
+                            </span>
+                          ) : null}
                         </div>
                       </div>
                     </div>
@@ -436,92 +630,66 @@ export default function LibraryPage() {
                 <table className="w-full border-collapse text-left text-sm">
                   <thead className="border-b border-border bg-elevated/60 text-xs uppercase tracking-wide text-text-tertiary">
                     <tr>
-                      <th className="px-4 py-3">Video</th>
+                      <th className="px-4 py-3">Asset</th>
+                      <th className="px-4 py-3">Type</th>
                       <th className="px-4 py-3">Status</th>
-                      <th className="px-4 py-3">Platforms</th>
-                      <th className="px-4 py-3">Views</th>
-                      <th className="px-4 py-3">Duration</th>
                       <th className="px-4 py-3">Date</th>
                       <th className="px-4 py-3 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredVideos.map((video) => {
-                      const selected = selectedIds.has(video.id)
+                    {filtered.map((asset) => {
+                      const selected = selectedIds.has(asset.id)
+                      const clickable = asset.status === 'ready' || asset.status === 'published'
                       return (
                         <tr
-                          key={video.id}
-                          onClick={() => navigate('/result')}
-                          className={`cursor-pointer border-b border-border transition hover:bg-elevated/40 ${selected ? 'bg-accent-blue/5' : ''}`}
+                          key={asset.id}
+                          onClick={() => clickable && openAsset(asset)}
+                          className={`border-b border-border transition hover:bg-elevated/40 ${
+                            clickable ? 'cursor-pointer' : ''
+                          } ${selected ? 'bg-accent-blue/5' : ''}`}
                         >
                           <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center gap-3">
                               <input
                                 type="checkbox"
                                 checked={selected}
-                                onChange={() => toggleSelect(video.id)}
+                                onChange={() => toggleSelect(asset.id)}
                                 className="accent-accent-blue"
                               />
-                              <div className="relative h-12 w-20 shrink-0 overflow-hidden rounded-lg border border-border-default">
-                                <div className="absolute inset-0 gradient-bg opacity-80" />
+                              <div className="relative h-12 w-20 shrink-0 overflow-hidden rounded-lg border border-border-default bg-elevated">
+                                <AssetThumb asset={asset} />
                               </div>
-                              <span className="font-medium text-text-primary">{video.title}</span>
+                              <span className="line-clamp-2 font-medium text-text-primary">
+                                {asset.title}
+                              </span>
                             </div>
                           </td>
+                          <td className="px-4 py-3 capitalize text-text-secondary">{asset.mediaType}</td>
                           <td className="px-4 py-3">
                             <span
-                              className={`inline-flex rounded-full border px-2 py-0.5 text-[11px] font-semibold capitalize ${STATUS_STYLES[video.status]}`}
+                              className={`inline-flex rounded-full border px-2 py-0.5 text-[11px] font-semibold capitalize ${STATUS_STYLES[asset.status] || STATUS_STYLES.ready}`}
                             >
-                              {video.status}
+                              {asset.status}
                             </span>
                           </td>
-                          <td className="px-4 py-3">
-                            <div className="flex gap-1">
-                              {video.platforms.map((p) => (
-                                <span key={p} className={`h-2 w-2 rounded-full ${PLATFORM_DOT[p]}`} />
-                              ))}
-                            </div>
+                          <td className="px-4 py-3 text-text-muted">
+                            {formatLibraryDate(asset.createdAt)}
                           </td>
-                          <td className="px-4 py-3 text-text-secondary">{video.views ?? '—'}</td>
-                          <td className="px-4 py-3 font-mono text-text-secondary">{video.duration}</td>
-                          <td className="px-4 py-3 text-text-muted">{video.date}</td>
                           <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                             <div className="relative inline-block text-left" data-video-menu-root>
                               <button
                                 type="button"
-                                onClick={() => setActiveMenu((m) => (m === `list-${video.id}` ? null : `list-${video.id}`))}
+                                onClick={() =>
+                                  setActiveMenu((m) =>
+                                    m === `list-${asset.id}` ? null : `list-${asset.id}`,
+                                  )
+                                }
                                 className="rounded-md p-1 text-text-muted hover:bg-elevated hover:text-text-primary"
                               >
                                 ···
                               </button>
-                              {activeMenu === `list-${video.id}` && (
-                                <div className="absolute right-0 z-30 mt-1 w-44 overflow-hidden rounded-lg border border-border-default bg-panel py-1 text-sm shadow-xl">
-                                  <Link
-                                    to="/result"
-                                    className="block px-3 py-2 text-text-secondary hover:bg-elevated hover:text-text-primary"
-                                    onClick={() => setActiveMenu(null)}
-                                  >
-                                    View
-                                  </Link>
-                                  <button type="button" className="block w-full px-3 py-2 text-left hover:bg-elevated">
-                                    Edit
-                                  </button>
-                                  <Link
-                                    to="/publish"
-                                    className="block px-3 py-2 text-text-secondary hover:bg-elevated hover:text-text-primary"
-                                    onClick={() => setActiveMenu(null)}
-                                  >
-                                    Publish
-                                  </Link>
-                                  <button type="button" className="block w-full px-3 py-2 text-left hover:bg-elevated">
-                                    Download
-                                  </button>
-                                  <div className="my-1 h-px bg-border" />
-                                  <button type="button" className="block w-full px-3 py-2 text-left text-error hover:bg-error/10">
-                                    Delete
-                                  </button>
-                                </div>
-                              )}
+                              {activeMenu === `list-${asset.id}` ? menuActions(asset) : null}
                             </div>
                           </td>
                         </tr>
@@ -532,27 +700,18 @@ export default function LibraryPage() {
               </div>
             )}
 
-            <nav className="flex items-center justify-center gap-2 pt-4 text-sm text-text-secondary">
-              <button type="button" className="rounded-md px-2 py-1 hover:bg-elevated hover:text-text-primary">
-                ←
-              </button>
-              {[1, 2, 3].map((p) => (
+            {nextCursor ? (
+              <div className="flex justify-center pt-2">
                 <button
-                  key={p}
                   type="button"
-                  className={`h-8 w-8 rounded-md ${p === 1 ? 'bg-accent-blue text-white' : 'hover:bg-elevated hover:text-text-primary'}`}
+                  disabled={loadingMore}
+                  onClick={() => load({ append: true, cursor: nextCursor })}
+                  className="rounded-lg border border-border-default bg-elevated px-4 py-2 text-sm font-medium text-text-primary hover:border-accent-blue/40 disabled:opacity-50"
                 >
-                  {p}
+                  {loadingMore ? 'Loading…' : 'Load more'}
                 </button>
-              ))}
-              <span className="px-1">...</span>
-              <button type="button" className="h-8 w-8 rounded-md hover:bg-elevated hover:text-text-primary">
-                9
-              </button>
-              <button type="button" className="rounded-md px-2 py-1 hover:bg-elevated hover:text-text-primary">
-                →
-              </button>
-            </nav>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

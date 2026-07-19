@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 const PLATFORMS = [
   {
@@ -71,6 +71,14 @@ function Toggle({ checked, onChange, disabled }) {
 
 export default function PublishingPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const publishAsset = location.state || {}
+  const isImage = publishAsset.type === 'image' && Boolean(publishAsset.imageUrl)
+  const assetTitle =
+    publishAsset.title ||
+    (isImage ? 'Untitled image' : 'Summer Product Launch — Cinematic Showcase 2024')
+  const backTo = isImage ? '/image-gen' : '/result'
+
   const [scheduleMode, setScheduleMode] = useState('now')
   const [openAccordion, setOpenAccordion] = useState('tiktok')
   const [toggles, setToggles] = useState({
@@ -88,10 +96,10 @@ export default function PublishingPage() {
     if (!showToast) return
     const t = setTimeout(() => {
       setShowToast(false)
-      navigate('/dashboard')
+      navigate(isImage ? '/image-gen' : '/dashboard')
     }, 1800)
     return () => clearTimeout(t)
-  }, [showToast, navigate])
+  }, [showToast, navigate, isImage])
 
   const toggleAccordion = (id) => {
     setOpenAccordion((prev) => (prev === id ? '' : id))
@@ -106,39 +114,52 @@ export default function PublishingPage() {
     <div className="relative flex h-screen min-h-0 flex-col bg-base font-body text-text-primary">
       <header className="flex h-[60px] shrink-0 items-center gap-3 border-b border-border bg-panel px-4">
         <Link
-          to="/result"
+          to={backTo}
           className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm text-text-secondary transition hover:bg-elevated hover:text-text-primary"
         >
           <ChevronLeftIcon className="h-4 w-4" />
           Back
         </Link>
         <span className="h-5 w-px bg-border-default" aria-hidden />
-        <h1 className="font-heading text-base font-semibold tracking-tight">Publish Video</h1>
+        <h1 className="font-heading text-base font-semibold tracking-tight">
+          {isImage ? 'Publish Image' : 'Publish Video'}
+        </h1>
       </header>
 
       <div className="flex min-h-0 flex-1">
         <aside className="flex w-[360px] shrink-0 flex-col border-r border-border bg-panel">
           <div className="min-h-0 flex-1 space-y-6 overflow-y-auto p-5">
             <div className="overflow-hidden rounded-xl border border-border-default bg-surface shadow-lg">
-              <div className="relative aspect-video w-full">
-                <div className="absolute inset-0 gradient-bg" />
-                <div className="absolute inset-0 bg-linear-to-t from-base/90 via-transparent to-transparent" />
-                <button
-                  type="button"
-                  className="absolute left-1/2 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-white/15 text-white backdrop-blur-md"
-                  aria-label="Play preview"
-                >
-                  <svg className="ml-0.5 h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                    <path d="M8 5v14l11-7L8 5z" />
-                  </svg>
-                </button>
+              <div className={`relative w-full ${isImage ? 'aspect-square' : 'aspect-video'}`}>
+                {isImage ? (
+                  <img
+                    src={publishAsset.imageUrl}
+                    alt=""
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                ) : (
+                  <>
+                    <div className="absolute inset-0 gradient-bg" />
+                    <div className="absolute inset-0 bg-linear-to-t from-base/90 via-transparent to-transparent" />
+                    <button
+                      type="button"
+                      className="absolute left-1/2 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-white/15 text-white backdrop-blur-md"
+                      aria-label="Play preview"
+                    >
+                      <svg className="ml-0.5 h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                        <path d="M8 5v14l11-7L8 5z" />
+                      </svg>
+                    </button>
+                  </>
+                )}
               </div>
               <div className="space-y-2 p-4">
-                <p className="font-heading text-sm font-semibold leading-snug">
-                  Summer Product Launch — Cinematic Showcase 2024
-                </p>
+                <p className="font-heading text-sm font-semibold leading-snug">{assetTitle}</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {['0:15', '16:9', '1080p', '8.4MB'].map((c) => (
+                  {(isImage
+                    ? ['Image', publishAsset.capability || 'AI', 'Ready']
+                    : ['0:15', '16:9', '1080p', '8.4MB']
+                  ).map((c) => (
                     <span
                       key={c}
                       className="rounded-md border border-border-default bg-input px-2 py-0.5 font-mono text-[10px] text-text-secondary"
@@ -217,7 +238,9 @@ export default function PublishingPage() {
                   />
                   <span>
                     <span className="block text-sm font-medium text-text-primary">🚀 Publish Now</span>
-                    <span className="text-xs text-text-muted">Your video goes live as soon as publishing completes.</span>
+                    <span className="text-xs text-text-muted">
+                      Your {isImage ? 'image' : 'video'} goes live as soon as publishing completes.
+                    </span>
                   </span>
                 </label>
                 <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-transparent p-2 transition hover:border-border-default hover:bg-elevated/40">
@@ -460,7 +483,7 @@ export default function PublishingPage() {
               Confirm Publishing
             </h2>
             <p className="mt-2 text-sm text-text-secondary">
-              You are about to publish this video to the selected platforms. Captions and visibility settings will be
+              You are about to publish this {isImage ? 'image' : 'video'} to the selected platforms. Captions and visibility settings will be
               applied immediately.
             </p>
             <ul className="mt-4 space-y-2 rounded-xl border border-border-default bg-input p-3 text-sm">
