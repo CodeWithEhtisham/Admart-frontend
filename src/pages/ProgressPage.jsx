@@ -114,7 +114,7 @@ export default function ProgressPage() {
             <div className="relative h-[160px] w-[160px]">
               <svg className="-rotate-90" width="160" height="160" viewBox="0 0 160 160" aria-hidden>
                 <defs>
-                  <linearGradient id="vidifyRing" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <linearGradient id="admartRing" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#2563eb" />
                     <stop offset="100%" stopColor="#7c3aed" />
                   </linearGradient>
@@ -125,7 +125,7 @@ export default function ProgressPage() {
                   cy="80"
                   r={radius}
                   fill="none"
-                  stroke="url(#vidifyRing)"
+                  stroke="url(#admartRing)"
                   strokeWidth="10"
                   strokeLinecap="round"
                   strokeDasharray={circumference}

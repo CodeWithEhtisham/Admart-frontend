@@ -14,7 +14,7 @@ const INITIAL = {
   confirmPassword: '',
   aspect: '9:16',
   videoStyle: 'cinematic',
-  aiModel: 'vidify-v2',
+  aiModel: 'admart-v2',
   voiceover: 'neutral-en',
   autoCaptions: true,
   autoMusic: true,
@@ -28,7 +28,7 @@ const INITIAL = {
     creditEmail: true,
     creditPush: true,
   },
-  webhookUrl: 'https://api.example.com/hooks/vidify',
+  webhookUrl: 'https://api.example.com/hooks/admart',
   teamInviteEmail: '',
   teamInviteRole: 'editor',
 }
@@ -333,8 +333,8 @@ export default function SettingsPage() {
                           onChange={(e) => update({ aiModel: e.target.value })}
                           className="mt-1 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
                         >
-                          <option value="vidify-v2">Admart v2 (recommended)</option>
-                          <option value="vidify-v1">Admart v1</option>
+                          <option value="admart-v2">Admart v2 (recommended)</option>
+                          <option value="admart-v1">Admart v1</option>
                         </select>
                       </label>
                       <label className="block text-sm">

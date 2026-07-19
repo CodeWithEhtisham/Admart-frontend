@@ -184,7 +184,7 @@ function NavItem({ item, active, collapsed }) {
   )
 }
 
-export default function VidifySidebar() {
+export default function AdmartSidebar() {
   const { pathname } = useLocation()
   const { collapsed, theme, toggleCollapsed, toggleTheme } = useAppChrome()
   const sidebarW = collapsed ? 'w-[72px]' : 'w-[260px]'

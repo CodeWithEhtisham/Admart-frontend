@@ -1,6 +1,6 @@
-# Admart Frontend (Vidify)
+# Admart Frontend
 
-Frontend for **Vidify** — an AI video automation platform. Users can create, manage, and publish short-form and long-form videos across social channels from a single dashboard.
+Frontend for **Admart** — an AI video automation platform. Users can create, manage, and publish short-form and long-form videos across social channels from a single dashboard.
 
 ## Tech stack
 
@@ -44,7 +44,7 @@ src/
 ├── main.jsx             # App entry + BrowserRouter
 ├── index.css            # Tailwind theme & global styles
 ├── components/
-│   └── VidifySidebar.jsx
+│   └── AdmartSidebar.jsx
 ├── pages/
 │   ├── LandingPage.jsx
 │   ├── AuthPage.jsx
@@ -101,8 +101,8 @@ The UI uses a dark theme defined in `src/index.css`:
 
 ## Notes
 
-- This repo is currently **UI-only**: pages use static/mock data; there is no API client or environment configuration yet.
-- The app title and branding in the UI are **Vidify**; the repository name is **Admart-frontend**.
+- Brand name in the UI is **Admart**.
+- Some pages still use mock data where backend endpoints are not wired yet.
 
 ## License
 
