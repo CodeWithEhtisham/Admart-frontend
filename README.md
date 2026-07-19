@@ -1,109 +1,199 @@
-# Admart Frontend
+# Admart
 
-Frontend for **Admart** — an AI video automation platform. Users can create, manage, and publish short-form and long-form videos across social channels from a single dashboard.
+AI social-media platform: create images (and later videos), manage a per-project library, connect social accounts, and publish.
 
-## Tech stack
+This README is the **single project doc** for both repos. The same file lives in:
 
-| Layer | Technology |
-|-------|------------|
-| Framework | React 19 |
-| Build tool | Vite 8 |
-| Routing | React Router 7 |
-| Styling | Tailwind CSS 4 (`@tailwindcss/vite`) |
-| Linting | ESLint 9 |
+- Backend: https://github.com/CodeWithEhtisham/admart-backend
+- Frontend: https://github.com/CodeWithEhtisham/Admart-frontend
 
-## Prerequisites
+Verified against the codebase on **2026-07-19** (`staging`). Older `*.md` specs were removed; trust this file and the OpenAPI schema.
 
-- **Node.js** 18+ (20+ recommended)
-- **npm** (or pnpm / yarn)
+---
 
-## Getting started
+## Repos & stack
 
-```bash
-# Install dependencies
-npm install
+| | Backend | Frontend |
+|---|---|---|
+| Path | `admart-backend` | `Admart-frontend` |
+| Branch | `staging` | `staging` |
+| Stack | Django 6 + DRF + SimpleJWT + Spectacular + CORS | React 19 + Vite 8 + Tailwind 4 + React Router 7 + Axios |
+| Default URL | `http://localhost:8000` | `http://localhost:5173` |
+| API docs | `/api/docs/` (Swagger), `/api/redoc/`, `/api/schema/` | — |
 
-# Start dev server (default: http://localhost:5173)
-npm run dev
+Django apps: `config`, `users`, `projects`, `content`.
 
-# Production build
-npm run build
+---
 
-# Preview production build locally
-npm run preview
+## What is real vs UI-only
 
-# Lint
-npm run lint
+### Implemented end-to-end (API + wired UI)
+
+| Area | Backend | Frontend |
+|---|---|---|
+| Auth (register/login/refresh/logout, forgot/reset password, Google OAuth, `/me`) | ✅ | ✅ Auth pages |
+| Onboarding → create first project | ✅ projects API | ✅ `/onboarding` |
+| Projects CRUD + activate + active project | ✅ | ✅ Project dropdown |
+| Credits balance / costs / history | ✅ | ✅ Billing + sidebar |
+| Image jobs (fal.ai): create, poll, cancel, upload, model catalog | ✅ | ✅ `/image-gen` |
+| Library list/detail + soft-delete | ✅ | ✅ `/library` |
+| Social accounts list / OAuth connect URL / disconnect / callback | ✅ YouTube (+ Meta stubs) | ✅ `/social` |
+
+### Frontend pages that are mostly mock / not backed by API yet
+
+| Route | Notes |
+|---|---|
+| `/create` (Wizard) | Still calls **removed** endpoints `/api/images/text-to-image` — **broken**. Use `/image-gen` instead. |
+| `/progress`, `/result`, `/publish` | Video pipeline UI; no VideoAsset/Publication APIs yet |
+| `/templates`, `/calendar`, `/analytics`, `/notifications` | Local/mock data |
+| `/brand-kit`, `/settings` | Mostly local UI; brand fields exist on User/Project but pages are not fully API-driven |
+| `/dashboard` | Shell UI; not a full analytics backend |
+
+### Planned (models/API not present)
+
+`VideoAsset`, `Publication`, analytics sync, TikTok OAuth, agent/automation loop.
+
+---
+
+## Domain model (actual Django models)
+
+```
+User ──owns──► Project ──► SocialAccount (youtube|tiktok|instagram|facebook)
+                │
+                ├──► ImageJob / ImageUpload
+                └──► LibraryAsset (image|video metadata; soft-delete via deleted_at)
 ```
 
-## Project structure
+- **User**: email login, plan, `credits_total` / `credits_used` / `credits_remaining`, `onboarding_completed`, `active_project`, brand kit fields.
+- **Project**: workspace + per-project brand kit; parent for social + content.
+- **SocialAccount**: one row per `(project, platform)`; tokens Fernet-encrypted; never returned by serializers.
+- **ImageJob**: fal queue job (`textToImage`, `edit`, `multiEdit`, `upscale`, `removeBackground`).
+- **LibraryAsset**: browsable assets; succeeded image jobs sync into the library.
+
+Credits are integers on `User` (reserved/refunded around image jobs). History is derived from recent `ImageJob` rows — there is no separate ledger table.
+
+---
+
+## API map (authoritative)
+
+Auth base: `/api/auth/`
+
+| Method | Path | Purpose |
+|---|---|---|
+| POST | `/api/auth/register` | Sign up |
+| POST | `/api/auth/login` | JWT pair |
+| POST | `/api/auth/refresh` | Refresh access |
+| POST | `/api/auth/logout` | Blacklist refresh |
+| POST | `/api/auth/google` | Google code exchange |
+| POST | `/api/auth/forgot-password` | Request reset |
+| POST | `/api/auth/reset-password` | Complete reset |
+| GET/PATCH | `/api/auth/me` | Current user |
+| POST | `/api/auth/onboarding/complete` | Mark onboarding done |
+
+Credits:
+
+| Method | Path |
+|---|---|
+| GET | `/api/credits` |
+| GET | `/api/credits/costs` |
+| GET | `/api/credits/history` |
+
+Projects & social:
+
+| Method | Path |
+|---|---|
+| GET/POST | `/api/projects` |
+| GET/PATCH/DELETE | `/api/projects/{id}` |
+| POST | `/api/projects/{id}/activate` |
+| GET | `/api/projects/{id}/social/accounts` |
+| GET | `/api/projects/{id}/social/connect/{platform}/url` |
+| POST | `/api/projects/{id}/social/connect/{platform}` |
+| DELETE | `/api/projects/{id}/social/disconnect/{platform}` |
+| GET | `/api/social/callback/{platform}` | Provider redirect |
+
+Images & library (project-scoped):
+
+| Method | Path |
+|---|---|
+| GET | `/api/images/models` | Global catalog |
+| GET | `/api/projects/{id}/images/models` | Same, project path |
+| GET/POST | `/api/projects/{id}/images/jobs` |
+| GET | `/api/projects/{id}/images/jobs/{jobId}` |
+| POST | `/api/projects/{id}/images/jobs/{jobId}/cancel` |
+| POST | `/api/projects/{id}/images/uploads` | multipart |
+| GET | `/api/projects/{id}/library` |
+| GET/DELETE | `/api/projects/{id}/library/{assetId}` | DELETE → soft-delete |
+
+Default image models (from `content/catalog.py`): Flux Dev (textToImage), Nano Banana 2 Edit, ESRGAN, BiRefNet, etc.
+
+---
+
+## Frontend structure
 
 ```
 src/
-├── App.jsx              # Route definitions
-├── main.jsx             # App entry + BrowserRouter
-├── index.css            # Tailwind theme & global styles
-├── components/
-│   └── AdmartSidebar.jsx
-├── pages/
-│   ├── LandingPage.jsx
-│   ├── AuthPage.jsx
-│   ├── OnboardingPage.jsx
-│   ├── DashboardPage.jsx
-│   ├── WizardPage.jsx       # Create video flow
-│   ├── ProgressPage.jsx
-│   ├── ResultPage.jsx
-│   ├── PublishingPage.jsx
-│   ├── LibraryPage.jsx
-│   ├── TemplatesPage.jsx
-│   ├── ImageGenPage.jsx
-│   ├── SocialAccountsPage.jsx
-│   ├── CalendarPage.jsx
-│   ├── AnalyticsPage.jsx
-│   ├── BillingPage.jsx
-│   ├── BrandKitPage.jsx
-│   ├── SettingsPage.jsx
-│   ├── NotificationsPage.jsx
-│   └── NotFoundPage.jsx
-└── assets/
+  App.jsx                 # routes
+  utils/api.js            # Axios + JWT refresh (VITE_API_URL)
+  utils/projects.js       # projects + social helpers
+  utils/imageGeneration.js
+  utils/library.js
+  utils/credits.js
+  pages/                  # route screens
+  components/             # AppLayout, AdmartSidebar, Topbar, …
 ```
 
-## Routes
+Key wired screens: Auth*, Onboarding, ImageGen, Library, Social, Billing, Project switcher.
 
-| Path | Page |
-|------|------|
-| `/` | Landing |
-| `/auth` | Sign in / sign up |
-| `/onboarding` | Onboarding |
-| `/dashboard` | Dashboard |
-| `/create` | Video creation wizard |
-| `/progress` | Generation progress |
-| `/result` | Generated video result |
-| `/publish` | Publishing |
-| `/library` | Video library |
-| `/templates` | Templates |
-| `/image-gen` | AI image generation |
-| `/social` | Connected social accounts |
-| `/calendar` | Content calendar |
-| `/analytics` | Analytics |
-| `/brand-kit` | Brand kit |
-| `/billing` | Billing |
-| `/notifications` | Notifications |
-| `/settings` | Settings |
+Env:
 
-## Design system
+```bash
+# Admart-frontend/.env  (name must match code)
+VITE_API_URL=http://localhost:8000
+```
 
-The UI uses a dark theme defined in `src/index.css`:
+Legacy localStorage keys `vidify_*` are migrated automatically to `admart_*`.
 
-- **Fonts:** Syne (headings), DM Sans (body), JetBrains Mono (code)
-- **Colors:** Custom tokens (`base`, `panel`, `surface`, `accent-blue`, platform colors for TikTok, YouTube, Instagram, Facebook)
-- **Utilities:** Shared classes such as `gradient-bg`, `gradient-text`, and glass-style panels
+---
 
-## Notes
+## Local setup
 
-- Brand name in the UI is **Admart**.
-- Some pages still use mock data where backend endpoints are not wired yet.
+### Backend
 
-## License
+```bash
+cd admart-backend
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env   # set FAL_KEY, Google/YouTube OAuth, SOCIAL_TOKEN_ENCRYPTION_KEY as needed
+python manage.py migrate
+python manage.py runserver
+```
 
-Private — see repository owner for usage terms.
+Useful `.env` keys: `FRONTEND_URL`, `GOOGLE_OAUTH_*`, `YOUTUBE_OAUTH_REDIRECT_URI`, `META_*`, `FAL_KEY`, `MEDIA_BASE_URL`, `SOCIAL_TOKEN_ENCRYPTION_KEY`.
+
+### Frontend
+
+```bash
+cd Admart-frontend
+npm install
+echo 'VITE_API_URL=http://localhost:8000' > .env
+npm run dev
+```
+
+---
+
+## OAuth notes (social)
+
+- **YouTube**: OAuth connect URL + callback implemented; redirects to `{FRONTEND_URL}/social?connected=youtube`.
+- **TikTok**: model allows it; connect URL returns **501** until implemented.
+- **Facebook / Instagram**: Meta app env vars present; publish scopes gated by `FACEBOOK_PUBLISH_ENABLED` / `INSTAGRAM_PUBLISH_ENABLED`.
+
+---
+
+## Known gaps (do not document as done)
+
+1. **Wizard `/create`** still hits deleted `/api/images/text-to-image*` — use **`/image-gen`**.
+2. No video generation / publish / analytics APIs yet.
+3. `requirements.txt` has no pinned versions; fal is called via `requests` (no fal SDK package).
+
+For live request/response shapes, prefer **`/api/docs/`** over this README.
+```
