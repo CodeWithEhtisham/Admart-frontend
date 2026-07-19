@@ -60,10 +60,22 @@ const VIDEO_MODELS = [
   { id: 'wan', name: 'Wan 2.1 Premium', credits: 4, speed: 1 },
 ]
 
-const IMAGE_MODELS = [
-  { id: 'sdxl', name: 'SDXL Fast', credits: 1, speed: 3 },
-  { id: 'flux', name: 'Flux Pro Quality', credits: 2, speed: 2 },
-  { id: 'edit', name: 'Image Edit Pro', credits: 2, speed: 2 },
+/** fal.ai text-to-image models (verified on fal.ai) */
+const IMAGE_GEN_MODELS = [
+  { id: 'fal-ai/flux/dev', name: 'Flux Dev', credits: 1, speed: 3 },
+  { id: 'fal-ai/flux/schnell', name: 'Flux Schnell', credits: 1, speed: 3 },
+  { id: 'fal-ai/nano-banana-2', name: 'Nano Banana 2', credits: 1, speed: 3 },
+  { id: 'fal-ai/nano-banana-pro', name: 'Nano Banana Pro', credits: 2, speed: 2 },
+  { id: 'fal-ai/ideogram/v3', name: 'Ideogram V3', credits: 2, speed: 2 },
+  { id: 'openai/gpt-image-2', name: 'GPT Image 2', credits: 3, speed: 1 },
+]
+
+/** fal.ai edit / image-to-image models */
+const IMAGE_EDIT_MODELS = [
+  { id: 'fal-ai/nano-banana-2/edit', name: 'Nano Banana 2 Edit', credits: 1, speed: 3 },
+  { id: 'fal-ai/nano-banana-pro/edit', name: 'Nano Banana Pro Edit', credits: 2, speed: 2 },
+  { id: 'fal-ai/flux-pro/kontext', name: 'Flux Kontext Pro', credits: 2, speed: 2 },
+  { id: 'openai/gpt-image-2/edit', name: 'GPT Image 2 Edit', credits: 3, speed: 1 },
 ]
 
 const PLATFORMS = ['TikTok', 'YouTube', 'Instagram', 'Facebook']
@@ -300,8 +312,17 @@ export default function WizardPage() {
   const isUploadMode = inputTab === 'upload'
   const isUploadImageTarget = isUploadMode && uploadModifyTarget === 'image-image'
   const isImageOutputMode = isTextToImageMode || inputTab === 'image-image' || isUploadImageTarget
-  const activeModels = isImageOutputMode ? IMAGE_MODELS : VIDEO_MODELS
-  const fallbackModelId = isImageOutputMode ? 'flux' : 'cog'
+  const isImageEditMode = inputTab === 'image-image' || isUploadImageTarget
+  const activeModels = isImageOutputMode
+    ? isImageEditMode
+      ? IMAGE_EDIT_MODELS
+      : IMAGE_GEN_MODELS
+    : VIDEO_MODELS
+  const fallbackModelId = isImageOutputMode
+    ? isImageEditMode
+      ? 'fal-ai/nano-banana-2/edit'
+      : 'fal-ai/flux/dev'
+    : 'cog'
   const selectedModelForMode = activeModels.some((m) => m.id === selectedModel)
     ? selectedModel
     : fallbackModelId
@@ -492,6 +513,7 @@ export default function WizardPage() {
         style: selectedStyle,
         aspect_ratio: selectedAspect,
         resolution: selectedResolution,
+        model: selectedModelForMode,
       }, setImageGenerationStatus)
       setGeneratedImage(result)
       setImageGenerationStatus('done')

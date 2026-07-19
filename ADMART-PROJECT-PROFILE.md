@@ -438,7 +438,7 @@ Admart is a **full-stack platform** with separated frontend and backend reposito
 | **API** | REST JSON API; OpenAPI schema for type generation |
 | **Auth** | JWT (access + refresh tokens); Google OAuth |
 | **Social OAuth** | Redirect-based OAuth for YouTube (Google), Facebook/Instagram (Meta) |
-| **AI Inference** | Multiple models (Mochi, CogVideoX, Wan 2.1 for video; SDXL, Flux for images) |
+| **AI Inference** | Video: Mochi, CogVideoX, Wan 2.1 · Images via fal.ai: Flux, Nano Banana, Ideogram, GPT Image 2 |
 | **Infrastructure** | GPU-backed generation (e.g., DGX-class hardware for image jobs) |
 
 ### 12.2 Frontend Application Structure
@@ -487,9 +487,10 @@ src/
 
 | Model | Name | Credits | Speed |
 |-------|------|---------|-------|
-| `sdxl` | SDXL Fast | 1 | ★★★ |
-| `flux` | Flux Pro Quality | 2 | ★★ |
-| `edit` | Image Edit Pro | 2 | ★★ |
+| `fal-ai/flux/dev` | Flux Dev | 1 | ★★★ |
+| `fal-ai/nano-banana-2` | Nano Banana 2 | 1 | ★★★ |
+| `fal-ai/ideogram/v3` | Ideogram V3 | 2 | ★★ |
+| `openai/gpt-image-2` | GPT Image 2 | 3 | ★★ |
 
 ### 13.3 Style Presets
 

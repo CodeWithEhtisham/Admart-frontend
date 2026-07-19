@@ -428,13 +428,16 @@ User ──owns──> Project (many) ──has──> SocialAccount (many)
 | `cog` | CogVideoX Quality | 2 | Balanced quality/speed |
 | `wan` | Wan 2.1 Premium | 4 | Highest quality final renders |
 
-### Image AI Models
+### Image AI Models (fal.ai)
 
-| Model | Name | Credits |
-|-------|------|---------|
-| `sdxl` | SDXL Fast | 1 |
-| `flux` | Flux Pro Quality | 2 |
-| `edit` | Image Edit Pro | 2 |
+| Model id | Name | Credits |
+|----------|------|---------|
+| `fal-ai/flux/dev` | Flux Dev | 1 |
+| `fal-ai/flux/schnell` | Flux Schnell | 1 |
+| `fal-ai/nano-banana-2` | Nano Banana 2 | 1 |
+| `fal-ai/nano-banana-pro` | Nano Banana Pro | 2 |
+| `fal-ai/ideogram/v3` | Ideogram V3 | 2 |
+| `openai/gpt-image-2` | GPT Image 2 | 3 |
 
 **Style presets:** Cinematic, Minimal, Dynamic, Corporate, Artistic, Custom
 
