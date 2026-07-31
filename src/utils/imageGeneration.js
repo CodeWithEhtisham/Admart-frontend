@@ -25,6 +25,7 @@ export const EDIT_MODELS = [
   { id: 'fal-ai/nano-banana-pro/edit', label: 'Nano Banana Pro Edit', family: 'nano' },
   { id: 'fal-ai/flux-pro/kontext', label: 'Flux Kontext Pro', family: 'flux' },
   { id: 'openai/gpt-image-2/edit', label: 'GPT Image 2 Edit', family: 'openai' },
+  { id: 'wan/v2.6/image-to-image', label: 'Wan 2.6 Edit', family: 'wan' },
 ]
 
 export const UPSCALE_MODELS = [
@@ -40,6 +41,14 @@ export const REMBG_MODELS = [
   { id: 'fal-ai/birefnet', label: 'BiRefNet' },
   { id: 'fal-ai/bria/background/remove', label: 'Bria RMBG' },
 ]
+
+export const DEFAULT_IMAGE_CATALOG = {
+  textToImage: TEXT_TO_IMAGE_MODELS,
+  edit: EDIT_MODELS,
+  multiEdit: EDIT_MODELS,
+  upscale: UPSCALE_MODELS,
+  removeBackground: REMBG_MODELS,
+}
 
 export const ASPECT_RATIOS = [
   { id: '1:1', label: '1:1', sub: 'Square' },
@@ -65,28 +74,46 @@ export const ACCEPTED_MIME = ['image/jpeg', 'image/png', 'image/webp']
 export const POLL_INTERVAL_MS = 1750
 export const POLL_MAX_MS = 5 * 60 * 1000
 
-export function modelsForCapability(capability) {
-  switch (capability) {
-    case 'textToImage':
-      return TEXT_TO_IMAGE_MODELS
-    case 'edit':
-    case 'multiEdit':
-      return EDIT_MODELS
-    case 'upscale':
-      return UPSCALE_MODELS
-    case 'removeBackground':
-      return REMBG_MODELS
-    default:
-      return TEXT_TO_IMAGE_MODELS
+let _catalog = DEFAULT_IMAGE_CATALOG
+
+function isValidCatalog(data) {
+  return (
+    data &&
+    typeof data === 'object' &&
+    Array.isArray(data.textToImage) &&
+    data.textToImage.length > 0
+  )
+}
+
+export async function loadImageCatalog() {
+  try {
+    const { data } = await api.get('/api/images/models')
+    if (isValidCatalog(data)) {
+      _catalog = data
+      return data
+    }
+  } catch (err) {
+    console.warn('[image] catalog API unavailable, using local list', err?.response?.status || err?.message)
   }
+  _catalog = DEFAULT_IMAGE_CATALOG
+  return _catalog
 }
 
-export function defaultModel(capability) {
-  return modelsForCapability(capability)[0]?.id
+export function getImageCatalog() {
+  return _catalog || DEFAULT_IMAGE_CATALOG
 }
 
-export function modelFamily(modelId) {
-  const all = [...TEXT_TO_IMAGE_MODELS, ...EDIT_MODELS]
+export function modelsForCapability(capability, catalog = getImageCatalog()) {
+  return catalog[capability] || DEFAULT_IMAGE_CATALOG[capability] || TEXT_TO_IMAGE_MODELS
+}
+
+export function defaultModel(capability, catalog = getImageCatalog()) {
+  const models = modelsForCapability(capability, catalog)
+  return models.find((m) => m.default)?.id || models[0]?.id
+}
+
+export function modelFamily(modelId, catalog = getImageCatalog()) {
+  const all = Object.values(catalog || DEFAULT_IMAGE_CATALOG).filter(Array.isArray).flat()
   return all.find((m) => m.id === modelId)?.family ?? null
 }
 
@@ -130,6 +157,9 @@ export function fieldVisible(field, capability, family) {
     },
     guidance: family === 'flux' && capability === 'textToImage',
     ideogram: family === 'ideogram' && capability === 'textToImage',
+    negativePrompt:
+      (family === 'ideogram' && capability === 'textToImage') ||
+      (family === 'wan' && ['edit', 'multiEdit'].includes(capability)),
     upscaleOpts: capability === 'upscale',
     rembgOpts: capability === 'removeBackground',
   }

@@ -4,6 +4,7 @@ import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import {
   CAPABILITY_LABELS,
+  formatCredits,
   formatCreditDate,
   formatPlanName,
   getCreditCosts,
@@ -94,9 +95,12 @@ export default function BillingPage() {
     load()
   }, [load])
 
-  const remaining = balance?.creditsRemaining ?? 0
-  const total = balance?.creditsTotal ?? 0
-  const used = balance?.creditsUsed ?? Math.max(0, total - remaining)
+  const remaining = Number(balance?.creditsRemaining ?? 0)
+  const total = Number(balance?.creditsTotal ?? 0)
+  const used = Number(balance?.creditsUsed ?? Math.max(0, total - remaining))
+  const remainingLabel = formatCredits(remaining)
+  const totalLabel = formatCredits(total)
+  const usedLabel = formatCredits(used)
   const pct = total > 0 ? Math.min(100, Math.round((remaining / total) * 100)) : 0
   const planKey = String(balance?.plan || 'free').toLowerCase()
   const features = PLAN_FEATURES[planKey] || PLAN_FEATURES.free
@@ -138,7 +142,7 @@ export default function BillingPage() {
                   {loading ? '…' : formatPlanName(balance?.plan)}
                 </h2>
                 <p className="mt-1 text-text-secondary">
-                  {total} credits allotment
+                  {totalLabel} credits allotment
                   {balance?.creditsResetAt ? ` · Resets ${resetLabel}` : ''}
                 </p>
               </div>
@@ -172,10 +176,10 @@ export default function BillingPage() {
           <div className="rounded-2xl border border-border-default bg-panel p-6">
             <h3 className="font-heading text-lg font-semibold text-text-primary">Credit Balance</h3>
             <p className="mt-4 font-heading text-5xl font-bold text-text-primary">
-              {loading ? '…' : remaining}
+              {loading ? '…' : remainingLabel}
             </p>
             <p className="mt-1 text-text-secondary">
-              of {loading ? '—' : total} plan credits
+              of {loading ? '—' : totalLabel} plan credits
             </p>
             <p className="text-sm text-text-tertiary">{resetLabel}</p>
             <div className="mt-5 h-2 overflow-hidden rounded-full bg-elevated">
@@ -188,13 +192,13 @@ export default function BillingPage() {
               <div className="rounded-xl border border-border bg-surface px-3 py-3">
                 <p className="text-xs text-text-tertiary">Used</p>
                 <p className="font-mono text-lg font-semibold text-text-primary">
-                  {loading ? '—' : used}
+                  {loading ? '—' : usedLabel}
                 </p>
               </div>
               <div className="rounded-xl border border-border bg-surface px-3 py-3">
                 <p className="text-xs text-text-tertiary">Remaining</p>
                 <p className="font-mono text-lg font-semibold text-success">
-                  {loading ? '—' : remaining}
+                  {loading ? '—' : remainingLabel}
                 </p>
               </div>
               <div className="rounded-xl border border-border bg-surface px-3 py-3">
@@ -246,7 +250,7 @@ export default function BillingPage() {
         </section>
 
         <section>
-          <h2 className="font-heading text-xl font-bold text-text-primary">Image credit costs</h2>
+          <h2 className="font-heading text-xl font-bold text-text-primary">Generation credit costs</h2>
           <p className="mt-1 text-sm text-text-tertiary">From GET /api/credits/costs</p>
           <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {(costItems.length ? costItems : []).map((row) => (
@@ -263,7 +267,7 @@ export default function BillingPage() {
                   )}
                 </div>
                 <span className="font-mono font-semibold text-accent-blue">
-                  {row.credits}
+                  {formatCredits(row.credits)}
                   {row.perImage ? ' × n' : ''} cr
                 </span>
               </div>
@@ -340,7 +344,7 @@ export default function BillingPage() {
                         {t.model || '—'}
                       </td>
                       <td className="px-6 py-3 font-mono font-medium text-error">
-                        {cr > 0 ? `-${cr}` : cr}
+                        {cr > 0 ? `-${formatCredits(cr)}` : formatCredits(cr)}
                       </td>
                       <td className="px-6 py-3 text-text-secondary">{t.status || '—'}</td>
                     </tr>

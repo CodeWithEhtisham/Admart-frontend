@@ -115,7 +115,7 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = 20000) {
     })
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
-      throw new Error(`Request timed out while connecting to ${url}. Check that the local backend is running.`)
+      throw new Error(`Request timed out while connecting to ${url}. Check that the local backend and DGX image API are running.`)
     }
     throw error
   } finally {
@@ -128,7 +128,7 @@ async function startTextImage(payload) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
-  }, 20000)
+  }, 120000)
   const data = await readJson(response)
 
   if (!response.ok) {
@@ -138,12 +138,45 @@ async function startTextImage(payload) {
   return data
 }
 
+async function startImageToImage(payload) {
+  const formData = new FormData()
+  formData.append('prompt', payload.prompt)
+  formData.append('style', payload.style)
+  formData.append('aspect_ratio', payload.aspect_ratio)
+  formData.append('resolution', payload.resolution)
+  formData.append('model', payload.model)
+  formData.append('image', payload.image, payload.image.name || 'source-image.png')
+
+  const response = await fetchWithTimeout(`${API_BASE_URL}/api/images/image-to-image`, {
+    method: 'POST',
+    body: formData,
+  }, 120000)
+  const data = await readJson(response)
+
+  if (!response.ok) {
+    throw new Error(data.detail || 'Image to image generation failed.')
+  }
+
+  return data
+}
+
 async function getTextImageStatus(jobId) {
-  const response = await fetchWithTimeout(`${API_BASE_URL}/api/images/text-to-image/${jobId}`, {}, 15000)
+  const response = await fetchWithTimeout(`${API_BASE_URL}/api/images/text-to-image/${jobId}`, {}, 120000)
   const data = await readJson(response)
 
   if (!response.ok) {
     throw new Error(data.detail || 'Could not check image generation status.')
+  }
+
+  return data
+}
+
+async function getImageToImageStatus(jobId) {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/api/images/image-to-image/${jobId}`, {}, 120000)
+  const data = await readJson(response)
+
+  if (!response.ok) {
+    throw new Error(data.detail || 'Could not check image edit status.')
   }
 
   return data
@@ -160,10 +193,19 @@ async function generateTextImage(payload, onStatus) {
 
   onStatus?.(job.status || 'queued')
 
-  const deadline = Date.now() + 5 * 60 * 1000
+  const deadline = Date.now() + 15 * 60 * 1000
+  let lastStatusError = null
   while (Date.now() < deadline) {
     await sleep(2000)
-    const status = await getTextImageStatus(jobId)
+    let status
+    try {
+      status = await getTextImageStatus(jobId)
+      lastStatusError = null
+    } catch (error) {
+      lastStatusError = error
+      onStatus?.('waiting_for_model')
+      continue
+    }
     onStatus?.(status.status || 'queued')
 
     if (status.status === 'done') {
@@ -179,7 +221,68 @@ async function generateTextImage(payload, onStatus) {
     }
   }
 
+  if (lastStatusError) {
+    throw new Error('Image generation is still running, but status polling is slow. Try checking again in a moment.')
+  }
   throw new Error('Image generation is still running. Try checking again in a moment.')
+}
+
+async function generateImageToImage(payload, onStatus) {
+  onStatus?.('connecting_to_backend')
+  const job = await startImageToImage(payload)
+  const jobId = job.job_id
+
+  if (!jobId) {
+    throw new Error('Backend did not return an image edit job id.')
+  }
+
+  onStatus?.(job.status || 'queued')
+
+  const deadline = Date.now() + 15 * 60 * 1000
+  let lastStatusError = null
+  while (Date.now() < deadline) {
+    await sleep(2000)
+    let status
+    try {
+      status = await getImageToImageStatus(jobId)
+      lastStatusError = null
+    } catch (error) {
+      lastStatusError = error
+      onStatus?.('waiting_for_model')
+      continue
+    }
+    onStatus?.(status.status || 'queued')
+
+    if (status.status === 'done') {
+      return {
+        ...status,
+        image_url: resolveApiUrl(status.image_url),
+        source_image_url: resolveApiUrl(status.source_image_url),
+      }
+    }
+
+    if (status.status === 'error') {
+      throw new Error(status.error || 'DGX1 image edit failed.')
+    }
+  }
+
+  if (lastStatusError) {
+    throw new Error('Image edit is still running, but status polling is slow. Try checking again in a moment.')
+  }
+  throw new Error('Image edit is still running. Try checking again in a moment.')
+}
+
+async function sourceUrlToFile(sourceUrl, fallbackName = 'source-image.png') {
+  const response = await fetchWithTimeout(resolveApiUrl(sourceUrl), {}, 20000)
+
+  if (!response.ok) {
+    throw new Error('Could not load the selected image asset for editing.')
+  }
+
+  const blob = await response.blob()
+  const extension = blob.type?.split('/')[1] || 'png'
+  const fileName = fallbackName.includes('.') ? fallbackName : `${fallbackName}.${extension}`
+  return new File([blob], fileName, { type: blob.type || 'image/png' })
 }
 
 function StepProgress({ currentStep }) {
@@ -273,7 +376,9 @@ export default function WizardPage() {
   const [imageUploadName, setImageUploadName] = useState('')
   const [imagePrompt, setImagePrompt] = useState('')
   const [imageEditPrompt, setImageEditPrompt] = useState('')
+  const [imageEditFile, setImageEditFile] = useState(null)
   const [imageEditUploadName, setImageEditUploadName] = useState('')
+  const [uploadedMediaFile, setUploadedMediaFile] = useState(null)
   const [uploadedMediaName, setUploadedMediaName] = useState('')
   const [uploadedMediaUrl, setUploadedMediaUrl] = useState('')
   const [uploadedMediaType, setUploadedMediaType] = useState('image')
@@ -311,8 +416,9 @@ export default function WizardPage() {
   const isTextToImageMode = inputTab === 'text-image'
   const isUploadMode = inputTab === 'upload'
   const isUploadImageTarget = isUploadMode && uploadModifyTarget === 'image-image'
-  const isImageOutputMode = isTextToImageMode || inputTab === 'image-image' || isUploadImageTarget
-  const isImageEditMode = inputTab === 'image-image' || isUploadImageTarget
+  const isDirectImageEditMode = inputTab === 'image-image'
+  const isImageEditMode = isDirectImageEditMode || isUploadImageTarget
+  const isImageOutputMode = isTextToImageMode || isImageEditMode
   const activeModels = isImageOutputMode
     ? isImageEditMode
       ? IMAGE_EDIT_MODELS
@@ -333,6 +439,13 @@ export default function WizardPage() {
   const captionCost = !isImageOutputMode && autoCaptions ? 0.5 : 0
   const thumbCost = isImageOutputMode ? 0 : 0.5
   const totalCredits = modelCredits + captionCost + thumbCost
+  const activeImagePrompt = isTextToImageMode
+    ? imagePrompt
+    : isDirectImageEditMode
+      ? imageEditPrompt
+      : uploadInstructions
+  const activeImageFile = isDirectImageEditMode ? imageEditFile : isUploadImageTarget ? uploadedMediaFile : null
+  const canGenerateImageEdit = isImageEditMode && Boolean((activeImageFile || uploadedMediaUrl) && activeImagePrompt.trim())
 
   const creditsRemaining = 42
 
@@ -350,6 +463,7 @@ export default function WizardPage() {
     if (!sourceAsset) return
 
     setInputTab('upload')
+    setUploadedMediaFile(null)
     setUploadedMediaName(sourceAsset.title || 'Saved asset')
     setUploadedMediaUrl(sourceAsset.thumbnailUrl || sourceAsset.sourceUrl || '')
     setUploadedMediaType(sourceAsset.type === 'video' ? 'video' : 'image')
@@ -420,6 +534,7 @@ export default function WizardPage() {
     setAssetActionError('')
 
     if (!file) {
+      setUploadedMediaFile(null)
       setUploadedMediaName('')
       setUploadedMediaUrl('')
       setUploadedMediaType('image')
@@ -428,6 +543,7 @@ export default function WizardPage() {
     }
 
     const isVideo = file.type.startsWith('video/')
+    setUploadedMediaFile(file)
     setUploadedMediaName(file.name)
     setUploadedMediaUrl(URL.createObjectURL(file))
     setUploadedMediaType(isVideo ? 'video' : 'image')
@@ -461,7 +577,7 @@ export default function WizardPage() {
       id: generatedImage?.job_id || generatedImage?.id || imageUrl,
       type: 'image',
       title: videoTitle || 'Generated image',
-      prompt: generatedImage?.full_prompt || imagePrompt,
+      prompt: generatedImage?.full_prompt || activeImagePrompt,
       thumbnailUrl: imageUrl,
       sourceUrl: imageUrl,
       width: generatedImage?.width,
@@ -478,7 +594,7 @@ export default function WizardPage() {
   const sidebarAfter = Math.max(0, creditsRemaining - totalCredits)
 
   const handleGenerate = async () => {
-    if (isUploadMode) {
+    if (isUploadMode && !isUploadImageTarget) {
       setAssetActionMessage('')
       setAssetActionError('')
       if (!uploadedMediaUrl) {
@@ -489,14 +605,19 @@ export default function WizardPage() {
       return
     }
 
-    if (!isTextToImageMode) {
+    if (!isImageOutputMode) {
       navigate('/progress')
       return
     }
 
-    const cleanPrompt = imagePrompt.trim()
+    const cleanPrompt = activeImagePrompt.trim()
     if (!cleanPrompt) {
       setImageGenerationError('Prompt is required before generating.')
+      return
+    }
+
+    if (isImageEditMode && !activeImageFile && !uploadedMediaUrl) {
+      setImageGenerationError('Upload an image before generating.')
       return
     }
 
@@ -508,13 +629,22 @@ export default function WizardPage() {
     setGeneratedImage(null)
 
     try {
-      const result = await generateTextImage({
-        prompt: cleanPrompt,
-        style: selectedStyle,
-        aspect_ratio: selectedAspect,
-        resolution: selectedResolution,
-        model: selectedModelForMode,
-      }, setImageGenerationStatus)
+      const result = isTextToImageMode
+        ? await generateTextImage({
+            prompt: cleanPrompt,
+            style: selectedStyle,
+            aspect_ratio: selectedAspect,
+            resolution: selectedResolution,
+            model: selectedModelForMode,
+          }, setImageGenerationStatus)
+        : await generateImageToImage({
+            prompt: cleanPrompt,
+            style: selectedStyle,
+            aspect_ratio: selectedAspect,
+            resolution: selectedResolution,
+            model: selectedModelForMode,
+            image: activeImageFile || await sourceUrlToFile(uploadedMediaUrl, uploadedMediaName || 'source-image.png'),
+          }, setImageGenerationStatus)
       setGeneratedImage(result)
       setImageGenerationStatus('done')
     } catch (error) {
@@ -677,7 +807,13 @@ export default function WizardPage() {
                     <UploadDropzone
                       id="image-to-image-upload"
                       fileName={imageEditUploadName}
-                      onFileChange={(file) => setImageEditUploadName(file?.name ?? '')}
+                      onFileChange={(file) => {
+                        setImageEditFile(file)
+                        setImageEditUploadName(file?.name ?? '')
+                        setGeneratedImage(null)
+                        setImageGenerationStatus('')
+                        setImageGenerationError('')
+                      }}
                       title="Upload a reference image"
                     />
                     <div>
@@ -1139,7 +1275,7 @@ export default function WizardPage() {
                   </div>
                 </div>
 
-                {isTextToImageMode && (
+                {isImageOutputMode && (
                   <div className="rounded-2xl border border-border-default bg-panel p-6">
                     <div className="mb-4 flex items-center justify-between gap-3">
                       <h3 className="font-heading text-lg font-semibold">Generated image</h3>
@@ -1171,7 +1307,7 @@ export default function WizardPage() {
                       <div className="overflow-hidden rounded-xl border border-border-default bg-input">
                         <img
                           src={generatedImage.image_base64 || generatedImage.image_url}
-                          alt={generatedImage.full_prompt || imagePrompt}
+                          alt={generatedImage.full_prompt || activeImagePrompt}
                           className="max-h-[520px] w-full object-contain"
                           onError={() => {
                             setGeneratedImage(null)
@@ -1346,11 +1482,12 @@ export default function WizardPage() {
               onClick={handleGenerate}
               disabled={
                 (isTextToImageMode && (isGeneratingTextImage || !imagePrompt.trim())) ||
-                (isUploadMode && !uploadedMediaUrl)
+                (isImageEditMode && (isGeneratingTextImage || !canGenerateImageEdit)) ||
+                (isUploadMode && !isUploadImageTarget && !uploadedMediaUrl)
               }
               className="rounded-lg bg-accent-violet px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-violet/30 transition hover:bg-accent-violet/90 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
             >
-              {isTextToImageMode
+              {isTextToImageMode || isImageEditMode
                 ? isGeneratingTextImage
                   ? 'Generating...'
                   : 'Generate Image'

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import {
@@ -11,9 +11,11 @@ import {
   CREDITS_CHANGE_EVENT,
   creditsFromApiError,
   estimateJobCost,
+  formatCredits,
   getCreditCosts,
   getCredits,
   notifyCreditsChanged,
+  quoteCredits,
   syncCreditsFromPayload,
 } from '../utils/credits.js'
 import {
@@ -40,6 +42,10 @@ import {
   validationMessage,
 } from '../utils/videoGeneration.js'
 import { notifyLibraryChanged } from '../utils/library.js'
+import {
+  enhancePromptRemote,
+  promptEnhancementError,
+} from '../utils/promptEnhancement.js'
 
 function Label({ children }) {
   return (
@@ -95,7 +101,7 @@ function ChevronDown({ open }) {
   )
 }
 
-function ModelPicker({ models, value, onChange }) {
+function ModelPicker({ models, value, onChange, costsByModel = {} }) {
   const rootRef = useRef(null)
   const [open, setOpen] = useState(false)
   const selected = models.find((m) => m.id === value) || models[0]
@@ -127,6 +133,11 @@ function ModelPicker({ models, value, onChange }) {
           <p className="mt-0.5 truncate text-[11px] text-text-tertiary">
             {selected?.strength || selected?.family || selected?.inputs}
           </p>
+          {costsByModel[selected?.id]?.credits ? (
+            <p className="mt-0.5 text-[11px] text-text-tertiary">
+              From {formatCredits(costsByModel[selected.id].credits)} cr
+            </p>
+          ) : null}
         </div>
         <ChevronDown open={open} />
       </button>
@@ -152,6 +163,11 @@ function ModelPicker({ models, value, onChange }) {
                   <span className="mt-0.5 text-[11px] opacity-80">
                     {m.strength || m.inputs}
                   </span>
+                  {costsByModel[m.id]?.credits ? (
+                    <span className="mt-1 font-mono text-[11px] opacity-80">
+                      From {formatCredits(costsByModel[m.id].credits)} cr
+                    </span>
+                  ) : null}
                 </button>
               </li>
             )
@@ -207,6 +223,7 @@ function FrameUpload({ label, preview, onPick, onClear, disabled }) {
 
 export default function VideoGenPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [project, setProject] = useState(getCachedActiveProject)
   const [capability, setCapability] = useState('textToVideo')
   const [model, setModel] = useState('')
@@ -229,6 +246,8 @@ export default function VideoGenPage() {
   const [savedKeys, setSavedKeys] = useState(() => new Set())
   const [creditsRemaining, setCreditsRemaining] = useState(null)
   const [byCapability, setByCapability] = useState(null)
+  const [costsByModel, setCostsByModel] = useState({})
+  const [creditQuote, setCreditQuote] = useState(null)
   const [catalog, setCatalog] = useState(DEFAULT_VIDEO_CATALOG)
 
   useEffect(() => {
@@ -248,13 +267,31 @@ export default function VideoGenPage() {
   }, [])
 
   useEffect(() => {
+    const source = location.state?.sourceImage
+    if (!source?.url) return
+
+    setCapability('imageToVideo')
+    setStartPreview(source.url)
+    setStartUrl(source.url)
+    setEndPreview('')
+    setEndUrl('')
+    setError('')
+    setStatusText('Image loaded for image to video.')
+    setPrompt('')
+    setNegativePrompt('')
+  }, [location.state])
+
+  useEffect(() => {
     getCredits()
       .then((b) => {
         if (b) setCreditsRemaining(b.creditsRemaining)
       })
       .catch(() => {})
     getCreditCosts()
-      .then((c) => setByCapability(c?.byCapability || null))
+      .then((c) => {
+        setByCapability(c?.byCapability || null)
+        setCostsByModel(c?.byModel || {})
+      })
       .catch(() => {})
     const onCredits = (e) => {
       if (e.detail?.creditsRemaining != null) setCreditsRemaining(e.detail.creditsRemaining)
@@ -304,7 +341,38 @@ export default function VideoGenPage() {
     reloadGallery()
   }, [reloadGallery])
 
-  const estimatedCost = estimateJobCost(byCapability, capability, 1)
+  useEffect(() => {
+    if (!model) return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const quote = await quoteCredits({
+          kind: 'video',
+          capability,
+          model,
+          settings: {
+            duration,
+            resolution,
+            aspectRatio,
+            generateAudio,
+          },
+        })
+        if (!cancelled) setCreditQuote(quote)
+      } catch {
+        if (!cancelled) setCreditQuote(null)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [aspectRatio, capability, duration, generateAudio, model, resolution])
+
+  const fallbackEstimatedCost = estimateJobCost(byCapability, capability, 1)
+  const estimatedCost = creditQuote?.credits ?? fallbackEstimatedCost
+  const hasCredits =
+    creditsRemaining == null ||
+    estimatedCost == null ||
+    Number(creditsRemaining) >= Number(estimatedCost)
   const canGo = canGenerateVideo({
     capability,
     prompt,
@@ -319,6 +387,9 @@ export default function VideoGenPage() {
     endImageUrl: endUrl,
     modelId: model,
   })
+  const creditBlockReason = !hasCredits
+    ? `Need ${formatCredits(estimatedCost)} credits, you have ${formatCredits(creditsRemaining)}.`
+    : ''
 
   const pickFrame = async (which, file) => {
     if (!project?.id) {
@@ -360,6 +431,10 @@ export default function VideoGenPage() {
     }
     if (!canGo) {
       setError(blockReason || 'Complete required fields.')
+      return
+    }
+    if (!hasCredits) {
+      setError(creditBlockReason || 'Insufficient credits.')
       return
     }
     setBusy(true)
@@ -431,11 +506,35 @@ export default function VideoGenPage() {
   const aspects = fieldOptions(entry, 'aspectRatio')
   const resolutions = fieldOptions(entry, 'resolution')
 
-  const handleEnhancePrompt = () => {
+  const handleEnhancePrompt = async () => {
     if (!prompt.trim() || enhancingPrompt) return
+    const original = prompt.trim()
     setEnhancingPrompt(true)
+    setError('')
     try {
-      setPrompt(enhanceVideoPrompt(prompt))
+      const data = await enhancePromptRemote({
+        kind: 'video',
+        prompt: original,
+        negativePrompt,
+        context: {
+          capability,
+          model,
+          duration,
+          aspectRatio,
+          resolution,
+          generateAudio,
+          hasStartImage: Boolean(startUrl),
+          hasEndImage: Boolean(endUrl),
+        },
+      })
+      const enhanced = data?.enhancedPrompt?.trim()
+      setPrompt(enhanced || enhanceVideoPrompt(original))
+      if (!negativePrompt.trim() && data?.negativePrompt?.trim() && fieldEnabled(entry, 'negativePrompt')) {
+        setNegativePrompt(data.negativePrompt.trim())
+      }
+    } catch (err) {
+      setPrompt(enhanceVideoPrompt(original))
+      setError(`Prompt enhancer unavailable; used local polish. ${promptEnhancementError(err)}`)
     } finally {
       setEnhancingPrompt(false)
     }
@@ -567,7 +666,12 @@ export default function VideoGenPage() {
 
           <div>
             <Label>Model</Label>
-            <ModelPicker models={models} value={model} onChange={setModel} />
+            <ModelPicker
+              models={models}
+              value={model}
+              onChange={setModel}
+              costsByModel={costsByModel}
+            />
           </div>
 
           {durations?.length ? (
@@ -654,15 +758,21 @@ export default function VideoGenPage() {
 
           <button
             type="button"
-            disabled={busy || !canGo || !project?.id}
+            disabled={busy || !canGo || !project?.id || !hasCredits}
             onClick={onGenerate}
             className="w-full rounded-xl bg-accent-blue px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            {busy ? 'Generating…' : 'Generate video'}
+            {busy
+              ? 'Generating…'
+              : estimatedCost != null
+                ? `Generate video · ${formatCredits(estimatedCost)} cr`
+                : 'Generate video'}
           </button>
           <p className="text-center text-xs text-text-muted">
-            {estimatedCost != null ? `~${estimatedCost} credits` : '—'}
-            {creditsRemaining != null ? ` · ${creditsRemaining} left` : ''}
+            {estimatedCost != null ? `est. ${formatCredits(estimatedCost)} credits` : '—'}
+            {creditQuote?.unitPrice ? ` · ${formatCredits(creditQuote.unitPrice)} / ${creditQuote.unit}` : ''}
+            {creditsRemaining != null ? ` · ${formatCredits(creditsRemaining)} left` : ''}
+            {!hasCredits && creditBlockReason ? ` · ${creditBlockReason}` : ''}
             {!canGo && blockReason ? ` · ${blockReason}` : ''}
           </p>
         </section>

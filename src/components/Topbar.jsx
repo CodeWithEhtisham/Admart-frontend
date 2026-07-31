@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import ProjectDropdown from './ProjectDropdown'
 import { getUserInitial } from '../utils/user.js'
 import api from '../utils/api'
-import { CREDITS_CHANGE_EVENT, getCredits } from '../utils/credits.js'
+import { CREDITS_CHANGE_EVENT, formatCredits, getCredits } from '../utils/credits.js'
 
 /**
  * Shared top navigation bar used by every in-app page.
@@ -126,7 +126,7 @@ export default function Topbar({ title }) {
             <span className="text-accent-blue" aria-hidden>
               ◆
             </span>
-            {creditsRemaining == null ? '…' : creditsRemaining}
+            {formatCredits(creditsRemaining, '…')}
           </Link>
           <button
             type="button"

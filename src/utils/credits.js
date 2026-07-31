@@ -31,9 +31,23 @@ export async function getCreditCosts() {
   return data
 }
 
+export async function quoteCredits(payload) {
+  const { data } = await api.post('/api/credits/quote', payload)
+  return data
+}
+
 export async function getCreditHistory(limit = 20) {
   const { data } = await api.get('/api/credits/history', { params: { limit } })
   return data?.items ?? (Array.isArray(data) ? data : [])
+}
+
+export function formatCredits(value, fallback = '—') {
+  if (value == null || value === '') return fallback
+  const n = Number(value)
+  if (!Number.isFinite(n)) return fallback
+  if (n === 0) return '0'
+  if (Math.abs(n) < 0.01) return n.toFixed(4).replace(/0+$/, '').replace(/\.$/, '')
+  return n.toFixed(2).replace(/0+$/, '').replace(/\.$/, '')
 }
 
 /** Estimate cost before Generate (frontend-credits.md). */

@@ -10,9 +10,11 @@ import {
   CREDITS_CHANGE_EVENT,
   creditsFromApiError,
   estimateJobCost,
+  formatCredits,
   getCreditCosts,
   getCredits,
   notifyCreditsChanged,
+  quoteCredits,
   syncCreditsFromPayload,
 } from '../utils/credits.js'
 import {
@@ -30,9 +32,11 @@ import {
   fieldVisible,
   flattenJobImages,
   formatGenerationError,
+  getImageCatalog,
   imageApiError,
   isRemoteUrl,
   listImageJobs,
+  loadImageCatalog,
   modelFamily,
   modelsForCapability,
   pollImageJob,
@@ -42,6 +46,10 @@ import {
 } from '../utils/imageGeneration.js'
 import { saveGeneratedAsset } from '../utils/generatedAssets.js'
 import { notifyLibraryChanged } from '../utils/library.js'
+import {
+  enhancePromptRemote,
+  promptEnhancementError,
+} from '../utils/promptEnhancement.js'
 
 function Label({ children }) {
   return (
@@ -108,7 +116,7 @@ function ChevronDown({ open }) {
   )
 }
 
-function ModelPicker({ models, value, onChange }) {
+function ModelPicker({ models, value, onChange, costsByModel = {} }) {
   const rootRef = useRef(null)
   const [open, setOpen] = useState(false)
   const selected = models.find((m) => m.id === value) || models[0]
@@ -157,6 +165,11 @@ function ModelPicker({ models, value, onChange }) {
               {selected.family}
             </p>
           ) : null}
+          {costsByModel[selected?.id]?.credits ? (
+            <p className="mt-0.5 text-[11px] text-text-tertiary">
+              From {formatCredits(costsByModel[selected.id].credits)} cr
+            </p>
+          ) : null}
         </div>
         <ChevronDown open={open} />
       </button>
@@ -196,6 +209,15 @@ function ModelPicker({ models, value, onChange }) {
                         }`}
                       >
                         {m.strength}
+                      </span>
+                    ) : null}
+                    {costsByModel[m.id]?.credits ? (
+                      <span
+                        className={`mt-1 block font-mono text-[11px] ${
+                          active ? 'text-accent-blue/80' : 'text-text-tertiary'
+                        }`}
+                      >
+                        From {formatCredits(costsByModel[m.id].credits)} cr
                       </span>
                     ) : null}
                   </span>
@@ -274,6 +296,9 @@ export default function ImageGenPage() {
   const [creditsRemaining, setCreditsRemaining] = useState(null)
   const [canGenerateCredits, setCanGenerateCredits] = useState(true)
   const [byCapability, setByCapability] = useState(null)
+  const [costsByModel, setCostsByModel] = useState({})
+  const [creditQuote, setCreditQuote] = useState(null)
+  const [imageCatalog, setImageCatalog] = useState(getImageCatalog)
 
   const reloadGallery = async (pid) => {
     if (!pid) return
@@ -302,6 +327,22 @@ export default function ImageGenPage() {
     })
   }
 
+  const goImageToVideo = (img) => {
+    if (!img?.url) return
+    navigate('/video-gen', {
+      state: {
+        sourceImage: {
+          url: img.url,
+          title: (img._prompt || lastPrompt || img.fileName || 'Generated image').slice(0, 120),
+          prompt: img._prompt || lastPrompt || '',
+          model: img.model,
+          capability: img.capability || capability,
+          jobId: img.jobId,
+        },
+      },
+    })
+  }
+
   const resultKey = (img) => img?.url || img?.fileName || img?.jobId || ''
 
   const saveResult = (img) => {
@@ -321,8 +362,8 @@ export default function ImageGenPage() {
     if (projectId) reloadGallery(projectId)
   }
 
-  const family = modelFamily(model)
-  const models = modelsForCapability(capability)
+  const family = modelFamily(model, imageCatalog)
+  const models = modelsForCapability(capability, imageCatalog)
   const capMeta = IMAGE_CAPABILITIES.find((c) => c.id === capability)
   const showPrompt = fieldVisible('prompt', capability, family)
   const showImages = fieldVisible('imageUrls', capability, family)
@@ -332,6 +373,7 @@ export default function ImageGenPage() {
   const showSeed = fieldVisible('seed', capability, family)
   const showGuidance = fieldVisible('guidance', capability, family)
   const showIdeogram = fieldVisible('ideogram', capability, family)
+  const showNegativePrompt = fieldVisible('negativePrompt', capability, family)
   const showUpscaleOpts = fieldVisible('upscaleOpts', capability, family)
   const showRembgOpts = fieldVisible('rembgOpts', capability, family)
 
@@ -339,15 +381,19 @@ export default function ImageGenPage() {
     () => ({ capability, prompt, imageUrls }),
     [capability, prompt, imageUrls],
   )
-  const estimatedCost = estimateJobCost(byCapability, capability, numImages)
+  const fallbackEstimatedCost = estimateJobCost(byCapability, capability, numImages)
+  const estimatedCost = creditQuote?.credits ?? fallbackEstimatedCost
   const formReady = Boolean(projectId) && canGenerate(formState)
   const hasCredits =
-    canGenerateCredits && (creditsRemaining == null || creditsRemaining > 0)
+    canGenerateCredits &&
+    (creditsRemaining == null ||
+      estimatedCost == null ||
+      Number(creditsRemaining) >= Number(estimatedCost))
   const ready = formReady && hasCredits
   const blockReason = !projectId
     ? 'Select or create a project first.'
     : !hasCredits
-      ? 'Insufficient credits. Buy more on Billing.'
+      ? `Need ${formatCredits(estimatedCost)} credits, you have ${formatCredits(creditsRemaining)}.`
       : validationMessage(formState)
   const isBusy =
     jobStatus === 'queued' ||
@@ -362,6 +408,23 @@ export default function ImageGenPage() {
 
   useEffect(() => {
     let cancelled = false
+    loadImageCatalog().then((data) => {
+      if (!cancelled && data) setImageCatalog(data)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    const available = modelsForCapability(capability, imageCatalog)
+    if (available.length && !available.some((m) => m.id === model)) {
+      setModel(defaultModel(capability, imageCatalog))
+    }
+  }, [capability, imageCatalog, model])
+
+  useEffect(() => {
+    let cancelled = false
     ;(async () => {
       try {
         const [bal, costs] = await Promise.all([getCredits(), getCreditCosts()])
@@ -372,6 +435,7 @@ export default function ImageGenPage() {
           notifyCreditsChanged(bal)
         }
         if (costs?.byCapability) setByCapability(costs.byCapability)
+        if (costs?.byModel) setCostsByModel(costs.byModel)
       } catch {
         /* badge stays optional if credits API down */
       }
@@ -390,6 +454,43 @@ export default function ImageGenPage() {
       window.removeEventListener(CREDITS_CHANGE_EVENT, onCredits)
     }
   }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    const settings = {
+      numImages,
+      resolution,
+      aspectRatio,
+      renderingSpeed,
+      scale,
+      operatingResolution,
+    }
+    ;(async () => {
+      try {
+        const quote = await quoteCredits({
+          kind: 'image',
+          capability,
+          model,
+          settings,
+        })
+        if (!cancelled) setCreditQuote(quote)
+      } catch {
+        if (!cancelled) setCreditQuote(null)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [
+    aspectRatio,
+    capability,
+    model,
+    numImages,
+    operatingResolution,
+    renderingSpeed,
+    resolution,
+    scale,
+  ])
 
   useEffect(() => {
     if (!projectId) {
@@ -423,7 +524,7 @@ export default function ImageGenPage() {
 
   const switchCapability = (id) => {
     setCapability(id)
-    setModel(defaultModel(id))
+    setModel(defaultModel(id, imageCatalog))
     setJobError(null)
     // Text to image never uses uploads — clear any leftover sources
     if (id === 'textToImage') {
@@ -438,11 +539,32 @@ export default function ImageGenPage() {
     }
   }
 
-  const handleEnhancePrompt = () => {
+  const handleEnhancePrompt = async () => {
     if (!prompt.trim() || enhancingPrompt) return
+    const original = prompt.trim()
     setEnhancingPrompt(true)
+    setJobError(null)
     try {
-      setPrompt(enhanceImagePrompt(prompt))
+      const data = await enhancePromptRemote({
+        kind: 'image',
+        prompt: original,
+        negativePrompt,
+        context: {
+          capability,
+          model,
+          aspectRatio: showAspect ? aspectRatio : undefined,
+          resolution: showResolution ? resolution : undefined,
+          numImages: showNumImages ? numImages : undefined,
+        },
+      })
+      const enhanced = data?.enhancedPrompt?.trim()
+      setPrompt(enhanced || enhanceImagePrompt(original))
+      if (!negativePrompt.trim() && data?.negativePrompt?.trim()) {
+        setNegativePrompt(data.negativePrompt.trim())
+      }
+    } catch (err) {
+      setPrompt(enhanceImagePrompt(original))
+      setJobError(`Prompt enhancer unavailable; used local polish. ${promptEnhancementError(err)}`)
     } finally {
       setEnhancingPrompt(false)
     }
@@ -476,7 +598,9 @@ export default function ImageGenPage() {
     setImageUrls((prev) => {
       const max =
         capability === 'multiEdit'
-          ? MAX_MULTI_IMAGES
+          ? model === 'wan/v2.6/image-to-image'
+            ? 3
+            : MAX_MULTI_IMAGES
           : capability === 'edit' ||
               capability === 'upscale' ||
               capability === 'removeBackground'
@@ -501,7 +625,7 @@ export default function ImageGenPage() {
 
   const chainTo = (nextCapability, assets) => {
     setCapability(nextCapability)
-    setModel(defaultModel(nextCapability))
+    setModel(defaultModel(nextCapability, imageCatalog))
     setImageUrls(
       assets.map((u, i) => ({
         id: `chain_${Date.now()}_${i}`,
@@ -532,10 +656,12 @@ export default function ImageGenPage() {
       payload.guidanceScale = guidanceScale
       payload.numInferenceSteps = numInferenceSteps
     }
+    if (showAdvanced && showNegativePrompt && negativePrompt.trim()) {
+      payload.negativePrompt = negativePrompt.trim()
+    }
     if (showIdeogram && showAdvanced) {
       payload.style = style
       payload.renderingSpeed = renderingSpeed
-      if (negativePrompt.trim()) payload.negativePrompt = negativePrompt.trim()
     }
     if (showUpscaleOpts) {
       payload.scale = scale
@@ -810,7 +936,12 @@ export default function ImageGenPage() {
 
               <div>
                 <Label>Model</Label>
-                <ModelPicker models={models} value={model} onChange={setModel} />
+                <ModelPicker
+                  models={models}
+                  value={model}
+                  onChange={setModel}
+                  costsByModel={costsByModel}
+                />
               </div>
 
               {showAspect && (
@@ -948,7 +1079,7 @@ export default function ImageGenPage() {
                 </>
               )}
 
-              {(showSeed || showGuidance || showIdeogram) && (
+              {(showSeed || showGuidance || showIdeogram || showNegativePrompt) && (
                 <div>
                   <button
                     type="button"
@@ -1012,6 +1143,17 @@ export default function ImageGenPage() {
                             />
                           </div>
                         </>
+                      )}
+                      {showNegativePrompt && !showIdeogram && (
+                        <div>
+                          <Label>Negative prompt</Label>
+                          <textarea
+                            value={negativePrompt}
+                            onChange={(e) => setNegativePrompt(e.target.value)}
+                            placeholder="Things to exclude..."
+                            className="min-h-[64px] w-full resize-y rounded-lg border border-border-default bg-input p-2 text-sm focus:border-accent-blue focus:outline-none"
+                          />
+                        </div>
                       )}
                       {showIdeogram && (
                         <>
@@ -1101,15 +1243,22 @@ export default function ImageGenPage() {
                       ? 'Queued…'
                       : 'Generating…'
                   : capability === 'removeBackground'
-                    ? 'Remove background'
+                    ? estimatedCost != null
+                      ? `Remove background · ${formatCredits(estimatedCost)} cr`
+                      : 'Remove background'
                     : capability === 'upscale'
-                      ? `Upscale ${scale}×`
+                    ? estimatedCost != null
+                      ? `Upscale ${scale}× · ${formatCredits(estimatedCost)} cr`
+                      : `Upscale ${scale}×`
+                    : estimatedCost != null
+                      ? `Generate · ${formatCredits(estimatedCost)} cr`
                       : 'Generate'}
               </button>
               <p className="mt-2 text-center font-mono text-[11px] text-text-muted">
                 {capMeta?.label}
-                {estimatedCost != null ? ` · ~${estimatedCost} cr` : ''}
-                {creditsRemaining != null ? ` · ${creditsRemaining} left` : ''}
+                {estimatedCost != null ? ` · est. ${formatCredits(estimatedCost)} cr` : ''}
+                {creditQuote?.unitPrice ? ` · ${formatCredits(creditQuote.unitPrice)} / ${creditQuote.unit}` : ''}
+                {creditsRemaining != null ? ` · ${formatCredits(creditsRemaining)} left` : ''}
               </p>
             </div>
           </div>
@@ -1209,7 +1358,7 @@ export default function ImageGenPage() {
                               <ActionBtn onClick={() => chainTo('removeBackground', [img])}>
                                 Remove BG
                               </ActionBtn>
-                              <ActionBtn onClick={() => navigate('/video-gen')}>Use in video</ActionBtn>
+                              <ActionBtn onClick={() => goImageToVideo(img)}>Image to video</ActionBtn>
                             </div>
                           </div>
                         </div>
@@ -1265,10 +1414,10 @@ export default function ImageGenPage() {
                             </button>
                             <button
                               type="button"
-                              onClick={() => navigate('/video-gen')}
+                              onClick={() => goImageToVideo(img)}
                               className="rounded-lg border border-border-default bg-elevated px-3 py-1.5 text-xs font-medium text-text-secondary"
                             >
-                              Use in video
+                              Image to video
                             </button>
                           </div>
                         </div>
@@ -1328,6 +1477,7 @@ export default function ImageGenPage() {
                             <ActionBtn onClick={() => chainTo('removeBackground', [img])}>
                               Remove BG
                             </ActionBtn>
+                            <ActionBtn onClick={() => goImageToVideo(img)}>Image to video</ActionBtn>
                           </div>
                         </div>
                       </div>
@@ -1370,6 +1520,13 @@ export default function ImageGenPage() {
                             className="rounded-md bg-elevated px-2 py-0.5 text-[10px] font-medium text-text-tertiary hover:text-text-primary"
                           >
                             Remove BG
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => goImageToVideo(img)}
+                            className="rounded-md bg-elevated px-2 py-0.5 text-[10px] font-medium text-text-tertiary hover:text-text-primary"
+                          >
+                            Image to video
                           </button>
                         </div>
                       </div>

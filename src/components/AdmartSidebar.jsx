@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { useAppChrome } from '../utils/appChrome'
 import {
   CREDITS_CHANGE_EVENT,
+  formatCredits,
   getCredits,
 } from '../utils/credits.js'
 
@@ -212,11 +213,13 @@ export default function AdmartSidebar() {
     }
   }, [])
 
-  const rem = remaining ?? '—'
-  const tot = total ?? '—'
+  const rem = formatCredits(remaining)
+  const tot = formatCredits(total)
+  const remainingNumber = Number(remaining)
+  const totalNumber = Number(total)
   const pct =
-    typeof remaining === 'number' && typeof total === 'number' && total > 0
-      ? Math.min(100, Math.round((remaining / total) * 100))
+    Number.isFinite(remainingNumber) && Number.isFinite(totalNumber) && totalNumber > 0
+      ? Math.min(100, Math.round((remainingNumber / totalNumber) * 100))
       : 0
 
   return (

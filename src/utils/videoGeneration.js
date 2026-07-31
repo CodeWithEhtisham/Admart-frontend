@@ -163,7 +163,7 @@ export const DEFAULT_VIDEO_CATALOG = {
       "strength": "Social short clips"
     },
     {
-      "id": "fal-ai/wan/v2.6/text-to-video",
+      "id": "wan/v2.6/text-to-video",
       "label": "Wan 2.6",
       "family": "wan",
       "default": false,
@@ -183,7 +183,8 @@ export const DEFAULT_VIDEO_CATALOG = {
         "resolution": [
           "720p",
           "1080p"
-        ]
+        ],
+        "negativePrompt": true
       },
       "strength": "Coherent scenes"
     },
@@ -348,7 +349,7 @@ export const DEFAULT_VIDEO_CATALOG = {
       "strength": "Product / social"
     },
     {
-      "id": "fal-ai/wan/v2.6/image-to-video",
+      "id": "wan/v2.6/image-to-video",
       "label": "Wan 2.6",
       "family": "wan",
       "default": false,
@@ -360,12 +361,14 @@ export const DEFAULT_VIDEO_CATALOG = {
         "seed": true,
         "duration": [
           "5",
-          "10"
+          "10",
+          "15"
         ],
         "resolution": [
           "720p",
           "1080p"
-        ]
+        ],
+        "negativePrompt": true
       },
       "strength": "Coherent I2V"
     },
