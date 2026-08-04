@@ -31,6 +31,17 @@ export async function getCreditCosts() {
   return data
 }
 
+export async function getPlans() {
+  const { data } = await api.get('/api/credits/plans')
+  return data
+}
+
+export async function activatePlan(plan) {
+  const { data } = await api.post('/api/credits/plan', { plan })
+  notifyCreditsChanged(data)
+  return data
+}
+
 export async function quoteCredits(payload) {
   const { data } = await api.post('/api/credits/quote', payload)
   return data

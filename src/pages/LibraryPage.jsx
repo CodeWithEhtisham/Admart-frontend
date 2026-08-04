@@ -143,7 +143,6 @@ export default function LibraryPage() {
   useEffect(() => {
     clearSelection()
     load()
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- reload on tab only
   }, [tab, load])
 
   useEffect(() => {

@@ -324,7 +324,7 @@ export default function VideoGenPage() {
     setAspectRatio(aspects?.[0] || '')
     setResolution(resos?.[0] || '')
     setGenerateAudio(Boolean(entry.fields?.generateAudio))
-  }, [entry?.id])
+  }, [entry])
 
   const reloadGallery = useCallback(async () => {
     const pid = project?.id
@@ -574,7 +574,7 @@ export default function VideoGenPage() {
     })
   }
 
-  const useAsStartFrame = async (item) => {
+  const handleUseAsStartFrame = async () => {
     // Can't extract frame client-side easily; send user to I2V with hint.
     // Prefer opening library / prompt them — for now switch to imageToVideo tab.
     setCapability('imageToVideo')
@@ -847,7 +847,7 @@ export default function VideoGenPage() {
                           </button>
                           <button
                             type="button"
-                            onClick={() => useAsStartFrame(item)}
+                            onClick={() => handleUseAsStartFrame()}
                             className="rounded-lg border border-border-default px-2 py-1 text-[11px] text-text-secondary hover:bg-elevated hover:text-text-primary"
                           >
                             Use in I2V

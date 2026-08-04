@@ -365,7 +365,7 @@ export default function AuthPage() {
               <LogoLink />
               <h1 className="font-heading text-3xl font-bold text-text-primary">Create your account</h1>
               <p className="mt-2 text-sm text-text-secondary">
-                Get 5 free credits and start publishing AI videos in minutes.
+                Create your workspace and choose a plan when you are ready to generate.
               </p>
 
               <button
@@ -393,7 +393,7 @@ export default function AuthPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label htmlFor="first-name" className="mb-1.5 block text-xs font-medium text-text-tertiary">
-                      First name
+                      First name <span className="text-text-muted">(optional)</span>
                     </label>
                     <input
                       id="first-name"
@@ -403,12 +403,11 @@ export default function AuthPage() {
                       onChange={(e) => setFirstName(e.target.value)}
                       className="h-11 w-full rounded-xl border border-border-default bg-input px-3 text-sm text-text-primary outline-none ring-accent-blue/30 transition placeholder:text-text-muted focus:border-accent-blue/50 focus:ring-2"
                       placeholder="Alex"
-                      required
                     />
                   </div>
                   <div>
                     <label htmlFor="last-name" className="mb-1.5 block text-xs font-medium text-text-tertiary">
-                      Last name
+                      Last name <span className="text-text-muted">(optional)</span>
                     </label>
                     <input
                       id="last-name"
@@ -418,7 +417,6 @@ export default function AuthPage() {
                       onChange={(e) => setLastName(e.target.value)}
                       className="h-11 w-full rounded-xl border border-border-default bg-input px-3 text-sm text-text-primary outline-none ring-accent-blue/30 transition placeholder:text-text-muted focus:border-accent-blue/50 focus:ring-2"
                       placeholder="Rivera"
-                      required
                     />
                   </div>
                 </div>

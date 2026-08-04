@@ -181,7 +181,7 @@ export default function LandingPage() {
             </Link>
           </form>
           <p className="mt-4 text-sm text-text-tertiary">
-            No credit card · 5 free credits · Cancel anytime
+            No credit card · Basic, Plus, and Pro plans available
           </p>
         </div>
 
@@ -325,43 +325,36 @@ export default function LandingPage() {
             <h2 className="font-heading text-3xl font-bold text-text-primary sm:text-4xl">
               Simple pricing
             </h2>
-            <p className="mt-3 text-text-secondary">Start free, upgrade when you scale.</p>
+            <p className="mt-3 text-text-secondary">Choose Basic, Plus, or Pro. Payment setup is coming soon.</p>
           </div>
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-6 md:grid-cols-3">
             {[
               {
-                name: 'Free',
-                price: '$0',
-                credits: '5 credits / month',
+                name: 'Basic',
+                price: '$9',
+                credits: '3 credits / month · PKR 2,499 approx',
                 featured: false,
-                features: ['Text to video', '720p exports', '1 connected account', 'Community support'],
+                features: ['Image and video generation', 'Manual publishing', '2 connected social accounts', 'Standard support'],
               },
               {
-                name: 'Starter',
-                price: '$19',
-                credits: '50 credits / month',
-                featured: false,
-                features: ['1080p exports', '3 connected accounts', 'AI voiceover', 'Email support'],
+                name: 'Plus',
+                price: '$29',
+                credits: '10 credits / month · PKR 7,999 approx',
+                featured: true,
+                features: ['Image-to-video', 'Prompt enhancement', '5 connected social accounts', 'Content calendar', 'Email support'],
               },
               {
                 name: 'Pro',
-                price: '$49',
-                credits: '200 credits / month',
-                featured: true,
-                features: [
-                  '4K exports',
-                  'Unlimited accounts',
-                  'Priority queue',
-                  'Smart captions + SEO',
-                  'Dedicated success manager',
-                ],
-              },
-              {
-                name: 'Agency',
-                price: '$99',
-                credits: '500 credits / month',
+                price: '$79',
+                credits: '30 credits / month · PKR 21,999 approx',
                 featured: false,
-                features: ['Team workspaces', 'SSO', 'API access', 'SLA + onboarding'],
+                features: [
+                  'Priority generation queue',
+                  'Multi-brand workspaces',
+                  'Auto-publishing workflows',
+                  'Analytics dashboard',
+                  'Priority support',
+                ],
               },
             ].map((plan) => (
               <div
@@ -399,7 +392,7 @@ export default function LandingPage() {
                       : 'border border-border-default bg-elevated text-text-primary hover:border-border-default'
                   }`}
                 >
-                  {plan.name === 'Free' ? 'Start free' : 'Choose plan'}
+                  Choose plan
                 </Link>
               </div>
             ))}
@@ -410,7 +403,7 @@ export default function LandingPage() {
       <section className="px-6 pb-20 lg:px-16">
         <div className="mx-auto max-w-4xl rounded-3xl border border-border-default bg-linear-to-br from-accent-blue/15 to-accent-violet/15 px-8 py-14 text-center sm:px-16">
           <h2 className="font-heading text-3xl font-bold text-text-primary sm:text-4xl">
-            Start creating for free today
+            Start building your AI content workspace
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-text-secondary">
             Join creators shipping weekly without a production crew. Bring your ideas — Admart handles

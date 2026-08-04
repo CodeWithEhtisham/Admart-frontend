@@ -138,6 +138,7 @@ function ModelPicker({ models, value, onChange, costsByModel = {} }) {
   }, [open])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- close the popover when the model catalog changes.
     setOpen(false)
   }, [models])
 

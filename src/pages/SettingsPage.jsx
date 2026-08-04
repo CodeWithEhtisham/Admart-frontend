@@ -1,12 +1,16 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
+import api from '../utils/api'
+import { getStoredUser } from '../utils/user.js'
 
 const INITIAL = {
-  firstName: 'Ehtisham',
-  lastName: 'Khan',
-  email: 'ehtisham.khan@example.com',
+  firstName: '',
+  lastName: '',
+  email: '',
+  avatarUrl: '',
+  googleId: '',
   timezone: 'PKT',
   language: 'en',
   currentPassword: '',
@@ -33,29 +37,7 @@ const INITIAL = {
   teamInviteRole: 'editor',
 }
 
-const TEAM = [
-  {
-    id: '1',
-    name: 'Ehtisham',
-    email: 'ehtisham.khan@example.com',
-    role: 'Admin',
-    initial: 'E',
-  },
-  {
-    id: '2',
-    name: 'Abdullah Abid',
-    email: 'abdullah@example.com',
-    role: 'Editor',
-    initial: 'A',
-  },
-  {
-    id: '3',
-    name: 'Sarah Ahmed',
-    email: 'sarah@example.com',
-    role: 'Viewer',
-    initial: 'S',
-  },
-]
+const TEAM = []
 
 const TABS = [
   { id: 'profile', label: 'Profile', icon: '👤' },
@@ -64,6 +46,51 @@ const TABS = [
   { id: 'team', label: 'Team', icon: '👥' },
   { id: 'danger', label: 'Danger Zone', icon: '⚠️', danger: true },
 ]
+
+function userInitial(source) {
+  const value =
+    source?.firstName ||
+    source?.first_name ||
+    source?.name ||
+    source?.username ||
+    source?.email ||
+    ''
+  const ch = String(value).trim().charAt(0)
+  return ch ? ch.toUpperCase() : 'U'
+}
+
+function formFromUser(user, base = INITIAL) {
+  return {
+    ...base,
+    firstName: user?.firstName || user?.first_name || '',
+    lastName: user?.lastName || user?.last_name || '',
+    email: user?.email || '',
+    avatarUrl: user?.avatarUrl || user?.avatar_url || '',
+    googleId: user?.googleId || user?.google_id || '',
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  }
+}
+
+function teamFromUser(user) {
+  if (!user?.email) return []
+  const name = `${user.firstName || user.first_name || ''} ${user.lastName || user.last_name || ''}`.trim()
+  return [
+    {
+      id: 'current-user',
+      name: name || user.email,
+      email: user.email,
+      role: 'Admin',
+      initial: userInitial(user),
+    },
+  ]
+}
+
+function updateStoredUser(user) {
+  if (typeof window === 'undefined' || !user) return
+  window.localStorage.setItem('user', JSON.stringify(user))
+}
 
 function Toggle({ checked, onChange, ariaLabel }) {
   return (
@@ -91,6 +118,7 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('profile')
   const [toast, setToast] = useState(null)
   const [apiKeyVisible, setApiKeyVisible] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [savedSnapshot, setSavedSnapshot] = useState(INITIAL)
   const [savedTeam, setSavedTeam] = useState(TEAM)
   const [form, setForm] = useState(INITIAL)
@@ -107,6 +135,33 @@ export default function SettingsPage() {
     window.setTimeout(() => setToast(null), 2400)
   }, [])
 
+  useEffect(() => {
+    let cancelled = false
+
+    const applyUser = (user) => {
+      const nextForm = formFromUser(user)
+      const nextTeam = teamFromUser(user)
+      setForm(nextForm)
+      setSavedSnapshot(nextForm)
+      setTeam(nextTeam)
+      setSavedTeam(nextTeam)
+    }
+
+    applyUser(getStoredUser())
+
+    api.get('/api/auth/me')
+      .then(({ data }) => {
+        if (cancelled) return
+        updateStoredUser(data)
+        applyUser(data)
+      })
+      .catch(() => {})
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   const update = useCallback((patch) => {
     setForm((f) => ({ ...f, ...patch }))
   }, [])
@@ -115,11 +170,28 @@ export default function SettingsPage() {
     setForm((f) => ({ ...f, notif: { ...f.notif, [key]: val } }))
   }, [])
 
-  const handleSave = () => {
-    setSavedSnapshot(form)
-    setSavedTeam(team)
-    showToast('Settings saved successfully.')
-    navigate('.', { replace: true })
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      const { data } = await api.patch('/api/auth/me', {
+        firstName: form.firstName,
+        lastName: form.lastName,
+        avatarUrl: form.avatarUrl || null,
+      })
+      updateStoredUser(data)
+      const nextForm = formFromUser(data, form)
+      const nextTeam = teamFromUser(data)
+      setForm(nextForm)
+      setSavedSnapshot(nextForm)
+      setTeam(nextTeam)
+      setSavedTeam(nextTeam)
+      showToast('Settings saved successfully.')
+      navigate('.', { replace: true })
+    } catch (err) {
+      showToast(err?.response?.data?.detail || 'Could not save profile settings.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handleCancel = () => {
@@ -138,6 +210,8 @@ export default function SettingsPage() {
   }
 
   const maskedKey = apiKeyVisible ? 'vid_sk_live_7f3a9c2e1b8d4a6f0e2c9b1d' : 'vid_sk_live_••••••••••••••••••••'
+  const profileInitial = userInitial(form)
+  const isGoogleAccount = Boolean(form.googleId)
 
   return (
     <AppLayout>
@@ -185,18 +259,24 @@ export default function SettingsPage() {
                   <div>
                     <h2 className="font-heading text-xl font-bold text-text-primary">Profile Picture</h2>
                     <div className="mt-4 flex flex-wrap items-center gap-4">
-                      <div className="flex h-[72px] w-[72px] items-center justify-center rounded-2xl font-heading text-2xl font-bold text-white gradient-bg">
-                        E
+                      <div className="flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-2xl font-heading text-2xl font-bold text-white gradient-bg">
+                        {form.avatarUrl ? (
+                          <img src={form.avatarUrl} alt="" className="h-full w-full object-cover" />
+                        ) : (
+                          profileInitial
+                        )}
                       </div>
                       <div className="flex gap-2">
                         <button
                           type="button"
+                          onClick={() => showToast('Profile picture upload will be connected with media storage.')}
                           className="rounded-xl border border-border-default bg-elevated px-4 py-2 text-sm font-medium text-text-primary hover:border-accent-blue/40"
                         >
                           Upload
                         </button>
                         <button
                           type="button"
+                          onClick={() => update({ avatarUrl: '' })}
                           className="rounded-xl border border-border-default bg-input px-4 py-2 text-sm text-text-secondary hover:text-text-primary"
                         >
                           Remove
@@ -231,7 +311,11 @@ export default function SettingsPage() {
                           value={form.email}
                           className="mt-1 w-full cursor-not-allowed rounded-xl border border-border-default bg-elevated px-3 py-2.5 text-text-secondary"
                         />
-                        <p className="mt-1 text-xs text-text-muted">Signed in with Google — email cannot be changed here.</p>
+                        <p className="mt-1 text-xs text-text-muted">
+                          {isGoogleAccount
+                            ? 'Signed in with Google - email cannot be changed here.'
+                            : 'Email is used for sign in and cannot be changed here.'}
+                        </p>
                       </label>
                       <label className="block text-sm">
                         <span className="text-text-tertiary">Timezone</span>
@@ -598,10 +682,10 @@ export default function SettingsPage() {
                 <button
                   type="button"
                   onClick={handleSave}
-                  disabled={!dirty}
+                  disabled={!dirty || saving}
                   className="rounded-xl bg-accent-blue px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-accent-blue/20 disabled:cursor-not-allowed disabled:opacity-40 hover:bg-accent-blue/90"
                 >
-                  Save Changes
+                  {saving ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
             </div>

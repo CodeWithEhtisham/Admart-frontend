@@ -1,37 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import {
   CAPABILITY_LABELS,
+  activatePlan,
   formatCredits,
   formatCreditDate,
   formatPlanName,
   getCreditCosts,
   getCreditHistory,
   getCredits,
+  getPlans,
   notifyCreditsChanged,
 } from '../utils/credits.js'
-
-const PACKS = [
-  { credits: 10, price: 5, per: 0.5, best: false },
-  { credits: 50, price: 20, per: 0.4, best: false },
-  { credits: 100, price: 35, per: 0.35, best: true },
-  { credits: 250, price: 75, per: 0.3, best: false },
-]
-
-const PLAN_FEATURES = {
-  free: ['Text to video', '720p exports', '1 connected account', 'Community support'],
-  starter: ['1080p exports', '3 connected accounts', 'AI voiceover', 'Email support'],
-  pro: [
-    'Unlimited exports in HD',
-    'Priority rendering queue',
-    'Brand Kit & templates',
-    'Multi-platform publishing',
-    'Analytics dashboard',
-  ],
-  agency: ['Team workspaces', 'SSO', 'API access', 'SLA + onboarding'],
-}
 
 function TypeBadge({ type }) {
   const map = {
@@ -47,15 +29,37 @@ function TypeBadge({ type }) {
   )
 }
 
+function updateStoredUserPlan(balance) {
+  if (typeof window === 'undefined' || !balance) return
+  try {
+    const stored = JSON.parse(window.localStorage.getItem('user') || '{}') || {}
+    window.localStorage.setItem(
+      'user',
+      JSON.stringify({
+        ...stored,
+        plan: balance.plan,
+        planDetails: balance.planDetails,
+        creditsTotal: balance.creditsTotal,
+        creditsUsed: balance.creditsUsed,
+        creditsRemaining: balance.creditsRemaining,
+        creditsResetAt: balance.creditsResetAt,
+      }),
+    )
+  } catch {
+    // Keep billing usable even if localStorage contains stale/non-JSON data.
+  }
+}
+
 export default function BillingPage() {
-  const navigate = useNavigate()
   const [toast, setToast] = useState(null)
   const toastTimer = useRef(null)
 
   const [balance, setBalance] = useState(null)
+  const [plans, setPlans] = useState([])
   const [costItems, setCostItems] = useState([])
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
+  const [activatingPlan, setActivatingPlan] = useState(null)
   const [error, setError] = useState(null)
 
   const showToast = useCallback((msg) => {
@@ -68,12 +72,14 @@ export default function BillingPage() {
     setLoading(true)
     setError(null)
     try {
-      const [bal, costs, hist] = await Promise.all([
+      const [bal, costs, hist, planData] = await Promise.all([
         getCredits(),
         getCreditCosts(),
         getCreditHistory(20),
+        getPlans(),
       ])
       setBalance(bal)
+      setPlans(Array.isArray(planData?.items) ? planData.items : [])
       notifyCreditsChanged(bal)
       setCostItems(costs?.items?.length ? costs.items : Object.entries(costs?.byCapability || {}).map(
         ([capability, credits]) => ({
@@ -91,6 +97,24 @@ export default function BillingPage() {
     }
   }, [])
 
+  const handleActivatePlan = useCallback(
+    async (planId) => {
+      setActivatingPlan(planId)
+      setError(null)
+      try {
+        const nextBalance = await activatePlan(planId)
+        setBalance(nextBalance)
+        updateStoredUserPlan(nextBalance)
+        showToast(nextBalance?.message || 'Plan activated for testing.')
+      } catch (err) {
+        setError(err?.response?.data?.message || err?.message || 'Could not activate plan.')
+      } finally {
+        setActivatingPlan(null)
+      }
+    },
+    [showToast],
+  )
+
   useEffect(() => {
     load()
   }, [load])
@@ -103,7 +127,8 @@ export default function BillingPage() {
   const usedLabel = formatCredits(used)
   const pct = total > 0 ? Math.min(100, Math.round((remaining / total) * 100)) : 0
   const planKey = String(balance?.plan || 'free').toLowerCase()
-  const features = PLAN_FEATURES[planKey] || PLAN_FEATURES.free
+  const currentPlan = balance?.planDetails || plans.find((p) => p.id === planKey)
+  const features = currentPlan?.features || ['Choose a plan to unlock generation credits']
   const resetLabel = balance?.creditsResetAt
     ? formatCreditDate(balance.creditsResetAt)
     : 'No automatic reset'
@@ -158,14 +183,14 @@ export default function BillingPage() {
             <div className="mt-6 flex flex-wrap gap-3">
               <button
                 type="button"
-                onClick={() => navigate('/create')}
+                onClick={() => document.getElementById('billing-plans')?.scrollIntoView({ behavior: 'smooth' })}
                 className="inline-flex items-center gap-2 rounded-xl border border-border-default bg-input px-4 py-2.5 text-sm font-semibold text-text-primary hover:border-accent-violet/40"
               >
-                ↑ Upgrade plan
+                ↑ Choose plan
               </button>
               <button
                 type="button"
-                onClick={() => showToast('Plan management opens when billing checkout is connected.')}
+                onClick={() => showToast('Payment checkout is not connected yet. Plan buttons are for testing.')}
                 className="inline-flex items-center gap-2 rounded-xl bg-accent-blue px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-accent-blue/25 hover:bg-accent-blue/90"
               >
                 Manage Plan
@@ -211,41 +236,61 @@ export default function BillingPage() {
           </div>
         </section>
 
-        <section>
-          <h2 className="font-heading text-xl font-bold text-text-primary">Buy More Credits</h2>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {PACKS.map((p) => (
+        <section id="billing-plans">
+          <h2 className="font-heading text-xl font-bold text-text-primary">Business Plans</h2>
+          <p className="mt-1 text-sm text-text-tertiary">
+            Payment is not connected yet. Activating a plan here is for local testing.
+          </p>
+          <div className="mt-5 grid gap-4 md:grid-cols-3">
+            {plans.map((plan) => {
+              const active = plan.id === planKey
+              const busy = activatingPlan === plan.id
+              return (
               <div
-                key={p.credits}
+                key={plan.id}
                 className={`relative flex flex-col rounded-2xl border p-5 ${
-                  p.best
+                  active
                     ? 'border-accent-blue/50 bg-surface shadow-lg shadow-accent-blue/10'
                     : 'border-border-default bg-surface'
                 }`}
               >
-                {p.best && (
+                {active && (
                   <span className="absolute -top-2.5 left-4 rounded-full bg-accent-blue px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-                    Best Value
+                    Current
                   </span>
                 )}
-                <p className="font-heading text-2xl font-bold text-text-primary">{p.credits} cr</p>
-                <p className="mt-1 text-2xl font-semibold text-text-primary">${p.price}</p>
-                <p className="mt-1 text-sm text-text-tertiary">${p.per.toFixed(2)} / credit</p>
+                <p className="font-heading text-2xl font-bold text-text-primary">{plan.name}</p>
+                <p className="mt-1 text-sm text-text-tertiary">{plan.description}</p>
+                <p className="mt-4 text-2xl font-semibold text-text-primary">${plan.priceUsd} / month</p>
+                <p className="mt-1 text-sm text-text-tertiary">
+                  PKR {Number(plan.pricePkr || 0).toLocaleString()} approx
+                </p>
+                <p className="mt-3 rounded-xl border border-border bg-panel px-3 py-2 font-mono text-sm font-semibold text-accent-blue">
+                  {formatCredits(plan.monthlyCredits)} credits monthly
+                </p>
+                <ul className="mt-5 flex-1 space-y-2 text-sm text-text-secondary">
+                  {(plan.features || []).map((feature) => (
+                    <li key={feature} className="flex gap-2">
+                      <span className="text-success">✓</span>
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
                 <button
                   type="button"
-                  onClick={() =>
-                    showToast(`Purchasing ${p.credits} credits — checkout would open here.`)
-                  }
+                  onClick={() => handleActivatePlan(plan.id)}
+                  disabled={active || busy || Boolean(activatingPlan)}
                   className={`mt-5 w-full rounded-xl py-2.5 text-sm font-semibold transition ${
-                    p.best
-                      ? 'bg-accent-blue text-white hover:bg-accent-blue/90'
-                      : 'border border-border-default bg-elevated text-text-primary hover:border-accent-blue/40'
+                    active
+                      ? 'cursor-not-allowed border border-accent-blue/40 bg-accent-blue/10 text-accent-blue'
+                      : 'bg-accent-blue text-white hover:bg-accent-blue/90 disabled:cursor-not-allowed disabled:opacity-60'
                   }`}
                 >
-                  Buy Now
+                  {active ? 'Current Plan' : busy ? 'Activating...' : 'Activate for Testing'}
                 </button>
               </div>
-            ))}
+              )
+            })}
           </div>
         </section>
 
@@ -279,23 +324,12 @@ export default function BillingPage() {
         </section>
 
         <section className="rounded-2xl border border-border-default bg-surface p-6">
-          <h2 className="font-heading text-xl font-bold text-text-primary">Payment Methods</h2>
-          <div className="mt-5 flex flex-wrap gap-4">
-            <div className="flex min-w-[200px] flex-1 items-center justify-between rounded-xl border border-border-default bg-panel px-4 py-3">
-              <div>
-                <p className="text-sm font-medium text-text-primary">Visa ending 4242</p>
-                <p className="text-xs text-text-tertiary">Expires 12/28</p>
-              </div>
-              <span className="rounded-full border border-success/30 bg-success/15 px-2 py-0.5 text-xs font-medium text-success">
-                Default
-              </span>
-            </div>
-            <button
-              type="button"
-              className="flex min-w-[160px] flex-1 items-center justify-center rounded-xl border border-dashed border-border-default bg-input px-4 py-3 text-sm font-medium text-text-secondary hover:border-accent-blue/40 hover:text-text-primary"
-            >
-              + Add New Card
-            </button>
+          <h2 className="font-heading text-xl font-bold text-text-primary">Payment Setup</h2>
+          <div className="mt-5 rounded-xl border border-dashed border-border-default bg-input px-4 py-4">
+            <p className="text-sm font-medium text-text-primary">Checkout is not connected yet.</p>
+            <p className="mt-1 text-sm text-text-tertiary">
+              When payment is integrated, successful payment webhooks will activate plans and renew credits.
+            </p>
           </div>
         </section>
 
