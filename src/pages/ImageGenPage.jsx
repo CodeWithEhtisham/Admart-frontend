@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import {
@@ -256,8 +256,10 @@ async function downloadAsset(img) {
 
 export default function ImageGenPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const fileInputRef = useRef(null)
   const abortRef = useRef(null)
+  const appliedTemplateRef = useRef(null)
 
   const [activeProject, setActiveProject] = useState(getCachedActiveProject)
   const projectId = activeProject?.id
@@ -423,6 +425,33 @@ export default function ImageGenPage() {
       setModel(defaultModel(capability, imageCatalog))
     }
   }, [capability, imageCatalog, model])
+
+  useEffect(() => {
+    const template = location.state?.template
+    if (!template || template.kind !== 'image') return
+
+    const key = `${template.id || template.title || 'template'}:${template.model || ''}`
+    if (appliedTemplateRef.current === key) return
+    appliedTemplateRef.current = key
+
+    const nextCapability = template.capability || 'textToImage'
+    const settings = template.settings || {}
+    const available = modelsForCapability(nextCapability, imageCatalog)
+    const nextModel =
+      template.model && available.some((entry) => entry.id === template.model)
+        ? template.model
+        : defaultModel(nextCapability, imageCatalog)
+
+    setCapability(nextCapability)
+    setModel(nextModel)
+    setPrompt(template.prompt || '')
+    setNegativePrompt(template.negativePrompt || '')
+    if (settings.aspectRatio) setAspectRatio(settings.aspectRatio)
+    if (settings.resolution) setResolution(settings.resolution)
+    if (settings.numImages) setNumImages(Number(settings.numImages) || 1)
+    setJobError(null)
+    setResults([])
+  }, [imageCatalog, location.state])
 
   useEffect(() => {
     let cancelled = false

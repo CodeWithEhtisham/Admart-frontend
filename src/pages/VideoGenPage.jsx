@@ -224,6 +224,7 @@ function FrameUpload({ label, preview, onPick, onClear, disabled }) {
 export default function VideoGenPage() {
   const navigate = useNavigate()
   const location = useLocation()
+  const appliedTemplateRef = useRef(null)
   const [project, setProject] = useState(getCachedActiveProject)
   const [capability, setCapability] = useState('textToVideo')
   const [model, setModel] = useState('')
@@ -267,6 +268,34 @@ export default function VideoGenPage() {
   }, [])
 
   useEffect(() => {
+    const template = location.state?.template
+    if (!template || template.kind !== 'video') return
+
+    const key = `${template.id || template.title || 'template'}:${template.model || ''}`
+    if (appliedTemplateRef.current === key) return
+    appliedTemplateRef.current = key
+
+    const nextCapability = template.capability || 'textToVideo'
+    const settings = template.settings || {}
+    const available = modelsForCapability(nextCapability, catalog)
+    const nextModel =
+      template.model && available.some((entry) => entry.id === template.model)
+        ? template.model
+        : defaultModel(nextCapability, catalog)
+
+    setCapability(nextCapability)
+    setModel(nextModel || '')
+    setPrompt(template.prompt || '')
+    setNegativePrompt(template.negativePrompt || '')
+    if (settings.duration) setDuration(settings.duration)
+    if (settings.aspectRatio) setAspectRatio(settings.aspectRatio)
+    if (settings.resolution) setResolution(settings.resolution)
+    if (settings.generateAudio != null) setGenerateAudio(Boolean(settings.generateAudio))
+    setError('')
+    setStatusText('Template loaded. Edit the prompt or generate when ready.')
+  }, [catalog, location.state])
+
+  useEffect(() => {
     const source = location.state?.sourceImage
     if (!source?.url) return
 
@@ -307,8 +336,9 @@ export default function VideoGenPage() {
 
   useEffect(() => {
     const next = defaultModel(capability, catalog)
-    setModel(next || '')
-  }, [capability, catalog])
+    const available = modelsForCapability(capability, catalog)
+    if (!available.some((entry) => entry.id === model)) setModel(next || '')
+  }, [capability, catalog, model])
 
   const entry = useMemo(
     () => getModelEntry(capability, model, catalog),
@@ -320,9 +350,9 @@ export default function VideoGenPage() {
     const durs = fieldOptions(entry, 'duration')
     const aspects = fieldOptions(entry, 'aspectRatio')
     const resos = fieldOptions(entry, 'resolution')
-    setDuration(durs?.[0] || '')
-    setAspectRatio(aspects?.[0] || '')
-    setResolution(resos?.[0] || '')
+    setDuration((prev) => (durs?.includes(prev) ? prev : durs?.[0] || ''))
+    setAspectRatio((prev) => (aspects?.includes(prev) ? prev : aspects?.[0] || ''))
+    setResolution((prev) => (resos?.includes(prev) ? prev : resos?.[0] || ''))
     setGenerateAudio(Boolean(entry.fields?.generateAudio))
   }, [entry])
 

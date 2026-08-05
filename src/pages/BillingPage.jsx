@@ -57,6 +57,7 @@ export default function BillingPage() {
   const [balance, setBalance] = useState(null)
   const [plans, setPlans] = useState([])
   const [costItems, setCostItems] = useState([])
+  const [pricingFormula, setPricingFormula] = useState([])
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
   const [activatingPlan, setActivatingPlan] = useState(null)
@@ -80,13 +81,14 @@ export default function BillingPage() {
       ])
       setBalance(bal)
       setPlans(Array.isArray(planData?.items) ? planData.items : [])
+      setPricingFormula(Array.isArray(costs?.pricingFormula) ? costs.pricingFormula : [])
       notifyCreditsChanged(bal)
       setCostItems(costs?.items?.length ? costs.items : Object.entries(costs?.byCapability || {}).map(
         ([capability, credits]) => ({
           capability,
           credits,
           perImage: capability === 'textToImage',
-          notes: capability === 'textToImage' ? 'Cost × numImages' : 'Flat cost per job',
+          notes: capability === 'textToImage' ? 'Cost x numImages' : 'Flat cost per job',
         }),
       ))
       setHistory(Array.isArray(hist) ? hist : [])
@@ -295,25 +297,44 @@ export default function BillingPage() {
         </section>
 
         <section>
-          <h2 className="font-heading text-xl font-bold text-text-primary">Generation credit costs</h2>
-          <p className="mt-1 text-sm text-text-tertiary">From GET /api/credits/costs</p>
+          <h2 className="font-heading text-xl font-bold text-text-primary">Admart generation costs</h2>
+          <p className="mt-1 text-sm text-text-tertiary">
+            Final charges include Admart markup. fal cost basis is shown here for testing.
+          </p>
+          {pricingFormula.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {pricingFormula.map((tier) => (
+                <span
+                  key={`${tier.falCost}-${tier.markupMultiplier}`}
+                  className="rounded-full border border-border bg-panel px-3 py-1 text-xs text-text-tertiary"
+                >
+                  fal {tier.falCost}: {tier.markupMultiplier}x
+                </span>
+              ))}
+            </div>
+          )}
           <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {(costItems.length ? costItems : []).map((row) => (
               <div
                 key={row.capability}
-                className="flex items-center justify-between rounded-xl border border-border-default bg-panel px-4 py-3"
+                className="flex items-center justify-between gap-4 rounded-xl border border-border-default bg-panel px-4 py-3"
               >
-                <div>
+                <div className="min-w-0">
                   <span className="text-text-secondary">
                     {CAPABILITY_LABELS[row.capability] || row.capability}
                   </span>
                   {row.notes && (
                     <p className="text-[11px] text-text-muted">{row.notes}</p>
                   )}
+                  {row.falCost && row.markupMultiplier && (
+                    <p className="text-[11px] text-text-muted">
+                      fal {formatCredits(row.falCost)} x {formatCredits(row.markupMultiplier)}
+                    </p>
+                  )}
                 </div>
-                <span className="font-mono font-semibold text-accent-blue">
+                <span className="shrink-0 text-right font-mono font-semibold text-accent-blue">
                   {formatCredits(row.credits)}
-                  {row.perImage ? ' × n' : ''} cr
+                  {row.perImage ? ' x n' : ''} cr
                 </span>
               </div>
             ))}

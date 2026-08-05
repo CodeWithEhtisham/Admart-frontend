@@ -1,183 +1,430 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import AppLayout from '../components/AppLayout.jsx'
+import Topbar from '../components/Topbar'
+import {
+  CREDITS_CHANGE_EVENT,
+  formatCredits,
+  getCredits,
+} from '../utils/credits.js'
 import {
   GENERATED_ASSETS_EVENT,
   downloadAsset,
   downloadFilename,
-  formatAssetDate,
   getSavedAssets,
 } from '../utils/generatedAssets'
-import AppLayout from '../components/AppLayout.jsx'
-import Topbar from '../components/Topbar'
+import {
+  LIBRARY_CHANGE_EVENT,
+  formatDuration,
+  formatLibraryDate,
+  listLibraryAssets,
+} from '../utils/library.js'
+import {
+  PROJECT_CHANGE_EVENT,
+  getCachedActiveProject,
+  listProjects,
+  listSocialAccounts,
+  resolveActiveProject,
+  setActiveProject,
+} from '../utils/projects'
 import { getStoredUser } from '../utils/user.js'
 
-const FILTERS = ['All', 'Published', 'Ready', 'Scheduled', 'Generating']
-
-/** Rotating creative taglines for the dashboard hero. */
-const HERO_TAGLINES = [
-  'Ready to create something scroll-stopping today? ✨',
-  'Your next viral moment starts right here. 🚀',
-  "Let's turn today's idea into tomorrow's trend. 🔥",
-  'Lights, camera, automation — make something great. 🎬',
-  'Time to make content the algorithm loves. 📈',
-  'Big ideas deserve big reach. Let’s ship one. 💫',
+const FILTERS = [
+  { id: 'all', label: 'All' },
+  { id: 'ready', label: 'Ready' },
+  { id: 'generating', label: 'Generating' },
+  { id: 'published', label: 'Published' },
+  { id: 'scheduled', label: 'Scheduled' },
+  { id: 'failed', label: 'Failed' },
 ]
 
-/** Pick a tagline that stays stable for the day but changes day to day. */
-function getDailyTagline() {
-  const dayIndex = Math.floor(Date.now() / 86_400_000)
-  return HERO_TAGLINES[dayIndex % HERO_TAGLINES.length]
+const STATUS_STYLES = {
+  ready: 'border-success/30 bg-success/15 text-success',
+  generating: 'border-accent-violet/30 bg-accent-violet/15 text-accent-violet',
+  published: 'border-accent-blue/30 bg-accent-blue/15 text-accent-blue',
+  scheduled: 'border-warning/30 bg-warning/15 text-warning',
+  failed: 'border-error/30 bg-error/15 text-error',
 }
 
-const SPARKLINES = {
-  credits: [40, 52, 48, 55, 50, 42],
-  videos: [12, 14, 15, 16, 17, 18],
-  views: [98, 102, 108, 110, 118, 124],
-  scheduled: [3, 4, 5, 5, 6, 7],
+const PLATFORM_LABELS = {
+  instagram: 'Instagram',
+  facebook: 'Facebook',
+  youtube: 'YouTube',
+  tiktok: 'TikTok',
 }
 
-const VIDEOS = [
-  {
-    id: 1,
-    title: 'Summer Drop — Teaser',
-    status: 'Published',
-    duration: '0:24',
-    date: 'Apr 12, 2026',
-    platforms: ['T', 'Y', 'I'],
-  },
-  {
-    id: 2,
-    title: 'Brand Story — Vertical',
-    status: 'Generating',
-    duration: '—',
-    date: 'Just now',
-    platforms: ['T', 'I'],
-  },
-  {
-    id: 3,
-    title: 'Product Walkthrough',
-    status: 'Ready',
-    duration: '1:02',
-    date: 'Apr 11, 2026',
-    platforms: ['Y'],
-  },
-  {
-    id: 4,
-    title: 'Customer Spotlight',
-    status: 'Scheduled',
-    duration: '0:45',
-    date: 'Apr 16, 2026',
-    platforms: ['F', 'I'],
-  },
-  {
-    id: 5,
-    title: 'Tutorial — Onboarding',
-    status: 'Generating',
-    duration: '—',
-    date: '2 min ago',
-    platforms: ['Y', 'T'],
-  },
-  {
-    id: 6,
-    title: 'Flash Sale Promo',
-    status: 'Failed',
-    duration: '0:18',
-    date: 'Apr 9, 2026',
-    platforms: ['T'],
-  },
-]
+function getFirstName(user) {
+  const raw =
+    user?.firstName ||
+    user?.first_name ||
+    user?.name ||
+    user?.email?.split('@')?.[0] ||
+    ''
+  return raw.trim() || 'there'
+}
 
-function Sparkline({ values, tone }) {
-  const max = Math.max(...values, 1)
-  const toneBar = {
-    blue: 'bg-accent-blue',
-    green: 'bg-success',
-    violet: 'bg-accent-violet',
-    yellow: 'bg-warning',
-  }[tone]
+function statusLabel(status) {
+  const s = String(status || 'ready').toLowerCase()
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}
 
-  return (
-    <div className="flex h-10 items-end gap-1">
-      {values.map((v, i) => (
-        <div
-          key={i}
-          className={`w-1.5 rounded-sm ${toneBar} opacity-80`}
-          style={{ height: `${Math.max(12, (v / max) * 100)}%` }}
-        />
-      ))}
-    </div>
-  )
+function formatNumber(value) {
+  const n = Number(value || 0)
+  if (!Number.isFinite(n)) return '0'
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`
+  if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, '')}K`
+  return String(n)
+}
+
+function normalizeLocalAsset(asset) {
+  if (!asset) return null
+  const sourceUrl = asset.sourceUrl || asset.thumbnailUrl || ''
+  if (!sourceUrl) return null
+  return {
+    id: `local-${asset.id || sourceUrl}`,
+    mediaType: asset.type === 'video' ? 'video' : 'image',
+    title: asset.title || (asset.type === 'video' ? 'Generated video' : 'Generated image'),
+    status: String(asset.status || 'ready').toLowerCase(),
+    thumbnailUrl: asset.thumbnailUrl || sourceUrl,
+    sourceUrl,
+    prompt: asset.prompt || '',
+    width: asset.width || null,
+    height: asset.height || null,
+    durationSeconds: asset.durationSeconds ?? null,
+    createdAt: asset.createdAt || new Date().toISOString(),
+    jobId: asset.jobId || null,
+    localOnly: true,
+  }
+}
+
+function mergeAssets(serverItems, localItems) {
+  const seen = new Set()
+  const merged = []
+  for (const item of serverItems || []) {
+    if (!item) continue
+    const key = item.sourceUrl || item.id
+    if (key) seen.add(key)
+    merged.push(item)
+  }
+  for (const local of localItems || []) {
+    const item = normalizeLocalAsset(local)
+    if (!item) continue
+    const key = item.sourceUrl || item.id
+    if (seen.has(key)) continue
+    seen.add(key)
+    merged.push(item)
+  }
+  return merged.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 }
 
 function StatusBadge({ status }) {
-  const map = {
-    Published: 'bg-accent-blue/20 text-accent-blue border-accent-blue/30',
-    Generating:
-      'border-accent-violet/30 bg-accent-violet/15 text-accent-violet animate-pulse-dot',
-    Ready: 'border-success/30 bg-success/15 text-success',
-    Scheduled: 'border-warning/30 bg-warning/15 text-warning',
-    Failed: 'border-error/30 bg-error/15 text-error',
-  }
+  const key = String(status || 'ready').toLowerCase()
+  const styles = STATUS_STYLES[key] || STATUS_STYLES.ready
   return (
-    <span
-      className={`rounded-full border px-2 py-0.5 text-xs font-medium ${map[status] || map.Published}`}
-    >
-      {status}
+    <span className={`rounded-full border px-2 py-0.5 text-xs font-medium ${styles}`}>
+      {statusLabel(key)}
     </span>
   )
 }
 
-function PlatformDot({ letter }) {
-  const colors = {
-    T: 'bg-tiktok',
-    Y: 'bg-youtube',
-    I: 'bg-instagram',
-    F: 'bg-facebook',
-  }
+function MetricCard({ label, value, detail, tone }) {
+  const toneClass = {
+    blue: 'border-accent-blue/30 bg-accent-blue/10 text-accent-blue',
+    green: 'border-success/30 bg-success/10 text-success',
+    violet: 'border-accent-violet/30 bg-accent-violet/10 text-accent-violet',
+    yellow: 'border-warning/30 bg-warning/10 text-warning',
+  }[tone]
+
   return (
-    <span
-      className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white ${colors[letter]}`}
-    >
-      {letter}
-    </span>
+    <section className="rounded-2xl border border-border-default bg-surface p-5">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-xs font-medium uppercase text-text-tertiary">{label}</p>
+          <p className="mt-2 font-heading text-3xl font-bold text-text-primary">{value}</p>
+          <p className="mt-1 text-sm text-text-secondary">{detail}</p>
+        </div>
+        <span className={`rounded-xl border px-2.5 py-1 text-xs font-bold ${toneClass}`}>
+          Live
+        </span>
+      </div>
+    </section>
+  )
+}
+
+function AssetThumb({ asset }) {
+  const status = String(asset.status || 'ready').toLowerCase()
+  if (status === 'generating') {
+    return (
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-elevated">
+        <div className="h-9 w-9 animate-spin rounded-full border-[3px] border-accent-violet/20 border-t-accent-violet" />
+        <p className="mt-2 text-xs text-text-tertiary">Generating</p>
+      </div>
+    )
+  }
+
+  if (status === 'failed') {
+    return (
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-error/10 px-4 text-center">
+        <p className="text-sm font-semibold text-error">Failed</p>
+        <p className="mt-1 line-clamp-2 text-xs text-text-muted">{asset.title}</p>
+      </div>
+    )
+  }
+
+  const src = asset.sourceUrl || asset.thumbnailUrl
+  if (src && asset.mediaType === 'video') {
+    const videoSrc = src.includes('#') ? src : `${src}#t=0.1`
+    return (
+      <>
+        <video
+          src={videoSrc}
+          muted
+          playsInline
+          preload="metadata"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 flex items-center justify-center bg-black/25">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-black/55 text-white">
+            <span className="ml-0.5 h-0 w-0 border-y-[8px] border-l-[13px] border-y-transparent border-l-white" />
+          </span>
+        </div>
+      </>
+    )
+  }
+
+  if (src) {
+    return <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" />
+  }
+
+  return <div className="absolute inset-0 gradient-bg opacity-80" />
+}
+
+function AssetCard({ asset, onOpen, onDownload }) {
+  const isVideo = asset.mediaType === 'video'
+  const meta = isVideo
+    ? formatDuration(asset.durationSeconds) || 'Video'
+    : asset.width && asset.height
+      ? `${asset.width} x ${asset.height}`
+      : 'Image'
+
+  return (
+    <article className="overflow-hidden rounded-2xl border border-border-default bg-surface">
+      <button
+        type="button"
+        onClick={() => onOpen(asset)}
+        className="block w-full text-left"
+      >
+        <div className="relative aspect-video overflow-hidden bg-input">
+          <AssetThumb asset={asset} />
+          <div className="absolute left-3 top-3">
+            <StatusBadge status={asset.status} />
+          </div>
+        </div>
+      </button>
+      <div className="space-y-3 p-4">
+        <div>
+          <h3 className="truncate font-heading font-semibold text-text-primary">{asset.title}</h3>
+          <div className="mt-1 flex items-center justify-between gap-3 text-xs text-text-tertiary">
+            <span>{meta}</span>
+            <time>{formatLibraryDate(asset.createdAt)}</time>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => onOpen(asset)}
+            className="rounded-lg bg-accent-blue px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-accent-blue/90"
+          >
+            {asset.status === 'generating' ? 'View Job' : 'Open'}
+          </button>
+          {asset.sourceUrl && asset.status !== 'generating' && asset.status !== 'failed' && (
+            <button
+              type="button"
+              onClick={() => onDownload(asset)}
+              className="rounded-lg border border-border-default bg-elevated px-3 py-1.5 text-xs font-semibold text-text-secondary transition hover:text-text-primary"
+            >
+              Download
+            </button>
+          )}
+        </div>
+      </div>
+    </article>
   )
 }
 
 export default function DashboardPage() {
   const navigate = useNavigate()
   const user = getStoredUser()
-  const firstName = user.firstName || user.first_name || user.name || 'there'
-  const tagline = getDailyTagline()
-  const [activeFilter, setActiveFilter] = useState('All')
-  const [savedAssets, setSavedAssets] = useState(() => getSavedAssets())
-  const [assetMessage, setAssetMessage] = useState('')
+  const firstName = getFirstName(user)
 
-  useEffect(() => {
-    const refreshSavedAssets = () => setSavedAssets(getSavedAssets())
-    window.addEventListener('storage', refreshSavedAssets)
-    window.addEventListener(GENERATED_ASSETS_EVENT, refreshSavedAssets)
-    return () => {
-      window.removeEventListener('storage', refreshSavedAssets)
-      window.removeEventListener(GENERATED_ASSETS_EVENT, refreshSavedAssets)
+  const [activeFilter, setActiveFilter] = useState('all')
+  const [balance, setBalance] = useState(null)
+  const [activeProject, setActiveProjectState] = useState(() => getCachedActiveProject())
+  const [projects, setProjects] = useState([])
+  const [assets, setAssets] = useState([])
+  const [accounts, setAccounts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
+  const [error, setError] = useState('')
+  const [assetMessage, setAssetMessage] = useState('')
+  const [lastUpdated, setLastUpdated] = useState(null)
+
+  const loadDashboard = useCallback(async ({ silent = false } = {}) => {
+    if (silent) setRefreshing(true)
+    else setLoading(true)
+    setError('')
+
+    try {
+      const [projectResult, creditResult] = await Promise.allSettled([
+        listProjects(),
+        getCredits(),
+      ])
+
+      let nextProjects = []
+      let nextActiveProject = getCachedActiveProject()
+
+      if (projectResult.status === 'fulfilled') {
+        nextProjects = projectResult.value.projects || []
+        nextActiveProject = resolveActiveProject(projectResult.value)
+        setProjects(nextProjects)
+        setActiveProjectState(nextActiveProject)
+        if (nextActiveProject && getCachedActiveProject()?.id !== nextActiveProject.id) {
+          setActiveProject(nextActiveProject)
+        }
+      } else {
+        setProjects([])
+        setActiveProjectState(nextActiveProject)
+      }
+
+      if (creditResult.status === 'fulfilled') {
+        setBalance(creditResult.value)
+      }
+
+      const projectId = nextActiveProject?.id
+      const [libraryResult, accountsResult] = projectId
+        ? await Promise.allSettled([
+            listLibraryAssets('all', { projectId, limit: 50 }),
+            listSocialAccounts(projectId),
+          ])
+        : [{ status: 'fulfilled', value: { items: [] } }, { status: 'fulfilled', value: [] }]
+
+      const serverAssets =
+        libraryResult.status === 'fulfilled' ? libraryResult.value.items || [] : []
+      const localAssets = getSavedAssets()
+      setAssets(mergeAssets(serverAssets, localAssets))
+      setAccounts(accountsResult.status === 'fulfilled' ? accountsResult.value || [] : [])
+
+      if (projectResult.status === 'rejected' && creditResult.status === 'rejected') {
+        setError('Could not reach the backend. Start the backend and refresh.')
+      } else if (libraryResult.status === 'rejected') {
+        setError('Dashboard loaded, but library data could not be refreshed.')
+      }
+
+      setLastUpdated(new Date().toISOString())
+    } catch (err) {
+      setError(err?.response?.data?.message || err?.message || 'Could not load dashboard data.')
+    } finally {
+      setLoading(false)
+      setRefreshing(false)
     }
   }, [])
+
+  useEffect(() => {
+    loadDashboard()
+  }, [loadDashboard])
+
+  useEffect(() => {
+    const refresh = () => loadDashboard({ silent: true })
+    const onCredits = (event) => {
+      if (event.detail) setBalance((prev) => ({ ...(prev || {}), ...event.detail }))
+    }
+
+    window.addEventListener(PROJECT_CHANGE_EVENT, refresh)
+    window.addEventListener(LIBRARY_CHANGE_EVENT, refresh)
+    window.addEventListener(GENERATED_ASSETS_EVENT, refresh)
+    window.addEventListener(CREDITS_CHANGE_EVENT, onCredits)
+    window.addEventListener('storage', refresh)
+    window.addEventListener('focus', refresh)
+    return () => {
+      window.removeEventListener(PROJECT_CHANGE_EVENT, refresh)
+      window.removeEventListener(LIBRARY_CHANGE_EVENT, refresh)
+      window.removeEventListener(GENERATED_ASSETS_EVENT, refresh)
+      window.removeEventListener(CREDITS_CHANGE_EVENT, onCredits)
+      window.removeEventListener('storage', refresh)
+      window.removeEventListener('focus', refresh)
+    }
+  }, [loadDashboard])
+
+  useEffect(() => {
+    const hasGenerating = assets.some((asset) => asset.status === 'generating')
+    if (!hasGenerating) return undefined
+    const id = window.setInterval(() => loadDashboard({ silent: true }), 4000)
+    return () => window.clearInterval(id)
+  }, [assets, loadDashboard])
+
+  const counts = useMemo(() => {
+    const videos = assets.filter((asset) => asset.mediaType === 'video').length
+    const images = assets.filter((asset) => asset.mediaType === 'image').length
+    const generating = assets.filter((asset) => asset.status === 'generating').length
+    const ready = assets.filter((asset) => ['ready', 'published'].includes(asset.status)).length
+    const failed = assets.filter((asset) => asset.status === 'failed').length
+    const connected = accounts.filter((account) => account.connected).length
+    return { videos, images, generating, ready, failed, connected }
+  }, [accounts, assets])
+
+  const filteredAssets = useMemo(() => {
+    if (activeFilter === 'all') return assets
+    return assets.filter((asset) => asset.status === activeFilter)
+  }, [activeFilter, assets])
+
+  const balanceRemaining = Number(balance?.creditsRemaining ?? 0)
+  const balanceTotal = Number(balance?.creditsTotal ?? 0)
+  const balanceUsed = Number(balance?.creditsUsed ?? Math.max(0, balanceTotal - balanceRemaining))
+  const activeProjectName = activeProject?.name || activeProject?.title || 'No active project'
+  const connectedNames = accounts
+    .filter((account) => account.connected)
+    .map((account) => PLATFORM_LABELS[account.platform] || account.platform)
+    .join(', ')
 
   const handleAssetDownload = async (asset) => {
     setAssetMessage('')
     try {
-      await downloadAsset(asset.sourceUrl || asset.thumbnailUrl, downloadFilename(asset.title || 'admart-image'))
+      const ext = asset.mediaType === 'video' ? 'mp4' : 'png'
+      await downloadAsset(asset.sourceUrl || asset.thumbnailUrl, downloadFilename(asset.title || 'admart-asset', ext))
       setAssetMessage('Download started.')
-    } catch (error) {
-      setAssetMessage(error instanceof Error ? error.message : 'Could not download asset.')
+    } catch (err) {
+      setAssetMessage(err instanceof Error ? err.message : 'Could not download asset.')
     }
   }
 
-  const handleUseAsset = (asset) => {
-    if (asset?.type === 'video') {
-      navigate('/video-gen')
+  const openAsset = (asset) => {
+    if (asset.status === 'generating' || asset.status === 'failed') {
+      navigate('/library')
       return
     }
-    navigate('/image-gen')
+    if (asset.mediaType === 'video') {
+      navigate('/publish', {
+        state: {
+          type: 'video',
+          videoUrl: asset.sourceUrl,
+          title: asset.title,
+          prompt: asset.prompt,
+          jobId: asset.jobId,
+          assetId: asset.id,
+        },
+      })
+      return
+    }
+    navigate('/publish', {
+      state: {
+        type: 'image',
+        imageUrl: asset.sourceUrl,
+        title: asset.title,
+        prompt: asset.prompt,
+        jobId: asset.jobId,
+        assetId: asset.id,
+      },
+    })
   }
 
   return (
@@ -185,297 +432,201 @@ export default function DashboardPage() {
       <Topbar title="Home" />
 
       <main className="space-y-8 p-7">
-        <section className="animate-slide-up relative overflow-hidden rounded-2xl border border-white/10 gradient-bg p-8 text-white shadow-lg shadow-accent-violet/20">
-          <span
-            className="animate-float pointer-events-none absolute -right-4 -top-4 text-6xl opacity-30"
-            aria-hidden
-          >
-            ✦
-          </span>
-          <p className="font-heading text-2xl font-bold">Welcome back, {firstName} 👋</p>
-          <p className="mt-1 text-sm text-white/90">{tagline}</p>
-          <p className="mt-1 text-xs text-white/70">42 credits remaining</p>
+        <section className="relative overflow-hidden rounded-2xl border border-white/10 gradient-bg p-7 text-white shadow-lg shadow-accent-violet/20">
+          <div className="max-w-3xl">
+            <p className="font-heading text-2xl font-bold">Welcome back, {firstName}</p>
+            <p className="mt-2 text-sm text-white/85">
+              {activeProject ? `Live dashboard for ${activeProjectName}.` : 'Create a project to start generating content.'}
+            </p>
+            <p className="mt-1 text-xs text-white/70">
+              {formatCredits(balanceRemaining, '0')} credits remaining
+              {lastUpdated ? ` - updated ${formatLibraryDate(lastUpdated)}` : ''}
+              {refreshing ? ' - refreshing' : ''}
+            </p>
+          </div>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
-              to="/video-gen"
-              className="inline-flex items-center gap-2 rounded-xl bg-white/15 px-5 py-2.5 text-sm font-semibold backdrop-blur transition hover:bg-white/25"
+              to="/templates"
+              className="rounded-xl bg-white/15 px-5 py-2.5 text-sm font-semibold backdrop-blur transition hover:bg-white/25"
             >
-              <span>✦</span> New Video
+              Use Template
             </Link>
             <Link
               to="/image-gen"
-              className="inline-flex items-center gap-2 rounded-xl bg-accent-violet/40 px-5 py-2.5 text-sm font-semibold backdrop-blur transition hover:bg-accent-violet/55"
+              className="rounded-xl bg-accent-violet/40 px-5 py-2.5 text-sm font-semibold backdrop-blur transition hover:bg-accent-violet/55"
             >
-              <span>⊕</span> New Image
+              New Image
+            </Link>
+            <Link
+              to="/video-gen"
+              className="rounded-xl bg-success/35 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-success/50"
+            >
+              New Video
             </Link>
             <button
               type="button"
-              onClick={() => navigate('/library', { state: { openUpload: true } })}
-              className="inline-flex items-center gap-2 rounded-xl bg-success/35 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-success/50"
+              onClick={() => loadDashboard({ silent: true })}
+              className="rounded-xl border border-white/25 px-5 py-2.5 text-sm font-semibold text-white/90 transition hover:bg-white/10"
             >
-              <span>↑</span> Upload
+              Refresh
             </button>
           </div>
         </section>
 
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {[
-            {
-              label: 'Credits Remaining',
-              value: '42',
-              trend: '↓ 158 used',
-              icon: '✦',
-              spark: SPARKLINES.credits,
-              tone: 'blue',
-            },
-            {
-              label: 'Videos This Month',
-              value: '18',
-              trend: '↑ +3',
-              icon: '▶',
-              spark: SPARKLINES.videos,
-              tone: 'green',
-            },
-            {
-              label: 'Total Views',
-              value: '124K',
-              trend: '↑ +12%',
-              icon: '◎',
-              spark: SPARKLINES.views,
-              tone: 'violet',
-            },
-            {
-              label: 'Scheduled Posts',
-              value: '7',
-              trend: '↑ +2',
-              icon: '⌚',
-              spark: SPARKLINES.scheduled,
-              tone: 'yellow',
-            },
-          ].map((card) => (
-            <div
-              key={card.label}
-              className="rounded-2xl border border-border-default bg-surface p-5"
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-text-tertiary">
-                    {card.label}
-                  </p>
-                  <p className="mt-2 font-heading text-3xl font-bold text-text-primary">{card.value}</p>
-                  <p className="mt-1 text-sm text-text-secondary">{card.trend}</p>
-                </div>
-                <span className="text-2xl opacity-80" aria-hidden>
-                  {card.icon}
-                </span>
-              </div>
-              <div className="mt-4 flex justify-end">
-                <Sparkline values={card.spark} tone={card.tone} />
-              </div>
-            </div>
-          ))}
-        </section>
-
-        {savedAssets.length > 0 && (
-          <section>
-            <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <h2 className="font-heading text-xl font-bold text-text-primary">Saved Assets</h2>
-                {assetMessage && <p className="mt-1 text-xs text-text-tertiary">{assetMessage}</p>}
-              </div>
-              <Link
-                to="/library"
-                className="text-sm font-medium text-accent-blue hover:underline"
-              >
-                View library →
-              </Link>
-            </div>
-
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {savedAssets.slice(0, 6).map((asset) => (
-                <article
-                  key={asset.id}
-                  className="overflow-hidden rounded-2xl border border-border-default bg-surface"
-                >
-                  <div className="relative aspect-[4/3] overflow-hidden bg-input">
-                    {asset.type === 'video' ? (
-                      <video
-                        src={asset.thumbnailUrl || asset.sourceUrl}
-                        className="h-full w-full object-cover"
-                        muted
-                      />
-                    ) : (
-                      <img
-                        src={asset.thumbnailUrl || asset.sourceUrl}
-                        alt={asset.title}
-                        className="h-full w-full object-cover"
-                      />
-                    )}
-                    <div className="absolute left-3 top-3">
-                      <StatusBadge status={asset.status || 'Ready'} />
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="truncate font-heading font-semibold text-text-primary">{asset.title}</h3>
-                    <div className="mt-2 flex items-center justify-between gap-3 text-xs">
-                      <span className="text-text-tertiary">
-                        {asset.width && asset.height
-                          ? `${asset.width} x ${asset.height}`
-                          : asset.resolution || 'Image'}
-                      </span>
-                      <time className="text-text-tertiary">{formatAssetDate(asset.createdAt)}</time>
-                    </div>
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handleUseAsset(asset)}
-                        className="rounded-lg bg-accent-blue px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-accent-blue/90"
-                      >
-                        Use
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleAssetDownload(asset)}
-                        className="rounded-lg border border-border-default bg-elevated px-3 py-1.5 text-xs font-semibold text-text-secondary transition hover:text-text-primary"
-                      >
-                        Download
-                      </button>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
+        {error && (
+          <section className="rounded-2xl border border-warning/30 bg-warning/10 p-4 text-sm text-warning">
+            {error}
           </section>
         )}
 
-        <section>
-          <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
-            <h2 className="font-heading text-xl font-bold text-text-primary">Recent Videos</h2>
-            <Link
-              to="/library"
-              className="text-sm font-medium text-accent-blue hover:underline"
-            >
-              View all →
-            </Link>
-          </div>
-
-          <div className="mb-5 flex flex-wrap gap-2">
-            {FILTERS.map((f) => (
-              <button
-                key={f}
-                type="button"
-                onClick={() => setActiveFilter(f)}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                  activeFilter === f
-                    ? 'bg-accent-blue text-white shadow-lg shadow-accent-blue/20'
-                    : 'border border-border-default bg-elevated text-text-secondary hover:text-text-primary'
-                }`}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
-
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {VIDEOS.filter(
-              (v) => activeFilter === 'All' || v.status === activeFilter
-            ).map((v) => (
-              <article
-                key={v.id}
-                className="group cursor-pointer overflow-hidden rounded-2xl border border-border-default bg-surface"
-                role="button"
-                tabIndex={0}
-                onClick={() => navigate('/result')}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    navigate('/result')
-                  }
-                }}
-              >
-                <div className="relative aspect-video overflow-hidden">
-                  <div className="absolute inset-0 gradient-bg opacity-90 transition group-hover:scale-105" />
-                  <div className="absolute left-3 top-3">
-                    <StatusBadge status={v.status} />
-                  </div>
-                  <div className="absolute bottom-3 right-3 rounded-md bg-black/50 px-2 py-0.5 font-mono text-xs text-white">
-                    {v.duration}
-                  </div>
-                  <div
-                    className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition group-hover:bg-black/30 group-hover:opacity-100"
-                    aria-hidden
-                  >
-                    <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 text-2xl text-base shadow-lg">
-                      ▶
-                    </span>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-heading font-semibold text-text-primary">{v.title}</h3>
-                    <button
-                      type="button"
-                      onClick={(e) => e.stopPropagation()}
-                      className="text-text-muted hover:text-text-primary"
-                      aria-label="Menu"
-                    >
-                      ···
-                    </button>
-                  </div>
-                  <div className="mt-3 flex items-center justify-between">
-                    <div className="flex gap-1">
-                      {v.platforms.map((p) => (
-                        <PlatformDot key={p} letter={p} />
-                      ))}
-                    </div>
-                    <time className="text-xs text-text-tertiary">{v.date}</time>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
+        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <MetricCard
+            label="Credits Remaining"
+            value={formatCredits(balanceRemaining, loading ? '...' : '0')}
+            detail={`${formatCredits(balanceUsed, '0')} used of ${formatCredits(balanceTotal, '0')}`}
+            tone="blue"
+          />
+          <MetricCard
+            label="Library Assets"
+            value={loading ? '...' : formatNumber(assets.length)}
+            detail={`${counts.images} images, ${counts.videos} videos`}
+            tone="green"
+          />
+          <MetricCard
+            label="Active Jobs"
+            value={loading ? '...' : formatNumber(counts.generating)}
+            detail={`${counts.ready} ready, ${counts.failed} failed`}
+            tone="violet"
+          />
+          <MetricCard
+            label="Connected Accounts"
+            value={loading ? '...' : formatNumber(counts.connected)}
+            detail={connectedNames || 'No social accounts connected'}
+            tone="yellow"
+          />
         </section>
 
-        <section>
-          <h2 className="mb-4 font-heading text-xl font-bold text-text-primary">Quick Actions</h2>
-          <div className="grid gap-4 md:grid-cols-3">
-            <Link
-              to="/templates"
-              className="flex items-center gap-3 rounded-2xl border border-border-default bg-surface p-5 transition hover:border-accent-blue/40"
-            >
-              <span className="text-2xl" aria-hidden>
-                🔥
-              </span>
+        <section className="grid gap-5 xl:grid-cols-[1fr_340px]">
+          <div>
+            <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
               <div>
-                <p className="font-semibold text-text-primary">Trending Templates</p>
-                <p className="text-sm text-text-tertiary">Start from top performers</p>
+                <h2 className="font-heading text-xl font-bold text-text-primary">Recent Content</h2>
+                {assetMessage && <p className="mt-1 text-xs text-text-tertiary">{assetMessage}</p>}
               </div>
-            </Link>
-            <Link
-              to="/social"
-              className="flex items-center gap-3 rounded-2xl border border-border-default bg-surface p-5 transition hover:border-accent-violet/40"
-            >
-              <span className="text-2xl" aria-hidden>
-                ⚡
-              </span>
-              <div>
-                <p className="font-semibold text-text-primary">Connect Instagram</p>
-                <p className="text-sm text-text-tertiary">Finish setup in one click</p>
+              <Link to="/library" className="text-sm font-medium text-accent-blue hover:underline">
+                View library
+              </Link>
+            </div>
+
+            <div className="mb-5 flex flex-wrap gap-2">
+              {FILTERS.map((filter) => (
+                <button
+                  key={filter.id}
+                  type="button"
+                  onClick={() => setActiveFilter(filter.id)}
+                  className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                    activeFilter === filter.id
+                      ? 'bg-accent-blue text-white shadow-lg shadow-accent-blue/20'
+                      : 'border border-border-default bg-elevated text-text-secondary hover:text-text-primary'
+                  }`}
+                >
+                  {filter.label}
+                </button>
+              ))}
+            </div>
+
+            {loading ? (
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {[0, 1, 2].map((item) => (
+                  <div key={item} className="h-64 animate-pulse rounded-2xl border border-border-default bg-surface" />
+                ))}
               </div>
-            </Link>
-            <Link
-              to="/analytics"
-              className="flex items-center gap-3 rounded-2xl border border-border-default bg-surface p-5 transition hover:border-success/40"
-            >
-              <span className="text-2xl" aria-hidden>
-                📈
-              </span>
-              <div>
-                <p className="font-semibold text-text-primary">View Analytics</p>
-                <p className="text-sm text-text-tertiary">Track performance</p>
+            ) : filteredAssets.length > 0 ? (
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredAssets.slice(0, 9).map((asset) => (
+                  <AssetCard
+                    key={asset.id}
+                    asset={asset}
+                    onOpen={openAsset}
+                    onDownload={handleAssetDownload}
+                  />
+                ))}
               </div>
-            </Link>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-border-default bg-surface p-10 text-center">
+                <p className="font-heading text-lg font-semibold text-text-primary">No content here yet</p>
+                <p className="mt-2 text-sm text-text-secondary">
+                  Generate an image, create a video, or upload media to see it appear here.
+                </p>
+                <div className="mt-6 flex flex-wrap justify-center gap-3">
+                  <Link to="/templates" className="rounded-xl bg-accent-blue px-4 py-2 text-sm font-semibold text-white">
+                    Browse Templates
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/library', { state: { openUpload: true } })}
+                    className="rounded-xl border border-border-default bg-elevated px-4 py-2 text-sm font-semibold text-text-primary"
+                  >
+                    Upload Media
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
+
+          <aside className="space-y-5">
+            <section className="rounded-2xl border border-border-default bg-surface p-5">
+              <h2 className="font-heading text-lg font-bold text-text-primary">Project Snapshot</h2>
+              <div className="mt-4 space-y-3 text-sm">
+                <div className="flex justify-between gap-3 border-b border-border pb-3">
+                  <span className="text-text-tertiary">Active project</span>
+                  <span className="text-right font-medium text-text-primary">{activeProjectName}</span>
+                </div>
+                <div className="flex justify-between gap-3 border-b border-border pb-3">
+                  <span className="text-text-tertiary">Projects</span>
+                  <span className="font-medium text-text-primary">{projects.length}</span>
+                </div>
+                <div className="flex justify-between gap-3 border-b border-border pb-3">
+                  <span className="text-text-tertiary">Generating</span>
+                  <span className="font-medium text-text-primary">{counts.generating}</span>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <span className="text-text-tertiary">Connected channels</span>
+                  <span className="text-right font-medium text-text-primary">{connectedNames || 'None'}</span>
+                </div>
+              </div>
+            </section>
+
+            <section className="rounded-2xl border border-border-default bg-surface p-5">
+              <h2 className="font-heading text-lg font-bold text-text-primary">Quick Actions</h2>
+              <div className="mt-4 grid gap-3">
+                <Link
+                  to="/templates"
+                  className="rounded-xl border border-border-default bg-elevated px-4 py-3 text-sm font-semibold text-text-primary transition hover:border-accent-blue/40"
+                >
+                  Start from a template
+                </Link>
+                <Link
+                  to="/social"
+                  className="rounded-xl border border-border-default bg-elevated px-4 py-3 text-sm font-semibold text-text-primary transition hover:border-accent-violet/40"
+                >
+                  Connect social accounts
+                </Link>
+                <Link
+                  to="/billing"
+                  className="rounded-xl border border-border-default bg-elevated px-4 py-3 text-sm font-semibold text-text-primary transition hover:border-success/40"
+                >
+                  Manage credits
+                </Link>
+                <Link
+                  to="/library"
+                  className="rounded-xl border border-border-default bg-elevated px-4 py-3 text-sm font-semibold text-text-primary transition hover:border-warning/40"
+                >
+                  Open library
+                </Link>
+              </div>
+            </section>
+          </aside>
         </section>
       </main>
     </AppLayout>
