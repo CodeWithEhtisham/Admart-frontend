@@ -1,6 +1,23 @@
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+let authTokenProvider = null;
+
+export function setAuthTokenProvider(provider) {
+  authTokenProvider = provider;
+}
+
+async function getBearerToken() {
+  if (authTokenProvider) {
+    try {
+      const token = await authTokenProvider();
+      if (token) return token;
+    } catch {
+      // Fall back to the legacy token cache while Clerk finishes loading.
+    }
+  }
+  return localStorage.getItem('accessToken');
+}
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -11,8 +28,8 @@ const api = axios.create({
 
 // Request Interceptor: Attach access token
 api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('accessToken');
+  async (config) => {
+    const token = await getBearerToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

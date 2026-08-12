@@ -449,6 +449,20 @@ export default function ImageGenPage() {
     if (settings.aspectRatio) setAspectRatio(settings.aspectRatio)
     if (settings.resolution) setResolution(settings.resolution)
     if (settings.numImages) setNumImages(Number(settings.numImages) || 1)
+    if (settings.seed != null && settings.seed !== '') setSeed(String(settings.seed))
+    if (settings.guidanceScale != null) setGuidanceScale(Number(settings.guidanceScale) || 3.5)
+    if (settings.numInferenceSteps != null) {
+      setNumInferenceSteps(Number(settings.numInferenceSteps) || 28)
+    }
+    if (settings.outputFormat) setOutputFormat(settings.outputFormat)
+    if (
+      settings.seed != null ||
+      settings.guidanceScale != null ||
+      settings.numInferenceSteps != null ||
+      settings.outputFormat
+    ) {
+      setShowAdvanced(true)
+    }
     setJobError(null)
     setResults([])
   }, [imageCatalog, location.state])

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import api from '../utils/api'
-import { needsOnboarding } from '../utils/projects'
+import { postAuthDestination } from '../utils/templates'
 
 export default function AuthCallbackPage() {
   const navigate = useNavigate()
@@ -25,7 +25,7 @@ export default function AuthCallbackPage() {
         localStorage.setItem('refreshToken', refreshToken)
         localStorage.setItem('user', JSON.stringify(user))
 
-        navigate(needsOnboarding(user) ? '/onboarding' : '/dashboard')
+        navigate(postAuthDestination(user))
       } catch (err) {
         console.error('OAuth exchange error:', err)
         setError(err.response?.data?.detail || 'Failed to authenticate with Google.')

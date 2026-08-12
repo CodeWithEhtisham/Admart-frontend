@@ -303,12 +303,16 @@ export default function BillingPage() {
           </p>
           {pricingFormula.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-2">
-              {pricingFormula.map((tier) => (
+              {pricingFormula.map((tier, index) => (
                 <span
-                  key={`${tier.falCost}-${tier.markupMultiplier}`}
+                  key={`${tier.label || tier.falCost || 'formula'}-${index}`}
                   className="rounded-full border border-border bg-panel px-3 py-1 text-xs text-text-tertiary"
                 >
-                  fal {tier.falCost}: {tier.markupMultiplier}x
+                  {tier.formula
+                    ? `${tier.label}: ${tier.formula}`
+                    : `${tier.label || `fal ${tier.falCost}`}: fal ${tier.falCost} -> ${
+                        tier.admartCredits || tier.markupMultiplier
+                      } cr`}
                 </span>
               ))}
             </div>
