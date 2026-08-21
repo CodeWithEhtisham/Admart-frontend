@@ -115,8 +115,8 @@ export default function ProgressPage() {
               <svg className="-rotate-90" width="160" height="160" viewBox="0 0 160 160" aria-hidden>
                 <defs>
                   <linearGradient id="admartRing" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#2563eb" />
-                    <stop offset="100%" stopColor="#7c3aed" />
+                    <stop offset="0%" stopColor="#5b7cfa" />
+                    <stop offset="100%" stopColor="#8b5cf6" />
                   </linearGradient>
                 </defs>
                 <circle cx="80" cy="80" r={radius} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="10" />

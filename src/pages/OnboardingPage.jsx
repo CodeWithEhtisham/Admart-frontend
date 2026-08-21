@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { createProject, setActiveProject } from '../utils/projects'
 
-const PRESET_COLORS = ['#2563eb', '#7c3aed', '#10b981', '#f59e0b', '#ef4444', '#ec4899']
+const PRESET_COLORS = ['#5b7cfa', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#ec4899']
 
 const PROJECT_ICONS = ['▶', '✦', '◇', '☀', '⚡', '◎', '◈', '✸']
 

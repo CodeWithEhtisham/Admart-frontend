@@ -30,7 +30,9 @@ export default function Topbar({ title }) {
   if (hasDirectToken) {
     try {
       directUser = JSON.parse(localStorage.getItem('user') || '{}')
-    } catch {}
+    } catch {
+      // Invalid JSON in storage — fall back to anonymous user
+    }
   }
 
   const handleDirectSignOut = () => {
@@ -104,7 +106,7 @@ export default function Topbar({ title }) {
         </div>
       )}
 
-      <header className="sticky top-0 z-30 flex h-[60px] items-center justify-between gap-4 border-b border-border bg-panel/90 px-7 backdrop-blur-md">
+      <header className="sticky top-0 z-30 flex h-[60px] items-center justify-between gap-4 border-b border-border bg-base/75 px-7 backdrop-blur-xl">
         <div className="flex shrink-0 items-center gap-4">
           <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-sm text-text-secondary">
             <Link to="/dashboard" className="hover:text-text-primary">
@@ -120,25 +122,30 @@ export default function Topbar({ title }) {
         <button
           type="button"
           onClick={() => setSearchOpen(true)}
-          className="mx-auto hidden max-w-md flex-1 items-center gap-3 rounded-xl border border-border-default bg-surface px-4 py-2 text-left text-sm text-text-secondary md:flex"
+          className="mx-auto hidden max-w-md flex-1 items-center gap-3 rounded-xl border border-border-default bg-surface px-4 py-2 text-left text-sm text-text-secondary transition hover:border-accent-blue/40 hover:bg-elevated hover:shadow-[0_0_0_1px_rgba(59,130,246,0.12)] md:flex"
         >
-          <span aria-hidden>
+          <span aria-hidden className="text-text-tertiary">
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="7" />
               <path d="m20 20-3.5-3.5" />
             </svg>
           </span>
           <span>Search videos, templates...</span>
-          <span className="ml-auto font-mono text-xs text-text-muted">Ctrl+K</span>
+          <span className="ml-auto rounded-md border border-border-default bg-input px-1.5 py-0.5 font-mono text-xs text-text-muted">
+            Ctrl K
+          </span>
         </button>
 
         <div className="flex shrink-0 items-center gap-2">
           <Link
             to="/billing"
-            className="hidden items-center gap-1.5 rounded-xl border border-border-default bg-surface px-3 py-2 font-mono text-sm font-semibold text-text-primary transition hover:border-accent-blue/40 sm:inline-flex"
+            className="hidden items-center gap-1.5 rounded-xl border border-border-default bg-surface px-3 py-2 font-mono text-sm font-semibold text-text-primary transition hover:border-accent-blue/40 hover:shadow-[0_0_0_1px_rgba(59,130,246,0.12)] sm:inline-flex"
             title="Credits remaining"
           >
-            <span className="text-accent-blue" aria-hidden>
+            <span
+              className="flex h-5 w-5 items-center justify-center rounded-md gradient-bg font-sans text-[10px] font-bold text-white"
+              aria-hidden
+            >
               cr
             </span>
             {formatCredits(creditsRemaining, '...')}

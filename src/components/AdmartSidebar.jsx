@@ -159,21 +159,21 @@ const NAV_SECTIONS = [
 
 function NavItem({ item, active, collapsed }) {
   const base =
-    'flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition w-full'
+    'flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 w-full'
   const state = active
-    ? 'bg-accent-blue/15 text-accent-blue'
+    ? 'bg-gradient-to-r from-accent-blue/15 to-accent-violet/10 text-text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]'
     : 'text-text-secondary hover:bg-white/5 hover:text-text-primary'
   const layout = collapsed ? 'justify-center gap-0' : item.badge ? 'justify-between gap-3' : 'gap-3'
 
   const badgeCls =
     item.badgeColor === 'red'
       ? 'bg-error/20 text-error'
-      : 'bg-accent-blue/20 text-accent-blue'
+      : 'bg-gradient-to-r from-accent-blue/25 to-accent-violet/25 text-accent-blue'
 
   return (
     <Link to={item.to} className={`${base} ${state} ${layout}`} title={item.label}>
       <span className="flex items-center gap-3">
-        {item.icon}
+        {active ? <span className="gradient-text">{item.icon}</span> : item.icon}
         {!collapsed && <span>{item.label}</span>}
       </span>
       {!collapsed && item.badge && (
@@ -224,11 +224,13 @@ export default function AdmartSidebar() {
 
   return (
     <aside
-      className={`fixed bottom-0 left-0 top-0 z-40 flex flex-col border-r border-border bg-panel transition-[width] duration-300 ease-out ${sidebarW}`}
+      className={`fixed bottom-0 left-0 top-0 z-40 flex flex-col border-r border-border bg-panel/80 backdrop-blur-xl transition-[width] duration-300 ease-out ${sidebarW}`}
     >
-      <div className={`flex h-[60px] items-center border-b border-border px-4 ${collapsed ? 'justify-center' : ''}`}>
-        <Link to="/dashboard" className="font-heading text-lg font-bold">
-          <span className="gradient-text">A</span>
+      <div className={`flex h-[60px] items-center gap-2.5 border-b border-border px-4 ${collapsed ? 'justify-center' : ''}`}>
+        <Link to="/dashboard" className="flex items-center gap-2.5 font-heading text-lg font-bold">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg gradient-bg font-heading text-base font-bold text-white shadow-lg gradient-glow">
+            A
+          </span>
           {!collapsed && <span className="text-text-primary">dmart</span>}
         </Link>
       </div>
@@ -237,7 +239,7 @@ export default function AdmartSidebar() {
         {NAV_SECTIONS.map((section) => (
           <div key={section.label}>
             {!collapsed && (
-              <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-text-muted">
+              <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted">
                 {section.label}
               </p>
             )}
@@ -259,7 +261,7 @@ export default function AdmartSidebar() {
         <Link
           to="/billing"
           title="Billing & credits"
-          className={`block rounded-xl border border-border-default bg-surface transition hover:border-accent-blue/40 ${
+          className={`group block rounded-xl border border-border-default bg-surface transition hover:border-accent-blue/50 hover:shadow-[0_0_0_1px_rgba(59,130,246,0.15)] ${
             collapsed ? 'px-2 py-2 text-center' : 'p-3'
           }`}
         >
@@ -269,20 +271,23 @@ export default function AdmartSidebar() {
                 <span className="text-text-secondary">Credits</span>
                 <span className="font-mono font-semibold text-text-primary">{rem}</span>
               </div>
-              <div className="h-1.5 overflow-hidden rounded-full bg-elevated">
+              <div className="h-1.5 overflow-hidden rounded-full bg-elevated ring-1 ring-inset ring-white/5">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-accent-blue to-accent-violet transition-all"
+                  className="h-full rounded-full bg-gradient-to-r from-accent-blue via-accent-violet to-accent-violet transition-all"
                   style={{ width: `${pct}%` }}
                 />
               </div>
-              <p className="mt-1 text-xs text-text-tertiary">
-                {rem} / {tot}
+              <p className="mt-1.5 flex items-center justify-between text-xs text-text-tertiary">
+                <span>
+                  {rem} / {tot}
+                </span>
+                <span className="gradient-text font-semibold">Top up</span>
               </p>
             </>
           ) : (
             <>
               <p className="font-mono text-sm font-bold text-text-primary">{rem}</p>
-              <div className="mx-auto mt-1 h-8 w-1 overflow-hidden rounded-full bg-elevated">
+              <div className="mx-auto mt-1 h-8 w-1 overflow-hidden rounded-full bg-elevated ring-1 ring-inset ring-white/5">
                 <div
                   className="w-full bg-gradient-to-b from-accent-blue to-accent-violet transition-all"
                   style={{ height: `${pct}%` }}

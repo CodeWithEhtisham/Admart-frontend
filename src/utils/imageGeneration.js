@@ -59,6 +59,16 @@ export const ASPECT_RATIOS = [
   { id: 'auto', label: 'Auto', sub: 'Model' },
 ]
 
+/** fal image_size presets for models that expose a size knob (flux / ideogram). */
+export const IMAGE_SIZES = [
+  { id: 'square_hd', label: 'Square HD', sub: '1024×1024' },
+  { id: 'square', label: 'Square', sub: '512×512' },
+  { id: 'portrait_4_3', label: 'Portrait 4:3', sub: '768×1024' },
+  { id: 'portrait_16_9', label: 'Portrait 16:9', sub: '576×1024' },
+  { id: 'landscape_4_3', label: 'Landscape 4:3', sub: '1024×768' },
+  { id: 'landscape_16_9', label: 'Landscape 16:9', sub: '1024×576' },
+]
+
 export const MULTI_EDIT_ROLES = ['Subject', 'Scene', 'Style', 'Extra', 'Extra', 'Extra']
 
 /** Live prompt stats for the UI counter (no hard fal limit). */
@@ -135,9 +145,16 @@ export function fieldVisible(field, capability, family) {
       removeBackground: true,
     },
     aspectRatio: {
-      textToImage: true,
-      edit: true,
-      multiEdit: true,
+      textToImage: family !== 'flux' && family !== 'ideogram',
+      edit: family !== 'flux',
+      multiEdit: family !== 'flux',
+      upscale: false,
+      removeBackground: false,
+    },
+    size: {
+      textToImage: family === 'flux' || family === 'ideogram',
+      edit: family === 'flux',
+      multiEdit: family === 'flux',
       upscale: false,
       removeBackground: false,
     },

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
+import PreviewModal from '../components/PreviewModal.jsx'
 import Topbar from '../components/Topbar'
 import {
   PROJECT_CHANGE_EVENT,
@@ -244,6 +245,7 @@ export default function VideoGenPage() {
   const [statusText, setStatusText] = useState('')
   const [error, setError] = useState('')
   const [gallery, setGallery] = useState([])
+  const [previewItem, setPreviewItem] = useState(null)
   const [savedKeys, setSavedKeys] = useState(() => new Set())
   const [creditsRemaining, setCreditsRemaining] = useState(null)
   const [byCapability, setByCapability] = useState(null)
@@ -856,6 +858,13 @@ export default function VideoGenPage() {
                         <div className="flex flex-wrap gap-1.5">
                           <button
                             type="button"
+                            onClick={() => setPreviewItem(item)}
+                            className="rounded-lg border border-accent-blue/40 px-2 py-1 text-[11px] font-semibold text-accent-blue hover:bg-accent-blue/10"
+                          >
+                            Preview
+                          </button>
+                          <button
+                            type="button"
                             onClick={() => saveResult(item)}
                             className="rounded-lg border border-border-default px-2 py-1 text-[11px] text-text-secondary hover:bg-elevated hover:text-text-primary"
                           >
@@ -901,6 +910,13 @@ export default function VideoGenPage() {
           )}
         </section>
       </div>
+      <PreviewModal
+        type="video"
+        src={previewItem?.url}
+        title={previewItem?.prompt || previewItem?.fileName || 'Generated video'}
+        onClose={() => setPreviewItem(null)}
+        onDownload={() => previewItem && downloadVideo(previewItem)}
+      />
     </AppLayout>
   )
 }

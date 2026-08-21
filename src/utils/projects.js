@@ -5,7 +5,7 @@ export const PROJECT_CHANGE_EVENT = 'admart:project-change'
 const ACTIVE_KEY = 'admart_activeProject'
 
 // Sensible visual fallbacks for projects the backend created without icon/color.
-export const DEFAULT_PROJECT_COLOR = '#2563eb'
+export const DEFAULT_PROJECT_COLOR = '#5b7cfa'
 export const DEFAULT_PROJECT_ICON = '▶'
 
 export function normalizeProject(project) {

@@ -3,15 +3,15 @@ import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 
 const INITIAL_COLORS = [
-  { hex: '#2563eb', role: 'Primary' },
-  { hex: '#7c3aed', role: 'Secondary' },
+  { hex: '#5b7cfa', role: 'Primary' },
+  { hex: '#8b5cf6', role: 'Secondary' },
   { hex: '#10b981', role: 'Accent' },
-  { hex: '#f4f4f5', role: 'Light' },
-  { hex: '#09090b', role: 'Dark' },
+  { hex: '#f6f7fb', role: 'Light' },
+  { hex: '#0a0b10', role: 'Dark' },
 ]
 
-const HEADING_FONTS = ['Syne', 'Inter', 'DM Sans', 'Playfair', 'Montserrat']
-const BODY_FONTS = ['DM Sans', 'Inter', 'Roboto', 'Nunito']
+const HEADING_FONTS = ['Space Grotesk', 'Inter', 'DM Sans', 'Playfair', 'Montserrat']
+const BODY_FONTS = ['Inter', 'DM Sans', 'Roboto', 'Nunito']
 
 const TONE_PRESETS = [
   { id: 'professional', icon: '💼', label: 'Professional', text: 'Communicate with authority and expertise. Use clear, concise language that builds trust and credibility. Maintain a polished, industry-standard tone in every piece of content.' },
@@ -31,8 +31,8 @@ export default function BrandKitPage() {
   const [toast, setToast] = useState(null)
   const [selectedColor, setSelectedColor] = useState(0)
   const [colors, setColors] = useState(INITIAL_COLORS)
-  const [headingFont, setHeadingFont] = useState('Syne')
-  const [bodyFont, setBodyFont] = useState('DM Sans')
+  const [headingFont, setHeadingFont] = useState('Space Grotesk')
+  const [bodyFont, setBodyFont] = useState('Inter')
   const [selectedTone, setSelectedTone] = useState('professional')
   const [toneText, setToneText] = useState(TONE_PRESETS[0].text)
   const [genAspect, setGenAspect] = useState('16:9')

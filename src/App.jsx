@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useAuth, useUser } from '@clerk/react'
+import { useAuth, useSession, useUser } from '@clerk/react'
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
 import AuthPage from './pages/AuthPage'
@@ -54,9 +54,10 @@ function ProtectedRoute() {
 function ClerkApiBridge() {
   const { getToken, isLoaded, isSignedIn } = useAuth()
   const { user } = useUser()
+  const { isLoaded: sessionLoaded } = useSession()
 
   useEffect(() => {
-    if (!isLoaded) {
+    if (!isLoaded || !sessionLoaded) {
       // Don't clear the provider yet — a direct-auth user may already have a token
       return undefined
     }
@@ -65,17 +66,14 @@ function ClerkApiBridge() {
       // Clerk session — use Clerk token
       setAuthTokenProvider(() => getToken())
     } else {
-      // No Clerk session — fall back to direct JWT in localStorage (if any)
-      const directToken = localStorage.getItem('accessToken')
-      if (directToken) {
-        setAuthTokenProvider(() => Promise.resolve(directToken))
-      } else {
-        setAuthTokenProvider(null)
-      }
+      // Direct JWT in localStorage — read live so the auto-refresh flow (which
+      // writes a fresh token to localStorage) is picked up on retry instead of
+      // a stale captured value.
+      setAuthTokenProvider(() => Promise.resolve(localStorage.getItem('accessToken')))
     }
 
     return () => setAuthTokenProvider(null)
-  }, [getToken, isLoaded, isSignedIn])
+  }, [getToken, isLoaded, isSignedIn, sessionLoaded])
 
   useEffect(() => {
     if (!isLoaded || typeof window === 'undefined') return

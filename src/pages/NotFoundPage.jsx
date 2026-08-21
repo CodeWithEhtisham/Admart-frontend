@@ -129,11 +129,11 @@ export default function NotFoundPage() {
         {/* Background blobs */}
         <div
           className="pointer-events-none absolute -left-40 -top-40 h-[500px] w-[500px] rounded-full opacity-20 blur-[120px]"
-          style={{ background: 'radial-gradient(circle, #2563eb 0%, transparent 70%)' }}
+          style={{ background: 'radial-gradient(circle, #5b7cfa 0%, transparent 70%)' }}
         />
         <div
           className="pointer-events-none absolute -bottom-32 -right-32 h-[400px] w-[400px] rounded-full opacity-20 blur-[100px]"
-          style={{ background: 'radial-gradient(circle, #7c3aed 0%, transparent 70%)' }}
+          style={{ background: 'radial-gradient(circle, #8b5cf6 0%, transparent 70%)' }}
         />
 
         {/* Floating 404 */}

@@ -39,11 +39,11 @@ const FILTERS = [
 ]
 
 const STATUS_STYLES = {
-  ready: 'border-success/30 bg-success/15 text-success',
-  generating: 'border-accent-violet/30 bg-accent-violet/15 text-accent-violet',
-  published: 'border-accent-blue/30 bg-accent-blue/15 text-accent-blue',
-  scheduled: 'border-warning/30 bg-warning/15 text-warning',
-  failed: 'border-error/30 bg-error/15 text-error',
+  ready: 'border-success/30 bg-success/10 text-success',
+  generating: 'border-accent-violet/30 bg-accent-violet/10 text-accent-violet',
+  published: 'border-accent-blue/30 bg-accent-blue/10 text-accent-blue',
+  scheduled: 'border-warning/30 bg-warning/10 text-warning',
+  failed: 'border-error/30 bg-error/10 text-error',
 }
 
 const PLATFORM_LABELS = {
@@ -127,7 +127,7 @@ function StatusBadge({ status }) {
   )
 }
 
-function MetricCard({ label, value, detail, tone }) {
+function MetricCard({ label, value, detail, tone, index }) {
   const toneClass = {
     blue: 'border-accent-blue/30 bg-accent-blue/10 text-accent-blue',
     green: 'border-success/30 bg-success/10 text-success',
@@ -136,11 +136,11 @@ function MetricCard({ label, value, detail, tone }) {
   }[tone]
 
   return (
-    <section className="rounded-2xl border border-border-default bg-surface p-5">
+    <section className="animate-stagger-in rounded-2xl border border-border-default bg-surface/50 backdrop-blur-sm p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xs font-medium uppercase text-text-tertiary">{label}</p>
-          <p className="mt-2 font-heading text-3xl font-bold text-text-primary">{value}</p>
+          <p className="mt-2 font-heading text-3xl font-bold text-text-primary animate-count-up">{value}</p>
           <p className="mt-1 text-sm text-text-secondary">{detail}</p>
         </div>
         <span className={`rounded-xl border px-2.5 py-1 text-xs font-bold ${toneClass}`}>
@@ -208,7 +208,7 @@ function AssetCard({ asset, onOpen, onDownload }) {
       : 'Image'
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-border-default bg-surface">
+    <article className="overflow-hidden rounded-2xl border border-border-default bg-surface/50 backdrop-blur-sm">
       <button
         type="button"
         onClick={() => onOpen(asset)}
@@ -432,8 +432,16 @@ export default function DashboardPage() {
       <Topbar title="Home" />
 
       <main className="space-y-8 p-7">
-        <section className="relative overflow-hidden rounded-2xl border border-white/10 gradient-bg p-7 text-white shadow-lg shadow-accent-violet/20">
-          <div className="max-w-3xl">
+        <section className="relative overflow-hidden rounded-3xl border border-white/10 gradient-bg p-7 text-white shadow-lg gradient-glow">
+          <div
+            className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-white/15 blur-[90px]"
+            aria-hidden
+          />
+          <div
+            className="pointer-events-none absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-accent-violet/40 blur-[100px]"
+            aria-hidden
+          />
+          <div className="relative max-w-3xl animate-fade-slide-down">
             <p className="font-heading text-2xl font-bold">Welcome back, {firstName}</p>
             <p className="mt-2 text-sm text-white/85">
               {activeProject ? `Live dashboard for ${activeProjectName}.` : 'Create a project to start generating content.'}
@@ -444,29 +452,29 @@ export default function DashboardPage() {
               {refreshing ? ' - refreshing' : ''}
             </p>
           </div>
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="relative mt-6 flex flex-wrap gap-3">
             <Link
               to="/templates"
-              className="rounded-xl bg-white/15 px-5 py-2.5 text-sm font-semibold backdrop-blur transition hover:bg-white/25"
+              className="rounded-xl border border-white/20 bg-white/10 px-5 py-2.5 text-sm font-semibold backdrop-blur transition hover:bg-white/20"
             >
               Use Template
             </Link>
             <Link
               to="/image-gen"
-              className="rounded-xl bg-accent-violet/40 px-5 py-2.5 text-sm font-semibold backdrop-blur transition hover:bg-accent-violet/55"
+              className="rounded-xl bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20"
             >
               New Image
             </Link>
             <Link
               to="/video-gen"
-              className="rounded-xl bg-success/35 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-success/50"
+              className="rounded-xl bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20"
             >
               New Video
             </Link>
             <button
               type="button"
               onClick={() => loadDashboard({ silent: true })}
-              className="rounded-xl border border-white/25 px-5 py-2.5 text-sm font-semibold text-white/90 transition hover:bg-white/10"
+              className="rounded-xl border border-white/20 px-5 py-2.5 text-sm font-semibold text-white/90 backdrop-blur transition hover:bg-white/10"
             >
               Refresh
             </button>
@@ -485,24 +493,28 @@ export default function DashboardPage() {
             value={formatCredits(balanceRemaining, loading ? '...' : '0')}
             detail={`${formatCredits(balanceUsed, '0')} used of ${formatCredits(balanceTotal, '0')}`}
             tone="blue"
+            index={0}
           />
           <MetricCard
             label="Library Assets"
             value={loading ? '...' : formatNumber(assets.length)}
             detail={`${counts.images} images, ${counts.videos} videos`}
             tone="green"
+            index={1}
           />
           <MetricCard
             label="Active Jobs"
             value={loading ? '...' : formatNumber(counts.generating)}
             detail={`${counts.ready} ready, ${counts.failed} failed`}
             tone="violet"
+            index={2}
           />
           <MetricCard
             label="Connected Accounts"
             value={loading ? '...' : formatNumber(counts.connected)}
             detail={connectedNames || 'No social accounts connected'}
             tone="yellow"
+            index={3}
           />
         </section>
 
@@ -543,7 +555,7 @@ export default function DashboardPage() {
               </div>
             ) : filteredAssets.length > 0 ? (
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {filteredAssets.slice(0, 9).map((asset) => (
+                {filteredAssets.slice(0, 9).map((asset, index) => (
                   <AssetCard
                     key={asset.id}
                     asset={asset}
@@ -575,7 +587,7 @@ export default function DashboardPage() {
           </div>
 
           <aside className="space-y-5">
-            <section className="rounded-2xl border border-border-default bg-surface p-5">
+            <section className="rounded-2xl border border-border-default bg-surface/50 backdrop-blur-sm p-5">
               <h2 className="font-heading text-lg font-bold text-text-primary">Project Snapshot</h2>
               <div className="mt-4 space-y-3 text-sm">
                 <div className="flex justify-between gap-3 border-b border-border pb-3">
@@ -597,7 +609,7 @@ export default function DashboardPage() {
               </div>
             </section>
 
-            <section className="rounded-2xl border border-border-default bg-surface p-5">
+            <section className="rounded-2xl border border-border-default bg-surface/50 backdrop-blur-sm p-5">
               <h2 className="font-heading text-lg font-bold text-text-primary">Quick Actions</h2>
               <div className="mt-4 grid gap-3">
                 <Link

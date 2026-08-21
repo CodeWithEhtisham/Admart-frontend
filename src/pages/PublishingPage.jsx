@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import PreviewModal from '../components/PreviewModal.jsx'
 
 const PLATFORMS = [
   {
@@ -90,6 +91,7 @@ export default function PublishingPage() {
   })
   const [showModal, setShowModal] = useState(false)
   const [showToast, setShowToast] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
 
   const activeCount = PLATFORMS.filter((p) => toggles[p.id] && p.connected).length
 
@@ -159,6 +161,16 @@ export default function PublishingPage() {
                     </button>
                   </>
                 )}
+                {isImage || isVideo ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowPreview(true)}
+                    className="absolute right-2 top-2 z-10 rounded-md border border-white/25 bg-black/50 px-2.5 py-1.5 text-[11px] font-semibold text-white backdrop-blur-sm transition hover:bg-black/70"
+                    aria-label="Open fullscreen preview"
+                  >
+                    Fullscreen
+                  </button>
+                ) : null}
               </div>
               <div className="space-y-2 p-4">
                 <p className="font-heading text-sm font-semibold leading-snug">{assetTitle}</p>
@@ -530,6 +542,15 @@ export default function PublishingPage() {
         <div className="animate-slide-up fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-xl border border-success/30 bg-panel px-5 py-3 text-sm font-medium text-success shadow-xl">
           ✅ Published to 3 platforms successfully!
         </div>
+      )}
+
+      {showPreview && (
+        <PreviewModal
+          type={isImage ? 'image' : 'video'}
+          src={isImage ? publishAsset.imageUrl : publishAsset.videoUrl}
+          title={assetTitle}
+          onClose={() => setShowPreview(false)}
+        />
       )}
     </div>
   )

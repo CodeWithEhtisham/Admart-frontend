@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
+import PreviewModal from '../components/PreviewModal.jsx'
 import Topbar from '../components/Topbar'
 import {
   LIBRARY_CHANGE_EVENT,
@@ -105,6 +106,7 @@ export default function LibraryPage() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
   const [activeMenu, setActiveMenu] = useState(null)
+  const [previewAsset, setPreviewAsset] = useState(null)
   const [cancellingId, setCancellingId] = useState(null)
   const [deleting, setDeleting] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -364,6 +366,19 @@ export default function LibraryPage() {
           }}
         >
           {cancellingId === asset.id ? 'Cancelling…' : 'Cancel'}
+        </button>
+      ) : null}
+      {asset.sourceUrl && (asset.status === 'ready' || asset.status === 'published') ? (
+        <button
+          type="button"
+          className="block w-full px-3 py-2 text-left hover:bg-elevated"
+          onClick={(e) => {
+            e.stopPropagation()
+            setActiveMenu(null)
+            setPreviewAsset(asset)
+          }}
+        >
+          Preview
         </button>
       ) : null}
       {asset.sourceUrl && asset.status === 'ready' ? (
@@ -685,6 +700,18 @@ export default function LibraryPage() {
                             {duration}
                           </span>
                         ) : null}
+                        {asset.sourceUrl && clickable ? (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setPreviewAsset(asset)
+                            }}
+                            className="absolute left-1/2 top-1/2 z-[6] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/25 bg-black/55 px-4 py-2 text-xs font-semibold text-white opacity-0 backdrop-blur-sm transition group-hover:opacity-100 hover:bg-black/75"
+                          >
+                            Preview
+                          </button>
+                        ) : null}
                       </div>
                       <div className="space-y-2 p-4">
                         <div className="flex items-start justify-between gap-2">
@@ -809,6 +836,12 @@ export default function LibraryPage() {
           </div>
         </div>
       </div>
+      <PreviewModal
+        type={previewAsset?.mediaType === 'video' ? 'video' : 'image'}
+        src={previewAsset?.sourceUrl || previewAsset?.thumbnailUrl}
+        title={previewAsset?.title}
+        onClose={() => setPreviewAsset(null)}
+      />
     </AppLayout>
   )
 }

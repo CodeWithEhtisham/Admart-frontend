@@ -399,9 +399,13 @@ export default function BillingPage() {
                       <td className="max-w-xs truncate px-6 py-3 text-text-primary" title={desc}>
                         {desc}
                       </td>
-                      <td className="px-6 py-3 font-mono text-xs text-text-tertiary">
-                        {t.model || '—'}
-                      </td>
+<td className="px-6 py-3 font-mono text-xs text-text-tertiary">
+                          {t.model
+                            ? t.model
+                                .replace(/^fal[.-]?ai[/]/i, '')
+                                .replace(/^fal[/]/i, '')
+                            : '—'}
+                        </td>
                       <td className="px-6 py-3 font-mono font-medium text-error">
                         {cr > 0 ? `-${formatCredits(cr)}` : formatCredits(cr)}
                       </td>

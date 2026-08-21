@@ -4,28 +4,28 @@ import { Link, Navigate, useLocation, useNavigate, useSearchParams } from 'react
 import api from '../utils/api'
 
 const showcaseItems = [
-  { title: 'Launch Hype', duration: '0:28', platform: 'TikTok', badge: 'bg-tiktok text-base' },
-  { title: 'Tutorial Cut', duration: '3:05', platform: 'YouTube', badge: 'bg-youtube text-white' },
-  { title: 'Drop Reel', duration: '0:42', platform: 'Instagram', badge: 'bg-instagram text-white' },
-  { title: 'Community', duration: '1:11', platform: 'Facebook', badge: 'bg-facebook text-white' },
+  { title: 'Launch Hype', duration: '0:28', platform: 'TikTok', badge: 'bg-tiktok/20 text-tiktok' },
+  { title: 'Tutorial Cut', duration: '3:05', platform: 'YouTube', badge: 'bg-youtube/20 text-youtube' },
+  { title: 'Drop Reel', duration: '0:42', platform: 'Instagram', badge: 'bg-instagram/20 text-instagram' },
+  { title: 'Community', duration: '1:11', platform: 'Facebook', badge: 'bg-facebook/20 text-facebook' },
 ]
 
 const clerkAppearance = {
   variables: {
-    colorPrimary: '#2563eb',
-    colorBackground: '#111113',
-    colorInputBackground: '#0f0f12',
-    colorInputText: '#f4f4f5',
-    colorText: '#f4f4f5',
-    colorTextSecondary: '#a1a1aa',
-    colorNeutral: '#71717a',
+    colorPrimary: '#3B82F6',
+    colorBackground: '#1E293B',
+    colorInputBackground: '#0F172A',
+    colorInputText: '#F8FAFC',
+    colorText: '#F8FAFC',
+    colorTextSecondary: '#94A3B8',
+    colorNeutral: '#64748B',
     borderRadius: '0.75rem',
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Fira Sans, sans-serif',
   },
   elements: {
     cardBox: 'w-full max-w-md border border-border-default bg-panel shadow-none',
     card: 'bg-panel shadow-none',
-    formButtonPrimary: 'gradient-bg shadow-lg shadow-accent-blue/25 hover:opacity-95',
+    formButtonPrimary: 'gradient-bg shadow-lg gradient-glow hover:opacity-95',
     footerActionLink: 'text-accent-blue hover:text-accent-violet',
     socialButtonsBlockButton: 'border-border-default bg-surface text-text-primary hover:bg-elevated',
     formFieldInput: 'border-border-default bg-input text-text-primary',
@@ -37,7 +37,7 @@ const clerkAppearance = {
 function LogoLink() {
   return (
     <Link to="/" className="mb-8 inline-flex items-center gap-2.5">
-      <span className="flex h-10 w-10 items-center justify-center rounded-xl gradient-bg font-heading text-lg font-bold text-white shadow-lg shadow-accent-blue/25">
+      <span className="flex h-10 w-10 items-center justify-center rounded-xl gradient-bg font-heading text-lg font-bold text-white shadow-lg gradient-glow">
         A
       </span>
       <span className="font-heading text-xl font-semibold tracking-tight text-text-primary">
@@ -50,10 +50,10 @@ function LogoLink() {
 function ShowcaseCard({ item, offset }) {
   return (
     <div
-      className={`group relative overflow-hidden rounded-2xl border border-border-default bg-surface shadow-xl ${offset ? 'mt-8 sm:mt-10' : ''}`}
+      className={`group relative overflow-hidden rounded-2xl border border-border-default bg-surface/50 backdrop-blur-sm shadow-xl ${offset ? 'mt-8 sm:mt-10' : ''}`}
     >
       <div className="absolute inset-0 gradient-bg opacity-35" />
-      <div className="absolute inset-0 bg-linear-to-t from-base via-base/50 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-base via-base/50 to-transparent" />
       <div className="relative flex aspect-[3/4] flex-col justify-between p-4">
         <div className="flex items-start justify-between">
           <span
@@ -244,7 +244,7 @@ export default function AuthPage() {
                   />
                 )
               ) : (
-                <form onSubmit={handleDirectAuth} className="space-y-4 rounded-xl border border-border-default bg-surface p-5">
+                <form onSubmit={handleDirectAuth} className="space-y-4 rounded-xl border border-border-default bg-surface/50 backdrop-blur-sm p-5">
                   {error && (
                     <div className="rounded-lg border border-error/30 bg-error/10 p-3 text-xs text-error">
                       {error}
@@ -303,7 +303,7 @@ export default function AuthPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full h-10 rounded-lg gradient-bg text-sm font-semibold text-white shadow-lg shadow-accent-blue/25 transition hover:opacity-95 disabled:opacity-50"
+                    className="w-full h-10 rounded-lg gradient-bg text-sm font-semibold text-white shadow-lg gradient-glow transition hover:opacity-95 disabled:opacity-50"
                   >
                     {loading ? 'Processing...' : isSignUp ? 'Create Account (50 Free Credits)' : 'Sign In'}
                   </button>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
+import PreviewModal from '../components/PreviewModal.jsx'
 import Topbar from '../components/Topbar'
 import {
   PROJECT_CHANGE_EVENT,
@@ -21,6 +22,7 @@ import {
   ACCEPTED_MIME,
   ASPECT_RATIOS,
   IMAGE_CAPABILITIES,
+  IMAGE_SIZES,
   MAX_FILE_MB,
   MAX_MULTI_IMAGES,
   MULTI_EDIT_ROLES,
@@ -270,6 +272,7 @@ export default function ImageGenPage() {
   const [enhancingPrompt, setEnhancingPrompt] = useState(false)
   const [negativePrompt, setNegativePrompt] = useState('')
   const [aspectRatio, setAspectRatio] = useState('1:1')
+  const [imageSize, setImageSize] = useState('')
   const [numImages, setNumImages] = useState(1)
   const [resolution, setResolution] = useState('1K')
   const [seed, setSeed] = useState('')
@@ -292,6 +295,7 @@ export default function ImageGenPage() {
   const [jobStatus, setJobStatus] = useState('idle')
   const [jobError, setJobError] = useState(null)
   const [results, setResults] = useState([])
+  const [previewImg, setPreviewImg] = useState(null)
   const [savedResultKeys, setSavedResultKeys] = useState(() => new Set())
   const [gallery, setGallery] = useState([])
   const [galleryLoading, setGalleryLoading] = useState(false)
@@ -371,6 +375,7 @@ export default function ImageGenPage() {
   const showPrompt = fieldVisible('prompt', capability, family)
   const showImages = fieldVisible('imageUrls', capability, family)
   const showAspect = fieldVisible('aspectRatio', capability, family)
+  const showSize = fieldVisible('size', capability, family)
   const showResolution = fieldVisible('resolution', capability, family)
   const showNumImages = fieldVisible('numImages', capability, family)
   const showSeed = fieldVisible('seed', capability, family)
@@ -425,6 +430,10 @@ export default function ImageGenPage() {
       setModel(defaultModel(capability, imageCatalog))
     }
   }, [capability, imageCatalog, model])
+
+  useEffect(() => {
+    if (showSize && !imageSize) setImageSize('square_hd')
+  }, [showSize, imageSize])
 
   useEffect(() => {
     const template = location.state?.template
@@ -692,6 +701,7 @@ export default function ImageGenPage() {
     if (showPrompt) payload.prompt = prompt.trim()
     if (showImages) payload.imageUrls = remoteUrls
     if (showAspect) payload.aspectRatio = aspectRatio
+    if (showSize) payload.imageSize = imageSize
     if (showNumImages) payload.numImages = numImages
     if (showResolution) payload.resolution = resolution
     if (showAdvanced && showSeed && seed !== '') payload.seed = Number(seed)
@@ -1000,6 +1010,24 @@ export default function ImageGenPage() {
                       >
                         <span className="block font-semibold text-text-primary">{a.label}</span>
                         <span className="text-[10px] text-text-tertiary">{a.sub}</span>
+                      </Chip>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {showSize && (
+                <div>
+                  <Label>Size</Label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {IMAGE_SIZES.map((s) => (
+                      <Chip
+                        key={s.id}
+                        active={imageSize === s.id}
+                        onClick={() => setImageSize(s.id)}
+                      >
+                        <span className="block font-semibold text-text-primary">{s.label}</span>
+                        <span className="text-[10px] text-text-tertiary">{s.sub}</span>
                       </Chip>
                     ))}
                   </div>
@@ -1388,6 +1416,7 @@ export default function ImageGenPage() {
                           ) : null}
                           <div className="absolute inset-0 flex items-center justify-center bg-black/35 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100">
                             <div className="flex flex-wrap items-center justify-center gap-2 px-3">
+                              <ActionBtn onClick={() => setPreviewImg(img)}>Preview</ActionBtn>
                               <ActionBtn
                                 onClick={() => saveResult(img)}
                               >
@@ -1414,6 +1443,13 @@ export default function ImageGenPage() {
                               'Result'}
                           </p>
                           <div className="flex flex-wrap gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setPreviewImg(img)}
+                              className="rounded-lg bg-accent-blue px-3 py-1.5 text-xs font-semibold text-white hover:bg-accent-blue/90"
+                            >
+                              Preview
+                            </button>
                             <button
                               type="button"
                               onClick={() => saveResult(img)}
@@ -1511,6 +1547,7 @@ export default function ImageGenPage() {
                         />
                         <div className="absolute inset-0 flex items-center justify-center bg-black/35 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100">
                           <div className="flex flex-wrap items-center justify-center gap-1.5 px-2">
+                            <ActionBtn onClick={() => setPreviewImg(img)}>Preview</ActionBtn>
                             <ActionBtn onClick={() => saveResult(img)}>Save</ActionBtn>
                             <ActionBtn onClick={() => goPublish(img)}>Publish</ActionBtn>
                             <ActionBtn onClick={() => downloadAsset(img)}>Download</ActionBtn>
@@ -1530,6 +1567,13 @@ export default function ImageGenPage() {
                           {img._prompt || img.fileName || img.capability || 'Image'}
                         </p>
                         <div className="mt-1.5 flex flex-wrap gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setPreviewImg(img)}
+                            className="rounded-md bg-accent-blue/15 px-2 py-0.5 text-[10px] font-semibold text-accent-blue hover:bg-accent-blue/25"
+                          >
+                            Preview
+                          </button>
                           <button
                             type="button"
                             onClick={() => saveResult(img)}
@@ -1582,6 +1626,13 @@ export default function ImageGenPage() {
           </div>
         </div>
       </div>
+      <PreviewModal
+        type="image"
+        src={previewImg?.url}
+        title={previewImg?._prompt || lastPrompt || previewImg?.fileName || 'Generated image'}
+        onClose={() => setPreviewImg(null)}
+        onDownload={() => previewImg && downloadAsset(previewImg)}
+      />
     </AppLayout>
   )
 }
