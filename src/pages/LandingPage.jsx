@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '@clerk/react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { activatePlan, formatCredits, getPlans } from '../utils/credits'
 
 const lm = (file) => `/leonardo-media/${file}`
@@ -214,12 +214,29 @@ const testimonials = [
   },
 ]
 
-const heroAssets = [
-  { ...media.hero1, x: '11%', y: '-4%', w: '19%', speed: 1.8 },
-  { ...media.hero2, x: '72%', y: '-8%', w: '18%', speed: 1.4 },
-  { ...media.hero3, x: '8%', y: '68%', w: '17%', speed: 2.2 },
-  { ...media.hero4, x: '76%', y: '64%', w: '16%', speed: 1.6 },
+const heroMarqueeA = [
+  { ...media.socialVeo1, caption: 'Neon product teaser for TikTok' },
+  { ...media.storyKling1, caption: 'SaaS walkthrough, clean UI motion' },
+  { ...media.hero1, caption: 'Studio fashion drop, bold color' },
+  { ...media.socialSeed3, caption: 'Summer reel with fast cuts' },
+  { ...media.storyVeo1, caption: 'Feature teaser, kinetic type' },
+  { ...media.cinematicVeo, caption: 'Cinematic brand film, 24fps look' },
+  { ...media.hero3, caption: 'Texture study, macro detail' },
+  { ...media.socialSeed2, caption: 'YouTube intro, wide format' },
 ]
+
+const heroMarqueeB = [
+  { ...media.socialSeed1, caption: 'Instagram Reel with auto captions' },
+  { ...media.storyKling2, caption: 'App launch countdown hype' },
+  { ...media.hero2, caption: 'Origami in slow motion' },
+  { ...media.socialSeed4, caption: 'Coffee brand story, warm tones' },
+  { ...media.storyVeo2, caption: 'Before/after try-on comparison' },
+  { ...media.storyVeo3, caption: '3D certificate reveal post' },
+  { ...media.hero4, caption: 'Portrait b-roll, golden hour' },
+  { ...media.storyHailuo, caption: 'Founder story, talking head' },
+]
+
+const heroChips = ['Veo 3.1', 'Seedance 2.0', 'Kling 2.5 Turbo', 'Flux Dev', 'Nano Banana 2', 'Wan 2.6']
 
 function LogoMark({ className = '' }) {
   return (
@@ -330,38 +347,6 @@ function LazyVideo({ src, className = '' }) {
   )
 }
 
-function HeroVideo({ src, poster, className = '' }) {
-  const ref = useRef(null)
-
-  useEffect(() => {
-    const start = () => {
-      const v = ref.current
-      if (v) {
-        v.src = src
-        v.play().catch(() => {})
-      }
-    }
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      const id = window.requestIdleCallback(start, { timeout: 800 })
-      return () => window.cancelIdleCallback(id)
-    }
-    const id = setTimeout(start, 250)
-    return () => clearTimeout(id)
-  }, [src])
-
-  return (
-    <video
-      ref={ref}
-      poster={poster}
-      preload="none"
-      muted
-      loop
-      playsInline
-      className={className}
-    />
-  )
-}
-
 function MediaCard({ item, title, model, className = '' }) {
   return (
     <div className={`group relative w-full overflow-hidden rounded-xl bg-black ${className}`}>
@@ -468,8 +453,8 @@ export default function LandingPage() {
   const [planError, setPlanError] = useState('')
   const [activatingPlan, setActivatingPlan] = useState(null)
   const [planToast, setPlanToast] = useState(null)
-  const heroRef = useRef(null)
-  const assetRefs = useRef([])
+  const [prompt, setPrompt] = useState('')
+  const navigate = useNavigate()
   const { isLoaded, isSignedIn } = useAuth()
   const hasDirectToken = Boolean(localStorage.getItem('accessToken'))
   const isAuthenticated = (isLoaded && isSignedIn) || hasDirectToken
@@ -570,29 +555,6 @@ export default function LandingPage() {
     return () => io.disconnect()
   }, [plans])
 
-  const reduceMotion =
-    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-  const onHeroMouseMove = (e) => {
-    if (reduceMotion) return
-    const rect = heroRef.current?.getBoundingClientRect()
-    if (!rect) return
-    const cx = (e.clientX - rect.left) / rect.width - 0.5
-    const cy = (e.clientY - rect.top) / rect.height - 0.5
-    assetRefs.current.forEach((el) => {
-      if (el) {
-        const speed = Number(el.dataset.speed || 1)
-        el.style.transform = `translate3d(${cx * -14 * speed}px, ${cy * -10 * speed}px, 0)`
-      }
-    })
-  }
-
-  const onHeroMouseLeave = () => {
-    assetRefs.current.forEach((el) => {
-      if (el) el.style.transform = 'translate3d(0,0,0)'
-    })
-  }
-
   const authPath = isAuthenticated ? '/dashboard' : '/auth'
 
   return (
@@ -641,10 +603,7 @@ export default function LandingPage() {
       {/* ─── Hero ────────────────────────────────────────────────── */}
       <section
         id="product"
-        ref={heroRef}
-        onMouseMove={onHeroMouseMove}
-        onMouseLeave={onHeroMouseLeave}
-        className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-3 pb-24 pt-32 text-center"
+        className="relative flex flex-col items-center overflow-hidden px-3 pb-10 pt-32 text-center sm:pt-36"
       >
         <div
           className="pointer-events-none absolute inset-0"
@@ -658,30 +617,95 @@ export default function LandingPage() {
           style={{ background: 'rgba(59,130,246,0.12)' }}
           aria-hidden
         />
+        <div
+          className="pointer-events-none absolute left-1/2 top-1/3 h-[420px] w-[720px] -translate-x-1/2 rounded-full blur-[160px]"
+          style={{ background: 'rgba(139,92,246,0.10)' }}
+          aria-hidden
+        />
 
-        <div className="relative z-30 mt-40 mb-10 w-full">
-          <div className="rv rv-up mx-auto max-w-[19em]">
-            <h1 className="font-heading font-bold uppercase leading-[1.02] tracking-tight text-white text-[clamp(1.7rem,4.8vw,4.5rem)]">
-              Your AI social media{' '}
-              <span className="gradient-text">handler</span>
-            </h1>
-          </div>
+        <div className="relative z-10 flex w-full flex-col items-center">
+          <p className="rv rv-up mb-6 flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-medium text-white/80 backdrop-blur-sm">
+            <span
+              className="animate-pulse-dot h-1.5 w-1.5 rounded-full"
+              style={{ backgroundColor: '#22C55E' }}
+              aria-hidden
+            />
+            36 AI models · images, videos, captions & publishing in one dashboard
+          </p>
+          <h1 className="rv rv-up max-w-[16em] font-heading font-bold uppercase leading-[1.02] tracking-tight text-white text-[clamp(2rem,5.5vw,4.8rem)]">
+            Your AI social media <span className="gradient-text">handler</span>
+          </h1>
           <p
-            className="rv rv-up mx-auto mt-6 max-w-[50em] text-base font-medium text-white/80 sm:text-lg"
+            className="rv rv-up mx-auto mt-5 max-w-[52em] text-base font-medium text-white/75 sm:text-lg"
             style={{ transitionDelay: '100ms' }}
           >
-            Generate full professional AI images and videos, then publish them wherever and
-            whenever you want — across TikTok, YouTube, Instagram and Facebook, from one dashboard.
+            Describe your idea — Admart generates professional AI images and videos, then publishes
+            them wherever and whenever you want across TikTok, YouTube, Instagram and Facebook.
           </p>
+
+          <form
+            className="rv rv-up mt-8 w-full max-w-2xl"
+            style={{ transitionDelay: '150ms' }}
+            onSubmit={(e) => {
+              e.preventDefault()
+              navigate(authPath)
+            }}
+          >
+            <div
+              className="rounded-[26px] p-[1px] sm:rounded-full"
+              style={{
+                background:
+                  'conic-gradient(from 140deg at 50% 50%, rgba(255,255,255,0.2) 0deg, rgba(255,255,255,0.04) 90deg, rgba(255,255,255,0.2) 180deg, rgba(255,255,255,0.04) 270deg, rgba(255,255,255,0.2) 360deg)',
+              }}
+            >
+              <div className="flex flex-col gap-2 rounded-[25px] bg-[#0a0a0a]/95 p-2 backdrop-blur-sm sm:flex-row sm:items-center sm:rounded-full">
+                <input
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  placeholder="Describe your video — e.g. “Cinematic coffee teaser, warm tones, 15s”"
+                  aria-label="Describe the video you want to generate"
+                  className="w-full flex-1 bg-transparent px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35"
+                />
+                <button
+                  type="submit"
+                  className="gradient-bg gradient-glow flex shrink-0 items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white transition duration-300 hover:opacity-95"
+                >
+                  Generate
+                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </form>
+
           <div
-            className="rv rv-up mt-8 flex flex-col items-center gap-4"
+            className="rv rv-up mt-4 flex flex-wrap items-center justify-center gap-2"
             style={{ transitionDelay: '200ms' }}
           >
+            {heroChips.map((c) => (
+              <span
+                key={c}
+                className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70"
+              >
+                <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: '#3B82F6' }} aria-hidden />
+                {c}
+              </span>
+            ))}
+          </div>
+
+          <div
+            className="rv rv-up mt-8 flex flex-col items-center gap-3"
+            style={{ transitionDelay: '250ms' }}
+          >
+            <PillButton href={authPath} className="!px-8 !py-4 text-base">
+              Start creating free
+            </PillButton>
             <div className="flex items-center gap-2">
               <div className="relative">
                 <div className="flex gap-0.5 opacity-40">
                   {[0, 1, 2, 3, 4].map((s) => (
-                    <svg key={s} className="h-4 w-4" viewBox="0 0 24 24" fill="#22C55E" aria-hidden>
+                    <svg key={s} className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="#22C55E" aria-hidden>
                       <path d="M12 2 15 9h6l-5 5 2 8-6-4-6 4 2-8-5-5h6l3-7z" />
                     </svg>
                   ))}
@@ -691,61 +715,67 @@ export default function LandingPage() {
                   style={{ clipPath: 'inset(0 6% 0 0)' }}
                 >
                   {[0, 1, 2, 3, 4].map((s) => (
-                    <svg key={s} className="h-4 w-4" viewBox="0 0 24 24" fill="#22C55E" aria-hidden>
+                    <svg key={s} className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="#22C55E" aria-hidden>
                       <path d="M12 2 15 9h6l-5 5 2 8-6-4-6 4 2-8-5-5h6l3-7z" />
                     </svg>
                   ))}
                 </div>
               </div>
-              <span className="text-sm font-medium uppercase text-white">4.7</span>
+              <span className="text-xs font-medium text-white">4.7</span>
+              <span className="text-white/30">·</span>
+              <span className="text-xs text-white/60">based on 104K ratings</span>
             </div>
-            <PillButton href={authPath}>Start creating free</PillButton>
-            <p className="text-xs text-white/60">
-              based on 104K ratings · images, videos, captions & publishing included
-            </p>
           </div>
         </div>
+      </section>
 
-        {/* Video collage */}
-        <div className="relative w-full">
-          <div className="relative mx-auto aspect-[16/6] w-[190%] sm:w-[150%] xl:w-full">
-            {heroAssets.map((a, i) => (
-              <div
-                key={i}
-                ref={(el) => {
-                  assetRefs.current[i] = el
-                }}
-                data-speed={a.speed}
-                className="absolute overflow-hidden rounded-lg shadow-2xl will-change-transform"
-                style={{
-                  left: a.x,
-                  top: a.y,
-                  width: a.w,
-                  zIndex: 21,
-                  border: '1px solid rgba(255,255,255,0.12)',
-                }}
-              >
-                <div className="relative aspect-video overflow-hidden rounded-lg bg-black">
-                  {a.image && (
-                    <img
-                      src={a.image}
-                      alt=""
-                      loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                  )}
-                  {a.video && (
-                    <HeroVideo
-                      src={a.video}
-                      poster={posterOf(a.video)}
-                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                  )}
-                  <div className="pointer-events-none absolute inset-0 bg-black/10" />
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* ─── Hero video marquee ─────────────────────────────────── */}
+      <section className="relative overflow-hidden bg-black pb-24 pt-10">
+        <div
+          className="flex flex-col gap-4"
+          style={{
+            WebkitMaskImage:
+              'linear-gradient(to right, transparent 0, #000 8rem, #000 calc(100% - 8rem), transparent 100%)',
+            maskImage:
+              'linear-gradient(to right, transparent 0, #000 8rem, #000 calc(100% - 8rem), transparent 100%)',
+          }}
+        >
+          {[heroMarqueeA, heroMarqueeB].map((row, ri) => (
+            <div
+              key={ri}
+              className="animate-marquee flex w-max"
+              style={
+                ri === 1
+                  ? { animationDirection: 'reverse', animationDuration: '56s' }
+                  : { animationDuration: '48s' }
+              }
+            >
+              {[...row, ...row].map((item, i) => (
+                <figure
+                  key={i}
+                  className="group relative mr-4 w-64 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-black sm:w-72"
+                >
+                  <div className="aspect-video w-full">
+                    {item.video && (
+                      <video
+                        src={item.video}
+                        poster={posterOf(item.video)}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                    )}
+                  </div>
+                  <figcaption className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-3 pb-2 pt-8 text-left text-[11px] font-medium text-white/85">
+                    {item.caption}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          ))}
         </div>
       </section>
 
