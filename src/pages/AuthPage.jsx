@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { SignIn, SignUp, useAuth } from '@clerk/react'
+import { useAuth, useSignIn, useSignUp } from '@clerk/react'
 import { Link, Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import api from '../utils/api'
 
@@ -9,30 +9,6 @@ const showcaseItems = [
   { title: 'Drop Reel', duration: '0:42', platform: 'Instagram', badge: 'bg-instagram/20 text-instagram' },
   { title: 'Community', duration: '1:11', platform: 'Facebook', badge: 'bg-facebook/20 text-facebook' },
 ]
-
-const clerkAppearance = {
-  variables: {
-    colorPrimary: '#3B82F6',
-    colorBackground: '#1E293B',
-    colorInputBackground: '#0F172A',
-    colorInputText: '#F8FAFC',
-    colorText: '#F8FAFC',
-    colorTextSecondary: '#94A3B8',
-    colorNeutral: '#64748B',
-    borderRadius: '0.75rem',
-    fontFamily: 'Fira Sans, sans-serif',
-  },
-  elements: {
-    cardBox: 'w-full max-w-md border border-border-default bg-panel shadow-none',
-    card: 'bg-panel shadow-none',
-    formButtonPrimary: 'gradient-bg shadow-lg gradient-glow hover:opacity-95',
-    footerActionLink: 'text-accent-blue hover:text-accent-violet',
-    socialButtonsBlockButton: 'border-border-default bg-surface text-text-primary hover:bg-elevated',
-    formFieldInput: 'border-border-default bg-input text-text-primary',
-    dividerLine: 'bg-border-default',
-    dividerText: 'text-text-muted',
-  },
-}
 
 function LogoLink() {
   return (
@@ -81,6 +57,29 @@ function ShowcaseCard({ item, offset }) {
   )
 }
 
+function GoogleIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden>
+      <path
+        fill="#4285F4"
+        d="M23.5 12.27c0-.85-.08-1.66-.22-2.45H12v4.64h6.45a5.52 5.52 0 0 1-2.39 3.62v3h3.87c2.26-2.09 3.57-5.16 3.57-8.81z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 24c3.24 0 5.96-1.07 7.94-2.91l-3.87-3c-1.07.72-2.44 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.96H1.29v3.1A12 12 0 0 0 12 24z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M5.27 14.28A7.2 7.2 0 0 1 4.89 12c0-.79.14-1.56.38-2.28v-3.1H1.28a12 12 0 0 0 0 10.76l3.99-3.1z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 4.77c1.76 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.28 6.62l3.99 3.1C6.22 6.88 8.87 4.77 12 4.77z"
+      />
+    </svg>
+  )
+}
+
 function safeRedirect(value) {
   if (!value || typeof value !== 'string') return '/dashboard'
   if (!value.startsWith('/') || value.startsWith('//')) return '/dashboard'
@@ -95,8 +94,9 @@ export default function AuthPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const isSignUp = searchParams.get('mode') === 'sign-up'
   const redirectUrl = safeRedirect(searchParams.get('redirect_url') || location.state?.from)
+  const { signIn } = useSignIn()
+  const { signUp } = useSignUp()
 
-  const [authTab, setAuthTab] = useState('sso') // 'sso' or 'direct'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [firstName, setFirstName] = useState('')
@@ -116,10 +116,29 @@ export default function AuthPage() {
     setError('')
   }
 
-  const signInUrl = `/auth${redirectUrl ? `?redirect_url=${encodeURIComponent(redirectUrl)}` : ''}`
-  const signUpUrl = `/auth?mode=sign-up${
-    redirectUrl ? `&redirect_url=${encodeURIComponent(redirectUrl)}` : ''
-  }`
+  const clerkReady = isSignUp ? Boolean(signUp) : Boolean(signIn)
+
+  const handleGoogleAuth = async () => {
+    setError('')
+    try {
+      if (isSignUp) {
+        await signUp.sso({
+          strategy: 'oauth_google',
+          redirectUrl: '/onboarding',
+          redirectCallbackUrl: '/auth-callback',
+        })
+      } else {
+        await signIn.sso({
+          strategy: 'oauth_google',
+          redirectUrl,
+          redirectCallbackUrl: '/auth-callback',
+        })
+      }
+    } catch (err) {
+      console.error(err)
+      setError('Could not start Google sign-in. Please try again.')
+    }
+  }
 
   const handleDirectAuth = async (e) => {
     e.preventDefault()
@@ -203,112 +222,89 @@ export default function AuthPage() {
                 : 'Sign in to continue creating and publishing with Admart.'}
             </p>
 
-            <div className="mt-6 flex rounded-lg border border-border-default bg-surface p-1 text-xs font-medium text-text-secondary">
+            <div className="mt-6 rounded-xl border border-border-default bg-surface/50 p-5 backdrop-blur-sm">
+              {error && (
+                <div className="mb-4 rounded-lg border border-error/30 bg-error/10 p-3 text-xs text-error">
+                  {error}
+                </div>
+              )}
+
               <button
                 type="button"
-                onClick={() => { setAuthTab('sso'); setError(''); }}
-                className={`flex-1 rounded-md py-1.5 transition ${
-                  authTab === 'sso' ? 'bg-panel text-text-primary shadow-sm font-semibold' : 'hover:text-text-primary'
-                }`}
+                onClick={handleGoogleAuth}
+                disabled={!clerkReady}
+                className="flex h-10 w-full items-center justify-center gap-3 rounded-lg border border-border-default bg-panel text-sm font-semibold text-text-primary transition hover:bg-elevated disabled:cursor-not-allowed disabled:opacity-50"
               >
+                <GoogleIcon />
                 Continue with Google
               </button>
-              <button
-                type="button"
-                onClick={() => { setAuthTab('direct'); setError(''); }}
-                className={`flex-1 rounded-md py-1.5 transition ${
-                  authTab === 'direct' ? 'bg-panel text-text-primary shadow-sm font-semibold' : 'hover:text-text-primary'
-                }`}
-              >
-                Email & Password
-              </button>
-            </div>
 
-            <div className="mt-6">
-              {authTab === 'sso' ? (
-                isSignUp ? (
-                  <SignUp
-                    appearance={clerkAppearance}
-                    fallbackRedirectUrl="/onboarding"
-                    forceRedirectUrl="/onboarding"
-                    routing="hash"
-                    signInUrl={signInUrl}
-                  />
-                ) : (
-                  <SignIn
-                    appearance={clerkAppearance}
-                    fallbackRedirectUrl={redirectUrl}
-                    forceRedirectUrl={redirectUrl}
-                    routing="hash"
-                    signUpUrl={signUpUrl}
-                  />
-                )
-              ) : (
-                <form onSubmit={handleDirectAuth} className="space-y-4 rounded-xl border border-border-default bg-surface/50 backdrop-blur-sm p-5">
-                  {error && (
-                    <div className="rounded-lg border border-error/30 bg-error/10 p-3 text-xs text-error">
-                      {error}
+              <div className="my-4 flex items-center gap-3" aria-hidden>
+                <span className="h-px flex-1 bg-border-default" />
+                <span className="text-xs font-medium uppercase tracking-wide text-text-muted">
+                  or continue with email
+                </span>
+                <span className="h-px flex-1 bg-border-default" />
+              </div>
+
+              <form onSubmit={handleDirectAuth} className="space-y-4">
+                {isSignUp && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-text-secondary mb-1">First Name</label>
+                      <input
+                        type="text"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        placeholder="John"
+                        className="w-full h-10 rounded-lg border border-border-default bg-input px-3 text-sm text-text-primary outline-none focus:border-accent-blue"
+                      />
                     </div>
-                  )}
-
-                  {isSignUp && (
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-xs font-semibold text-text-secondary mb-1">First Name</label>
-                        <input
-                          type="text"
-                          value={firstName}
-                          onChange={(e) => setFirstName(e.target.value)}
-                          placeholder="John"
-                          className="w-full h-10 rounded-lg border border-border-default bg-input px-3 text-sm text-text-primary outline-none focus:border-accent-blue"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-text-secondary mb-1">Last Name</label>
-                        <input
-                          type="text"
-                          value={lastName}
-                          onChange={(e) => setLastName(e.target.value)}
-                          placeholder="Doe"
-                          className="w-full h-10 rounded-lg border border-border-default bg-input px-3 text-sm text-text-primary outline-none focus:border-accent-blue"
-                        />
-                      </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-text-secondary mb-1">Last Name</label>
+                      <input
+                        type="text"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        placeholder="Doe"
+                        className="w-full h-10 rounded-lg border border-border-default bg-input px-3 text-sm text-text-primary outline-none focus:border-accent-blue"
+                      />
                     </div>
-                  )}
-
-                  <div>
-                    <label className="block text-xs font-semibold text-text-secondary mb-1">Email address</label>
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="you@example.com"
-                      className="w-full h-10 rounded-lg border border-border-default bg-input px-3 text-sm text-text-primary outline-none focus:border-accent-blue"
-                    />
                   </div>
+                )}
 
-                  <div>
-                    <label className="block text-xs font-semibold text-text-secondary mb-1">Password</label>
-                    <input
-                      type="password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      className="w-full h-10 rounded-lg border border-border-default bg-input px-3 text-sm text-text-primary outline-none focus:border-accent-blue"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs font-semibold text-text-secondary mb-1">Email address</label>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className="w-full h-10 rounded-lg border border-border-default bg-input px-3 text-sm text-text-primary outline-none focus:border-accent-blue"
+                  />
+                </div>
 
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full h-10 rounded-lg gradient-bg text-sm font-semibold text-white shadow-lg gradient-glow transition hover:opacity-95 disabled:opacity-50"
-                  >
-                    {loading ? 'Processing...' : isSignUp ? 'Create Account (50 Free Credits)' : 'Sign In'}
-                  </button>
-                </form>
-              )}
+                <div>
+                  <label className="block text-xs font-semibold text-text-secondary mb-1">Password</label>
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full h-10 rounded-lg border border-border-default bg-input px-3 text-sm text-text-primary outline-none focus:border-accent-blue"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full h-10 rounded-lg gradient-bg text-sm font-semibold text-white shadow-lg gradient-glow transition hover:opacity-95 disabled:opacity-50"
+                >
+                  {loading ? 'Processing...' : isSignUp ? 'Create Account (50 Free Credits)' : 'Sign In'}
+                </button>
+              </form>
             </div>
           </div>
         </aside>

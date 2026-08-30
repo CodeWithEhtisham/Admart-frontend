@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import ProjectDropdown from './ProjectDropdown'
 import { CREDITS_CHANGE_EVENT, formatCredits, getCredits } from '../utils/credits.js'
+import { clearActiveProject } from '../utils/projects'
 
 function getInitials(firstName, lastName, email) {
   if (firstName && lastName) return `${firstName[0]}${lastName[0]}`.toUpperCase()
@@ -39,6 +40,7 @@ export default function Topbar({ title }) {
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
     localStorage.removeItem('user')
+    clearActiveProject()
     navigate('/auth', { replace: true })
   }
 

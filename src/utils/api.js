@@ -59,7 +59,7 @@ api.interceptors.response.use(
             refresh: refreshToken,
           });
           
-          const newAccessToken = response.data.access;
+          const newAccessToken = response.data.access || response.data.accessToken;
           localStorage.setItem('accessToken', newAccessToken);
 
           // Retry the original request

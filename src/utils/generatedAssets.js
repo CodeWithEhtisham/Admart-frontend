@@ -1,7 +1,18 @@
-const STORAGE_KEY = 'admart.generatedAssets.v1'
 const MAX_SAVED_ASSETS = 24
 
 export const GENERATED_ASSETS_EVENT = 'admart:generated-assets-updated'
+
+function getStorageKey() {
+  // Use user-specific storage key to isolate assets per account
+  if (typeof window === 'undefined') return null
+  try {
+    const user = JSON.parse(window.localStorage.getItem('user') || '{}')
+    const userId = user.id || user.email || 'anonymous'
+    return `admart.generatedAssets.v1.${userId}`
+  } catch {
+    return 'admart.generatedAssets.v1.anonymous'
+  }
+}
 
 function parseAssets(raw) {
   if (!raw) return []
@@ -19,7 +30,9 @@ function notifyAssetsChanged() {
 
 export function getSavedAssets() {
   if (typeof window === 'undefined') return []
-  return parseAssets(window.localStorage.getItem(STORAGE_KEY))
+  const key = getStorageKey()
+  if (!key) return []
+  return parseAssets(window.localStorage.getItem(key))
 }
 
 export function saveGeneratedAsset(asset) {
@@ -41,9 +54,12 @@ export function saveGeneratedAsset(asset) {
     createdAt: asset.createdAt || now,
   }
 
+  const key = getStorageKey()
+  if (!key) return normalized
+
   const current = getSavedAssets().filter((item) => item.id !== normalized.id)
   const next = [normalized, ...current].slice(0, MAX_SAVED_ASSETS)
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+  window.localStorage.setItem(key, JSON.stringify(next))
   notifyAssetsChanged()
   return normalized
 }

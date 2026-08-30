@@ -3,6 +3,7 @@ import { useAuth, useSession, useUser } from '@clerk/react'
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
 import AuthPage from './pages/AuthPage'
+import AuthCallbackPage from './pages/AuthCallbackPage'
 import OnboardingPage from './pages/OnboardingPage'
 import DashboardPage from './pages/DashboardPage'
 import ProgressPage from './pages/ProgressPage'
@@ -108,6 +109,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/auth/*" element={<AuthPage />} />
+        <Route path="/auth-callback" element={<AuthCallbackPage />} />
         {/* Public routes — browsable without signing in */}
         <Route path="/templates" element={<TemplatesPage />} />
         <Route element={<ProtectedRoute />}>

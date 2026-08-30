@@ -127,7 +127,7 @@ function StatusBadge({ status }) {
   )
 }
 
-function MetricCard({ label, value, detail, tone, index }) {
+function MetricCard({ label, value, detail, tone, icon, children }) {
   const toneClass = {
     blue: 'border-accent-blue/30 bg-accent-blue/10 text-accent-blue',
     green: 'border-success/30 bg-success/10 text-success',
@@ -136,17 +136,16 @@ function MetricCard({ label, value, detail, tone, index }) {
   }[tone]
 
   return (
-    <section className="animate-stagger-in rounded-2xl border border-border-default bg-surface/50 backdrop-blur-sm p-5">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-xs font-medium uppercase text-text-tertiary">{label}</p>
-          <p className="mt-2 font-heading text-3xl font-bold text-text-primary animate-count-up">{value}</p>
-          <p className="mt-1 text-sm text-text-secondary">{detail}</p>
-        </div>
-        <span className={`rounded-xl border px-2.5 py-1 text-xs font-bold ${toneClass}`}>
-          Live
+    <section className="animate-stagger-in rounded-2xl border border-border-default bg-surface/50 p-5 backdrop-blur-sm transition-colors duration-300 hover:border-white/20">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">{label}</p>
+        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${toneClass}`}>
+          {icon}
         </span>
       </div>
+      <p className="mt-3 font-heading text-3xl font-bold text-text-primary animate-count-up">{value}</p>
+      <p className="mt-1 truncate text-sm text-text-secondary">{detail}</p>
+      {children}
     </section>
   )
 }
@@ -432,52 +431,77 @@ export default function DashboardPage() {
       <Topbar title="Home" />
 
       <main className="space-y-8 p-7">
-        <section className="relative overflow-hidden rounded-3xl border border-white/10 gradient-bg p-7 text-white shadow-lg gradient-glow">
+        <section className="relative overflow-hidden rounded-2xl border border-border-default bg-surface/50 p-6 backdrop-blur-sm">
           <div
-            className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-white/15 blur-[90px]"
+            className="pointer-events-none absolute -right-20 -top-24 h-56 w-56 rounded-full bg-accent-blue/10 blur-[80px]"
             aria-hidden
           />
           <div
-            className="pointer-events-none absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-accent-violet/40 blur-[100px]"
+            className="pointer-events-none absolute -bottom-28 left-1/3 h-48 w-48 rounded-full bg-accent-violet/10 blur-[90px]"
             aria-hidden
           />
-          <div className="relative max-w-3xl animate-fade-slide-down">
-            <p className="font-heading text-2xl font-bold">Welcome back, {firstName}</p>
-            <p className="mt-2 text-sm text-white/85">
-              {activeProject ? `Live dashboard for ${activeProjectName}.` : 'Create a project to start generating content.'}
-            </p>
-            <p className="mt-1 text-xs text-white/70">
-              {formatCredits(balanceRemaining, '0')} credits remaining
-              {lastUpdated ? ` - updated ${formatLibraryDate(lastUpdated)}` : ''}
-              {refreshing ? ' - refreshing' : ''}
-            </p>
-          </div>
-          <div className="relative mt-6 flex flex-wrap gap-3">
-            <Link
-              to="/templates"
-              className="rounded-xl border border-white/20 bg-white/10 px-5 py-2.5 text-sm font-semibold backdrop-blur transition hover:bg-white/20"
-            >
-              Use Template
-            </Link>
-            <Link
-              to="/image-gen"
-              className="rounded-xl bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20"
-            >
-              New Image
-            </Link>
-            <Link
-              to="/video-gen"
-              className="rounded-xl bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20"
-            >
-              New Video
-            </Link>
-            <button
-              type="button"
-              onClick={() => loadDashboard({ silent: true })}
-              className="rounded-xl border border-white/20 px-5 py-2.5 text-sm font-semibold text-white/90 backdrop-blur transition hover:bg-white/10"
-            >
-              Refresh
-            </button>
+          <div className="relative flex flex-wrap items-start justify-between gap-5 animate-fade-slide-down">
+            <div className="min-w-0">
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl gradient-bg font-heading text-lg font-bold text-white shadow-lg gradient-glow">
+                  {firstName.charAt(0).toUpperCase()}
+                </span>
+                <div className="min-w-0">
+                  <p className="font-heading text-xl font-bold text-text-primary">
+                    Welcome back, {firstName}
+                  </p>
+                  <p className="truncate text-sm text-text-secondary">
+                    {activeProject
+                      ? `Active project: ${activeProjectName}`
+                      : 'Create a project to start generating content.'}
+                  </p>
+                </div>
+              </div>
+              <p className="mt-3 text-xs text-text-tertiary">
+                {formatCredits(balanceRemaining, '0')} credits remaining
+                {lastUpdated ? ` · Updated ${formatLibraryDate(lastUpdated)}` : ''}
+                {refreshing ? ' · Refreshing…' : ''}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link
+                to="/video-gen"
+                className="gradient-bg gradient-glow rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-95"
+              >
+                New Video
+              </Link>
+              <Link
+                to="/image-gen"
+                className="rounded-xl border border-border-default bg-elevated px-4 py-2.5 text-sm font-semibold text-text-primary transition hover:border-accent-blue/40"
+              >
+                New Image
+              </Link>
+              <Link
+                to="/templates"
+                className="rounded-xl border border-border-default bg-elevated px-4 py-2.5 text-sm font-semibold text-text-primary transition hover:border-accent-violet/40"
+              >
+                Templates
+              </Link>
+              <button
+                type="button"
+                onClick={() => loadDashboard({ silent: true })}
+                aria-label="Refresh dashboard"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-border-default bg-elevated text-text-secondary transition hover:text-text-primary"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden
+                >
+                  <path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6" />
+                </svg>
+              </button>
+            </div>
           </div>
         </section>
 
@@ -493,28 +517,58 @@ export default function DashboardPage() {
             value={formatCredits(balanceRemaining, loading ? '...' : '0')}
             detail={`${formatCredits(balanceUsed, '0')} used of ${formatCredits(balanceTotal, '0')}`}
             tone="blue"
-            index={0}
-          />
+            icon={
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <circle cx="12" cy="12" r="9" />
+                <path d="M14.8 9.5c-.4-.8-1.5-1.5-2.8-1.5-1.7 0-3 .9-3 2s1.3 2 3 2 3 .9 3 2-1.3 2-3 2c-1.3 0-2.4-.7-2.8-1.5M12 6.5v11" />
+              </svg>
+            }
+          >
+            {balanceTotal > 0 && (
+              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-elevated">
+                <div
+                  className="h-full rounded-full gradient-bg transition-[width] duration-500"
+                  style={{ width: `${Math.min(100, Math.max(0, (balanceUsed / balanceTotal) * 100))}%` }}
+                />
+              </div>
+            )}
+          </MetricCard>
           <MetricCard
             label="Library Assets"
             value={loading ? '...' : formatNumber(assets.length)}
             detail={`${counts.images} images, ${counts.videos} videos`}
             tone="green"
-            index={1}
+            icon={
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <rect x="3" y="3" width="18" height="18" rx="3" />
+                <circle cx="9" cy="9" r="2" />
+                <path d="m21 15-4.4-4.4a1.5 1.5 0 0 0-2.1 0L5 20" />
+              </svg>
+            }
           />
           <MetricCard
             label="Active Jobs"
             value={loading ? '...' : formatNumber(counts.generating)}
             detail={`${counts.ready} ready, ${counts.failed} failed`}
             tone="violet"
-            index={2}
+            icon={
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="m12 2 8.5 4.9v9.8L12 21.6l-8.5-4.9V6.9L12 2z" />
+                <path d="m12 11.5 8.5-4.9M12 11.5 3.5 6.6M12 11.5v10" />
+              </svg>
+            }
           />
           <MetricCard
             label="Connected Accounts"
             value={loading ? '...' : formatNumber(counts.connected)}
             detail={connectedNames || 'No social accounts connected'}
             tone="yellow"
-            index={3}
+            icon={
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7" />
+                <path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7" />
+              </svg>
+            }
           />
         </section>
 
@@ -555,7 +609,7 @@ export default function DashboardPage() {
               </div>
             ) : filteredAssets.length > 0 ? (
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {filteredAssets.slice(0, 9).map((asset, index) => (
+                {filteredAssets.slice(0, 9).map((asset) => (
                   <AssetCard
                     key={asset.id}
                     asset={asset}

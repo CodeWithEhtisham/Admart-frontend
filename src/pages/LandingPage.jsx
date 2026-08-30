@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '@clerk/react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { activatePlan, formatCredits, getPlans } from '../utils/credits'
 
 const lm = (file) => `/leonardo-media/${file}`
@@ -65,14 +65,6 @@ const modelShowcase = [
     desc: 'Reasoning-driven quality tiers, multi-image editing, up to 3840px output with streaming.',
   },
   {
-    name: 'Ideogram V3',
-    vendor: 'Ideogram',
-    kind: 'Image',
-    accent: '#8B5CF6',
-    media: media.refineStart,
-    desc: 'Best-in-class text rendering, Style References, Magic Fill & Extend editing tools.',
-  },
-  {
     name: 'Seedance 2.0',
     vendor: 'ByteDance',
     kind: 'Video',
@@ -96,46 +88,71 @@ const modelShowcase = [
     media: media.scaleModel,
     desc: 'Turbo-fast video synthesis with high-fidelity motion and scene consistency.',
   },
-  {
-    name: 'Wan 2.6',
-    vendor: 'Alibaba',
-    kind: 'Video',
-    accent: '#f59e0b',
-    media: media.animSeedance,
-    desc: 'Open video generation model with strong prompt adherence and long sequences.',
-  },
 ]
 
 const publishPlatforms = [
-  { name: 'TikTok', accent: '#00f2ea', aspect: 'aspect-[9/16]', media: media.socialVeo1, caption: 'Vertical short-form, hooks & trending sounds', span: 'sm:col-span-6 lg:col-span-3' },
-  { name: 'Instagram', accent: '#e6683c', aspect: 'aspect-[9/16]', media: media.socialSeed1, caption: 'Reels & posts with auto captions', span: 'sm:col-span-6 lg:col-span-3' },
-  { name: 'YouTube', accent: '#ff4444', aspect: 'aspect-video', media: media.socialSeed2, caption: 'Wide-screen videos & Shorts', span: 'sm:col-span-12 lg:col-span-6' },
-  { name: 'Facebook', accent: '#1877f2', aspect: 'aspect-video', media: media.socialVeo2, caption: 'Feed, Reels & Stories — full-width canvas', span: 'sm:col-span-12 lg:col-span-12' },
-]
-
-const featureGroups = [
   {
-    word: 'CREATE',
-    color: '#3B82F6',
-    heading: 'Create professional AI images & videos',
-    sub: 'Powered by 36 top models — text to image, text to video, image to video, editing, upscaling and background removal.',
+    name: 'Facebook',
+    bg: '#1877f2',
+    glyph: (
+      <svg viewBox="0 0 24 24" className="h-7 w-7" fill="#fff" aria-hidden>
+        <path d="M13.4 21v-7.4h2.5l.4-2.9h-2.9V8.8c0-.8.2-1.4 1.4-1.4h1.6V4.8c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.1H7.8v2.9h2.5V21h3.1z" />
+      </svg>
+    ),
   },
   {
-    word: 'PUBLISH',
-    color: '#8B5CF6',
-    heading: 'Publish wherever & whenever',
-    sub: 'One-click publishing and smart scheduling across every platform — or let Admart pick the best time to post for you.',
+    name: 'Instagram',
+    bg: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #bc1888 100%)',
+    glyph: (
+      <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="#fff" strokeWidth="2" aria-hidden>
+        <rect x="3" y="3" width="18" height="18" rx="5" />
+        <circle cx="12" cy="12" r="4" />
+        <circle cx="17.3" cy="6.7" r="0.7" fill="#fff" stroke="none" />
+      </svg>
+    ),
   },
   {
-    word: 'SCALE',
-    color: '#22C55E',
-    heading: 'Scale your content engine',
-    sub: 'Bulk generation, brand kits, API access and analytics for teams and agencies that live on social.',
-    cards: [
-      { title: 'Brand Kit', media: media.animate, model: 'Brand Sync' },
-      { title: 'API & Webhooks', media: media.spin, model: 'Developer API' },
-      { title: 'Analytics', media: media.zoom, model: 'Insights' },
-    ],
+    name: 'YouTube',
+    bg: '#ff0000',
+    glyph: (
+      <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="#fff" strokeWidth="2" aria-hidden>
+        <rect x="2.5" y="6" width="19" height="12.5" rx="3.5" />
+        <path d="M10.2 9.4l4.7 2.8-4.7 2.8z" fill="#fff" stroke="none" />
+      </svg>
+    ),
+  },
+  {
+    name: 'TikTok',
+    bg: '#111111',
+    glyph: (
+      <svg viewBox="0 0 24 24" className="h-7 w-7" fill="#fff" aria-hidden>
+        <path d="M16.8 3c.4 2.1 1.8 3.7 3.9 4v3c-1.5 0-2.9-.5-3.9-1.3v5.7a5.2 5.2 0 1 1-5.2-5.2c.3 0 .6 0 .9.1v3.1a2.2 2.2 0 1 0 1.5 2.1V3h2.8z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'X',
+    bg: '#000000',
+    glyph: (
+      <svg viewBox="0 0 24 24" className="h-6 w-6" fill="#fff" aria-hidden>
+        <path d="M17.8 4h2.7l-6 6.8L21.5 20h-5.6l-4.3-5.6L6.6 20H3.9l6.4-7.3L3.5 4h5.7l3.9 5.1L17.8 4zm-1 14.4h1.5L8.6 5.5H7l9.8 12.9z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Pinterest',
+    bg: '#e60023',
+    glyph: <span className="font-heading text-2xl font-bold leading-none text-white">P</span>,
+  },
+  {
+    name: 'LinkedIn',
+    bg: '#0a66c2',
+    glyph: <span className="font-heading text-xl font-bold leading-none text-white">in</span>,
+  },
+  {
+    name: 'Threads',
+    bg: '#000000',
+    glyph: <span className="font-heading text-2xl font-bold leading-none text-white">@</span>,
   },
 ]
 
@@ -174,15 +191,6 @@ const faqs = [
   },
 ]
 
-const platforms = [
-  { name: 'TikTok', color: '#00f2ea' },
-  { name: 'YouTube', color: '#ff4444' },
-  { name: 'Instagram', color: '#e6683c' },
-  { name: 'Facebook', color: '#1877f2' },
-  { name: 'Pinterest', color: '#e60023' },
-  { name: 'LinkedIn', color: '#0a66c2' },
-]
-
 const testimonials = [
   {
     quote:
@@ -214,29 +222,14 @@ const testimonials = [
   },
 ]
 
-const heroMarqueeA = [
+const heroMarquee = [
   { ...media.socialVeo1, caption: 'Neon product teaser for TikTok' },
   { ...media.storyKling1, caption: 'SaaS walkthrough, clean UI motion' },
   { ...media.hero1, caption: 'Studio fashion drop, bold color' },
-  { ...media.socialSeed3, caption: 'Summer reel with fast cuts' },
+  { ...media.socialSeed4, caption: 'Coffee brand story, warm tones' },
   { ...media.storyVeo1, caption: 'Feature teaser, kinetic type' },
   { ...media.cinematicVeo, caption: 'Cinematic brand film, 24fps look' },
-  { ...media.hero3, caption: 'Texture study, macro detail' },
-  { ...media.socialSeed2, caption: 'YouTube intro, wide format' },
 ]
-
-const heroMarqueeB = [
-  { ...media.socialSeed1, caption: 'Instagram Reel with auto captions' },
-  { ...media.storyKling2, caption: 'App launch countdown hype' },
-  { ...media.hero2, caption: 'Origami in slow motion' },
-  { ...media.socialSeed4, caption: 'Coffee brand story, warm tones' },
-  { ...media.storyVeo2, caption: 'Before/after try-on comparison' },
-  { ...media.storyVeo3, caption: '3D certificate reveal post' },
-  { ...media.hero4, caption: 'Portrait b-roll, golden hour' },
-  { ...media.storyHailuo, caption: 'Founder story, talking head' },
-]
-
-const heroChips = ['Veo 3.1', 'Seedance 2.0', 'Kling 2.5 Turbo', 'Flux Dev', 'Nano Banana 2', 'Wan 2.6']
 
 function LogoMark({ className = '' }) {
   return (
@@ -347,43 +340,6 @@ function LazyVideo({ src, className = '' }) {
   )
 }
 
-function MediaCard({ item, title, model, className = '' }) {
-  return (
-    <div className={`group relative w-full overflow-hidden rounded-xl bg-black ${className}`}>
-      <div className="relative aspect-[16/10] w-full overflow-hidden">
-        {item.image && (
-          <img
-            src={item.image}
-            alt={title || ''}
-            loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-        )}
-        {item.video && (
-          <LazyVideo
-            src={item.video}
-            className="absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-700 group-hover:scale-110"
-          />
-        )}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-black/50" />
-        {title && (
-          <p className="absolute bottom-2 left-3 right-3 z-10 font-heading text-sm font-semibold text-white sm:text-base">
-            {title}
-          </p>
-        )}
-      </div>
-      {model && (
-        <span
-          className="absolute bottom-3 left-3 z-10 rounded-full px-3 py-1 text-xs font-semibold text-black"
-          style={{ backgroundColor: '#22C55E' }}
-        >
-          {model}
-        </span>
-      )}
-    </div>
-  )
-}
-
 function ShowcaseCard({ item }) {
   return (
     <div className="group">
@@ -453,8 +409,6 @@ export default function LandingPage() {
   const [planError, setPlanError] = useState('')
   const [activatingPlan, setActivatingPlan] = useState(null)
   const [planToast, setPlanToast] = useState(null)
-  const [prompt, setPrompt] = useState('')
-  const navigate = useNavigate()
   const { isLoaded, isSignedIn } = useAuth()
   const hasDirectToken = Boolean(localStorage.getItem('accessToken'))
   const isAuthenticated = (isLoaded && isSignedIn) || hasDirectToken
@@ -463,7 +417,8 @@ export default function LandingPage() {
     { id: 'product', label: 'Product' },
     { id: 'features', label: 'Features' },
     { id: 'pricing', label: 'Pricing' },
-    { id: 'examples', label: 'Examples' },
+    { id: 'showcase', label: 'Showcase' },
+    { id: 'faq', label: 'FAQ' },
   ]
 
   useEffect(() => {
@@ -643,57 +598,6 @@ export default function LandingPage() {
             them wherever and whenever you want across TikTok, YouTube, Instagram and Facebook.
           </p>
 
-          <form
-            className="rv rv-up mt-8 w-full max-w-2xl"
-            style={{ transitionDelay: '150ms' }}
-            onSubmit={(e) => {
-              e.preventDefault()
-              navigate(authPath)
-            }}
-          >
-            <div
-              className="rounded-[26px] p-[1px] sm:rounded-full"
-              style={{
-                background:
-                  'conic-gradient(from 140deg at 50% 50%, rgba(255,255,255,0.2) 0deg, rgba(255,255,255,0.04) 90deg, rgba(255,255,255,0.2) 180deg, rgba(255,255,255,0.04) 270deg, rgba(255,255,255,0.2) 360deg)',
-              }}
-            >
-              <div className="flex flex-col gap-2 rounded-[25px] bg-[#0a0a0a]/95 p-2 backdrop-blur-sm sm:flex-row sm:items-center sm:rounded-full">
-                <input
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="Describe your video — e.g. “Cinematic coffee teaser, warm tones, 15s”"
-                  aria-label="Describe the video you want to generate"
-                  className="w-full flex-1 bg-transparent px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35"
-                />
-                <button
-                  type="submit"
-                  className="gradient-bg gradient-glow flex shrink-0 items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white transition duration-300 hover:opacity-95"
-                >
-                  Generate
-                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                    <path d="M5 12h14M13 6l6 6-6 6" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </form>
-
-          <div
-            className="rv rv-up mt-4 flex flex-wrap items-center justify-center gap-2"
-            style={{ transitionDelay: '200ms' }}
-          >
-            {heroChips.map((c) => (
-              <span
-                key={c}
-                className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70"
-              >
-                <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: '#3B82F6' }} aria-hidden />
-                {c}
-              </span>
-            ))}
-          </div>
-
           <div
             className="rv rv-up mt-8 flex flex-col items-center gap-3"
             style={{ transitionDelay: '250ms' }}
@@ -740,50 +644,40 @@ export default function LandingPage() {
               'linear-gradient(to right, transparent 0, #000 8rem, #000 calc(100% - 8rem), transparent 100%)',
           }}
         >
-          {[heroMarqueeA, heroMarqueeB].map((row, ri) => (
-            <div
-              key={ri}
-              className="animate-marquee flex w-max"
-              style={
-                ri === 1
-                  ? { animationDirection: 'reverse', animationDuration: '56s' }
-                  : { animationDuration: '48s' }
-              }
-            >
-              {[...row, ...row].map((item, i) => (
-                <figure
-                  key={i}
-                  className="group relative mr-4 w-64 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-black sm:w-72"
-                >
-                  <div className="aspect-video w-full">
-                    {item.video && (
-                      <video
-                        src={item.video}
-                        poster={posterOf(item.video)}
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        preload="metadata"
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                    )}
-                  </div>
-                  <figcaption className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-3 pb-2 pt-8 text-left text-[11px] font-medium text-white/85">
-                    {item.caption}
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
-          ))}
+          <div className="animate-marquee flex w-max" style={{ animationDuration: '40s' }}>
+            {[...heroMarquee, ...heroMarquee].map((item, i) => (
+              <figure
+                key={i}
+                className="group relative mr-4 w-72 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-black sm:w-96"
+              >
+                <div className="aspect-video w-full">
+                  {item.video && (
+                    <video
+                      src={item.video}
+                      poster={posterOf(item.video)}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  )}
+                </div>
+                <figcaption className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-3 pb-2 pt-8 text-left text-[11px] font-medium text-white/85">
+                  {item.caption}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ─── Why choose ──────────────────────────────────────────── */}
-      <section className="mx-auto max-w-[1600px] px-2.5 py-24 sm:px-8">
+      {/* ─── Why Admart + models ─────────────────────────────────── */}
+      <section id="features" className="mx-auto max-w-[1600px] scroll-mt-20 px-2.5 py-24 sm:px-8">
         <SectionHead
           eyebrow="Why Admart"
-          sub="Your entire social pipeline — creation, publishing and scheduling — handled by one AI."
+          sub="Create professional AI images & videos powered by 36 top models — text to image, text to video, editing, upscaling and background removal — your entire social pipeline handled by one AI."
         >
           More than a video tool. <strong>Your social media handler</strong>
         </SectionHead>
@@ -824,178 +718,115 @@ export default function LandingPage() {
                 </div>
               </div>
             ))}
-          </div>
-        </section>
+        </div>
 
-      {/* ─── Feature groups ──────────────────────────────────────── */}
-      {featureGroups.map((group, gi) => (
-        <section
-          key={group.word}
-          id={gi === 0 ? 'features' : undefined}
-          className="relative scroll-mt-20 overflow-hidden bg-black px-3 py-16 sm:px-6 xl:px-8"
-        >
-          <div className={gi % 2 === 0 ? 'rv rv-left' : 'rv rv-right'} aria-hidden>
-            <div style={{ perspective: '15vw' }}>
+        <div className="mx-auto mt-16 grid max-w-[1600px] gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+          {modelShowcase.map((m, mi) => (
+            <div
+              key={m.name}
+              className="rv rv-up group relative rounded-xl p-[1px] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_60px_-15px_rgba(59,130,246,0.35)]"
+              style={{
+                transitionDelay: `${(mi % 3) * 100}ms`,
+                background:
+                  'conic-gradient(from 140deg at 50% 50%, rgba(255,255,255,0.2) 0deg, rgba(255,255,255,0.04) 90deg, rgba(255,255,255,0.2) 180deg, rgba(255,255,255,0.04) 270deg, rgba(255,255,255,0.2) 360deg)',
+              }}
+            >
+                <div className="rounded-[calc(1rem-1px)] bg-[#0a0a0a] p-3">
+                  <div className="relative aspect-video overflow-hidden rounded-lg bg-black">
+                    {m.media.image && (
+                      <img
+                        src={m.media.image}
+                        alt={m.name}
+                        loading="lazy"
+                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    )}
+                    {m.media.video && (
+                      <LazyVideo
+                        src={m.media.video}
+                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    )}
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <span
+                      className="absolute left-2.5 top-2.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-black transition-transform duration-300 group-hover:scale-110"
+                      style={{ backgroundColor: m.accent }}
+                    >
+                      {m.kind}
+                    </span>
+                  </div>
+                  <p className="mt-3 font-heading text-sm font-semibold text-white">
+                    {m.name}
+                  </p>
+                  <p className="text-xs text-white/50">{m.vendor}</p>
+                  <p className="mt-2 text-xs leading-relaxed text-white/60">{m.desc}</p>
+                </div>
+              </div>
+            ))}
+        </div>
+        <div className="rv rv-up mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row" style={{ transitionDelay: '150ms' }}>
+          <span
+            className="rounded-full border border-white/15 bg-white/5 px-4 py-1.5 font-mono text-xs text-white/70"
+          >
+            36 models · image · video · edit · upscale · rembg
+          </span>
+          <PillButton href="#showcase" variant="ring">
+            View all models →
+          </PillButton>
+        </div>
+      </section>
+
+      {/* ─── Publish ─────────────────────────────────────────────── */}
+      <section className="relative scroll-mt-20 overflow-hidden bg-black px-3 py-16 sm:px-6 xl:px-8">
+        <div className="rv rv-left" aria-hidden>
+          <div style={{ perspective: '15vw' }}>
             <h3
               className="pointer-events-none relative w-full font-heading font-bold uppercase leading-none tracking-tight opacity-25"
               style={{
-                color: group.color,
-                transform: `${gi % 2 === 0 ? 'translateX(-26vw)' : 'translateX(24vw)'} ${gi % 2 === 0 ? 'rotateY(-11deg)' : 'rotateY(11deg)'} ${gi % 2 === 0 ? 'skewY(-5.6deg)' : 'skewY(5.6deg)'}`,
+                color: '#8B5CF6',
+                transform: 'translateX(-26vw) rotateY(-11deg) skewY(-5.6deg)',
                 fontSize: 'clamp(5rem, 20vw, 15rem)',
                 transformStyle: 'preserve-3d',
               }}
             >
-              {group.word}
+              PUBLISH
             </h3>
           </div>
-          </div>
-          <h2 className="rv rv-up mx-auto max-w-[18em] text-center font-heading text-3xl font-bold uppercase tracking-tight text-white sm:text-5xl">
-            {group.heading}
-          </h2>
-          <p
-            className="rv rv-up mx-auto mt-4 max-w-[64ch] text-center text-sm font-medium text-white/80 sm:text-base"
-            style={{ transitionDelay: '100ms' }}
-          >
-            {group.sub}
-          </p>
+        </div>
+        <h2 className="rv rv-up mx-auto max-w-[18em] text-center font-heading text-3xl font-bold uppercase tracking-tight text-white sm:text-5xl">
+          Publish wherever &amp; whenever
+        </h2>
+        <p
+          className="rv rv-up mx-auto mt-4 max-w-[64ch] text-center text-sm font-medium text-white/80 sm:text-base"
+          style={{ transitionDelay: '100ms' }}
+        >
+          One-click publishing and smart scheduling across every platform — or let Admart pick the
+          best time to post for you.
+        </p>
 
-          {gi === 0 && (
-            <>
-              <div className="mx-auto mt-12 grid max-w-[1600px] gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-                {modelShowcase.map((m, mi) => (
-                  <div
-                    key={m.name}
-                    className="rv rv-up group relative rounded-xl p-[1px] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_60px_-15px_rgba(59,130,246,0.35)]"
-                    style={{
-                      transitionDelay: `${(mi % 3) * 100}ms`,
-                      background:
-                        'conic-gradient(from 140deg at 50% 50%, rgba(255,255,255,0.2) 0deg, rgba(255,255,255,0.04) 90deg, rgba(255,255,255,0.2) 180deg, rgba(255,255,255,0.04) 270deg, rgba(255,255,255,0.2) 360deg)',
-                    }}
-                  >
-                      <div className="rounded-[calc(1rem-1px)] bg-[#0a0a0a] p-3">
-                        <div className="relative aspect-video overflow-hidden rounded-lg bg-black">
-                          {m.media.image && (
-                            <img
-                              src={m.media.image}
-                              alt={m.name}
-                              loading="lazy"
-                              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                            />
-                          )}
-                          {m.media.video && (
-                            <LazyVideo
-                              src={m.media.video}
-                              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                            />
-                          )}
-                          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                          <span
-                            className="absolute left-2.5 top-2.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-black transition-transform duration-300 group-hover:scale-110"
-                            style={{ backgroundColor: m.accent }}
-                          >
-                            {m.kind}
-                          </span>
-                        </div>
-                        <p className="mt-3 font-heading text-sm font-semibold text-white">
-                          {m.name}
-                        </p>
-                        <p className="text-xs text-white/50">{m.vendor}</p>
-                        <p className="mt-2 text-xs leading-relaxed text-white/60">{m.desc}</p>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-              <div className="rv rv-up mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row" style={{ transitionDelay: '150ms' }}>
+        <div className="mx-auto mt-12 grid max-w-[1400px] grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-8">
+          {publishPlatforms.map((p, pi) => (
+            <div
+              key={p.name}
+              className="rv rv-up"
+              style={{ transitionDelay: `${(pi % 8) * 60}ms` }}
+            >
+              <div className="group flex h-full flex-col items-center gap-3 rounded-2xl border border-white/10 bg-[#0a0a0a] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-white/25">
                 <span
-                  className="rounded-full border border-white/15 bg-white/5 px-4 py-1.5 font-mono text-xs text-white/70"
+                  className="flex h-14 w-14 items-center justify-center rounded-2xl shadow-lg transition-transform duration-300 group-hover:scale-110"
+                  style={{ background: p.bg }}
                 >
-                  {modelShowcase.length >= 0 && '36 models · image · video · edit · upscale · rembg'}
+                  {p.glyph}
                 </span>
-                <PillButton href="#examples" variant="ring">
-                  View all models →
-                </PillButton>
+                <span className="text-xs font-semibold text-white/80">{p.name}</span>
               </div>
-            </>
-          )}
-
-          {gi === 1 && (
-            <div className="mx-auto mt-12 grid max-w-[1600px] grid-cols-12 gap-5 lg:gap-6">
-              {publishPlatforms.map((p, pi) => (
-                <div
-                  key={p.name}
-                  className={`rv rv-up col-span-12 ${p.span}`}
-                  style={{ transitionDelay: `${(pi % 4) * 100}ms` }}
-                >
-                  <div
-                    className="group relative rounded-xl p-[1px] transition-transform duration-300 hover:-translate-y-1 h-full"
-                    style={{
-                      background:
-                        'conic-gradient(from 140deg at 50% 50%, rgba(255,255,255,0.2) 0deg, rgba(255,255,255,0.04) 90deg, rgba(255,255,255,0.2) 180deg, rgba(255,255,255,0.04) 270deg, rgba(255,255,255,0.2) 360deg)',
-                    }}
-                  >
-                    <div className="flex h-full flex-col rounded-[calc(1rem-1px)] bg-[#0a0a0a] p-3">
-                      <div className={`relative ${p.aspect} overflow-hidden rounded-lg bg-black`}>
-                        {p.media.image && (
-                          <img
-                            src={p.media.image}
-                            alt={p.name}
-                            loading="lazy"
-                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                          />
-                        )}
-                        {p.media.video && (
-                          <LazyVideo
-                            src={p.media.video}
-                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                          />
-                        )}
-                        <div className="absolute left-2.5 top-2.5 flex items-center gap-2 rounded-full bg-black/60 px-3 py-1 backdrop-blur-sm">
-                          <span
-                            className="h-2 w-2 rounded-full"
-                            style={{ backgroundColor: p.accent }}
-                          />
-                          <span className="text-xs font-semibold text-white">{p.name}</span>
-                        </div>
-                        <span
-                          className="absolute bottom-2.5 left-2.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-black"
-                          style={{ backgroundColor: p.accent }}
-                        >
-                          Live preview
-                        </span>
-                      </div>
-                      <p className="mt-3 text-xs text-white/60">{p.caption}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
             </div>
-          )}
-
-          {gi === 2 && (
-            <div className="mx-auto mt-12 grid max-w-[1600px] gap-5 lg:grid-cols-3 lg:gap-10">
-              {group.cards.map((c, ci) => (
-                <div
-                  key={c.title}
-                  className="rv rv-up"
-                  style={{ transitionDelay: `${ci * 100}ms` }}
-                >
-                  <div
-                    className="relative rounded-xl p-[1px] transition-transform duration-300 hover:-translate-y-1"
-                    style={{
-                      background:
-                        'conic-gradient(from 140deg at 50% 50%, rgba(255,255,255,0.2) 0deg, rgba(255,255,255,0.04) 90deg, rgba(255,255,255,0.2) 180deg, rgba(255,255,255,0.04) 270deg, rgba(255,255,255,0.2) 360deg)',
-                    }}
-                  >
-                    <div className="rounded-[calc(1rem-1px)] bg-[#0a0a0a] p-3">
-                      <MediaCard item={c.media} title={c.title} model={c.model} />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-      ))}
+          ))}
+        </div>
+        <p className="rv rv-up mt-10 text-center text-sm font-medium uppercase tracking-widest text-white/50">
+          Trusted by teams publishing everywhere
+        </p>
+      </section>
 
       {/* ─── Pricing ─────────────────────────────────────────────── */}
       <section id="pricing" className="scroll-mt-20 bg-black px-3 py-24 sm:px-6 xl:px-8">
@@ -1121,7 +952,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Showcase ────────────────────────────────────────────── */}
-      <section id="examples" className="scroll-mt-20 bg-black px-3 py-24 sm:px-6 xl:px-8">
+      <section id="showcase" className="scroll-mt-20 bg-black px-3 py-24 sm:px-6 xl:px-8">
         <SectionHead eyebrow="Model Showcase" sub="Every piece below is tagged with the exact model that made it — explore all 36 models and see which one fits your style.">
           See what's possible with <strong>AI content</strong>
         </SectionHead>
@@ -1177,7 +1008,7 @@ export default function LandingPage() {
         </section>
 
         {/* ─── FAQ ─────────────────────────────────────────────────── */}
-        <section className="mx-auto max-w-4xl px-3 py-24 sm:px-5">
+        <section id="faq" className="mx-auto max-w-4xl scroll-mt-20 px-3 py-24 sm:px-5">
           <SectionHead eyebrow="FAQ" sub="Everything you need to know before getting started.">
             Frequently asked <strong>questions</strong>
           </SectionHead>
@@ -1192,39 +1023,6 @@ export default function LandingPage() {
             ))}
           </div>
         </section>
-
-      {/* ─── Trusted marquee ─────────────────────────────────────── */}
-      <section className="py-16">
-        <p className="mb-8 text-center text-xs font-medium uppercase tracking-widest text-white/50">
-          Trusted by teams publishing everywhere
-        </p>
-        <div
-          className="flex w-full overflow-hidden"
-          style={{
-            perspective: '1000px',
-            WebkitMaskImage:
-              'linear-gradient(to right, transparent 0, #000 10rem, #000 calc(100% - 10rem), transparent 100%)',
-            maskImage:
-              'linear-gradient(to right, transparent 0, #000 10rem, #000 calc(100% - 10rem), transparent 100%)',
-          }}
-        >
-          <div className="animate-marquee flex w-max items-center">
-            {[...platforms, ...platforms].map((p, i) => (
-              <span
-                key={`${p.name}-${i}`}
-                className="mx-8 flex items-center gap-3 font-heading text-xl font-bold uppercase tracking-wide"
-                style={{ color: p.color }}
-              >
-                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                  <circle cx="12" cy="12" r="10" opacity="0.25" />
-                  <circle cx="12" cy="12" r="4" />
-                </svg>
-                {p.name}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ─── Final CTA ───────────────────────────────────────────── */}
       <section className="relative flex min-h-[46vw] flex-col items-center justify-center overflow-hidden px-3 py-24 text-center sm:px-6">
