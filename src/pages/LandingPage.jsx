@@ -537,7 +537,7 @@ export default function LandingPage() {
             ))}
           </nav>
           <div className="flex items-center gap-3">
-            {authenticated ? (}
+            {authenticated ? (
               <PillButton href="/dashboard" variant="ring">
                 Go to Dashboard
               </PillButton>
@@ -905,7 +905,7 @@ export default function LandingPage() {
                         </li>
                       ))}
                     </ul>
-                    {authenticated ? (}
+                    {authenticated ? (
                       <button
                         type="button"
                         onClick={() => handleActivatePlan(p.id)}

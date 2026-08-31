@@ -1,25 +1,50 @@
-# Admart Auth — Backend-Owned Identity
+# Admart Auth — Backend spec (Django)
 
-> Audience: backend + frontend + future Android/iOS  
-> Goal: One auth system that works on web and mobile without replacing Clerk/Firebase later  
-> Related: `README.md` (`/api/auth/*`), `src/pages/AuthPage.jsx`, Django `users`  
-> Decision date: 2026-08-31
+> **Pass this file to backend.** It is the contract. Frontend is already live against it.  
+> Brand: **Admart**. Clerk is gone. Do not verify Clerk or Firebase tokens.  
+> Date: 2026-08-31
+
+---
+
+## Do this now (blocker)
+
+**Sign in must not create accounts.** Users Sign up first, then Sign in.
+
+Today `POST /api/auth/google` find-or-creates, so a Gmail with no Admart user still gets a JWT. Stop that.
+
+| User clicked | Body from web | Backend |
+| ------------ | ------------- | ------- |
+| **Sign in** | `intent: "login"`, `createAccount: false` | User exists → JWT. Missing → **404** `no_account`. **Do not create.** |
+| **Sign up** | `intent: "register"`, `createAccount: true` | Missing → create + JWT. Exists → JWT (or 409 if you want them to Sign in). |
+
+Exact 404 body (use this `code` and `message`):
+
+```json
+{
+  "code": "no_account",
+  "message": "There is no Admart account for this email. Please sign up first, then sign in."
+}
+```
+
+HTTP **404**, never **401** on `/api/auth/google` (401 triggers the web refresh interceptor).
+
+Same product rule for email: `POST /api/auth/login` if the email has no `User` → same 404 + `no_account`. Wrong password stays 401.
+
+**Out of scope for this change:** Facebook, Apple, email-verify SMTP, MFA, refactoring JWT.
 
 ---
 
 ## 1. Decision
 
-**Admart owns the user and the session.** Google, Facebook, Apple, etc. only prove who the person is.
+**Admart owns the user and the session.** Google / Facebook / Apple only prove who the person is.
 
 | Layer | Role |
 | ----- | ---- |
-| Google / Facebook / Apple | Identity provider (ID token) |
-| Django `User` + SimpleJWT | Source of truth: user row, access token, refresh token |
+| Google / Facebook / Apple | Identity provider |
+| Django `User` + SimpleJWT | Source of truth: user row, access + refresh |
 | Web / Android / iOS | Call **only** `/api/auth/*`; store **Admart** tokens |
 
-Do **not** make Clerk or Firebase Auth the product session. The frontend no longer uses Clerk. APIs, credits, projects, and mobile clients trust **Admart JWT** only.
-
-Email/password and Google both go to Django and return the same JWT pair.
+Email/password and Google return the **same JWT pair**.
 
 ---
 
@@ -28,22 +53,16 @@ Email/password and Google both go to Django and return the same JWT pair.
 | | Clerk | Firebase Auth | Admart JWT + Google OIDC |
 | --- | --- | --- | --- |
 | Who owns the user | Clerk | Google/Firebase | **Django `User`** |
-| Mobile | Clerk SDKs | Firebase SDKs | **Same REST API** |
-| Extra providers later | Their catalog + pricing | Their catalog + pricing | New endpoint, same JWT |
-| Email verification | Their product | Their product | Token/code + our SMTP |
-| Cost (email + Google, &lt;50k MAU) | Hobby $0 | $0 | **$0** |
-| Cost after ~50k MAU | Pro ~$20–25/mo + MRU | ~$0.0055/MAU (Identity Platform) | **$0** (Google Sign-In is free) |
-| Swap later | Rewrite every client | Rewrite every client | Apps unchanged |
+| Mobile | Their SDKs | Their SDKs | **Same REST API** |
+| Cost (email + Google) | Hobby then Pro | Identity Platform after free tier | **$0** (Google Sign-In is free) |
 
 Firebase is still useful later for **FCM, Crashlytics, Analytics** — not for “who is logged in.”
 
-Phone/SMS OTP is the expensive auth feature (per-message). Skip it until product requires it.
-
 ---
 
-## 3. Client contract (web + Android + iOS)
+## 3. Response contract (all login paths)
 
-All clients use the same endpoints. Success for login / register / Google / Facebook returns:
+Every successful `register` / `login` / `google` **must** return camelCase:
 
 ```json
 {
@@ -59,205 +78,247 @@ All clients use the same endpoints. Success for login / register / Google / Face
 }
 ```
 
-| Method | Path | Purpose |
-| ------ | ---- | ------- |
-| `POST` | `/api/auth/register` | Email + password sign up |
-| `POST` | `/api/auth/login` | Email + password |
-| `POST` | `/api/auth/google` | Exchange Google ID token / auth code |
-| `POST` | `/api/auth/facebook` | Future — Facebook Login token |
-| `POST` | `/api/auth/apple` | Future — required on iOS if other social login is offered |
-| `POST` | `/api/auth/refresh` | New access token |
-| `POST` | `/api/auth/logout` | Blacklist refresh |
-| `GET` / `PATCH` | `/api/auth/me` | Current user |
-| `POST` | `/api/auth/forgot-password` | Request reset email |
-| `POST` | `/api/auth/reset-password` | Complete reset |
-| `POST` | `/api/auth/verify-email` | Confirm email token/code |
-| `POST` | `/api/auth/resend-verification` | Resend verify email |
+`access` / `refresh` aliases are OK if SimpleJWT defaults are easier; prefer `accessToken` / `refreshToken`.
 
-Every authenticated API call:
+Authenticated APIs:
 
 ```
 Authorization: Bearer <accessToken>
 ```
 
-Refresh storage:
-
-- Web: httpOnly cookie preferred; current SPA uses `localStorage` — migrate when possible
-- Android: EncryptedSharedPreferences
-- iOS: Keychain
-
----
-
-## 4. Google Sign-In (large-app procedure)
-
-OAuth 2.0 + OpenID Connect. Google never becomes the session for billing or jobs.
-
-```
-Web / Android / iOS
-        │  Google Sign-In → Google ID token (or auth code)
-        ▼
-POST /api/auth/google  { "idToken": "…" }
-        │
-        ▼
-Django verifies token (signature, iss, aud, exp)
-        │
-        ▼
-Find or create User (link by verified email)
-        │
-        ▼
-Return Admart accessToken + refreshToken
-```
-
-### Backend must verify
-
-- Signature against Google’s JWKS
-- `iss` is Google
-- `aud` is **this app’s** Google client ID (web / Android / iOS each have their own client ID; accept the set you issued)
-- `exp` not expired
-- Prefer `email_verified === true` before treating email as trusted
-
-Then: upsert `User`, issue SimpleJWT pair. Discard the Google token.
-
-### Clients
-
-| Platform | How they get the Google token |
-| -------- | ----------------------------- |
-| Web | Redirect to Google authorize URL; callback `/auth-callback` posts `code` to `/api/auth/google` |
-| Android | Credential Manager / Google Sign-In SDK |
-| iOS | Google Sign-In SDK |
-
-Never put a Google **client secret** in a mobile app. Web auth-code flow: secret stays on the server.
-
-`POST /api/auth/google` exchanges the Google auth **code** (and `redirectUri`) for Admart tokens. Do not use Clerk `signIn.sso`.
+| Method | Path | Status | Notes |
+| ------ | ---- | ------ | ----- |
+| `POST` | `/api/auth/register` | live | Email + password. **Creates** the user. |
+| `POST` | `/api/auth/login` | live | Email + password. **Never creates.** Missing email → 404 `no_account`. |
+| `POST` | `/api/auth/google` | **change now** | Auth code + `intent` / `createAccount`. See §4. |
+| `POST` | `/api/auth/refresh` | live | `{ "refresh": "…" }` or `{ "refreshToken": "…" }` |
+| `POST` | `/api/auth/logout` | live | Blacklist refresh |
+| `GET` / `PATCH` | `/api/auth/me` | live | Current user |
+| `POST` | `/api/auth/forgot-password` | live | |
+| `POST` | `/api/auth/reset-password` | live | |
+| `POST` | `/api/auth/verify-email` | later | |
+| `POST` | `/api/auth/resend-verification` | later | |
+| `POST` | `/api/auth/facebook` | later | |
+| `POST` | `/api/auth/apple` | later | |
 
 ---
 
-## 5. More login options later (Facebook, Apple, …)
+## 4. Google — implement / fix this now
 
-Same pattern — new provider, same JWT.
+Web uses the **authorization-code** flow. Clerk is gone.
+
+```
+Browser  →  Google authorize
+         ←  redirect /auth-callback?code=…
+Frontend →  POST /api/auth/google
+Backend  →  Google token endpoint (code + client_secret + redirect_uri)
+         →  verify id_token
+         →  find User (login) OR find/create User (register)
+         →  Admart JWT  OR  404 no_account
+```
+
+### 4.1 Request (frontend already sends this)
+
+`POST /api/auth/google`
+
+**Sign in**
+
+```json
+{
+  "code": "4/0AX4XfWh…",
+  "redirectUri": "http://localhost:5173/auth-callback",
+  "redirect_uri": "http://localhost:5173/auth-callback",
+  "intent": "login",
+  "createAccount": false
+}
+```
+
+**Sign up**
+
+```json
+{
+  "code": "4/0AX4XfWh…",
+  "redirectUri": "http://localhost:5173/auth-callback",
+  "redirect_uri": "http://localhost:5173/auth-callback",
+  "intent": "register",
+  "createAccount": true
+}
+```
+
+| Field | Required | Notes |
+| ----- | -------- | ----- |
+| `code` | yes | One-time Google auth code |
+| `redirectUri` / `redirect_uri` | yes | Accept either. Must match Google authorize URL + Cloud console |
+| `intent` | yes | `login` or `register` |
+| `createAccount` | yes | `true` only on Sign up. Treat as `login` if both missing (safe default: do not create) |
+
+Default if `intent` / `createAccount` omitted: **login** (do not create).
+
+### 4.2 After Google identity is verified
+
+Look up `User` by Google `sub`, else by verified email.
+
+| `intent` | User exists | User missing |
+| -------- | ----------- | ------------ |
+| `login` (`createAccount: false`) | Issue JWT | **404** `no_account`. **Do not create.** |
+| `register` (`createAccount: true`) | Issue JWT (same as login) **or** `409` `{ "code": "account_exists" }` | Create user, store `sub`, `email_verified=true` if Google says so, then JWT |
+
+One `User` per verified email. If they registered with password then later Google the same email → link, do not duplicate.
+
+### 4.3 Steps
+
+1. Reject if `code` is missing (`400`).
+2. `POST https://oauth2.googleapis.com/token` with `code`, `client_id`, `client_secret` (server only), `redirect_uri` from the request, `grant_type=authorization_code`.
+3. Read `id_token` from Google.
+4. Verify `id_token`: JWKS signature, `iss`, `aud` = web client id, `exp`.
+5. Require `email_verified === true`. Else `400`.
+6. Lookup by `sub`, else email.
+7. Apply §4.2 (login vs register). **This is the bug to fix.**
+8. Return Admart SimpleJWT — **same shape as email login**. Discard Google tokens.
+
+### 4.4 Env
+
+```
+GOOGLE_OAUTH_CLIENT_ID=      # same as frontend VITE_GOOGLE_CLIENT_ID
+GOOGLE_OAUTH_CLIENT_SECRET=  # server only — never in the frontend
+```
+
+Google Cloud authorized redirect URIs:
+
+```
+http://localhost:5173/auth-callback
+http://127.0.0.1:5173/auth-callback
+https://<production-frontend>/auth-callback
+```
+
+Optional later (Android/iOS): same endpoint also accepts `{ "idToken": "…" }`. If present, skip code exchange and verify the JWT.
+
+### 4.5 Errors
+
+| Case | HTTP | Body |
+| ---- | ---- | ---- |
+| Missing `code` | `400` | `{ "message": "Missing authorization code." }` |
+| Bad / expired / used code | `400` | `{ "message": "Google sign-in failed." }` |
+| Google email not verified | `400` | `{ "message": "Google email is not verified." }` |
+| Sign in, no Admart user | **`404`** | `{ "code": "no_account", "message": "There is no Admart account for this email. Please sign up first, then sign in." }` |
+| Server misconfig | `500` | generic message; log details |
+
+**Never 401** on this route.
+
+---
+
+## 5. Email login (same product rule)
+
+`POST /api/auth/login` already cannot create a user.
+
+If the email has **no** `User` row:
+
+```json
+HTTP 404
+{ "code": "no_account", "message": "There is no Admart account for this email. Please sign up first, then sign in." }
+```
+
+Wrong password: keep **401**. Do not say “no account” for a bad password.
+
+`POST /api/auth/register` is the only email path that creates a user.
+
+---
+
+## 6. How to verify (backend)
+
+1. **Google Sign in** with a Gmail that has **no** Admart `User` → 404 `no_account`. No new row in the DB.
+2. **Google Sign up** with that same Gmail → 200 + JWT + new `User` (store Google `sub`).
+3. **Google Sign in** again with that Gmail → 200 + JWT. No second user.
+4. **Email login** with an unknown address → 404 `no_account`.
+5. **Email login** with a real user + wrong password → 401.
+6. Failed / reused Google `code` → 400, not 401.
+
+Web UI already shows “No account found” + Sign up first when it gets that 404.
+
+---
+
+## 7. Later (not this ticket)
+
+### Facebook / Apple login
 
 ```
 POST /api/auth/facebook  { "accessToken": "…" }
 POST /api/auth/apple     { "identityToken": "…" }
 ```
 
-### Login vs publish (do not mix)
+Same JWT contract. Do not mix Facebook **Login** with Facebook **Publish** (Page tokens live on `SocialAccount`).
 
-| | Facebook **Login** | Facebook **Publish** |
-| --- | --- | --- |
-| Purpose | Sign in to Admart | Connect a Page to post content |
-| Token | Short-lived login token → Admart JWT | Long-lived Page token on `SocialAccount` |
-| API | `/api/auth/facebook` | `/api/projects/:id/social/connect/facebook` |
+If iOS offers Google/Facebook, Apple typically requires **Sign in with Apple**.
 
-Publishing OAuth is not the product session.
+### Email verification
 
-### Account linking
+Parallel to password reset:
 
-If `me@gmail.com` registers with password, then later signs in with Facebook/Google using the same **verified** email → **one** `User`. Do not create a second account.
+1. `register` → `email_verified=false` + one-time token/code (TTL 15–60 min).
+2. `POST /api/auth/verify-email`
+3. Until verified: block generation, credits, publish.
+4. `POST /api/auth/resend-verification` rate-limited (e.g. 1/min, 5/hour).
 
-If emails differ, create a new user or require an explicit “link account” step while already logged in.
-
-### Apple
-
-If the iOS app offers Google (or Facebook) login, Apple typically requires **Sign in with Apple** as well. Plan `POST /api/auth/apple` before App Store social login.
-
-### Cost
-
-Google Sign-In, Facebook Login, and Sign in with Apple are **free**. Cost appears only if you wrap them in Clerk/Firebase.
-
-Ship **email + Google** first. Add Facebook login when product needs it.
+SMTP: Gmail for local; Resend / Postmark / SES in production. Google users: `email_verified=true` only if Google asserts it.
 
 ---
 
-## 6. Email verification
+## 8. Security baseline
 
-Not a paid Clerk/Firebase feature. Same idea as password reset: a secret the backend issued.
-
-You already have `forgot-password` / `reset-password`. Verification is parallel.
-
-### Flow
-
-1. `POST /api/auth/register` creates `User` with `email_verified=false`.
-2. Backend emails a **one-time token** or 6-digit code (TTL 15–60 minutes).
-3. User hits `/verify-email?token=…` or submits the code.
-4. `POST /api/auth/verify-email` sets `email_verified=true`.
-5. Until verified: **block generation, credits spend, and publish** (login may still be allowed so they can resend). Tightest option: also block login.
-
-Resend: `POST /api/auth/resend-verification` with rate limits (example: 1/minute, 5/hour) to stop email bombs.
-
-Social login: treat email as verified **only if** the provider asserts `email_verified`.
-
-### Cost
-
-The check is free. You pay **SMTP**:
-
-| Sender | Use |
-| ------ | --- |
-| Gmail SMTP | Local/dev only |
-| Resend / Postmark / Amazon SES | Production; free/cheap starter tiers, then cents per 1k emails |
-
-Do not buy Clerk for verification emails.
+- Hash passwords with Django. Never store plaintext.
+- Verify Google tokens **on the server**. Never trust the client.
+- `aud` must match our web client id. `client_secret` never leaves the server.
+- Rate-limit `login`, `register`, `forgot-password`, `/api/auth/google`.
+- HTTPS in staging/prod.
+- One user per verified email across providers.
+- Refresh rotatable + blacklist on `POST /api/auth/logout`.
 
 ---
 
-## 7. Security baseline
+## 9. Frontend (already shipped — do not wait on it)
 
-Implement on the **API**. This is what scales.
+- Clerk removed. No Clerk JWT.
+- Email → `/api/auth/register` and `/api/auth/login`
+- Google → Google authorize → `/auth-callback` → `POST /api/auth/google` with `code`, `redirectUri`, `intent`, `createAccount`
+- Session: `localStorage` `accessToken`, `refreshToken`, `user`
 
-- Passwords hashed by Django (never store plaintext).
-- Verify all third-party tokens **on the server**; never trust the client.
-- `aud` must match **our** OAuth client IDs.
-- Email verify before generation / billing.
-- Reset and verify tokens: single-use, short TTL.
-- Rate-limit `login`, `register`, `forgot-password`, `resend-verification`, social exchange.
-- HTTPS only.
-- Lock or CAPTCHA after repeated failed logins.
-- One user row for the same verified email across providers.
-- Refresh tokens rotatable + blacklist on logout (`POST /api/auth/logout`).
-- TOTP MFA can be added later on Django if needed; SMS MFA is paid and optional.
+Frontend env: `VITE_GOOGLE_CLIENT_ID` = same web client id as `GOOGLE_OAUTH_CLIENT_ID`.
 
 ---
 
-## 8. Frontend status
+## 10. Checklist
 
-Clerk has been **removed** from the frontend (`@clerk/react` / `ClerkProvider` gone).
+**This ticket**
 
-- Email/password → `/api/auth/register` + `/login` → Admart JWT in `localStorage`
-- Google → authorize redirect → `/auth-callback` → `POST /api/auth/google` `{ code, redirectUri }` → same JWT
-- `ProtectedRoute` and `api.js` use Admart JWT only
+- [ ] `POST /api/auth/google` reads `intent` + `createAccount`
+- [ ] Default missing flags → **login** (do not create)
+- [ ] Login + missing user → **404** `{ "code": "no_account", "message": "There is no Admart account for this email. Please sign up first, then sign in." }`
+- [ ] Register + missing user → create + JWT
+- [ ] No 401 on failed Google exchange (use 400)
+- [ ] Verify `id_token` (`iss`, `aud`, `exp`, signature)
+- [ ] Link by verified email; store Google `sub`
+- [ ] Email login missing user → same 404 `no_account`; wrong password → 401
+- [ ] Tests / manual checks in §6 pass
 
-Set `VITE_GOOGLE_CLIENT_ID` (Google Cloud OAuth **web** client). Authorized redirect URIs:
+**Later**
 
-```
-http://localhost:5173/auth-callback
-https://<production-host>/auth-callback
-```
-
-Backend must exchange the code with that same `redirect_uri`. Android/iOS reuse `POST /api/auth/google` with an ID token later.
-
----
-
-## 9. Backend checklist
-
-- [ ] `POST /api/auth/google` accepts ID token (and/or auth code), verifies `aud`/`iss`/`exp`
-- [ ] Same response shape as login (`accessToken`, `refreshToken`, `user`)
-- [ ] Link-or-create by verified email
-- [ ] `email_verified` on `User`; social respects provider flag
-- [ ] Verify-email + resend endpoints + transactional email (SES or Resend)
-- [ ] Rate limits on auth endpoints
-- [ ] Register Google OAuth client IDs: web, Android, iOS (same backend audience list)
-- [ ] Later: `POST /api/auth/facebook` and `POST /api/auth/apple` without changing JWT contract
+- [ ] `idToken` on the same Google endpoint for mobile
+- [ ] Verify-email + resend + SES/Resend
+- [ ] Rate limits
+- [ ] `POST /api/auth/facebook` and `POST /api/auth/apple`
 
 ---
 
-## 10. What not to do
+## 11. Do not
 
-- Call Google/Clerk/Firebase on every Admart API request
-- Use Facebook **publish** tokens as login sessions
-- Put OAuth client secrets in mobile apps
-- Run Clerk users and Django users as two sources of truth
-- Replace Clerk with Firebase Auth “so mobile works” — mobile should call Admart
+- Verify Clerk JWTs
+- Auto-create a user on Google **Sign in**
+- Return 401 from `/api/auth/google`
+- Put `GOOGLE_OAUTH_CLIENT_SECRET` in the frontend
+- Create a second `User` for the same verified email
+- Replace Clerk with Firebase Auth
+- Ship Facebook/Apple/verify-email in this change
 
 ---
 
-*Pair with `README.md` API map. Frontend Google wiring is the remaining gap vs this contract.*
+*Ship §4 + §5. Web already handles the 404.*

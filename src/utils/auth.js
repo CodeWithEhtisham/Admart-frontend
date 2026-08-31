@@ -58,6 +58,8 @@ export function clearSession() {
 }
 
 export function googleRedirectUri() {
+  const fromEnv = import.meta.env.VITE_GOOGLE_REDIRECT_URI
+  if (fromEnv) return fromEnv.replace(/\/$/, '')
   return `${window.location.origin}/auth-callback`
 }
 
@@ -79,6 +81,7 @@ export function startGoogleAuth({ redirectUrl = '/dashboard', isSignUp = false }
   const state = JSON.stringify({
     redirect: redirectUrl,
     signup: Boolean(isSignUp),
+    intent: isSignUp ? 'register' : 'login',
     nonce: `${Date.now()}`,
   })
   window.sessionStorage.setItem(GOOGLE_STATE_KEY, state)
@@ -105,4 +108,32 @@ export function readGoogleOAuthState(rawState) {
     window.sessionStorage.removeItem(GOOGLE_STATE_KEY)
     return {}
   }
+}
+
+export const NO_ACCOUNT_MESSAGE =
+  'There is no Admart account for this email. Please sign up first, then sign in.'
+
+export function isNoAccountError(err) {
+  const status = err?.response?.status
+  const data = err?.response?.data || {}
+  const code = String(data.code || data.error || '')
+  const text = String(data.detail || data.message || '').toLowerCase()
+  if (code === 'user_not_found' || code === 'no_account') return true
+  if (status === 404) return true
+  return /not found|no account|does not exist|unknown user|please sign up|no user|no active account/.test(
+    text,
+  )
+}
+
+export function formatAuthError(err, { isSignUp = false } = {}) {
+  if (!isSignUp && isNoAccountError(err)) return NO_ACCOUNT_MESSAGE
+  const data = err?.response?.data
+  const msg =
+    data?.detail ||
+    data?.message ||
+    (data && typeof data === 'object' ? Object.values(data).flat().join(' ') : null)
+  if (msg) return String(msg)
+  return isSignUp
+    ? 'Could not create your account. Please try again.'
+    : 'Sign-in failed. Please check your details or sign up first.'
 }

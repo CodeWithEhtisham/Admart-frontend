@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import api from '../utils/api'
-import { isAuthenticated, persistSession, startGoogleAuth } from '../utils/auth'
+import { isAuthenticated, persistSession, startGoogleAuth, formatAuthError, NO_ACCOUNT_MESSAGE } from '../utils/auth'
+import { postLoginPath } from '../utils/projects'
 
 const showcaseItems = [
   { title: 'Launch Hype', duration: '0:28', platform: 'TikTok', badge: 'bg-tiktok/20 text-tiktok' },
@@ -87,12 +88,20 @@ function safeRedirect(value) {
   return value
 }
 
+function noticeMessage(notice) {
+  if (notice === 'no_account') return NO_ACCOUNT_MESSAGE
+  if (notice === 'google_denied') return 'Google sign-in was cancelled or denied.'
+  if (notice === 'google_failed') return 'Google sign-in failed. Please try again.'
+  return ''
+}
+
 export default function AuthPage() {
   const location = useLocation()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const isSignUp = searchParams.get('mode') === 'sign-up'
   const redirectUrl = safeRedirect(searchParams.get('redirect_url') || location.state?.from)
+  const notice = searchParams.get('notice')
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -100,21 +109,31 @@ export default function AuthPage() {
   const [lastName, setLastName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const displayError = error || noticeMessage(notice)
 
   if (isAuthenticated()) {
     return <Navigate to={redirectUrl} replace />
+  }
+
+  const clearNotice = () => {
+    if (!notice) return
+    const next = new URLSearchParams(searchParams)
+    next.delete('notice')
+    setSearchParams(next, { replace: true })
   }
 
   const setMode = (mode) => {
     const next = new URLSearchParams(searchParams)
     if (mode === 'sign-up') next.set('mode', 'sign-up')
     else next.delete('mode')
+    next.delete('notice')
     setSearchParams(next, { replace: true })
     setError('')
   }
 
   const handleGoogleAuth = () => {
     setError('')
+    clearNotice()
     try {
       startGoogleAuth({
         redirectUrl: isSignUp ? '/onboarding' : redirectUrl,
@@ -151,16 +170,12 @@ export default function AuthPage() {
           password,
         })
         persistSession(data)
-        navigate(redirectUrl, { replace: true })
+        const next = await postLoginPath(data.user, redirectUrl)
+        navigate(next, { replace: true })
       }
     } catch (err) {
       console.error(err)
-      const msg =
-        err.response?.data?.detail ||
-        err.response?.data?.message ||
-        (err.response?.data ? Object.values(err.response.data).flat().join(' ') : null) ||
-        'Authentication failed. Please check your credentials.'
-      setError(String(msg))
+      setError(formatAuthError(err, { isSignUp }))
     } finally {
       setLoading(false)
     }
@@ -205,9 +220,18 @@ export default function AuthPage() {
             </p>
 
             <div className="mt-6 rounded-xl border border-border-default bg-surface/50 p-5 backdrop-blur-sm">
-              {error && (
+              {displayError && (
                 <div className="mb-4 rounded-lg border border-error/30 bg-error/10 p-3 text-xs text-error">
-                  {error}
+                  <p>{displayError}</p>
+                  {displayError === NO_ACCOUNT_MESSAGE && (
+                    <button
+                      type="button"
+                      onClick={() => setMode('sign-up')}
+                      className="mt-2 font-semibold underline underline-offset-2"
+                    >
+                      Create an account first
+                    </button>
+                  )}
                 </div>
               )}
 

@@ -29,6 +29,33 @@ export function needsOnboarding(user) {
   return !user.onboardingCompleted
 }
 
+function safeAppPath(value) {
+  if (!value || typeof value !== 'string') return '/dashboard'
+  if (!value.startsWith('/') || value.startsWith('//')) return '/dashboard'
+  if (value.startsWith('/auth')) return '/dashboard'
+  return value
+}
+
+/**
+ * After login/register/Google: first-time users (no project) go to onboarding.
+ */
+export async function postLoginPath(user, intended = '/dashboard') {
+  const fallback = safeAppPath(intended)
+
+  if (typeof user?.projectCount === 'number') {
+    return user.projectCount === 0 ? '/onboarding' : fallback
+  }
+  if (user?.onboardingCompleted === true) return fallback
+  if (user?.onboardingCompleted === false) return '/onboarding'
+
+  try {
+    const { projects } = await listProjects()
+    return projects?.length ? fallback : '/onboarding'
+  } catch {
+    return '/onboarding'
+  }
+}
+
 // ─── API calls ────────────────────────────────────────────────────────
 export async function listProjects() {
   const { data } = await api.get('/api/projects')
