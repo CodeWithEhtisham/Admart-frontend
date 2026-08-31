@@ -311,7 +311,9 @@ export default function SocialAccountsPage() {
             <p className="font-medium text-text-primary">Secure OAuth 2.0 connections</p>
             <p className="mt-1 text-sm text-text-secondary">
               Admart uses industry-standard OAuth so we never store your passwords. Connections are
-              per project — switching projects switches the connected accounts.
+              per project — switching projects switches the connected accounts. For YouTube, Google
+              shows your Gmail first; on the next screen pick the YouTube channel (Brand Account),
+              not the Gmail name.
             </p>
           </div>
         </div>
