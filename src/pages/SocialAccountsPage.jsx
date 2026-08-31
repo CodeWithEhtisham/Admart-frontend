@@ -256,7 +256,7 @@ function PlatformCard({ platform, account, available, busy, onConnect, onDisconn
             </div>
             {platform === 'instagram' && !account.displayName && !account.handle && (
               <p className="rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-xs text-warning">
-                Connect a Professional Instagram account linked to a Facebook Page to publish.
+                Connect a Professional (Business or Creator) Instagram account. Personal accounts cannot connect.
               </p>
             )}
             <div className="flex flex-wrap gap-2">
@@ -280,7 +280,9 @@ function PlatformCard({ platform, account, available, busy, onConnect, onDisconn
             </p>
             <p className="mt-2 max-w-sm text-sm text-text-secondary">
               {available
-                ? 'Publish directly from Admart and sync insights for performance tracking.'
+                ? platform === 'instagram'
+                  ? 'Sign in with Instagram. Requires a Professional (Business or Creator) account.'
+                  : 'Publish directly from Admart and sync insights for performance tracking.'
                 : "We're putting the finishing touches on this integration."}
             </p>
             {available ? (
