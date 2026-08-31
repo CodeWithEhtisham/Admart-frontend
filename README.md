@@ -92,6 +92,8 @@ Auth base: `/api/auth/`
 | GET/PATCH | `/api/auth/me` | Current user |
 | POST | `/api/auth/onboarding/complete` | Mark onboarding done |
 
+Auth architecture (Google / future Facebook / email verification / why not Clerk or Firebase): [`docs/backend-auth.md`](docs/backend-auth.md).
+
 Credits:
 
 | Method | Path |
