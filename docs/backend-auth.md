@@ -17,9 +17,9 @@
 | Django `User` + SimpleJWT | Source of truth: user row, access token, refresh token |
 | Web / Android / iOS | Call **only** `/api/auth/*`; store **Admart** tokens |
 
-Do **not** make Clerk or Firebase Auth the product session. They can stay as optional helpers, but APIs, credits, projects, and mobile clients must trust **Admart JWT** only.
+Do **not** make Clerk or Firebase Auth the product session. The frontend no longer uses Clerk. APIs, credits, projects, and mobile clients trust **Admart JWT** only.
 
-Clerk on the current frontend is a **web shortcut** (Google SSO via `@clerk/react`). Email/password already goes to Django. Target state: Google (and later Facebook) also go to Django, same JWT pair as login.
+Email/password and Google both go to Django and return the same JWT pair.
 
 ---
 
@@ -122,13 +122,13 @@ Then: upsert `User`, issue SimpleJWT pair. Discard the Google token.
 
 | Platform | How they get the Google token |
 | -------- | ----------------------------- |
-| Web | Google Identity Services (GIS) or auth-code redirect; **not** Clerk as session owner |
+| Web | Redirect to Google authorize URL; callback `/auth-callback` posts `code` to `/api/auth/google` |
 | Android | Credential Manager / Google Sign-In SDK |
 | iOS | Google Sign-In SDK |
 
 Never put a Google **client secret** in a mobile app. Web auth-code flow: secret stays on the server.
 
-`POST /api/auth/google` already exists in the API map. Frontend Google button should call it instead of `signIn.sso()` from Clerk.
+`POST /api/auth/google` exchanges the Google auth **code** (and `redirectUri`) for Admart tokens. Do not use Clerk `signIn.sso`.
 
 ---
 
@@ -218,23 +218,22 @@ Implement on the **API**. This is what scales.
 
 ---
 
-## 8. Frontend migration (current hybrid → target)
+## 8. Frontend status
 
-**Today**
+Clerk has been **removed** from the frontend (`@clerk/react` / `ClerkProvider` gone).
 
-- Email/password → `/api/auth/register` + `/login` → `localStorage` JWT
-- Google → Clerk `signIn.sso` / `ClerkProvider`
-- API interceptor prefers Clerk `getToken()`, else `accessToken`
+- Email/password → `/api/auth/register` + `/login` → Admart JWT in `localStorage`
+- Google → authorize redirect → `/auth-callback` → `POST /api/auth/google` `{ code, redirectUri }` → same JWT
+- `ProtectedRoute` and `api.js` use Admart JWT only
 
-**Target**
+Set `VITE_GOOGLE_CLIENT_ID` (Google Cloud OAuth **web** client). Authorized redirect URIs:
 
-1. Backend: `POST /api/auth/google` verifies Google token and returns the same JWT shape as login.
-2. Auth page: Google button obtains Google ID token (GIS), posts to `/api/auth/google`, stores Admart tokens.
-3. `ProtectedRoute` and `api.js` use Admart JWT only (drop `ClerkApiBridge` as session owner).
-4. Remove `@clerk/react` / `ClerkProvider` when Google no longer depends on it.
-5. Android/iOS reuse the same endpoints.
+```
+http://localhost:5173/auth-callback
+https://<production-host>/auth-callback
+```
 
-Until step 2–3 ship, do not add Firebase Auth as a second identity system.
+Backend must exchange the code with that same `redirect_uri`. Android/iOS reuse `POST /api/auth/google` with an ID token later.
 
 ---
 

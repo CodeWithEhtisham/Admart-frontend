@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { useAuth, useSignIn, useSignUp } from '@clerk/react'
 import { Link, Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import api from '../utils/api'
+import { isAuthenticated, persistSession, startGoogleAuth } from '../utils/auth'
 
 const showcaseItems = [
   { title: 'Launch Hype', duration: '0:28', platform: 'TikTok', badge: 'bg-tiktok/20 text-tiktok' },
@@ -90,12 +90,9 @@ function safeRedirect(value) {
 export default function AuthPage() {
   const location = useLocation()
   const navigate = useNavigate()
-  const { isLoaded, isSignedIn } = useAuth()
   const [searchParams, setSearchParams] = useSearchParams()
   const isSignUp = searchParams.get('mode') === 'sign-up'
   const redirectUrl = safeRedirect(searchParams.get('redirect_url') || location.state?.from)
-  const { signIn } = useSignIn()
-  const { signUp } = useSignUp()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -104,7 +101,7 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  if ((isLoaded && isSignedIn) || localStorage.getItem('accessToken')) {
+  if (isAuthenticated()) {
     return <Navigate to={redirectUrl} replace />
   }
 
@@ -116,27 +113,16 @@ export default function AuthPage() {
     setError('')
   }
 
-  const clerkReady = isSignUp ? Boolean(signUp) : Boolean(signIn)
-
-  const handleGoogleAuth = async () => {
+  const handleGoogleAuth = () => {
     setError('')
     try {
-      if (isSignUp) {
-        await signUp.sso({
-          strategy: 'oauth_google',
-          redirectUrl: '/onboarding',
-          redirectCallbackUrl: '/auth-callback',
-        })
-      } else {
-        await signIn.sso({
-          strategy: 'oauth_google',
-          redirectUrl,
-          redirectCallbackUrl: '/auth-callback',
-        })
-      }
+      startGoogleAuth({
+        redirectUrl: isSignUp ? '/onboarding' : redirectUrl,
+        isSignUp,
+      })
     } catch (err) {
       console.error(err)
-      setError('Could not start Google sign-in. Please try again.')
+      setError(err?.message || 'Could not start Google sign-in. Please try again.')
     }
   }
 
@@ -157,18 +143,14 @@ export default function AuthPage() {
           firstName: firstName.trim(),
           lastName: lastName.trim(),
         })
-        localStorage.setItem('accessToken', data.accessToken)
-        localStorage.setItem('refreshToken', data.refreshToken)
-        localStorage.setItem('user', JSON.stringify(data.user))
+        persistSession(data)
         navigate('/onboarding', { replace: true })
       } else {
         const { data } = await api.post('/api/auth/login', {
           email: email.trim(),
           password,
         })
-        localStorage.setItem('accessToken', data.accessToken)
-        localStorage.setItem('refreshToken', data.refreshToken)
-        localStorage.setItem('user', JSON.stringify(data.user))
+        persistSession(data)
         navigate(redirectUrl, { replace: true })
       }
     } catch (err) {
@@ -232,7 +214,6 @@ export default function AuthPage() {
               <button
                 type="button"
                 onClick={handleGoogleAuth}
-                disabled={!clerkReady}
                 className="flex h-10 w-full items-center justify-center gap-3 rounded-lg border border-border-default bg-panel text-sm font-semibold text-text-primary transition hover:bg-elevated disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <GoogleIcon />

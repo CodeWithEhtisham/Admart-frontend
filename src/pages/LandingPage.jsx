@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { useAuth } from '@clerk/react'
 import { Link } from 'react-router-dom'
 import { activatePlan, formatCredits, getPlans } from '../utils/credits'
+import { isAuthenticated } from '../utils/auth'
 
 const lm = (file) => `/leonardo-media/${file}`
 const posterOf = (video) =>
@@ -409,9 +409,7 @@ export default function LandingPage() {
   const [planError, setPlanError] = useState('')
   const [activatingPlan, setActivatingPlan] = useState(null)
   const [planToast, setPlanToast] = useState(null)
-  const { isLoaded, isSignedIn } = useAuth()
-  const hasDirectToken = Boolean(localStorage.getItem('accessToken'))
-  const isAuthenticated = (isLoaded && isSignedIn) || hasDirectToken
+  const authenticated = isAuthenticated()
 
   const navSections = [
     { id: 'product', label: 'Product' },
@@ -510,7 +508,7 @@ export default function LandingPage() {
     return () => io.disconnect()
   }, [plans])
 
-  const authPath = isAuthenticated ? '/dashboard' : '/auth'
+  const authPath = authenticated ? '/dashboard' : '/auth'
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-black font-body text-white">
@@ -539,7 +537,7 @@ export default function LandingPage() {
             ))}
           </nav>
           <div className="flex items-center gap-3">
-            {isAuthenticated ? (
+            {authenticated ? (}
               <PillButton href="/dashboard" variant="ring">
                 Go to Dashboard
               </PillButton>
@@ -907,7 +905,7 @@ export default function LandingPage() {
                         </li>
                       ))}
                     </ul>
-                    {isAuthenticated ? (
+                    {authenticated ? (}
                       <button
                         type="button"
                         onClick={() => handleActivatePlan(p.id)}

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useAuth } from '@clerk/react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { isAuthenticated } from '../utils/auth'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import { formatCredits, quoteCredits } from '../utils/credits.js'
@@ -380,7 +380,7 @@ function SettingInput({ name, value, onChange }) {
 export default function TemplatesPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { isLoaded: authLoaded, isSignedIn } = useAuth()
+  const signedIn = isAuthenticated()
   const [media, setMedia] = useState('all')
   const [modelFilter, setModelFilter] = useState('all')
   const [sort, setSort] = useState('trending')
@@ -493,7 +493,7 @@ export default function TemplatesPage() {
 
   useEffect(() => {
     if (!selected) return
-    if (!authLoaded || !isSignedIn) {
+    if (!signedIn) {
       setLiveQuote(null)
       return
     }
@@ -519,7 +519,7 @@ export default function TemplatesPage() {
     return () => {
       cancelled = true
     }
-  }, [authLoaded, draftSettings, isSignedIn, selected])
+  }, [draftSettings, selected, signedIn])
 
   const filterSummary = [
     MEDIA_LABELS[media],

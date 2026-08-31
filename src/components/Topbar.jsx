@@ -1,9 +1,10 @@
-import { useAuth, UserButton } from '@clerk/react'
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import ProjectDropdown from './ProjectDropdown'
 import { CREDITS_CHANGE_EVENT, formatCredits, getCredits } from '../utils/credits.js'
 import { clearActiveProject } from '../utils/projects'
+import api from '../utils/api'
+import { clearSession, getStoredUser, isAuthenticated } from '../utils/auth'
 
 function getInitials(firstName, lastName, email) {
   if (firstName && lastName) return `${firstName[0]}${lastName[0]}`.toUpperCase()
@@ -19,27 +20,23 @@ function getInitials(firstName, lastName, email) {
  */
 export default function Topbar({ title }) {
   const navigate = useNavigate()
-  const { isLoaded, isSignedIn } = useAuth()
   const [searchOpen, setSearchOpen] = useState(false)
   const [creditsRemaining, setCreditsRemaining] = useState(null)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
-  const hasDirectToken = Boolean(localStorage.getItem('accessToken'))
-  const isAuthenticated = (isLoaded && isSignedIn) || hasDirectToken
+  const authenticated = isAuthenticated()
+  const user = getStoredUser()
 
-  let directUser = null
-  if (hasDirectToken) {
+  const handleSignOut = async () => {
     try {
-      directUser = JSON.parse(localStorage.getItem('user') || '{}')
+      const refreshToken = window.localStorage.getItem('refreshToken')
+      if (refreshToken) {
+        await api.post('/api/auth/logout', { refreshToken, refresh: refreshToken })
+      }
     } catch {
-      // Invalid JSON in storage — fall back to anonymous user
+      /* still clear local session */
     }
-  }
-
-  const handleDirectSignOut = () => {
-    localStorage.removeItem('accessToken')
-    localStorage.removeItem('refreshToken')
-    localStorage.removeItem('user')
+    clearSession()
     clearActiveProject()
     navigate('/auth', { replace: true })
   }
@@ -173,7 +170,7 @@ export default function Topbar({ title }) {
             <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-error" />
           </Link>
 
-          {!isAuthenticated ? (
+          {!authenticated ? (
             <>
               <Link
                 to="/auth"
@@ -188,33 +185,24 @@ export default function Topbar({ title }) {
                 Sign up
               </Link>
             </>
-          ) : isSignedIn ? (
-            <UserButton
-              afterSignOutUrl="/"
-              appearance={{
-                elements: {
-                  avatarBox: 'h-9 w-9',
-                },
-              }}
-            />
           ) : (
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setUserMenuOpen((open) => !open)}
                 className="flex h-9 w-9 items-center justify-center rounded-full gradient-bg font-heading text-xs font-bold text-white shadow-md shadow-accent-blue/20 transition hover:opacity-90"
-                title={directUser?.email || 'User profile'}
+                title={user?.email || 'User profile'}
               >
-                {getInitials(directUser?.firstName, directUser?.lastName, directUser?.email)}
+                {getInitials(user?.firstName, user?.lastName, user?.email)}
               </button>
 
               {userMenuOpen && (
                 <div className="absolute right-0 top-11 z-50 w-56 rounded-2xl border border-border-default bg-panel p-3 shadow-2xl animate-fade-slide-down">
                   <div className="border-b border-border-default pb-2.5 mb-2 px-1">
                     <p className="font-heading text-sm font-bold text-text-primary truncate">
-                      {[directUser?.firstName, directUser?.lastName].filter(Boolean).join(' ') || 'User'}
+                      {[user?.firstName, user?.lastName].filter(Boolean).join(' ') || 'User'}
                     </p>
-                    <p className="text-xs text-text-muted truncate">{directUser?.email || ''}</p>
+                    <p className="text-xs text-text-muted truncate">{user?.email || ''}</p>
                   </div>
                   <Link
                     to="/settings"
@@ -225,7 +213,7 @@ export default function Topbar({ title }) {
                   </Link>
                   <button
                     type="button"
-                    onClick={handleDirectSignOut}
+                    onClick={handleSignOut}
                     className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-error transition hover:bg-error/10"
                   >
                     Sign out

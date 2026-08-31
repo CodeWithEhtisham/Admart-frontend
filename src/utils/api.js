@@ -1,82 +1,59 @@
-import axios from 'axios';
+import axios from 'axios'
+import { clearSession, getAccessToken, getRefreshToken } from './auth'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-let authTokenProvider = null;
-
-export function setAuthTokenProvider(provider) {
-  authTokenProvider = provider;
-}
-
-async function getBearerToken() {
-  if (authTokenProvider) {
-    try {
-      const token = await authTokenProvider();
-      if (token) return token;
-    } catch {
-      // Fall back to the legacy token cache while Clerk finishes loading.
-    }
-  }
-  return localStorage.getItem('accessToken');
-}
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-});
+})
 
-// Request Interceptor: Attach access token
 api.interceptors.request.use(
-  async (config) => {
-    const token = await getBearerToken();
+  (config) => {
+    const token = getAccessToken()
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${token}`
     }
-    return config;
+    return config
   },
-  (error) => Promise.reject(error)
-);
+  (error) => Promise.reject(error),
+)
 
-// Response Interceptor: Handle automatic token refresh
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config
 
-    // Avoid infinite loops and refresh token endpoints failing
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
       originalRequest.url !== '/api/auth/refresh'
     ) {
-      originalRequest._retry = true;
-      const refreshToken = localStorage.getItem('refreshToken');
+      originalRequest._retry = true
+      const refreshToken = getRefreshToken()
 
       if (refreshToken) {
         try {
           const response = await axios.post(`${API_BASE_URL}/api/auth/refresh`, {
             refresh: refreshToken,
-          });
-          
-          const newAccessToken = response.data.access || response.data.accessToken;
-          localStorage.setItem('accessToken', newAccessToken);
+            refreshToken,
+          })
 
-          // Retry the original request
-          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-          return api(originalRequest);
+          const newAccessToken = response.data.access || response.data.accessToken
+          window.localStorage.setItem('accessToken', newAccessToken)
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
+          return api(originalRequest)
         } catch (refreshError) {
-          // Refresh token expired or invalid -> logout user
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
-          localStorage.removeItem('user');
-          window.location.href = '/auth';
-          return Promise.reject(refreshError);
+          clearSession()
+          window.location.href = '/auth'
+          return Promise.reject(refreshError)
         }
       }
     }
-    return Promise.reject(error);
-  }
-);
+    return Promise.reject(error)
+  },
+)
 
-export default api;
+export default api

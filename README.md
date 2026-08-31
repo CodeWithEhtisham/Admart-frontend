@@ -171,6 +171,7 @@ Env:
 ```bash
 # Admart-frontend/.env  (name must match code)
 VITE_API_URL=http://localhost:8000
+VITE_GOOGLE_CLIENT_ID=your-google-oauth-web-client-id
 ```
 
 ---
