@@ -106,6 +106,42 @@ export async function disconnectPlatform(projectId, platform) {
   return data
 }
 
+export async function publishToAccounts(projectId, payload) {
+  const { data } = await api.post(`/api/projects/${projectId}/publish`, payload)
+  return data
+}
+
+export async function listYoutubePlaylists(projectId) {
+  const { data } = await api.get(`/api/projects/${projectId}/social/youtube/playlists`)
+  return data
+}
+
+export async function suggestYoutubeCopy(projectId, payload) {
+  const { data } = await api.post(`/api/projects/${projectId}/publish/youtube/suggest`, payload)
+  return data
+}
+
+export async function listAdAccounts(projectId) {
+  const { data } = await api.get(`/api/projects/${projectId}/ads/accounts`)
+  return data
+}
+
+export async function connectAdsProvider(projectId, provider) {
+  const { data } = await api.get(`/api/projects/${projectId}/ads/connect/${provider}/url`)
+  window.location.href = data.authUrl
+  return data
+}
+
+export async function disconnectAdsProvider(projectId, provider) {
+  const { data } = await api.delete(`/api/projects/${projectId}/ads/disconnect/${provider}`)
+  return data
+}
+
+export async function boostAsAd(projectId, payload) {
+  const { data } = await api.post(`/api/projects/${projectId}/ads/boost`, payload)
+  return data
+}
+
 // ─── Active-project cache (keeps the switcher instant across reloads) ──
 export function getCachedActiveProject() {
   try {

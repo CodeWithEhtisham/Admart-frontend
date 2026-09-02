@@ -4,19 +4,29 @@ import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import {
   PROJECT_CHANGE_EVENT,
+  connectAdsProvider,
   connectPlatform,
+  disconnectAdsProvider,
   disconnectPlatform,
   getCachedActiveProject,
+  listAdAccounts,
   listSocialAccounts,
 } from '../utils/projects'
 
-// YouTube, Facebook and Instagram are live; the rest show as coming soon.
+// YouTube, Facebook, Instagram, TikTok and Snapchat are live; the rest show as coming soon.
+const ADS_PROVIDERS = [
+  { key: 'google', name: 'YouTube Ads', description: 'Google Ads. Connect YouTube first to host the video, then this ads account to spend.' },
+  { key: 'meta', name: 'Meta Ads', description: 'Facebook + Instagram ads from one ad account.' },
+  { key: 'tiktok', name: 'TikTok Ads', description: 'TikTok Marketing API — separate from Login Kit.' },
+  { key: 'snap', name: 'Snap Ads', description: 'Snap Marketing API — Login Kit cannot post organically.' },
+]
+
 const PLATFORMS = [
   { key: 'youtube', available: true },
   { key: 'facebook', available: true },
   { key: 'instagram', available: true },
-  { key: 'tiktok', available: false },
-  { key: 'snapchat', available: false },
+  { key: 'tiktok', available: true },
+  { key: 'snapchat', available: true },
   { key: 'shopify', available: false },
   { key: 'wordpress', available: false },
   { key: 'linkedin', available: false },
@@ -315,8 +325,10 @@ export default function SocialAccountsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [activeProject, setActiveProject] = useState(getCachedActiveProject)
   const [accountsByPlatform, setAccountsByPlatform] = useState({})
+  const [adAccountsByProvider, setAdAccountsByProvider] = useState({})
   const [loading, setLoading] = useState(true)
   const [busyPlatform, setBusyPlatform] = useState('')
+  const [busyAds, setBusyAds] = useState('')
   const [toast, setToast] = useState({ message: '', visible: false })
 
   const showToast = (message) => setToast({ message, visible: true })
@@ -342,10 +354,13 @@ export default function SocialAccountsPage() {
     }
     setLoading(true)
     try {
-      const accounts = await listSocialAccounts(projectId)
+      const [accounts, ads] = await Promise.all([listSocialAccounts(projectId), listAdAccounts(projectId)])
       const map = {}
       for (const acc of accounts) map[acc.platform] = acc
       setAccountsByPlatform(map)
+      const adsMap = {}
+      for (const acc of ads || []) adsMap[acc.provider] = acc
+      setAdAccountsByProvider(adsMap)
     } catch (err) {
       console.error('Failed to load social accounts:', err)
       showToast('Could not load social accounts.')
@@ -363,9 +378,17 @@ export default function SocialAccountsPage() {
   useEffect(() => {
     const connected = searchParams.get('connected')
     const error = searchParams.get('error')
-    if (!connected && !error) return
+    const adsConnected = searchParams.get('adsConnected')
+    const adsError = searchParams.get('adsError')
+    if (!connected && !error && !adsConnected && !adsError) return
     if (connected) {
       setToast({ message: `${PLATFORM_META[connected]?.name || connected} connected.`, visible: true })
+    } else if (adsConnected) {
+      const name = ADS_PROVIDERS.find((p) => p.key === adsConnected)?.name || adsConnected
+      setToast({ message: `${name} connected.`, visible: true })
+    } else if (adsError) {
+      const name = ADS_PROVIDERS.find((p) => p.key === adsError)?.name || adsError
+      setToast({ message: `Couldn't connect ${name}. Please try again.`, visible: true })
     } else {
       setToast({
         message: `Couldn't connect ${PLATFORM_META[error]?.name || error}. Please try again.`,
@@ -404,6 +427,32 @@ export default function SocialAccountsPage() {
       showToast(`Could not disconnect ${PLATFORM_META[platform].name}.`)
     } finally {
       setBusyPlatform('')
+    }
+  }
+
+  const handleConnectAds = async (provider) => {
+    if (!projectId) return
+    setBusyAds(provider)
+    try {
+      await connectAdsProvider(projectId, provider)
+    } catch (err) {
+      showToast(err.response?.data?.message || `Could not connect ${provider} ads.`)
+      setBusyAds('')
+    }
+  }
+
+  const handleDisconnectAds = async (provider) => {
+    if (!projectId) return
+    setBusyAds(provider)
+    try {
+      await disconnectAdsProvider(projectId, provider)
+      await loadAccounts()
+      const name = ADS_PROVIDERS.find((p) => p.key === provider)?.name || provider
+      showToast(`${name} disconnected.`)
+    } catch (err) {
+      showToast(`Could not disconnect ${provider} ads.`)
+    } finally {
+      setBusyAds('')
     }
   }
 
@@ -457,6 +506,55 @@ export default function SocialAccountsPage() {
               />
             ))}
           </div>
+        )}
+
+        {projectId && (
+          <section className="space-y-4">
+            <div>
+              <h2 className="font-heading text-lg font-bold">Ads accounts</h2>
+              <p className="mt-1 text-sm text-text-secondary">
+                Separate from organic Connect. Meta covers Facebook and Instagram ads together.
+              </p>
+            </div>
+            <div className="grid gap-4 lg:grid-cols-3">
+              {ADS_PROVIDERS.map(({ key, name, description }) => {
+                const account = adAccountsByProvider[key]
+                const connected = Boolean(account?.connected)
+                return (
+                  <div key={key} className="rounded-2xl border border-border-default bg-surface p-5">
+                    <div className="flex items-center justify-between gap-2">
+                      <h3 className="font-heading font-semibold">{name}</h3>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                          connected
+                            ? 'border border-success/40 bg-success/15 text-success'
+                            : 'border border-border-default bg-elevated text-text-tertiary'
+                        }`}
+                      >
+                        {connected ? 'Connected' : 'Not connected'}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-sm text-text-secondary">{description}</p>
+                    {connected && account?.displayName ? (
+                      <p className="mt-3 truncate text-sm">{account.displayName}</p>
+                    ) : null}
+                    <button
+                      type="button"
+                      onClick={() => (connected ? handleDisconnectAds(key) : handleConnectAds(key))}
+                      disabled={busyAds === key}
+                      className={`mt-4 rounded-xl px-4 py-2 text-sm font-semibold disabled:opacity-50 ${
+                        connected
+                          ? 'border border-error/50 text-error hover:bg-error/10'
+                          : 'gradient-bg text-white'
+                      }`}
+                    >
+                      {busyAds === key ? 'Working…' : connected ? 'Disconnect' : `Connect ${name}`}
+                    </button>
+                  </div>
+                )
+              })}
+            </div>
+          </section>
         )}
       </main>
 

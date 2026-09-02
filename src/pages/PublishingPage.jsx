@@ -1,45 +1,37 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import PreviewModal from '../components/PreviewModal.jsx'
+import YoutubeUploadForm from '../components/YoutubeUploadForm.jsx'
+import { mediaBlockReason, platformAccepts, PROVIDER_PLACEMENTS } from '../utils/platformMedia.js'
+import {
+  boostAsAd,
+  getCachedActiveProject,
+  listAdAccounts,
+  listSocialAccounts,
+  publishToAccounts,
+} from '../utils/projects.js'
 
-const PLATFORMS = [
-  {
-    id: 'tiktok',
-    name: 'TikTok',
-    handle: '@admart_brand',
-    icon: '🎵',
-    color: 'text-tiktok',
-    dot: 'bg-tiktok',
-    connected: true,
-  },
-  {
-    id: 'youtube',
-    name: 'YouTube',
-    handle: 'Admart Brand',
-    icon: '▶️',
-    color: 'text-youtube',
-    dot: 'bg-youtube',
-    connected: true,
-  },
-  {
-    id: 'instagram',
-    name: 'Instagram',
-    handle: '@admart.brand',
-    icon: '📸',
-    color: 'text-instagram',
-    dot: 'bg-instagram',
-    connected: true,
-  },
-  {
-    id: 'facebook',
-    name: 'Facebook',
-    handle: 'Admart Brand Page',
-    icon: 'f',
-    color: 'text-facebook',
-    dot: 'bg-facebook',
-    connected: false,
-  },
+const ORGANIC_META = [
+  { id: 'tiktok', name: 'TikTok', icon: '🎵', color: 'text-tiktok', dot: 'bg-tiktok' },
+  { id: 'youtube', name: 'YouTube', icon: '▶️', color: 'text-youtube', dot: 'bg-youtube' },
+  { id: 'instagram', name: 'Instagram', icon: '📸', color: 'text-instagram', dot: 'bg-instagram' },
+  { id: 'facebook', name: 'Facebook', icon: 'f', color: 'text-facebook', dot: 'bg-facebook' },
 ]
+
+const ADS_PLACEMENT_META = [
+  { id: 'tiktok', name: 'TikTok', color: 'text-tiktok', dot: 'bg-tiktok' },
+  { id: 'instagram', name: 'Instagram', color: 'text-instagram', dot: 'bg-instagram' },
+  { id: 'facebook', name: 'Facebook', color: 'text-facebook', dot: 'bg-facebook' },
+  { id: 'snapchat', name: 'Snapchat', color: 'text-snapchat', dot: 'bg-snapchat' },
+  { id: 'youtube', name: 'YouTube', color: 'text-youtube', dot: 'bg-youtube' },
+]
+
+const ADS_PROVIDER_LABELS = {
+  meta: 'Meta Ads (Facebook + Instagram)',
+  tiktok: 'TikTok Ads',
+  snap: 'Snap Ads',
+  google: 'YouTube Ads (Google Ads)',
+}
 
 function ChevronLeftIcon({ className }) {
   return (
@@ -80,20 +72,79 @@ export default function PublishingPage() {
     publishAsset.title ||
     (isImage ? 'Untitled image' : isVideo ? 'Untitled video' : 'Summer Product Launch — Cinematic Showcase 2024')
   const backTo = isImage ? '/image-gen' : isVideo ? '/video-gen' : '/result'
+  const assetKind = isImage ? 'image' : 'video'
+  const sourceUrl = isImage ? publishAsset.imageUrl : publishAsset.videoUrl
 
-  const [scheduleMode, setScheduleMode] = useState('now')
-  const [openAccordion, setOpenAccordion] = useState('tiktok')
+  const [mode, setMode] = useState('post')
+  const [accountsByPlatform, setAccountsByPlatform] = useState({})
+  const [adAccounts, setAdAccounts] = useState([])
+  const [selectedId, setSelectedId] = useState(isImage ? 'instagram' : 'youtube')
   const [toggles, setToggles] = useState({
-    tiktok: true,
-    youtube: true,
+    tiktok: platformAccepts('tiktok', isImage ? 'image' : 'video'),
+    youtube: platformAccepts('youtube', isImage ? 'image' : 'video'),
     instagram: true,
-    facebook: false,
+    facebook: true,
   })
+  const [adsProvider, setAdsProvider] = useState('')
+  const [adsPlacements, setAdsPlacements] = useState({})
+  const [budget, setBudget] = useState('25')
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
   const [showPreview, setShowPreview] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
+  const [ytPayload, setYtPayload] = useState(null)
 
-  const activeCount = PLATFORMS.filter((p) => toggles[p.id] && p.connected).length
+  const platforms = ORGANIC_META.map((p) => {
+    const acc = accountsByPlatform[p.id]
+    return {
+      ...p,
+      connected: Boolean(acc?.connected),
+      handle: acc?.handle || acc?.displayName || '',
+    }
+  })
+
+  const connectedAds = adAccounts.filter((a) => a.connected)
+  const canPost = (p) => p.connected && platformAccepts(p.id, assetKind)
+  const activeOrganic = platforms.filter((p) => toggles[p.id] && canPost(p))
+  const allowedPlacements = (PROVIDER_PLACEMENTS[adsProvider] || []).filter((id) =>
+    platformAccepts(id, assetKind),
+  )
+  const selectedPlacements = allowedPlacements.filter((id) => adsPlacements[id])
+  const activeCount = mode === 'post' ? activeOrganic.length : selectedPlacements.length
+  const adsReady = connectedAds.length > 0 && Boolean(adsProvider)
+
+  useEffect(() => {
+    const projectId = getCachedActiveProject()?.id
+    if (!projectId) return
+    let cancelled = false
+    Promise.all([listSocialAccounts(projectId), listAdAccounts(projectId)])
+      .then(([social, ads]) => {
+        if (cancelled) return
+        const map = {}
+        for (const acc of social || []) map[acc.platform] = acc
+        setAccountsByPlatform(map)
+        const adsList = ads || []
+        setAdAccounts(adsList)
+        const first = adsList.find((a) => a.connected)
+        if (first) setAdsProvider(first.provider)
+      })
+      .catch(() => {
+        if (!cancelled) setError('Could not load connected accounts.')
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    const next = {}
+    for (const id of allowedPlacements) next[id] = true
+    setAdsPlacements(next)
+  }, [adsProvider, assetKind])
 
   useEffect(() => {
     if (!showToast) return
@@ -104,14 +155,72 @@ export default function PublishingPage() {
     return () => clearTimeout(t)
   }, [showToast, navigate, isImage, isVideo])
 
-  const toggleAccordion = (id) => {
-    setOpenAccordion((prev) => (prev === id ? '' : id))
+  const confirmAction = async () => {
+    const projectId = getCachedActiveProject()?.id
+    if (!projectId) {
+      setError('Select a project first.')
+      setShowModal(false)
+      return
+    }
+    setSubmitting(true)
+    setError('')
+    try {
+      if (mode === 'post') {
+        const job = await publishToAccounts(projectId, {
+          assetId: publishAsset.assetId || undefined,
+          kind: assetKind,
+          sourceUrl,
+          title: assetTitle,
+          platforms: activeOrganic.map((p) => p.id),
+          youtube: ytPayload || {
+            title: assetTitle.slice(0, 100),
+            description: publishAsset.prompt || '',
+            privacyStatus: 'public',
+            categoryId: '22',
+            madeForKids: false,
+            containsSyntheticMedia: true,
+          },
+        })
+        setToastMessage(
+          job.status === 'succeeded'
+            ? `Published to ${activeOrganic.length} platform${activeOrganic.length === 1 ? '' : 's'}.`
+            : job.status === 'partial'
+              ? 'Published to some platforms. Check failed accounts.'
+              : job.error || 'Publish failed.',
+        )
+      } else {
+        await boostAsAd(projectId, {
+          assetId: publishAsset.assetId || undefined,
+          kind: assetKind,
+          sourceUrl,
+          title: assetTitle,
+          provider: adsProvider,
+          placements: selectedPlacements,
+          budget,
+          startDate: startDate || undefined,
+          endDate: endDate || undefined,
+        })
+        setToastMessage('Boost created.')
+      }
+      setShowModal(false)
+      setShowToast(true)
+    } catch (err) {
+      setShowModal(false)
+      setError(err.response?.data?.message || err.response?.data?.error || 'Request failed.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
-  const confirmPublish = () => {
-    setShowModal(false)
-    setShowToast(true)
-  }
+  const footerDisabled = activeCount === 0 || submitting || (mode === 'ad' && !adsReady)
+
+  const adsCopy = useMemo(() => {
+    if (!connectedAds.length) return 'Connect an ads account'
+    return ADS_PROVIDER_LABELS[adsProvider] || 'Use as ad'
+  }, [connectedAds.length, adsProvider])
+
+  const selected = platforms.find((p) => p.id === selectedId) || platforms[0]
+  const youtubeReady = platforms.some((p) => p.id === 'youtube' && canPost(p))
 
   return (
     <div className="relative flex h-screen min-h-0 flex-col bg-base font-body text-text-primary">
@@ -129,17 +238,13 @@ export default function PublishingPage() {
         </h1>
       </header>
 
-      <div className="flex min-h-0 flex-1">
-        <aside className="flex w-[360px] shrink-0 flex-col border-r border-border bg-panel">
-          <div className="min-h-0 flex-1 space-y-6 overflow-y-auto p-5">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
+        <aside className="flex w-[300px] shrink-0 flex-col border-r border-border bg-panel">
+          <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4">
             <div className="overflow-hidden rounded-xl border border-border-default bg-surface shadow-lg">
               <div className={`relative w-full ${isImage ? 'aspect-square' : 'aspect-video'}`}>
                 {isImage ? (
-                  <img
-                    src={publishAsset.imageUrl}
-                    alt=""
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
+                  <img src={publishAsset.imageUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
                 ) : isVideo ? (
                   <video
                     src={publishAsset.videoUrl}
@@ -150,15 +255,6 @@ export default function PublishingPage() {
                   <>
                     <div className="absolute inset-0 gradient-bg" />
                     <div className="absolute inset-0 bg-linear-to-t from-base/90 via-transparent to-transparent" />
-                    <button
-                      type="button"
-                      className="absolute left-1/2 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-white/15 text-white backdrop-blur-md"
-                      aria-label="Play preview"
-                    >
-                      <svg className="ml-0.5 h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                        <path d="M8 5v14l11-7L8 5z" />
-                      </svg>
-                    </button>
                   </>
                 )}
                 {isImage || isVideo ? (
@@ -172,322 +268,252 @@ export default function PublishingPage() {
                   </button>
                 ) : null}
               </div>
-              <div className="space-y-2 p-4">
+              <div className="p-3">
                 <p className="font-heading text-sm font-semibold leading-snug">{assetTitle}</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {(isImage
-                    ? ['Image', publishAsset.capability || 'AI', 'Ready']
-                    : isVideo
-                      ? ['Video', publishAsset.capability || 'AI', 'Ready']
-                      : ['0:15', '16:9', '1080p', '8.4MB']
-                  ).map((c) => (
-                    <span
-                      key={c}
-                      className="rounded-md border border-border-default bg-input px-2 py-0.5 font-mono text-[10px] text-text-secondary"
-                    >
-                      {c}
-                    </span>
-                  ))}
-                </div>
               </div>
             </div>
 
-            <div>
-              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-tertiary">Publishing to</h2>
-              <div className="space-y-3">
-                {PLATFORMS.map((p) => {
-                  const on = toggles[p.id]
-                  const disabled = !p.connected
-                  return (
-                    <div
-                      key={p.id}
-                      className={`flex items-center gap-3 rounded-xl border px-3 py-2.5 ${
-                        disabled ? 'border-border bg-input/40 opacity-60' : 'border-border-default bg-input'
-                      }`}
-                    >
-                      <span className={`flex h-9 w-9 items-center justify-center rounded-lg bg-elevated text-lg ${p.color}`}>
-                        {p.icon}
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-text-primary">{p.name}</p>
-                        <p className="truncate text-xs text-text-muted">{disabled ? 'Not connected' : p.handle}</p>
-                      </div>
-                      <Toggle
-                        checked={on && !disabled}
-                        disabled={disabled}
-                        onChange={(v) => setToggles((prev) => ({ ...prev, [p.id]: v }))}
-                      />
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-
-            <div>
-              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-text-tertiary">
-                Platform previews
-              </h2>
-              <div className="flex gap-2 overflow-x-auto pb-1">
-                {PLATFORMS.filter((p) => p.connected).map((p) => (
-                  <div
-                    key={p.id}
-                    className="w-[70px] shrink-0 overflow-hidden rounded-xl border border-border-default bg-base shadow-md"
-                  >
-                    <div className={`relative aspect-[9/16] ${p.id === 'tiktok' ? 'bg-tiktok/20' : ''} ${p.id === 'youtube' ? 'bg-youtube/20' : ''} ${p.id === 'instagram' ? 'bg-instagram/20' : ''}`}>
-                      <div className="absolute inset-0 gradient-bg opacity-60" />
-                    </div>
-                    <p className="truncate px-1 py-1 text-center text-[9px] text-text-muted">{p.name}</p>
-                  </div>
-                ))}
-              </div>
+            <div className="grid grid-cols-2 gap-1 rounded-xl border border-border-default bg-input p-1">
+              <button
+                type="button"
+                onClick={() => setMode('post')}
+                className={`rounded-lg px-3 py-2 text-xs font-semibold ${
+                  mode === 'post' ? 'bg-elevated text-text-primary' : 'text-text-muted'
+                }`}
+              >
+                Post to accounts
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode('ad')}
+                className={`rounded-lg px-3 py-2 text-xs font-semibold ${
+                  mode === 'ad' ? 'bg-elevated text-text-primary' : 'text-text-muted'
+                }`}
+              >
+                Use as ad
+              </button>
             </div>
           </div>
         </aside>
 
-        <main className="min-h-0 flex-1 overflow-y-auto bg-base p-6 lg:p-8">
-          <section className="mx-auto max-w-3xl space-y-8">
-            <div>
-              <h2 className="mb-3 font-heading text-lg font-semibold">Schedule</h2>
-              <div className="space-y-3 rounded-xl border border-border-default bg-panel p-4">
-                <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-transparent p-2 transition hover:border-border-default hover:bg-elevated/40">
-                  <input
-                    type="radio"
-                    name="schedule"
-                    className="mt-1 accent-accent-blue"
-                    checked={scheduleMode === 'now'}
-                    onChange={() => setScheduleMode('now')}
-                  />
-                  <span>
-                    <span className="block text-sm font-medium text-text-primary">🚀 Publish Now</span>
-                    <span className="text-xs text-text-muted">
-                      Your {isImage ? 'image' : 'video'} goes live as soon as publishing completes.
-                    </span>
-                  </span>
-                </label>
-                <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-transparent p-2 transition hover:border-border-default hover:bg-elevated/40">
-                  <input
-                    type="radio"
-                    name="schedule"
-                    className="mt-1 accent-accent-blue"
-                    checked={scheduleMode === 'schedule'}
-                    onChange={() => setScheduleMode('schedule')}
-                  />
-                  <span>
-                    <span className="block text-sm font-medium text-text-primary">📅 Schedule for Later</span>
-                    <span className="text-xs text-text-muted">Pick a date, time, and timezone for each platform batch.</span>
-                  </span>
-                </label>
-                {scheduleMode === 'schedule' && (
-                  <div className="grid gap-3 border-t border-border pt-4 sm:grid-cols-3">
-                    <div>
-                      <label className="mb-1 block text-xs text-text-tertiary">Date</label>
-                      <input
-                        type="date"
-                        className="w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm outline-none focus:border-accent-blue/50"
-                      />
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-xs text-text-tertiary">Time</label>
-                      <input
-                        type="time"
-                        className="w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm outline-none focus:border-accent-blue/50"
-                      />
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-xs text-text-tertiary">Timezone</label>
-                      <select className="w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm outline-none focus:border-accent-blue/50">
-                        <option>UTC</option>
-                        <option>America/New_York</option>
-                        <option>Europe/London</option>
-                        <option>Asia/Tokyo</option>
-                      </select>
-                    </div>
+        <aside className="flex w-[260px] shrink-0 flex-col border-r border-border bg-panel">
+          <div className="min-h-0 flex-1 overflow-y-auto p-4">
+            {mode === 'post' ? (
+              <div>
+                <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-tertiary">Platforms</h2>
+                <div className="space-y-2">
+                  {platforms.map((p) => {
+                    const mediaBlocked = !platformAccepts(p.id, assetKind)
+                    const disabled = !p.connected || mediaBlocked
+                    const hint = mediaBlocked
+                      ? mediaBlockReason(p.id, assetKind)
+                      : !p.connected
+                        ? 'Not connected'
+                        : p.handle
+                    const selectedRow = selectedId === p.id
+                    return (
+                      <div
+                        key={p.id}
+                        className={`flex items-center gap-2 rounded-xl border px-2.5 py-2 ${
+                          selectedRow
+                            ? 'border-accent-blue/50 bg-elevated'
+                            : disabled
+                              ? 'border-border bg-input/40 opacity-60'
+                              : 'border-border-default bg-input'
+                        }`}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setSelectedId(p.id)}
+                          className="flex min-w-0 flex-1 items-center gap-2 text-left"
+                        >
+                          <span className={`flex h-8 w-8 items-center justify-center rounded-lg bg-elevated text-base ${p.color}`}>
+                            {p.icon}
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block truncate text-sm font-medium">{p.name}</span>
+                            <span className="block truncate text-[11px] text-text-muted">{hint}</span>
+                          </span>
+                        </button>
+                        <Toggle
+                          checked={Boolean(toggles[p.id]) && !disabled}
+                          disabled={disabled}
+                          onChange={(v) => {
+                            setToggles((prev) => ({ ...prev, [p.id]: v }))
+                            if (v) setSelectedId(p.id)
+                          }}
+                        />
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <h2 className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">Ads account</h2>
+                {!connectedAds.length ? (
+                  <div className="rounded-xl border border-border bg-input p-3 text-sm text-text-secondary">
+                    Connect an ads account
+                    <Link to="/social" className="mt-2 block font-medium text-accent-blue hover:underline">
+                      Connect ads →
+                    </Link>
                   </div>
+                ) : (
+                  <>
+                    <div className="space-y-2">
+                      {connectedAds.map((acc) => (
+                        <label
+                          key={acc.id}
+                          className="flex cursor-pointer items-center gap-2 rounded-lg border border-border-default bg-input px-3 py-2 text-sm"
+                        >
+                          <input
+                            type="radio"
+                            name="adsProvider"
+                            checked={adsProvider === acc.provider}
+                            onChange={() => setAdsProvider(acc.provider)}
+                          />
+                          <span>{ADS_PROVIDER_LABELS[acc.provider]}</span>
+                        </label>
+                      ))}
+                    </div>
+                    <div>
+                      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-text-tertiary">
+                        Placements
+                      </h3>
+                      <div className="space-y-2">
+                        {ADS_PLACEMENT_META.filter((p) => allowedPlacements.includes(p.id)).map((p) => (
+                          <div
+                            key={p.id}
+                            className="flex items-center gap-3 rounded-xl border border-border-default bg-input px-3 py-2"
+                          >
+                            <span className={`h-2 w-2 rounded-full ${p.dot}`} />
+                            <p className="min-w-0 flex-1 text-sm">{p.name}</p>
+                            <Toggle
+                              checked={Boolean(adsPlacements[p.id])}
+                              onChange={(v) => setAdsPlacements((prev) => ({ ...prev, [p.id]: v }))}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
-            </div>
+            )}
+          </div>
+        </aside>
 
-            <div>
-              <h2 className="mb-3 font-heading text-lg font-semibold">Per-platform settings</h2>
-              <div className="space-y-2">
-                {/* TikTok */}
-                <div className="overflow-hidden rounded-xl border border-border-default bg-panel">
-                  <button
-                    type="button"
-                    onClick={() => toggleAccordion('tiktok')}
-                    className="flex w-full items-center justify-between px-4 py-3 text-left"
-                  >
-                    <span className="flex items-center gap-2 text-sm font-semibold">
-                      <span className="h-2 w-2 rounded-full bg-tiktok" />
-                      TikTok
-                    </span>
-                    <span className="text-text-muted">{openAccordion === 'tiktok' ? '−' : '+'}</span>
-                  </button>
-                  {openAccordion === 'tiktok' && (
-                    <div className="space-y-3 border-t border-border px-4 py-4">
-                      <div>
-                        <label className="mb-1 block text-xs text-text-tertiary">Caption</label>
-                        <textarea
-                          rows={3}
-                          defaultValue="POV: your summer launch just hit different ✨ #skincare #summer2024"
-                          maxLength={2200}
-                          className="w-full resize-none rounded-lg border border-border-default bg-input px-3 py-2 text-sm outline-none focus:border-accent-blue/50"
-                        />
-                        <p className="mt-1 text-right text-xs text-text-muted font-mono">120/2200</p>
-                      </div>
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <div>
-                          <label className="mb-1 block text-xs text-text-tertiary">Privacy</label>
-                          <select className="w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm">
-                            <option>Public</option>
-                            <option>Friends</option>
-                            <option>Private</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="mb-1 block text-xs text-text-tertiary">Comments</label>
-                          <select className="w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm">
-                            <option>Everyone</option>
-                            <option>Friends</option>
-                            <option>Off</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
+        <main className="min-h-0 min-w-0 flex-1 overflow-y-auto bg-base p-6">
+          <section className="mx-auto max-w-2xl space-y-4">
+            {error ? (
+              <p className="rounded-xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error">{error}</p>
+            ) : null}
 
-                {/* YouTube */}
-                <div className="overflow-hidden rounded-xl border border-border-default bg-panel">
-                  <button
-                    type="button"
-                    onClick={() => toggleAccordion('youtube')}
-                    className="flex w-full items-center justify-between px-4 py-3 text-left"
-                  >
-                    <span className="flex items-center gap-2 text-sm font-semibold">
-                      <span className="h-2 w-2 rounded-full bg-youtube" />
-                      YouTube
-                    </span>
-                    <span className="text-text-muted">{openAccordion === 'youtube' ? '−' : '+'}</span>
-                  </button>
-                  {openAccordion === 'youtube' && (
-                    <div className="space-y-3 border-t border-border px-4 py-4">
+            {mode === 'post' ? (
+              <>
+                {youtubeReady ? (
+                  <div className={selected?.id === 'youtube' ? '' : 'hidden'}>
+                    <YoutubeUploadForm
+                      projectId={getCachedActiveProject()?.id}
+                      connected
+                      videoUrl={publishAsset.videoUrl}
+                      initialTitle={assetTitle}
+                      initialDescription={publishAsset.prompt || ''}
+                      initialThumbnail={publishAsset.thumbnailUrl || ''}
+                      onPayloadChange={setYtPayload}
+                      onError={setError}
+                    />
+                  </div>
+                ) : null}
+
+                {selected?.id !== 'youtube' || !youtubeReady ? (
+                  <div className="rounded-xl border border-border-default bg-panel p-5">
+                    <h2 className="font-heading text-lg font-semibold">{selected?.name} settings</h2>
+                    {!selected?.connected ? (
+                      <p className="mt-2 text-sm text-text-secondary">
+                        Connect {selected?.name} in Social Accounts, then come back to publish.
+                        <Link to="/social" className="mt-2 block font-medium text-accent-blue hover:underline">
+                          Open Social Accounts →
+                        </Link>
+                      </p>
+                    ) : !platformAccepts(selected.id, assetKind) ? (
+                      <p className="mt-2 text-sm text-text-secondary">{mediaBlockReason(selected.id, assetKind)}</p>
+                    ) : (
+                      <p className="mt-2 text-sm text-text-secondary">
+                        Caption and visibility use {selected.name} defaults for this first publish. Toggle it on in
+                        Platforms to include it.
+                      </p>
+                    )}
+                  </div>
+                ) : null}
+              </>
+            ) : (
+              <div className="space-y-4 rounded-xl border border-border-default bg-panel p-5">
+                {!connectedAds.length ? (
+                  <p className="text-sm text-text-secondary">
+                    Connect an ads account on Social Accounts, then boost this creative.
+                  </p>
+                ) : (
+                  <>
+                    <p className="text-sm text-text-secondary">
+                      {adsCopy}. Same creative, budget and dates. Custom audiences and reporting come later.
+                    </p>
+                    <label className="block text-xs text-text-tertiary">Daily budget (USD)</label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={budget}
+                      onChange={(e) => setBudget(e.target.value)}
+                      className="w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm outline-none focus:border-accent-blue/50"
+                    />
+                    <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="mb-1 block text-xs text-text-tertiary">Title</label>
+                        <label className="mb-1 block text-xs text-text-tertiary">Start</label>
                         <input
-                          type="text"
-                          defaultValue="Summer Product Launch 2024 — Cinematic Showcase"
-                          className="w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm outline-none focus:border-accent-blue/50"
+                          type="date"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
+                          className="w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm"
                         />
                       </div>
                       <div>
-                        <label className="mb-1 block text-xs text-text-tertiary">Description</label>
-                        <textarea
-                          rows={4}
-                          defaultValue="Full cinematic showcase for our summer launch. Chapters coming soon."
-                          className="w-full resize-none rounded-lg border border-border-default bg-input px-3 py-2 text-sm outline-none focus:border-accent-blue/50"
+                        <label className="mb-1 block text-xs text-text-tertiary">End</label>
+                        <input
+                          type="date"
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                          className="w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm"
                         />
-                      </div>
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <div>
-                          <label className="mb-1 block text-xs text-text-tertiary">Visibility</label>
-                          <select className="w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm">
-                            <option>Public</option>
-                            <option>Unlisted</option>
-                            <option>Private</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="mb-1 block text-xs text-text-tertiary">Category</label>
-                          <select className="w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm">
-                            <option>Howto & Style</option>
-                            <option>Science &amp; Technology</option>
-                            <option>Entertainment</option>
-                          </select>
-                        </div>
                       </div>
                     </div>
-                  )}
-                </div>
-
-                {/* Instagram */}
-                <div className="overflow-hidden rounded-xl border border-border-default bg-panel">
-                  <button
-                    type="button"
-                    onClick={() => toggleAccordion('instagram')}
-                    className="flex w-full items-center justify-between px-4 py-3 text-left"
-                  >
-                    <span className="flex items-center gap-2 text-sm font-semibold">
-                      <span className="h-2 w-2 rounded-full bg-instagram" />
-                      Instagram
-                    </span>
-                    <span className="text-text-muted">{openAccordion === 'instagram' ? '−' : '+'}</span>
-                  </button>
-                  {openAccordion === 'instagram' && (
-                    <div className="space-y-3 border-t border-border px-4 py-4">
-                      <div>
-                        <label className="mb-1 block text-xs text-text-tertiary">Caption</label>
-                        <textarea
-                          rows={3}
-                          defaultValue="Summer glow, unlocked. ☀️ #skincare #beauty"
-                          className="w-full resize-none rounded-lg border border-border-default bg-input px-3 py-2 text-sm outline-none focus:border-accent-blue/50"
-                        />
-                      </div>
-                      <div>
-                        <label className="mb-1 block text-xs text-text-tertiary">Post type</label>
-                        <select className="w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm">
-                          <option>Reel</option>
-                          <option>Feed</option>
-                          <option>Story</option>
-                        </select>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Facebook */}
-                <div className="overflow-hidden rounded-xl border border-border bg-input opacity-60">
-                  <div className="flex w-full items-center justify-between px-4 py-3">
-                    <span className="flex items-center gap-2 text-sm font-semibold text-text-muted">
-                      <span className="h-2 w-2 rounded-full bg-facebook" />
-                      Facebook
-                      <span className="rounded-md bg-elevated px-2 py-0.5 text-[10px] font-medium uppercase text-text-tertiary">
-                        Not connected
-                      </span>
-                    </span>
-                  </div>
-                  <div className="border-t border-border px-4 py-4 text-sm text-text-muted">
-                    Connect Facebook in Settings to enable publishing and previews.
-                  </div>
-                </div>
+                  </>
+                )}
               </div>
-            </div>
+            )}
           </section>
         </main>
       </div>
 
       <footer className="flex h-[72px] shrink-0 items-center gap-3 border-t border-border bg-panel px-4">
-        <div className="flex items-center gap-1.5">
-          {PLATFORMS.filter((p) => toggles[p.id] && p.connected).map((p) => (
-            <span key={p.id} className={`h-2 w-2 rounded-full ${p.dot}`} title={p.name} />
-          ))}
-        </div>
         <p className="text-sm text-text-secondary">
-          Publishing to <span className="font-semibold text-text-primary">{activeCount}</span> platforms
+          {mode === 'post' ? (
+            <>
+              Publishing to <span className="font-semibold text-text-primary">{activeCount}</span> platforms
+            </>
+          ) : (
+            <>
+              Boosting on <span className="font-semibold text-text-primary">{selectedPlacements.length}</span> placements
+            </>
+          )}
         </p>
         <div className="ml-auto flex items-center gap-2">
           <button
             type="button"
-            className="rounded-lg border border-border-default bg-elevated px-4 py-2 text-sm font-medium text-text-primary transition hover:border-border-default"
-          >
-            Save as Draft
-          </button>
-          <button
-            type="button"
             onClick={() => setShowModal(true)}
-            className="rounded-lg gradient-bg px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/25"
+            disabled={footerDisabled}
+            className="rounded-lg gradient-bg px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/25 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            🚀 Publish Now
+            {mode === 'post' ? 'Publish Now' : 'Boost as ad'}
           </button>
         </div>
       </footer>
@@ -501,37 +527,28 @@ export default function PublishingPage() {
             className="w-full max-w-md rounded-2xl border border-border-default bg-panel p-6 shadow-2xl"
           >
             <h2 id="confirm-title" className="font-heading text-lg font-semibold">
-              Confirm Publishing
+              {mode === 'post' ? 'Confirm Publishing' : 'Confirm boost'}
             </h2>
             <p className="mt-2 text-sm text-text-secondary">
-              You are about to publish this {isImage ? 'image' : 'video'} to the selected platforms. Captions and visibility settings will be
-              applied immediately.
+              {mode === 'post'
+                ? `Publish this ${assetKind} to the selected accounts.`
+                : `Create a ${ADS_PROVIDER_LABELS[adsProvider] || 'ads'} campaign with this ${assetKind}.`}
             </p>
-            <ul className="mt-4 space-y-2 rounded-xl border border-border-default bg-input p-3 text-sm">
-              {PLATFORMS.filter((p) => toggles[p.id] && p.connected).map((p) => (
-                <li key={p.id} className="flex items-center justify-between gap-2">
-                  <span className="flex items-center gap-2 font-medium">
-                    <span className={`h-2 w-2 rounded-full ${p.dot}`} />
-                    {p.name}
-                  </span>
-                  <span className="truncate text-xs text-text-muted">{p.handle}</span>
-                </li>
-              ))}
-            </ul>
             <div className="mt-6 flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="rounded-lg border border-border-default px-4 py-2 text-sm font-medium text-text-secondary transition hover:bg-elevated hover:text-text-primary"
+                className="rounded-lg border border-border-default px-4 py-2 text-sm font-medium text-text-secondary"
               >
                 Cancel
               </button>
               <button
                 type="button"
-                onClick={confirmPublish}
-                className="rounded-lg gradient-bg px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/20"
+                onClick={confirmAction}
+                disabled={submitting}
+                className="rounded-lg gradient-bg px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
               >
-                🚀 Publish Now
+                {submitting ? 'Working…' : mode === 'post' ? 'Publish Now' : 'Boost as ad'}
               </button>
             </div>
           </div>
@@ -540,7 +557,7 @@ export default function PublishingPage() {
 
       {showToast && (
         <div className="animate-slide-up fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-xl border border-success/30 bg-panel px-5 py-3 text-sm font-medium text-success shadow-xl">
-          ✅ Published to 3 platforms successfully!
+          {toastMessage}
         </div>
       )}
 
