@@ -48,13 +48,13 @@ const PLATFORM_META = {
   },
   instagram: {
     name: 'Instagram',
-    description: 'Reels, Stories, and feed distribution.',
+    description: 'Feed photos and Reels on a Professional account. Reconnect after publishing is turned on.',
     gradient: 'linear-gradient(90deg, #e6683c, #c13584)',
     iconBg: 'bg-instagram',
   },
   facebook: {
     name: 'Facebook',
-    description: 'Pages, Reels, and targeted social campaigns.',
+    description: 'Posts to a Facebook Page you manage. Reconnect after publishing is turned on.',
     gradient: 'linear-gradient(90deg, #1877f2, #0d5dbf)',
     iconBg: 'bg-facebook',
   },

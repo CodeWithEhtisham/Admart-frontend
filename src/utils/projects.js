@@ -116,6 +116,11 @@ export async function listYoutubePlaylists(projectId) {
   return data
 }
 
+export async function listFacebookPages(projectId) {
+  const { data } = await api.get(`/api/projects/${projectId}/social/facebook/pages`)
+  return data
+}
+
 export async function suggestYoutubeCopy(projectId, payload) {
   const { data } = await api.post(`/api/projects/${projectId}/publish/youtube/suggest`, payload)
   return data

@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import PreviewModal from '../components/PreviewModal.jsx'
+import FacebookPostForm from '../components/FacebookPostForm.jsx'
+import InstagramPostForm from '../components/InstagramPostForm.jsx'
 import YoutubeUploadForm from '../components/YoutubeUploadForm.jsx'
 import { mediaBlockReason, platformAccepts, PROVIDER_PLACEMENTS } from '../utils/platformMedia.js'
 import {
@@ -97,6 +99,8 @@ export default function PublishingPage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [ytPayload, setYtPayload] = useState(null)
+  const [fbPayload, setFbPayload] = useState(null)
+  const [igPayload, setIgPayload] = useState(null)
 
   const platforms = ORGANIC_META.map((p) => {
     const acc = accountsByPlatform[p.id]
@@ -180,6 +184,8 @@ export default function PublishingPage() {
             madeForKids: false,
             containsSyntheticMedia: true,
           },
+          facebook: fbPayload || { caption: assetTitle, pageId: '' },
+          instagram: igPayload || { caption: assetTitle },
         })
         setToastMessage(
           job.status === 'succeeded'
@@ -221,6 +227,12 @@ export default function PublishingPage() {
 
   const selected = platforms.find((p) => p.id === selectedId) || platforms[0]
   const youtubeReady = platforms.some((p) => p.id === 'youtube' && canPost(p))
+  const facebookReady = platforms.some((p) => p.id === 'facebook' && canPost(p))
+  const instagramReady = platforms.some((p) => p.id === 'instagram' && canPost(p))
+  const customFormReady =
+    (selected?.id === 'youtube' && youtubeReady) ||
+    (selected?.id === 'facebook' && facebookReady) ||
+    (selected?.id === 'instagram' && instagramReady)
 
   return (
     <div className="relative flex h-screen min-h-0 flex-col bg-base font-body text-text-primary">
@@ -426,7 +438,25 @@ export default function PublishingPage() {
                   </div>
                 ) : null}
 
-                {selected?.id !== 'youtube' || !youtubeReady ? (
+                {facebookReady ? (
+                  <div className={selected?.id === 'facebook' ? '' : 'hidden'}>
+                    <FacebookPostForm
+                      projectId={getCachedActiveProject()?.id}
+                      connected
+                      initialCaption={assetTitle}
+                      onPayloadChange={setFbPayload}
+                      onError={setError}
+                    />
+                  </div>
+                ) : null}
+
+                {instagramReady ? (
+                  <div className={selected?.id === 'instagram' ? '' : 'hidden'}>
+                    <InstagramPostForm initialCaption={assetTitle} onPayloadChange={setIgPayload} />
+                  </div>
+                ) : null}
+
+                {!customFormReady ? (
                   <div className="rounded-xl border border-border-default bg-panel p-5">
                     <h2 className="font-heading text-lg font-semibold">{selected?.name} settings</h2>
                     {!selected?.connected ? (
