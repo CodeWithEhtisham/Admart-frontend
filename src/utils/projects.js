@@ -128,6 +128,13 @@ export async function getProjectAnalytics(projectId, { range = '30d', platform =
   return data
 }
 
+export async function getProjectCalendar(projectId, { year, month } = {}) {
+  const { data } = await api.get(`/api/projects/${projectId}/calendar`, {
+    params: { year, month },
+  })
+  return data
+}
+
 export async function suggestYoutubeCopy(projectId, payload) {
   const { data } = await api.post(`/api/projects/${projectId}/publish/youtube/suggest`, payload)
   return data

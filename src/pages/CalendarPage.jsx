@@ -1,10 +1,12 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
-
-/** Reference "today" for demo (matches product brief) */
-const TODAY = new Date(2026, 3, 15)
+import {
+  PROJECT_CHANGE_EVENT,
+  getCachedActiveProject,
+  getProjectCalendar,
+} from '../utils/projects.js'
 
 const PLATFORMS = [
   { code: 'T', label: 'TikTok', className: 'bg-tiktok' },
@@ -12,6 +14,29 @@ const PLATFORMS = [
   { code: 'I', label: 'Instagram', className: 'bg-instagram' },
   { code: 'F', label: 'Facebook', className: 'bg-facebook' },
 ]
+const PLATFORM_CLASS = Object.fromEntries(PLATFORMS.map((p) => [p.code, p.className]))
+
+function platformClass(code) {
+  return PLATFORM_CLASS[code] || 'bg-accent-violet'
+}
+
+function platformName(ev) {
+  return ev.platformName || PLATFORMS.find((p) => p.code === ev.platform)?.label || 'Generation'
+}
+
+function statusStyle(ev) {
+  return STATUS_STYLES[ev.status] || STATUS_STYLES.scheduled
+}
+
+function statusLine(ev) {
+  const st = statusStyle(ev)
+  const where = platformName(ev)
+  if (ev.status === 'published') return `Published on ${where}`
+  if (ev.status === 'failed') return `Failed on ${where}`
+  if (ev.status === 'scheduled') return `Scheduled for ${where}`
+  if (ev.status === 'generating') return `Generating · ${where}`
+  return `${st.label} · ${where}`
+}
 
 const STATUS_STYLES = {
   published: {
@@ -39,24 +64,6 @@ const STATUS_STYLES = {
     label: 'Failed',
   },
 }
-
-/** April 2026 — spread across multiple days */
-const MOCK_EVENTS = [
-  { id: 'e1', y: 2026, m: 3, d: 1, title: 'April Kickoff Reel', status: 'published', platform: 'T', time: '8:00 AM' },
-  { id: 'e2', y: 2026, m: 3, d: 3, title: 'Product Teaser — Vertical', status: 'scheduled', platform: 'I', time: '11:30 AM' },
-  { id: 'e3', y: 2026, m: 3, d: 3, title: 'YouTube Short — Tips', status: 'generating', platform: 'Y', time: '2:00 PM' },
-  { id: 'e4', y: 2026, m: 3, d: 5, title: 'Flash Sale Countdown', status: 'scheduled', platform: 'T', time: '9:15 AM' },
-  { id: 'e5', y: 2026, m: 3, d: 7, title: 'Customer Story', status: 'published', platform: 'F', time: '10:00 AM' },
-  { id: 'e6', y: 2026, m: 3, d: 9, title: 'Tutorial — Onboarding', status: 'published', platform: 'Y', time: '3:45 PM' },
-  { id: 'e7', y: 2026, m: 3, d: 12, title: 'UGC Remix', status: 'generating', platform: 'T', time: '7:00 AM' },
-  { id: 'e8', y: 2026, m: 3, d: 12, title: 'Carousel Ad', status: 'failed', platform: 'I', time: '4:20 PM' },
-  { id: 'e9', y: 2026, m: 3, d: 15, title: 'Mid-month Promo', status: 'scheduled', platform: 'F', time: '12:00 PM' },
-  { id: 'e10', y: 2026, m: 3, d: 18, title: 'Brand Anthem', status: 'scheduled', platform: 'Y', time: '6:30 PM' },
-  { id: 'e11', y: 2026, m: 3, d: 22, title: 'Earth Day Spot', status: 'published', platform: 'I', time: '8:00 AM' },
-  { id: 'e12', y: 2026, m: 3, d: 24, title: 'Live Clip — Highlights', status: 'generating', platform: 'T', time: '5:10 PM' },
-  { id: 'e13', y: 2026, m: 3, d: 28, title: 'Month-end Recap', status: 'scheduled', platform: 'Y', time: '9:00 AM' },
-  { id: 'e14', y: 2026, m: 3, d: 30, title: 'April Finale', status: 'scheduled', platform: 'T', time: '7:45 PM' },
-]
 
 function sameCalendarDay(a, b) {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
@@ -123,15 +130,24 @@ const MONTH_NAMES = [
   'December',
 ]
 
-function eventToDate(ev) {
-  return new Date(ev.y, ev.m, ev.d)
+function mapApiEvent(ev) {
+  const jsDate = new Date(ev.at)
+  return {
+    ...ev,
+    jsDate,
+    y: jsDate.getFullYear(),
+    m: jsDate.getMonth(),
+    d: jsDate.getDate(),
+    time: ev.time || jsDate.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }),
+  }
 }
 
 export default function CalendarPage() {
   const navigate = useNavigate()
-  const [currentYear, setCurrentYear] = useState(2026)
-  const [currentMonth, setCurrentMonth] = useState(3)
-  const [selectedDay, setSelectedDay] = useState(() => new Date(2026, 3, 15))
+  const [today] = useState(() => new Date())
+  const [currentYear, setCurrentYear] = useState(() => today.getFullYear())
+  const [currentMonth, setCurrentMonth] = useState(() => today.getMonth())
+  const [selectedDay, setSelectedDay] = useState(() => new Date(today))
   const [panelOpen, setPanelOpen] = useState(false)
   const [viewMode, setViewMode] = useState('month')
   const [platformOn, setPlatformOn] = useState(() => ({
@@ -140,17 +156,46 @@ export default function CalendarPage() {
     I: true,
     F: true,
   }))
+  const [rawEvents, setRawEvents] = useState([])
+  const [error, setError] = useState('')
+  const [projectId, setProjectId] = useState(() => getCachedActiveProject()?.id || '')
+
+  useEffect(() => {
+    const sync = () => setProjectId(getCachedActiveProject()?.id || '')
+    window.addEventListener(PROJECT_CHANGE_EVENT, sync)
+    return () => window.removeEventListener(PROJECT_CHANGE_EVENT, sync)
+  }, [])
+
+  useEffect(() => {
+    if (!projectId) {
+      setRawEvents([])
+      setError('')
+      return undefined
+    }
+    let cancelled = false
+    setError('')
+    getProjectCalendar(projectId, { year: currentYear, month: currentMonth + 1 })
+      .then((payload) => {
+        if (!cancelled) setRawEvents(payload.events || [])
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setRawEvents([])
+          setError(err.response?.data?.message || 'Could not load calendar.')
+        }
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [projectId, currentYear, currentMonth])
 
   const gridCells = useMemo(() => buildMonthGrid(currentYear, currentMonth), [currentYear, currentMonth])
 
-  const eventsWithDate = useMemo(
-    () => MOCK_EVENTS.map((e) => ({ ...e, jsDate: eventToDate(e) })),
-    []
-  )
+  const eventsWithDate = useMemo(() => rawEvents.map(mapApiEvent), [rawEvents])
 
   const filteredPool = useMemo(
-    () => eventsWithDate.filter((e) => platformOn[e.platform]),
-    [eventsWithDate, platformOn]
+    () => eventsWithDate.filter((e) => !e.platform || platformOn[e.platform]),
+    [eventsWithDate, platformOn],
   )
 
   const eventsForDay = (day) => filteredPool.filter((e) => sameCalendarDay(e.jsDate, day)).sort((a, b) => a.time.localeCompare(b.time))
@@ -191,9 +236,9 @@ export default function CalendarPage() {
   }
 
   const goToday = () => {
-    setCurrentYear(TODAY.getFullYear())
-    setCurrentMonth(TODAY.getMonth())
-    setSelectedDay(new Date(TODAY))
+    setCurrentYear(today.getFullYear())
+    setCurrentMonth(today.getMonth())
+    setSelectedDay(new Date(today))
     setPanelOpen(true)
   }
 
@@ -290,6 +335,14 @@ export default function CalendarPage() {
         </div>
 
         <main className="p-7">
+          {!projectId ? (
+            <p className="mb-4 rounded-xl border border-border-default bg-surface px-4 py-3 text-sm text-text-secondary">
+              Select a project to see scheduled posts and generations.
+            </p>
+          ) : null}
+          {error ? (
+            <p className="mb-4 rounded-xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error">{error}</p>
+          ) : null}
           {viewMode === 'month' && (
             <div className="overflow-hidden rounded-2xl border border-border-default bg-panel">
               <div className="grid grid-cols-7 border-b border-border-default bg-surface text-center text-xs font-semibold uppercase tracking-wide text-text-tertiary">
@@ -302,7 +355,7 @@ export default function CalendarPage() {
               <div className="grid grid-cols-7">
                 {gridCells.map((cell, idx) => {
                   const num = cell.jsDate.getDate()
-                  const isToday = sameCalendarDay(cell.jsDate, TODAY)
+                  const isToday = sameCalendarDay(cell.jsDate, today)
                   const list = eventsForDay(cell.jsDate)
                   const shown = list.slice(0, maxPills)
                   const more = Math.max(0, list.length - shown.length)
@@ -330,14 +383,14 @@ export default function CalendarPage() {
                       </div>
                       <div className="flex flex-col gap-1">
                         {shown.map((ev) => {
-                          const st = STATUS_STYLES[ev.status]
+                          const st = statusStyle(ev)
                           return (
                             <span
                               key={ev.id}
                               className={`flex items-center gap-1.5 truncate rounded-md border px-1.5 py-0.5 text-[10px] font-medium ${st.pill}`}
                             >
                               <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${st.dot}`} />
-                              <span className="truncate">{ev.title}</span>
+                              <span className="truncate">{`${ev.platform || 'AI'} · ${st.label}`}</span>
                             </span>
                           )
                         })}
@@ -355,7 +408,7 @@ export default function CalendarPage() {
           {viewMode === 'week' && (
             <div className="grid gap-4 lg:grid-cols-7">
               {weekDays.map((d) => {
-                const isToday = sameCalendarDay(d, TODAY)
+                const isToday = sameCalendarDay(d, today)
                 const list = eventsForDay(d)
                 return (
                   <div
@@ -375,20 +428,18 @@ export default function CalendarPage() {
                     <div className="flex flex-1 flex-col gap-2">
                       {list.length === 0 && <p className="text-xs text-text-muted">No posts</p>}
                       {list.map((ev) => {
-                        const st = STATUS_STYLES[ev.status]
+                        const st = statusStyle(ev)
                         return (
                           <div key={ev.id} className={`rounded-lg border bg-gradient-to-br px-2 py-2 text-xs ${st.bar}`}>
                             <div className="flex items-center gap-1">
                               <span
-                                className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[8px] font-bold text-white ${
-                                  PLATFORMS.find((p) => p.code === ev.platform)?.className
-                                }`}
+                                className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[8px] font-bold text-white ${platformClass(ev.platform)}`}
                               >
-                                {ev.platform}
+                                {ev.platform || 'AI'}
                               </span>
                               <span className="font-medium leading-tight text-text-primary">{ev.title}</span>
                             </div>
-                            <p className="mt-1 text-[10px] text-text-tertiary">{ev.time}</p>
+                            <p className="mt-1 text-[10px] text-text-tertiary">{statusLine(ev)}</p>
                           </div>
                         )
                       })}
@@ -402,7 +453,7 @@ export default function CalendarPage() {
           {viewMode === 'day' && (
             <div className="space-y-6">
               {monthAgenda.length === 0 && (
-                <p className="text-center text-text-secondary">No content this month for the selected platforms.</p>
+                <p className="text-center text-text-secondary">No activity this month for the selected platforms.</p>
               )}
               {monthAgenda.map(([dayNum, evs]) => (
                 <div key={dayNum} className="rounded-2xl border border-border-default bg-panel p-5">
@@ -420,7 +471,7 @@ export default function CalendarPage() {
                   </div>
                   <div className="space-y-3">
                     {evs.map((ev) => {
-                      const st = STATUS_STYLES[ev.status]
+                      const st = statusStyle(ev)
                       return (
                         <div
                           key={ev.id}
@@ -428,15 +479,13 @@ export default function CalendarPage() {
                         >
                           <div className="flex items-center gap-3">
                             <span
-                              className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold text-white ${
-                                PLATFORMS.find((p) => p.code === ev.platform)?.className
-                              }`}
+                              className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold text-white ${platformClass(ev.platform)}`}
                             >
-                              {ev.platform}
+                              {ev.platform || 'AI'}
                             </span>
                             <div>
                               <p className="font-medium">{ev.title}</p>
-                              <p className="text-xs text-text-tertiary">{ev.time}</p>
+                              <p className="text-xs text-text-tertiary">{statusLine(ev)}</p>
                             </div>
                           </div>
                           <span className={`rounded-full border px-2 py-0.5 text-xs font-medium ${st.pill}`}>{st.label}</span>
@@ -493,12 +542,12 @@ export default function CalendarPage() {
           <div className="flex-1 space-y-4 overflow-y-auto p-5">
             {panelEvents.length === 0 && (
               <div className="rounded-xl border border-dashed border-border-default bg-input px-4 py-10 text-center">
-                <p className="text-sm text-text-secondary">No posts scheduled for this day.</p>
+                <p className="text-sm text-text-secondary">No activity for this day.</p>
                 <p className="mt-2 text-xs text-text-muted">Try another day or create something new.</p>
               </div>
             )}
             {panelEvents.map((ev) => {
-              const st = STATUS_STYLES[ev.status]
+              const st = statusStyle(ev)
               return (
                 <article
                   key={ev.id}
@@ -518,13 +567,13 @@ export default function CalendarPage() {
                     <div className="flex items-start justify-between gap-2">
                       <h3 className="font-heading font-semibold leading-snug">{ev.title}</h3>
                       <span
-                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white ${
-                          PLATFORMS.find((p) => p.code === ev.platform)?.className
-                        }`}
+                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white ${platformClass(ev.platform)}`}
                       >
-                        {ev.platform}
+                        {ev.platform || 'AI'}
                       </span>
                     </div>
+                    <p className="mt-2 text-sm text-text-secondary">{statusLine(ev)}</p>
+                    {ev.error ? <p className="mt-1 text-xs text-error">{ev.error}</p> : null}
                     <p className="mt-2 text-xs text-text-tertiary">{ev.time}</p>
                   </div>
                 </article>

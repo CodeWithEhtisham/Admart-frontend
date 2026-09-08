@@ -64,6 +64,13 @@ function Toggle({ checked, onChange, disabled }) {
   )
 }
 
+function toDatetimeLocal(value) {
+  const d = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(d.getTime())) return ''
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
 export default function PublishingPage() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -93,8 +100,11 @@ export default function PublishingPage() {
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [showModal, setShowModal] = useState(false)
+  const [scheduleOpen, setScheduleOpen] = useState(false)
+  const [scheduleAt, setScheduleAt] = useState('')
   const [showToast, setShowToast] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
+  const [stayAfterToast, setStayAfterToast] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -154,46 +164,68 @@ export default function PublishingPage() {
     if (!showToast) return
     const t = setTimeout(() => {
       setShowToast(false)
-      navigate(isImage ? '/image-gen' : isVideo ? '/video-gen' : '/dashboard')
+      if (!stayAfterToast) navigate(isImage ? '/image-gen' : isVideo ? '/video-gen' : '/dashboard')
     }, 1800)
     return () => clearTimeout(t)
-  }, [showToast, navigate, isImage, isVideo])
+  }, [showToast, stayAfterToast, navigate, isImage, isVideo])
 
-  const confirmAction = async () => {
+  const confirmAction = async (action = 'publish', scheduledAtValue = '') => {
     const projectId = getCachedActiveProject()?.id
     if (!projectId) {
       setError('Select a project first.')
       setShowModal(false)
+      setScheduleOpen(false)
       return
     }
     setSubmitting(true)
     setError('')
     try {
       if (mode === 'post') {
-        const job = await publishToAccounts(projectId, {
-          assetId: publishAsset.assetId || undefined,
-          kind: assetKind,
-          sourceUrl,
-          title: assetTitle,
-          platforms: activeOrganic.map((p) => p.id),
-          youtube: ytPayload || {
+        const youtube = {
+          ...(ytPayload || {
             title: assetTitle.slice(0, 100),
             description: publishAsset.prompt || '',
             privacyStatus: 'public',
             categoryId: '22',
             madeForKids: false,
             containsSyntheticMedia: true,
-          },
+          }),
+        }
+        if (action === 'schedule' && scheduledAtValue) {
+          youtube.publishAt = new Date(scheduledAtValue).toISOString()
+        }
+        const job = await publishToAccounts(projectId, {
+          action,
+          scheduledAt: action === 'schedule' ? new Date(scheduledAtValue).toISOString() : undefined,
+          assetId: publishAsset.assetId || undefined,
+          kind: assetKind,
+          sourceUrl,
+          title: assetTitle,
+          platforms: activeOrganic.map((p) => p.id),
+          youtube,
           facebook: fbPayload || { caption: assetTitle, pageId: '' },
           instagram: igPayload || { caption: assetTitle },
         })
-        setToastMessage(
-          job.status === 'succeeded'
-            ? `Published to ${activeOrganic.length} platform${activeOrganic.length === 1 ? '' : 's'}.`
-            : job.status === 'partial'
-              ? 'Published to some platforms. Check failed accounts.'
-              : job.error || 'Publish failed.',
-        )
+        if (action === 'draft') {
+          setStayAfterToast(true)
+          setToastMessage('Saved as draft.')
+        } else if (action === 'schedule') {
+          setStayAfterToast(false)
+          setToastMessage(
+            job.status === 'scheduled' || job.status === 'partial'
+              ? 'Scheduled. YouTube and Facebook use the platform scheduler.'
+              : job.error || 'Could not schedule.',
+          )
+        } else {
+          setStayAfterToast(false)
+          setToastMessage(
+            job.status === 'succeeded'
+              ? `Published to ${activeOrganic.length} platform${activeOrganic.length === 1 ? '' : 's'}.`
+              : job.status === 'partial'
+                ? 'Published to some platforms. Check failed accounts.'
+                : job.error || 'Publish failed.',
+          )
+        }
       } else {
         await boostAsAd(projectId, {
           assetId: publishAsset.assetId || undefined,
@@ -206,16 +238,25 @@ export default function PublishingPage() {
           startDate: startDate || undefined,
           endDate: endDate || undefined,
         })
+        setStayAfterToast(false)
         setToastMessage('Boost created.')
       }
       setShowModal(false)
+      setScheduleOpen(false)
       setShowToast(true)
     } catch (err) {
       setShowModal(false)
+      setScheduleOpen(false)
       setError(err.response?.data?.message || err.response?.data?.error || 'Request failed.')
     } finally {
       setSubmitting(false)
     }
+  }
+
+  const openSchedule = () => {
+    const fromYt = ytPayload?.publishAt ? toDatetimeLocal(ytPayload.publishAt) : ''
+    setScheduleAt(fromYt || toDatetimeLocal(new Date(Date.now() + 60 * 60 * 1000)))
+    setScheduleOpen(true)
   }
 
   const footerDisabled = activeCount === 0 || submitting || (mode === 'ad' && !adsReady)
@@ -537,13 +578,33 @@ export default function PublishingPage() {
           )}
         </p>
         <div className="ml-auto flex items-center gap-2">
+          {mode === 'post' ? (
+            <>
+              <button
+                type="button"
+                onClick={() => confirmAction('draft')}
+                disabled={footerDisabled}
+                className="rounded-lg border border-border-default px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Save draft
+              </button>
+              <button
+                type="button"
+                onClick={openSchedule}
+                disabled={footerDisabled}
+                className="rounded-lg border border-border-default px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Schedule
+              </button>
+            </>
+          ) : null}
           <button
             type="button"
             onClick={() => setShowModal(true)}
             disabled={footerDisabled}
             className="rounded-lg gradient-bg px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/25 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {mode === 'post' ? 'Publish Now' : 'Boost as ad'}
+            {mode === 'post' ? 'Publish now' : 'Boost as ad'}
           </button>
         </div>
       </footer>
@@ -574,17 +635,60 @@ export default function PublishingPage() {
               </button>
               <button
                 type="button"
-                onClick={confirmAction}
+                onClick={() => confirmAction()}
                 disabled={submitting}
                 className="rounded-lg gradient-bg px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
               >
-                {submitting ? 'Working…' : mode === 'post' ? 'Publish Now' : 'Boost as ad'}
+                {submitting ? 'Working…' : mode === 'post' ? 'Publish now' : 'Boost as ad'}
               </button>
             </div>
           </div>
         </div>
       )}
 
+      {scheduleOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="schedule-title"
+            className="w-full max-w-md rounded-2xl border border-border-default bg-panel p-6 shadow-2xl"
+          >
+            <h2 id="schedule-title" className="font-heading text-lg font-semibold">
+              Schedule post
+            </h2>
+            <p className="mt-2 text-sm text-text-secondary">
+              YouTube and Facebook use each platform's scheduler. Instagram is saved here until auto-publish is
+              available.
+            </p>
+            <label className="mt-4 block text-xs text-text-tertiary">Date and time</label>
+            <input
+              type="datetime-local"
+              min={toDatetimeLocal(new Date())}
+              value={scheduleAt}
+              onChange={(e) => setScheduleAt(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm outline-none focus:border-accent-blue/50"
+            />
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setScheduleOpen(false)}
+                className="rounded-lg border border-border-default px-4 py-2 text-sm font-medium text-text-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => confirmAction('schedule', scheduleAt)}
+                disabled={submitting || !scheduleAt}
+                className="rounded-lg gradient-bg px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+              >
+                {submitting ? 'Working…' : 'Schedule'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {showToast && (
         <div className="animate-slide-up fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-xl border border-success/30 bg-panel px-5 py-3 text-sm font-medium text-success shadow-xl">
           {toastMessage}
