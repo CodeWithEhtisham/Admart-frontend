@@ -9,11 +9,12 @@ import {
 } from '../utils/projects.js'
 
 const PLATFORMS = [
-  { code: 'T', label: 'TikTok', className: 'bg-tiktok' },
-  { code: 'Y', label: 'YouTube', className: 'bg-youtube' },
-  { code: 'I', label: 'Instagram', className: 'bg-instagram' },
-  { code: 'F', label: 'Facebook', className: 'bg-facebook' },
+  { id: 'tiktok', code: 'T', label: 'TikTok', className: 'bg-tiktok' },
+  { id: 'youtube', code: 'Y', label: 'YouTube', className: 'bg-youtube' },
+  { id: 'instagram', code: 'I', label: 'Instagram', className: 'bg-instagram' },
+  { id: 'facebook', code: 'F', label: 'Facebook', className: 'bg-facebook' },
 ]
+const CODE_BY_ID = Object.fromEntries(PLATFORMS.map((p) => [p.id, p.code]))
 const PLATFORM_CLASS = Object.fromEntries(PLATFORMS.map((p) => [p.code, p.className]))
 
 function platformClass(code) {
@@ -157,6 +158,7 @@ export default function CalendarPage() {
     F: true,
   }))
   const [rawEvents, setRawEvents] = useState([])
+  const [connectedIds, setConnectedIds] = useState([])
   const [error, setError] = useState('')
   const [projectId, setProjectId] = useState(() => getCachedActiveProject()?.id || '')
 
@@ -169,6 +171,7 @@ export default function CalendarPage() {
   useEffect(() => {
     if (!projectId) {
       setRawEvents([])
+      setConnectedIds([])
       setError('')
       return undefined
     }
@@ -176,11 +179,15 @@ export default function CalendarPage() {
     setError('')
     getProjectCalendar(projectId, { year: currentYear, month: currentMonth + 1 })
       .then((payload) => {
-        if (!cancelled) setRawEvents(payload.events || [])
+        if (!cancelled) {
+          setRawEvents(payload.events || [])
+          setConnectedIds(payload.connectedPlatforms || [])
+        }
       })
       .catch((err) => {
         if (!cancelled) {
           setRawEvents([])
+          setConnectedIds([])
           setError(err.response?.data?.message || 'Could not load calendar.')
         }
       })
@@ -193,9 +200,23 @@ export default function CalendarPage() {
 
   const eventsWithDate = useMemo(() => rawEvents.map(mapApiEvent), [rawEvents])
 
+  const connectedCodes = useMemo(
+    () => connectedIds.map((id) => CODE_BY_ID[id]).filter(Boolean),
+    [connectedIds],
+  )
+  const filterPlatforms = useMemo(
+    () => PLATFORMS.filter((p) => connectedIds.includes(p.id)),
+    [connectedIds],
+  )
+
   const filteredPool = useMemo(
-    () => eventsWithDate.filter((e) => !e.platform || platformOn[e.platform]),
-    [eventsWithDate, platformOn],
+    () =>
+      eventsWithDate.filter((e) => {
+        if (!e.platform) return true
+        if (!connectedCodes.includes(e.platform)) return false
+        return platformOn[e.platform]
+      }),
+    [eventsWithDate, connectedCodes, platformOn],
   )
 
   const eventsForDay = (day) => filteredPool.filter((e) => sameCalendarDay(e.jsDate, day)).sort((a, b) => a.time.localeCompare(b.time))
@@ -309,21 +330,23 @@ export default function CalendarPage() {
                 </button>
               ))}
             </div>
-            <div className="flex items-center gap-1.5 border-l border-border pl-3" aria-label="Filter by platform">
-              {PLATFORMS.map((p) => (
-                <button
-                  key={p.code}
-                  type="button"
-                  onClick={() => togglePlatform(p.code)}
-                  title={p.label}
-                  className={`flex h-8 w-8 items-center justify-center rounded-full text-[10px] font-bold text-white transition ${
-                    p.className
-                  } ${platformOn[p.code] ? 'opacity-100 ring-2 ring-white/40' : 'opacity-35 grayscale'}`}
-                >
-                  {p.code}
-                </button>
-              ))}
-            </div>
+            {filterPlatforms.length > 0 ? (
+              <div className="flex items-center gap-1.5 border-l border-border pl-3" aria-label="Filter by platform">
+                {filterPlatforms.map((p) => (
+                  <button
+                    key={p.code}
+                    type="button"
+                    onClick={() => togglePlatform(p.code)}
+                    title={p.label}
+                    className={`flex h-8 w-8 items-center justify-center rounded-full text-[10px] font-bold text-white transition ${
+                      p.className
+                    } ${platformOn[p.code] ? 'opacity-100 ring-2 ring-white/40' : 'opacity-35 grayscale'}`}
+                  >
+                    {p.code}
+                  </button>
+                ))}
+              </div>
+            ) : null}
             <button
               type="button"
               onClick={() => navigate('/create')}
