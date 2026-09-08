@@ -121,6 +121,13 @@ export async function listFacebookPages(projectId) {
   return data
 }
 
+export async function getProjectAnalytics(projectId, { range = '30d', platform = 'all' } = {}) {
+  const { data } = await api.get(`/api/projects/${projectId}/analytics`, {
+    params: { range, platform },
+  })
+  return data
+}
+
 export async function suggestYoutubeCopy(projectId, payload) {
   const { data } = await api.post(`/api/projects/${projectId}/publish/youtube/suggest`, payload)
   return data
