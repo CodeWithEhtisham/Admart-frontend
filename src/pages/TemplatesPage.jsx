@@ -5,11 +5,14 @@ import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import { formatCredits, quoteCredits } from '../utils/credits.js'
 import {
+  addTemplateFavorite,
   clearPendingTemplateUse,
   getPendingTemplateUse,
   getTemplate,
+  listFavoriteTemplates,
   listTemplates,
   recordTemplateUse,
+  removeTemplateFavorite,
   setPendingTemplateUse,
 } from '../utils/templates.js'
 
@@ -311,9 +314,9 @@ function MediaPreview({ template, large = false }) {
   )
 }
 
-function TemplateCard({ template, onOpen }) {
+function TemplateCard({ template, onOpen, isFavorite, onToggleFavorite }) {
   return (
-    <article className="mb-5 break-inside-avoid overflow-hidden rounded-xl border border-border-default bg-panel transition hover:-translate-y-0.5 hover:border-accent-blue/45 hover:shadow-lg">
+    <article className="relative mb-5 break-inside-avoid overflow-hidden rounded-xl border border-border-default bg-panel transition hover:-translate-y-0.5 hover:border-accent-blue/45 hover:shadow-lg">
       <button type="button" onClick={() => onOpen(template)} className="block w-full text-left">
         <MediaPreview template={template} />
         <div className="space-y-2.5 p-4">
@@ -346,6 +349,24 @@ function TemplateCard({ template, onOpen }) {
           </div>
         </div>
       </button>
+      {onToggleFavorite && (
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation()
+            onToggleFavorite(template)
+          }}
+          aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          className={`absolute bottom-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border text-sm shadow-md backdrop-blur-sm transition hover:scale-110 ${
+            isFavorite
+              ? 'border-rose-400/60 bg-rose-500/90 text-white'
+              : 'border-white/20 bg-black/50 text-white/80 hover:text-white'
+          }`}
+        >
+          <span aria-hidden>{isFavorite ? '❤' : '♡'}</span>
+        </button>
+      )}
     </article>
   )
 }
@@ -387,6 +408,10 @@ export default function TemplatesPage() {
   const [sort, setSort] = useState('featured')
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebouncedValue(search)
+
+  const [favorites, setFavorites] = useState([])
+  const [favoriteIds, setFavoriteIds] = useState(() => new Set())
+  const [showFavorites, setShowFavorites] = useState(false)
 
   const [templates, setTemplates] = useState([])
   const [nextCursor, setNextCursor] = useState(null)
@@ -444,11 +469,83 @@ export default function TemplatesPage() {
     fetchTemplates()
   }, [fetchTemplates])
 
+  // Load the user's favorites once on mount (only when signed in).
+  useEffect(() => {
+    if (!signedIn) return
+    let cancelled = false
+    listFavoriteTemplates()
+      .then((payload) => {
+        if (cancelled) return
+        const items = (payload.items || []).map(normalizeTemplate)
+        setFavorites(items)
+        setFavoriteIds(new Set(items.map((item) => item.id)))
+      })
+      .catch((err) => console.error('Failed to load favorites:', err))
+    return () => {
+      cancelled = true
+    }
+  }, [signedIn])
+
+  const toggleFavorite = useCallback(
+    async (template) => {
+      if (!signedIn) {
+        setError('Sign in to save favorite templates.')
+        return
+      }
+      const id = String(template.id)
+      const wasFavorite = favoriteIds.has(id)
+      // Optimistic update.
+      setFavoriteIds((current) => {
+        const next = new Set(current)
+        if (wasFavorite) next.delete(id)
+        else next.add(id)
+        return next
+      })
+      setFavorites((current) =>
+        wasFavorite ? current.filter((item) => item.id !== id) : [template, ...current],
+      )
+      try {
+        if (wasFavorite) await removeTemplateFavorite(id)
+        else await addTemplateFavorite(id)
+      } catch (err) {
+        // Revert on failure.
+        setFavoriteIds((current) => {
+          const next = new Set(current)
+          if (wasFavorite) next.add(id)
+          else next.delete(id)
+          return next
+        })
+        setFavorites((current) =>
+          wasFavorite
+            ? [...current, template]
+            : current.filter((item) => item.id !== id),
+        )
+        console.error('Failed to update favorite:', err)
+        setError(err.response?.data?.detail || 'Could not update favorites. Try again.')
+      }
+    },
+    [favoriteIds, signedIn],
+  )
+
   useEffect(() => {
     if (loading) return
     setImageCount(templates.filter((item) => !item.isVideo).length)
     setVideoCount(templates.filter((item) => item.isVideo).length)
   }, [loading, templates])
+
+  // In favorites mode the list comes from the favorites endpoint; media and
+  // search filters are applied client-side.
+  const visibleTemplates = showFavorites
+    ? favorites
+        .filter((item) =>
+          media === 'all' ? true : media === 'video' ? item.isVideo : !item.isVideo,
+        )
+        .filter((item) =>
+          debouncedSearch.trim()
+            ? item.title.toLowerCase().includes(debouncedSearch.trim().toLowerCase())
+            : true,
+        )
+    : templates
 
   const openTemplate = useCallback((rawTemplate, resume = null) => {
     const template = normalizeTemplate(rawTemplate)
@@ -663,6 +760,19 @@ export default function TemplatesPage() {
                       {item.label}
                     </button>
                   ))}
+                  <button
+                    type="button"
+                    onClick={() => setShowFavorites((current) => !current)}
+                    aria-pressed={showFavorites}
+                    className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                      showFavorites
+                        ? 'bg-rose-500 text-white'
+                        : 'border border-border-default bg-surface text-text-secondary hover:text-text-primary'
+                    }`}
+                  >
+                    <span aria-hidden>❤</span>
+                    Favorites{signedIn && favorites.length ? ` (${favorites.length})` : ''}
+                  </button>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-[180px_160px_minmax(220px,1fr)] lg:ml-auto">
                   <select
@@ -700,7 +810,10 @@ export default function TemplatesPage() {
               </div>
               <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-text-tertiary">
                 <span>{filterSummary.join(' / ')}</span>
-                <span>{templates.length} shown{nextCursor ? ` of ${totalCount}` : ''}</span>
+                <span>
+                  {visibleTemplates.length} shown
+                  {!showFavorites && nextCursor ? ` of ${totalCount}` : ''}
+                </span>
               </div>
             </div>
 
@@ -726,27 +839,49 @@ export default function TemplatesPage() {
                     <TemplateSkeleton key={index} />
                   ))}
                 </div>
-              ) : templates.length === 0 ? (
+              ) : visibleTemplates.length === 0 ? (
                 <div className="rounded-xl border border-border-default bg-panel p-12 text-center">
-                  <h2 className="font-heading text-xl font-semibold text-text-primary">No templates found</h2>
-                  <p className="mt-2 text-sm text-text-secondary">Try another filter or search term.</p>
-                  <button
-                    type="button"
-                    onClick={clearFilters}
-                    className="mt-5 rounded-lg bg-accent-blue px-4 py-2 text-sm font-semibold text-white"
-                  >
-                    Clear filters
-                  </button>
+                  <h2 className="font-heading text-xl font-semibold text-text-primary">
+                    {showFavorites ? 'No favorites yet' : 'No templates found'}
+                  </h2>
+                  <p className="mt-2 text-sm text-text-secondary">
+                    {showFavorites
+                      ? 'Tap the ♡ on any template to save it here — your favorites stay available even when the gallery refreshes.'
+                      : 'Try another filter or search term.'}
+                  </p>
+                  {showFavorites ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowFavorites(false)}
+                      className="mt-5 rounded-lg bg-accent-blue px-4 py-2 text-sm font-semibold text-white"
+                    >
+                      Browse all templates
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={clearFilters}
+                      className="mt-5 rounded-lg bg-accent-blue px-4 py-2 text-sm font-semibold text-white"
+                    >
+                      Clear filters
+                    </button>
+                  )}
                 </div>
               ) : (
                 <>
                   <div className="columns-1 gap-5 sm:columns-2 lg:columns-3 2xl:columns-4">
-                    {templates.map((template) => (
-                      <TemplateCard key={template.id} template={template} onOpen={openTemplate} />
+                    {visibleTemplates.map((template) => (
+                      <TemplateCard
+                        key={template.id}
+                        template={template}
+                        onOpen={openTemplate}
+                        isFavorite={favoriteIds.has(template.id)}
+                        onToggleFavorite={toggleFavorite}
+                      />
                     ))}
                   </div>
 
-                  {nextCursor && (
+                  {!showFavorites && nextCursor && (
                     <div className="mt-2 flex justify-center pt-2">
                       <button
                         type="button"

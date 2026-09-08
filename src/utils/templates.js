@@ -18,6 +18,21 @@ export async function recordTemplateUse(templateId) {
   return data
 }
 
+export async function listFavoriteTemplates() {
+  const { data } = await api.get('/api/templates/favorites')
+  return data
+}
+
+export async function addTemplateFavorite(templateId) {
+  const { data } = await api.post(`/api/templates/${templateId}/favorite`)
+  return data
+}
+
+export async function removeTemplateFavorite(templateId) {
+  const { data } = await api.delete(`/api/templates/${templateId}/favorite`)
+  return data
+}
+
 export function setPendingTemplateUse(payload) {
   if (!payload) return
   localStorage.setItem(PENDING_TEMPLATE_USE_KEY, JSON.stringify(payload))
