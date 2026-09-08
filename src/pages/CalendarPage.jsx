@@ -322,7 +322,7 @@ export default function CalendarPage() {
                   key={v}
                   type="button"
                   onClick={() => setViewMode(v)}
-                  className={`rounded-lg px-3 py-1.5 text-xs font-semibold capitalize ${
+                  className={`rounded-lg px-3 py-1.5 text-sm font-semibold capitalize ${
                     viewMode === v ? 'bg-accent-blue text-white' : 'text-text-secondary hover:text-text-primary'
                   }`}
                 >

@@ -286,7 +286,7 @@ export default function PublishingPage() {
           Back
         </Link>
         <span className="h-5 w-px bg-border-default" aria-hidden />
-        <h1 className="font-heading text-base font-semibold tracking-tight">
+        <h1 className="font-heading text-xl font-semibold tracking-tight">
           {isImage ? 'Publish Image' : 'Publish Video'}
         </h1>
       </header>

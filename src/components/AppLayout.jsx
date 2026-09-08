@@ -11,7 +11,7 @@ export default function AppLayout({ children }) {
   const { collapsed } = useAppChrome()
 
   return (
-    <div className="min-h-screen bg-base font-body text-text-primary">
+    <div className="min-h-screen bg-base font-body text-base text-text-primary">
       <AdmartSidebar />
       <div
         className={`min-h-screen transition-[margin] duration-300 ease-out ${
