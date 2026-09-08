@@ -30,7 +30,8 @@ const MODEL_OPTIONS = [
 ]
 
 const SORT_OPTIONS = [
-  { id: 'trending', label: 'Featured' },
+  { id: 'trending', label: 'Trending' },
+  { id: 'featured', label: 'Featured' },
   { id: 'uses', label: 'Most used' },
   { id: 'new', label: 'Newest' },
 ]
@@ -383,7 +384,7 @@ export default function TemplatesPage() {
   const signedIn = isAuthenticated()
   const [media, setMedia] = useState('all')
   const [modelFilter, setModelFilter] = useState('all')
-  const [sort, setSort] = useState('trending')
+  const [sort, setSort] = useState('featured')
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebouncedValue(search)
 
@@ -602,7 +603,7 @@ export default function TemplatesPage() {
     setMedia('all')
     setModelFilter('all')
     setSearch('')
-    setSort('trending')
+    setSort('featured')
   }
 
   return (
