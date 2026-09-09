@@ -799,25 +799,21 @@ export default function TemplatesPage() {
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
                 <div className="flex flex-col gap-2">
                   <div className="flex flex-wrap gap-2">
-                    {CATEGORY_OPTIONS.map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => setCategory(item.id)}
-                        className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${
-                          category === item.id
-                            ? 'bg-accent-blue text-white'
-                            : 'border border-border-default bg-surface text-text-secondary hover:text-text-primary'
-                        }`}
-                      >
-                        {item.label}
-                        {item.id !== 'all' && hostStats[item.id] ? (
-                          <span className="ml-1.5 text-xs opacity-70">
-                            {(hostStats[item.id].images || 0) + (hostStats[item.id].videos || 0)}
-                          </span>
-                        ) : null}
-                      </button>
-                    ))}
+                    <select
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                      className="h-11 min-w-[220px] rounded-lg border border-border-default bg-input px-3 text-sm font-semibold text-text-primary outline-none focus:border-accent-blue"
+                      aria-label="Filter by category"
+                    >
+                      {CATEGORY_OPTIONS.map((item) => (
+                        <option key={item.id} value={item.id}>
+                          {item.label}
+                          {item.id !== 'all' && hostStats[item.id]
+                            ? ` (${(hostStats[item.id].images || 0) + (hostStats[item.id].videos || 0)})`
+                            : ''}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div className="flex flex-wrap gap-2">
                   {MEDIA_OPTIONS.map((item) => (
@@ -1057,7 +1053,7 @@ export default function TemplatesPage() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-xs font-semibold uppercase text-accent-blue">
-                      {CATEGORY_LABELS[selected.category] || selected.category} · {selected.format}
+                      {CATEGORY_LABELS[resolveCategory(selected)] || selected.category} · {selected.format}
                     </p>
                     <h2 id="template-modal-title" className="mt-1 font-heading text-2xl font-bold text-text-primary">
                       {selected.title}
