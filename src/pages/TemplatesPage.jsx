@@ -440,6 +440,13 @@ export default function TemplatesPage() {
   const [favoriteIds, setFavoriteIds] = useState(() => new Set())
   const [showFavorites, setShowFavorites] = useState(false)
 
+  // Keep the ref in sync so the favorites-mode branch of fetchTemplates can
+  // read the count without depending on `favorites` (which would re-run the
+  // gallery fetch effect on every heart click).
+  useEffect(() => {
+    favoritesCountRef.current = favorites.length
+  }, [favorites])
+
   const [templates, setTemplates] = useState([])
   const [hostStats, setHostStats] = useState({ all: { images: 0, videos: 0 } })
   const [nextCursor, setNextCursor] = useState(null)
@@ -459,20 +466,57 @@ export default function TemplatesPage() {
   const [usingTemplate, setUsingTemplate] = useState(false)
   const [resumeHandled, setResumeHandled] = useState(false)
   const modalRef = useRef(null)
+  // Latest gallery fetch wins; earlier in-flight responses are ignored.
+  const fetchSeqRef = useRef(0)
+  // Current favorites count without re-triggering gallery fetches on heart clicks.
+  const favoritesCountRef = useRef(0)
+
+  // Any gallery filter change (media/category/sort/model) immediately leaves
+  // favorites mode, so All/Images/Videos can never stay stuck on favorites.
+  const handleMediaSelect = useCallback(
+    (id) => {
+      setShowFavorites(false)
+      setMedia(id)
+    },
+    [],
+  )
+
+  const handleCategorySelect = useCallback((id) => {
+    setShowFavorites(false)
+    setCategory(id)
+  }, [])
+
+  const handleSortSelect = useCallback((id) => {
+    setShowFavorites(false)
+    setSort(id)
+  }, [])
+
+  const handleModelSelect = useCallback((id) => {
+    setShowFavorites(false)
+    setModelFilter(id)
+  }, [])
+
+  const handleFavoritesToggle = useCallback(() => {
+    setShowFavorites((current) => !current)
+  }, [])
 
   const fetchTemplates = useCallback(
     async ({ cursor = null, append = false } = {}) => {
       if (showFavorites && !append) {
         // Favorites come from the favorites endpoint (it also returns templates
         // the gallery refresh deactivated), so skip the public gallery fetch.
-        setTemplates([])
+        // Keep the cached gallery list intact so leaving favorites mode can
+        // restore it instantly while the fresh fetch is in flight.
         setNextCursor(null)
-        setTotalCount(favorites.length)
+        setTotalCount(favoritesCountRef.current)
         setLoading(false)
         setLoadingMore(false)
         setError('')
         return
       }
+      // Ignore stale responses when filters change quickly (mode switches,
+      // rapid pill clicks) — only the newest request may update the grid.
+      const seq = ++fetchSeqRef.current
       const params = {
         sort,
         cursor: cursor || undefined,
@@ -488,6 +532,7 @@ export default function TemplatesPage() {
 
       try {
         const payload = await listTemplates(params)
+        if (!append && seq !== fetchSeqRef.current) return
         const items = (payload.items || []).map(normalizeTemplate)
         setTemplates((current) => (append ? [...current, ...items] : items))
         setNextCursor(payload.nextCursor || null)
@@ -503,14 +548,16 @@ export default function TemplatesPage() {
           setHostStats(normalized)
         }
       } catch (err) {
-        console.error(err)
-        setError(err.response?.data?.message || 'Template library could not be loaded.')
+        if (append || seq === fetchSeqRef.current) {
+          console.error(err)
+          setError(err.response?.data?.message || 'Template library could not be loaded.')
+        }
       } finally {
         setLoading(false)
         setLoadingMore(false)
       }
     },
-    [category, debouncedSearch, favorites.length, media, modelFilter, showFavorites, sort]
+    [category, debouncedSearch, media, modelFilter, showFavorites, sort],
   )
 
   useEffect(() => {
@@ -744,6 +791,7 @@ export default function TemplatesPage() {
   const selectedCredit = () => liveQuote?.credits || selected?.estimatedCredits
 
   const clearFilters = () => {
+    setShowFavorites(false)
     setCategory('all')
     setMedia('all')
     setModelFilter('all')
@@ -801,7 +849,7 @@ export default function TemplatesPage() {
                   <div className="flex flex-wrap gap-2">
                     <select
                       value={category}
-                      onChange={(e) => setCategory(e.target.value)}
+                      onChange={(e) => handleCategorySelect(e.target.value)}
                       className="h-11 min-w-[220px] rounded-lg border border-border-default bg-input px-3 text-sm font-semibold text-text-primary outline-none focus:border-accent-blue"
                       aria-label="Filter by category"
                     >
@@ -820,7 +868,7 @@ export default function TemplatesPage() {
                     <button
                       key={item.id}
                       type="button"
-                      onClick={() => setMedia(item.id)}
+                      onClick={() => handleMediaSelect(item.id)}
                       className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${
                         media === item.id
                           ? 'bg-accent-blue text-white'
@@ -832,7 +880,7 @@ export default function TemplatesPage() {
                   ))}
                   <button
                     type="button"
-                    onClick={() => setShowFavorites((current) => !current)}
+                    onClick={handleFavoritesToggle}
                     aria-pressed={showFavorites}
                     className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold transition ${
                       showFavorites
@@ -848,7 +896,7 @@ export default function TemplatesPage() {
                 <div className="grid gap-3 sm:grid-cols-[180px_160px_minmax(220px,1fr)] lg:ml-auto">
                   <select
                     value={modelFilter}
-                    onChange={(e) => setModelFilter(e.target.value)}
+                    onChange={(e) => handleModelSelect(e.target.value)}
                     className="h-11 rounded-lg border border-border-default bg-input px-3 text-sm text-text-primary outline-none focus:border-accent-blue"
                     aria-label="Filter by model"
                   >
@@ -860,7 +908,7 @@ export default function TemplatesPage() {
                   </select>
                   <select
                     value={sort}
-                    onChange={(e) => setSort(e.target.value)}
+                    onChange={(e) => handleSortSelect(e.target.value)}
                     className="h-11 rounded-lg border border-border-default bg-input px-3 text-sm text-text-primary outline-none focus:border-accent-blue"
                     aria-label="Sort templates"
                   >
