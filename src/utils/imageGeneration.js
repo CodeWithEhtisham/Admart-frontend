@@ -59,7 +59,7 @@ export const ASPECT_RATIOS = [
   { id: 'auto', label: 'Auto', sub: 'Model' },
 ]
 
-/** fal image_size presets for models that expose a size knob (flux / ideogram). */
+/** image_size presets for models that expose a size knob (flux / ideogram). */
 export const IMAGE_SIZES = [
   { id: 'square_hd', label: 'Square HD', sub: '1024×1024' },
   { id: 'square', label: 'Square', sub: '512×512' },
@@ -71,7 +71,7 @@ export const IMAGE_SIZES = [
 
 export const MULTI_EDIT_ROLES = ['Subject', 'Scene', 'Style', 'Extra', 'Extra', 'Extra']
 
-/** Live prompt stats for the UI counter (no hard fal limit). */
+/** Live prompt stats for the UI counter (no hard limit). */
 export function promptStats(raw) {
   const text = String(raw || '')
   const trimmed = text.trim()

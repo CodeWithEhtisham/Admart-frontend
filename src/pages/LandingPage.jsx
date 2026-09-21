@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { activatePlan, formatCredits, getPlans } from '../utils/credits'
+import { formatCredits, getPlans } from '../utils/credits'
 import { isAuthenticated } from '../utils/auth'
 
 const lm = (file) => `/leonardo-media/${file}`
@@ -407,8 +407,6 @@ export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false)
   const [plans, setPlans] = useState([])
   const [planError, setPlanError] = useState('')
-  const [activatingPlan, setActivatingPlan] = useState(null)
-  const [planToast, setPlanToast] = useState(null)
   const authenticated = isAuthenticated()
 
   const navSections = [
@@ -452,20 +450,6 @@ export default function LandingPage() {
       mounted = false
     }
   }, [])
-
-  const handleActivatePlan = async (planId) => {
-    setActivatingPlan(planId)
-    setPlanError('')
-    try {
-      const result = await activatePlan(planId)
-      setPlanToast(result?.message || 'Plan activated for testing.')
-      window.setTimeout(() => setPlanToast(null), 3000)
-    } catch (err) {
-      setPlanError(err?.response?.data?.message || err?.message || 'Could not activate plan.')
-    } finally {
-      setActivatingPlan(null)
-    }
-  }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -906,18 +890,13 @@ export default function LandingPage() {
                       ))}
                     </ul>
                     {authenticated ? (
-                      <button
-                        type="button"
-                        onClick={() => handleActivatePlan(p.id)}
-                        disabled={Boolean(activatingPlan)}
-                        className={`mt-8 w-full rounded-full py-3 text-sm font-semibold transition duration-300 ${
-                          popular
-                            ? 'gradient-bg text-white shadow-lg gradient-glow hover:opacity-95'
-                            : 'border border-white/25 text-white hover:bg-white/10'
-                        } disabled:cursor-not-allowed disabled:opacity-60`}
+                      <PillButton
+                        href="/billing"
+                        variant={popular ? 'primary' : 'ring'}
+                        className="mt-8 w-full justify-center"
                       >
-                        {activatingPlan === p.id ? 'Activating…' : 'Activate plan'}
-                      </button>
+                        Subscribe
+                      </PillButton>
                     ) : (
                       <PillButton
                         href={authPath}
@@ -938,14 +917,6 @@ export default function LandingPage() {
         )}
         {!plans.length && !planError && (
           <p className="mt-12 text-center text-sm text-white/60">Loading plans…</p>
-        )}
-        {planToast && (
-          <div
-            role="status"
-            className="animate-slide-up fixed bottom-8 right-8 z-50 rounded-xl border border-border-default bg-elevated px-4 py-3 text-sm text-text-primary shadow-xl"
-          >
-            {planToast}
-          </div>
         )}
       </section>
 

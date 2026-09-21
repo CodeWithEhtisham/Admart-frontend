@@ -36,10 +36,29 @@ export async function getPlans() {
   return data
 }
 
-export async function activatePlan(plan) {
-  const { data } = await api.post('/api/credits/plan', { plan })
-  notifyCreditsChanged(data)
+export async function getTopupPacks() {
+  const { data } = await api.get('/api/credits/topups')
+  return data?.items ?? []
+}
+
+export async function getPaymentMethods() {
+  const { data } = await api.get('/api/credits/payments/methods')
   return data
+}
+
+/** Submit manual payment proof (multipart). `form` is a FormData instance. */
+export async function submitPayment(form) {
+  const { data } = await api.post('/api/credits/payments/submit', form, {
+    // Drop the JSON default so the browser sets multipart/form-data with a
+    // proper boundary for the FormData body.
+    headers: { 'Content-Type': false },
+  })
+  return data
+}
+
+export async function getMyPayments() {
+  const { data } = await api.get('/api/credits/payments/mine')
+  return data?.items ?? []
 }
 
 export async function quoteCredits(payload) {

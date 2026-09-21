@@ -18,6 +18,7 @@ import {
   getAdminUsers,
   getAdminStatus,
   patchAdminUser,
+  reviewAdminPayment,
   timeAgo,
   updateAdminSettings,
 } from '../utils/admin'
@@ -1017,7 +1018,18 @@ function PaymentsTab({ isSuperuser, refreshKey, showToast }) {
     load()
   }, [load, refreshKey])
 
-  const byStatus = revenue?.byStatus || {}
+  const handleReview = useCallback(
+    async (paymentId, decision) => {
+      try {
+        await reviewAdminPayment(paymentId, { decision })
+        showToast(decision === 'approve' ? 'Payment approved and credits credited.' : 'Payment rejected.')
+        load()
+      } catch (err) {
+        showToast(err?.response?.data?.message || err?.message || 'Could not review payment.')
+      }
+    },
+    [load, showToast],
+  )
 
   return (
     <div className="space-y-4">
@@ -1046,31 +1058,85 @@ function PaymentsTab({ isSuperuser, refreshKey, showToast }) {
 
       <div className="overflow-hidden rounded-2xl border border-border-default bg-panel">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[760px] text-left text-sm">
+          <table className="w-full min-w-[840px] text-left text-sm">
             <thead>
               <tr className="border-b border-border-default text-xs uppercase tracking-wide text-text-tertiary">
                 <th className="px-4 py-3 font-medium">Date</th>
                 <th className="px-4 py-3 font-medium">Customer</th>
+                <th className="px-4 py-3 font-medium">Item</th>
                 <th className="px-4 py-3 font-medium">Amount</th>
                 <th className="px-4 py-3 font-medium">Method</th>
                 <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium">Reference</th>
+                <th className="px-4 py-3 font-medium">Proof</th>
+                {isSuperuser && <th className="px-4 py-3 font-medium text-right">Action</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-border-default">
               {payments.map((p) => (
                 <tr key={p.id}>
                   <td className="px-4 py-3 text-text-muted">{formatAdminDateTime(p.createdAt)}</td>
-                  <td className="px-4 py-3 font-medium text-text-primary">{p.email}</td>
+                  <td className="px-4 py-3 font-medium text-text-primary">
+                    <div>{p.email}</div>
+                    {p.firstName && <div className="text-xs text-text-muted">{p.firstName} {p.lastName}</div>}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-semibold text-text-primary">{p.planName || p.plan || p.pack || '—'}</span>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                          p.paymentType === 'topup'
+                            ? 'border border-success/30 bg-success/15 text-success'
+                            : 'border border-accent-blue/30 bg-accent-blue/15 text-accent-blue'
+                        }`}
+                      >
+                        {p.paymentType === 'topup' ? 'Top-up' : 'Sub'}
+                      </span>
+                    </div>
+                    {p.credits && (
+                      <div className="text-xs text-text-muted">+{p.credits} credits</div>
+                    )}
+                  </td>
                   <td className="px-4 py-3 font-mono font-semibold text-text-primary">{p.currency} {formatMoney(p.amount)}</td>
                   <td className="px-4 py-3 capitalize text-text-secondary">{p.method}</td>
                   <td className="px-4 py-3"><PaymentPill status={p.status} /></td>
-                  <td className="px-4 py-3 text-xs text-text-muted">{p.providerRef || '—'}</td>
+                  <td className="px-4 py-3 text-xs">
+                    {p.screenshotUrl ? (
+                      <a href={p.screenshotUrl} target="_blank" rel="noopener noreferrer" className="font-medium text-accent-blue hover:underline">
+                        View proof
+                      </a>
+                    ) : (
+                      <span className="text-text-muted">{p.providerRef || '—'}</span>
+                    )}
+                  </td>
+                  {isSuperuser && (
+                    <td className="px-4 py-3 text-right">
+                      {p.status === 'pending' ? (
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleReview(p.id, 'approve')}
+                            className="rounded-lg border border-success/40 bg-success/15 px-2.5 py-1 text-xs font-semibold text-success transition hover:bg-success hover:text-white"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleReview(p.id, 'reject')}
+                            className="rounded-lg border border-error/40 bg-error/15 px-2.5 py-1 text-xs font-semibold text-error transition hover:bg-error hover:text-white"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-text-muted">—</span>
+                      )}
+                    </td>
+                  )}
                 </tr>
               ))}
               {!loading && payments.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-10 text-center text-sm text-text-muted">No payments match your filters.</td>
+                  <td colSpan={isSuperuser ? 8 : 7} className="px-4 py-10 text-center text-sm text-text-muted">No payments match your filters.</td>
                 </tr>
               )}
             </tbody>
