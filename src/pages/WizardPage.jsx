@@ -60,7 +60,7 @@ const VIDEO_MODELS = [
   { id: 'wan', name: 'Wan 2.1 Premium', credits: 4, speed: 1 },
 ]
 
-/** fal.ai text-to-image models (verified on fal.ai) */
+/** Text-to-image models */
 const IMAGE_GEN_MODELS = [
   { id: 'fal-ai/flux/dev', name: 'Flux Dev', credits: 1, speed: 3 },
   { id: 'fal-ai/flux/schnell', name: 'Flux Schnell', credits: 1, speed: 3 },
@@ -70,7 +70,7 @@ const IMAGE_GEN_MODELS = [
   { id: 'openai/gpt-image-2', name: 'GPT Image 2', credits: 3, speed: 1 },
 ]
 
-/** fal.ai edit / image-to-image models */
+/** Edit / image-to-image models */
 const IMAGE_EDIT_MODELS = [
   { id: 'fal-ai/nano-banana-2/edit', name: 'Nano Banana 2 Edit', credits: 1, speed: 3 },
   { id: 'fal-ai/nano-banana-pro/edit', name: 'Nano Banana Pro Edit', credits: 2, speed: 2 },

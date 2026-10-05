@@ -1,15 +1,18 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { isAuthenticated } from '../utils/auth'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import { formatCredits, quoteCredits } from '../utils/credits.js'
 import {
+  addTemplateFavorite,
   clearPendingTemplateUse,
   getPendingTemplateUse,
   getTemplate,
+  listFavoriteTemplates,
   listTemplates,
   recordTemplateUse,
+  removeTemplateFavorite,
   setPendingTemplateUse,
 } from '../utils/templates.js'
 
@@ -30,12 +33,39 @@ const MODEL_OPTIONS = [
 ]
 
 const SORT_OPTIONS = [
-  { id: 'trending', label: 'Featured' },
+  { id: 'trending', label: 'Trending' },
+  { id: 'featured', label: 'Featured' },
   { id: 'uses', label: 'Most used' },
   { id: 'new', label: 'Newest' },
 ]
 
-const CATEGORY_LABELS = { ad: 'Ad', reel: 'Reel', story: 'Story', product: 'Product', announce: 'Announcement', carousel: 'Carousel' }
+const CATEGORY_OPTIONS = [
+  { id: 'all', label: 'All' },
+  { id: 'ads-product', label: 'Ads & Product' },
+  { id: 'brand-logo', label: 'Brand & Logo' },
+  { id: 'video', label: 'Videos' },
+  { id: 'illustration-3d', label: 'Illustration & 3D' },
+  { id: 'posters-visuals', label: 'Posters & Visuals' },
+  { id: 'portraits', label: 'Portraits' },
+  { id: 'storyboard-characters', label: 'Storyboard & Characters' },
+  { id: 'wallpaper', label: 'Wallpaper' },
+]
+const CATEGORY_LABELS = Object.fromEntries(CATEGORY_OPTIONS.map((item) => [item.id, item.label]))
+// Rows synced before the meigen-style categories: map on read so old cards and
+// favorites still land under the right tab until the gallery refresh rewrites them.
+const LEGACY_CATEGORY_MAP = {
+  ad: 'ads-product',
+  product: 'ads-product',
+  announce: 'ads-product',
+  announcement: 'ads-product',
+  carousel: 'ads-product',
+  story: 'ads-product',
+  reel: 'video',
+}
+
+function resolveCategory(item) {
+  return LEGACY_CATEGORY_MAP[item?.category] || item?.category || 'ads-product'
+}
 const MEDIA_LABELS = Object.fromEntries(MEDIA_OPTIONS.map((item) => [item.id, item.label]))
 const SORT_LABELS = Object.fromEntries(SORT_OPTIONS.map((item) => [item.id, item.label]))
 const BRACKET_PLACEHOLDER_RE = /\[([^[\n\]]{1,80})\]/g
@@ -310,9 +340,9 @@ function MediaPreview({ template, large = false }) {
   )
 }
 
-function TemplateCard({ template, onOpen }) {
+function TemplateCard({ template, onOpen, isFavorite, onToggleFavorite }) {
   return (
-    <article className="mb-5 break-inside-avoid overflow-hidden rounded-xl border border-border-default bg-panel transition hover:-translate-y-0.5 hover:border-accent-blue/45 hover:shadow-lg">
+    <article className="relative mb-5 break-inside-avoid overflow-hidden rounded-xl border border-border-default bg-panel transition hover:-translate-y-0.5 hover:border-accent-blue/45 hover:shadow-lg">
       <button type="button" onClick={() => onOpen(template)} className="block w-full text-left">
         <MediaPreview template={template} />
         <div className="space-y-2.5 p-4">
@@ -336,7 +366,7 @@ function TemplateCard({ template, onOpen }) {
                 <span className="truncate">{template.author.name}</span>
               </span>
             ) : (
-              <span>{CATEGORY_LABELS[template.category] || template.category}</span>
+              <span>{CATEGORY_LABELS[resolveCategory(template)] || template.category}</span>
             )}
             <span className="flex items-center gap-1.5">
               <span>{formatCount(template.usesCount || 0)}</span>
@@ -345,6 +375,24 @@ function TemplateCard({ template, onOpen }) {
           </div>
         </div>
       </button>
+      {onToggleFavorite && (
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation()
+            onToggleFavorite(template)
+          }}
+          aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          className={`absolute bottom-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border text-sm shadow-md backdrop-blur-sm transition hover:scale-110 ${
+            isFavorite
+              ? 'border-rose-400/60 bg-rose-500/90 text-white'
+              : 'border-white/20 bg-black/50 text-white/80 hover:text-white'
+          }`}
+        >
+          <span aria-hidden>{isFavorite ? '❤' : '♡'}</span>
+        </button>
+      )}
     </article>
   )
 }
@@ -382,16 +430,27 @@ export default function TemplatesPage() {
   const location = useLocation()
   const signedIn = isAuthenticated()
   const [media, setMedia] = useState('all')
+  const [category, setCategory] = useState('all')
   const [modelFilter, setModelFilter] = useState('all')
-  const [sort, setSort] = useState('trending')
+  const [sort, setSort] = useState('featured')
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebouncedValue(search)
 
+  const [favorites, setFavorites] = useState([])
+  const [favoriteIds, setFavoriteIds] = useState(() => new Set())
+  const [showFavorites, setShowFavorites] = useState(false)
+
+  // Keep the ref in sync so the favorites-mode branch of fetchTemplates can
+  // read the count without depending on `favorites` (which would re-run the
+  // gallery fetch effect on every heart click).
+  useEffect(() => {
+    favoritesCountRef.current = favorites.length
+  }, [favorites])
+
   const [templates, setTemplates] = useState([])
+  const [hostStats, setHostStats] = useState({ all: { images: 0, videos: 0 } })
   const [nextCursor, setNextCursor] = useState(null)
   const [totalCount, setTotalCount] = useState(0)
-  const [imageCount, setImageCount] = useState(0)
-  const [videoCount, setVideoCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState('')
@@ -407,13 +466,62 @@ export default function TemplatesPage() {
   const [usingTemplate, setUsingTemplate] = useState(false)
   const [resumeHandled, setResumeHandled] = useState(false)
   const modalRef = useRef(null)
+  // Latest gallery fetch wins; earlier in-flight responses are ignored.
+  const fetchSeqRef = useRef(0)
+  // Current favorites count without re-triggering gallery fetches on heart clicks.
+  const favoritesCountRef = useRef(0)
+
+  // Any gallery filter change (media/category/sort/model) immediately leaves
+  // favorites mode, so All/Images/Videos can never stay stuck on favorites.
+  const handleMediaSelect = useCallback(
+    (id) => {
+      setShowFavorites(false)
+      setMedia(id)
+    },
+    [],
+  )
+
+  const handleCategorySelect = useCallback((id) => {
+    setShowFavorites(false)
+    setCategory(id)
+  }, [])
+
+  const handleSortSelect = useCallback((id) => {
+    setShowFavorites(false)
+    setSort(id)
+  }, [])
+
+  const handleModelSelect = useCallback((id) => {
+    setShowFavorites(false)
+    setModelFilter(id)
+  }, [])
+
+  const handleFavoritesToggle = useCallback(() => {
+    setShowFavorites((current) => !current)
+  }, [])
 
   const fetchTemplates = useCallback(
     async ({ cursor = null, append = false } = {}) => {
+      if (showFavorites && !append) {
+        // Favorites come from the favorites endpoint (it also returns templates
+        // the gallery refresh deactivated), so skip the public gallery fetch.
+        // Keep the cached gallery list intact so leaving favorites mode can
+        // restore it instantly while the fresh fetch is in flight.
+        setNextCursor(null)
+        setTotalCount(favoritesCountRef.current)
+        setLoading(false)
+        setLoadingMore(false)
+        setError('')
+        return
+      }
+      // Ignore stale responses when filters change quickly (mode switches,
+      // rapid pill clicks) — only the newest request may update the grid.
+      const seq = ++fetchSeqRef.current
       const params = {
         sort,
         cursor: cursor || undefined,
       }
+      if (category !== 'all') params.category = category
       if (media !== 'all') params.media = media
       if (modelFilter !== 'all') params.model = modelFilter
       if (debouncedSearch.trim()) params.search = debouncedSearch.trim()
@@ -424,30 +532,114 @@ export default function TemplatesPage() {
 
       try {
         const payload = await listTemplates(params)
+        if (!append && seq !== fetchSeqRef.current) return
         const items = (payload.items || []).map(normalizeTemplate)
         setTemplates((current) => (append ? [...current, ...items] : items))
         setNextCursor(payload.nextCursor || null)
         setTotalCount(Number(payload.count || items.length))
+        if (payload.categoryStats && typeof payload.categoryStats === 'object') {
+          const normalized = {}
+          for (const [slug, entry] of Object.entries(payload.categoryStats)) {
+            normalized[slug] = {
+              images: Number(entry?.images || 0),
+              videos: Number(entry?.videos || 0),
+            }
+          }
+          setHostStats(normalized)
+        }
       } catch (err) {
-        console.error(err)
-        setError(err.response?.data?.message || 'Template library could not be loaded.')
+        if (append || seq === fetchSeqRef.current) {
+          console.error(err)
+          setError(err.response?.data?.message || 'Template library could not be loaded.')
+        }
       } finally {
         setLoading(false)
         setLoadingMore(false)
       }
     },
-    [debouncedSearch, media, modelFilter, sort]
+    [category, debouncedSearch, media, modelFilter, showFavorites, sort],
   )
 
   useEffect(() => {
     fetchTemplates()
   }, [fetchTemplates])
 
+  // Load the user's favorites on mount and every time favorites mode opens,
+  // so newly added favorites (or ones added on another device) show up.
   useEffect(() => {
-    if (loading) return
-    setImageCount(templates.filter((item) => !item.isVideo).length)
-    setVideoCount(templates.filter((item) => item.isVideo).length)
-  }, [loading, templates])
+    if (!signedIn) return
+    let cancelled = false
+    listFavoriteTemplates()
+      .then((payload) => {
+        if (cancelled) return
+        const items = (payload.items || []).map(normalizeTemplate)
+        setFavorites(items)
+        setFavoriteIds(new Set(items.map((item) => item.id)))
+      })
+      .catch((err) => console.error('Failed to load favorites:', err))
+    return () => {
+      cancelled = true
+    }
+  }, [signedIn, showFavorites])
+
+  const toggleFavorite = useCallback(
+    async (template) => {
+      if (!signedIn) {
+        setError('Sign in to save favorite templates.')
+        return
+      }
+      const id = String(template.id)
+      const wasFavorite = favoriteIds.has(id)
+      // Optimistic update.
+      setFavoriteIds((current) => {
+        const next = new Set(current)
+        if (wasFavorite) next.delete(id)
+        else next.add(id)
+        return next
+      })
+      setFavorites((current) =>
+        wasFavorite ? current.filter((item) => item.id !== id) : [template, ...current],
+      )
+      try {
+        if (wasFavorite) await removeTemplateFavorite(id)
+        else await addTemplateFavorite(id)
+      } catch (err) {
+        // Revert on failure.
+        setFavoriteIds((current) => {
+          const next = new Set(current)
+          if (wasFavorite) next.add(id)
+          else next.delete(id)
+          return next
+        })
+        setFavorites((current) =>
+          wasFavorite
+            ? [...current, template]
+            : current.filter((item) => item.id !== id),
+        )
+        console.error('Failed to update favorite:', err)
+        setError(err.response?.data?.detail || 'Could not update favorites. Try again.')
+      }
+    },
+    [favoriteIds, signedIn],
+  )
+
+  // One unified filter path for both modes: category + media + search all
+  // behave identically whether we are showing the gallery or favorites, so
+  // switching tabs can never leave a stale mix behind.
+  const visibleTemplates = useMemo(() => {
+    const search = debouncedSearch.trim().toLowerCase()
+    const inCategory = (item) => category === 'all' || resolveCategory(item) === category
+    const inMedia = (item) =>
+      media === 'all' || (media === 'video' ? item.isVideo : !item.isVideo)
+    const inSearch = (item) =>
+      !search ||
+      item.title.toLowerCase().includes(search) ||
+      (item.prompt || '').toLowerCase().includes(search) ||
+      (item.description || '').toLowerCase().includes(search)
+    return (showFavorites ? favorites : templates).filter(
+      (item) => inCategory(item) && inMedia(item) && inSearch(item),
+    )
+  }, [category, debouncedSearch, favorites, media, showFavorites, templates])
 
   const openTemplate = useCallback((rawTemplate, resume = null) => {
     const template = normalizeTemplate(rawTemplate)
@@ -599,10 +791,12 @@ export default function TemplatesPage() {
   const selectedCredit = () => liveQuote?.credits || selected?.estimatedCredits
 
   const clearFilters = () => {
+    setShowFavorites(false)
+    setCategory('all')
     setMedia('all')
     setModelFilter('all')
     setSearch('')
-    setSort('trending')
+    setSort('featured')
   }
 
   return (
@@ -633,11 +827,15 @@ export default function TemplatesPage() {
                   <p className="text-xs text-text-tertiary">Templates</p>
                 </div>
                 <div className="rounded-xl border border-border bg-surface px-4 py-3">
-                  <p className="font-heading text-2xl font-bold">{formatCount(videoCount)}</p>
+                  <p className="font-heading text-2xl font-bold">
+                    {formatCount(hostStats.all?.videos ?? 0)}
+                  </p>
                   <p className="text-xs text-text-tertiary">Videos</p>
                 </div>
                 <div className="rounded-xl border border-border bg-surface px-4 py-3">
-                  <p className="font-heading text-2xl font-bold">{formatCount(imageCount)}</p>
+                  <p className="font-heading text-2xl font-bold">
+                    {formatCount(hostStats.all?.images ?? 0)}
+                  </p>
                   <p className="text-xs text-text-tertiary">Images</p>
                 </div>
               </div>
@@ -647,12 +845,30 @@ export default function TemplatesPage() {
           <section>
             <div className="rounded-xl border border-border-default bg-panel p-4">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-wrap gap-2">
+                    <select
+                      value={category}
+                      onChange={(e) => handleCategorySelect(e.target.value)}
+                      className="h-11 min-w-[220px] rounded-lg border border-border-default bg-input px-3 text-sm font-semibold text-text-primary outline-none focus:border-accent-blue"
+                      aria-label="Filter by category"
+                    >
+                      {CATEGORY_OPTIONS.map((item) => (
+                        <option key={item.id} value={item.id}>
+                          {item.label}
+                          {item.id !== 'all' && hostStats[item.id]
+                            ? ` (${(hostStats[item.id].images || 0) + (hostStats[item.id].videos || 0)})`
+                            : ''}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
                   {MEDIA_OPTIONS.map((item) => (
                     <button
                       key={item.id}
                       type="button"
-                      onClick={() => setMedia(item.id)}
+                      onClick={() => handleMediaSelect(item.id)}
                       className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${
                         media === item.id
                           ? 'bg-accent-blue text-white'
@@ -662,11 +878,25 @@ export default function TemplatesPage() {
                       {item.label}
                     </button>
                   ))}
+                  <button
+                    type="button"
+                    onClick={handleFavoritesToggle}
+                    aria-pressed={showFavorites}
+                    className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                      showFavorites
+                        ? 'bg-rose-500 text-white'
+                        : 'border border-border-default bg-surface text-text-secondary hover:text-text-primary'
+                    }`}
+                  >
+                    <span aria-hidden>❤</span>
+                    Favorites{signedIn && favorites.length ? ` (${favorites.length})` : ''}
+                  </button>
+                  </div>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-[180px_160px_minmax(220px,1fr)] lg:ml-auto">
                   <select
                     value={modelFilter}
-                    onChange={(e) => setModelFilter(e.target.value)}
+                    onChange={(e) => handleModelSelect(e.target.value)}
                     className="h-11 rounded-lg border border-border-default bg-input px-3 text-sm text-text-primary outline-none focus:border-accent-blue"
                     aria-label="Filter by model"
                   >
@@ -678,7 +908,7 @@ export default function TemplatesPage() {
                   </select>
                   <select
                     value={sort}
-                    onChange={(e) => setSort(e.target.value)}
+                    onChange={(e) => handleSortSelect(e.target.value)}
                     className="h-11 rounded-lg border border-border-default bg-input px-3 text-sm text-text-primary outline-none focus:border-accent-blue"
                     aria-label="Sort templates"
                   >
@@ -699,7 +929,10 @@ export default function TemplatesPage() {
               </div>
               <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-text-tertiary">
                 <span>{filterSummary.join(' / ')}</span>
-                <span>{templates.length} shown{nextCursor ? ` of ${totalCount}` : ''}</span>
+                <span>
+                  {visibleTemplates.length} shown
+                  {!showFavorites && nextCursor ? ` of ${totalCount}` : ''}
+                </span>
               </div>
             </div>
 
@@ -725,27 +958,49 @@ export default function TemplatesPage() {
                     <TemplateSkeleton key={index} />
                   ))}
                 </div>
-              ) : templates.length === 0 ? (
+              ) : visibleTemplates.length === 0 ? (
                 <div className="rounded-xl border border-border-default bg-panel p-12 text-center">
-                  <h2 className="font-heading text-xl font-semibold text-text-primary">No templates found</h2>
-                  <p className="mt-2 text-sm text-text-secondary">Try another filter or search term.</p>
-                  <button
-                    type="button"
-                    onClick={clearFilters}
-                    className="mt-5 rounded-lg bg-accent-blue px-4 py-2 text-sm font-semibold text-white"
-                  >
-                    Clear filters
-                  </button>
+                  <h2 className="font-heading text-xl font-semibold text-text-primary">
+                    {showFavorites ? 'No favorites yet' : 'No templates found'}
+                  </h2>
+                  <p className="mt-2 text-sm text-text-secondary">
+                    {showFavorites
+                      ? 'Tap the ♡ on any template to save it here — your favorites stay available even when the gallery refreshes.'
+                      : 'Try another filter or search term.'}
+                  </p>
+                  {showFavorites ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowFavorites(false)}
+                      className="mt-5 rounded-lg bg-accent-blue px-4 py-2 text-sm font-semibold text-white"
+                    >
+                      Browse all templates
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={clearFilters}
+                      className="mt-5 rounded-lg bg-accent-blue px-4 py-2 text-sm font-semibold text-white"
+                    >
+                      Clear filters
+                    </button>
+                  )}
                 </div>
               ) : (
                 <>
                   <div className="columns-1 gap-5 sm:columns-2 lg:columns-3 2xl:columns-4">
-                    {templates.map((template) => (
-                      <TemplateCard key={template.id} template={template} onOpen={openTemplate} />
+                    {visibleTemplates.map((template) => (
+                      <TemplateCard
+                        key={template.id}
+                        template={template}
+                        onOpen={openTemplate}
+                        isFavorite={favoriteIds.has(template.id)}
+                        onToggleFavorite={toggleFavorite}
+                      />
                     ))}
                   </div>
 
-                  {nextCursor && (
+                  {!showFavorites && nextCursor && (
                     <div className="mt-2 flex justify-center pt-2">
                       <button
                         type="button"
@@ -846,7 +1101,7 @@ export default function TemplatesPage() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-xs font-semibold uppercase text-accent-blue">
-                      {CATEGORY_LABELS[selected.category] || selected.category} · {selected.format}
+                      {CATEGORY_LABELS[resolveCategory(selected)] || selected.category} · {selected.format}
                     </p>
                     <h2 id="template-modal-title" className="mt-1 font-heading text-2xl font-bold text-text-primary">
                       {selected.title}

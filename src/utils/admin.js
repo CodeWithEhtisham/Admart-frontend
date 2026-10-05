@@ -88,6 +88,11 @@ export async function createAdminPayment(payload) {
   return data
 }
 
+export async function reviewAdminPayment(paymentId, payload) {
+  const { data } = await api.post(`/api/admin/payments/${paymentId}/review`, payload)
+  return data
+}
+
 export async function getAdminSettings() {
   const { data } = await api.get('/api/admin/settings')
   return data
