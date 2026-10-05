@@ -61,7 +61,7 @@ function Chip({ active, onClick, children, className = '' }) {
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-xl border px-3 py-2 text-center text-xs font-medium transition ${
+      className={`rounded-xl border px-3 py-2 text-center text-sm font-medium transition ${
         active
           ? 'border-accent-blue bg-accent-blue/10 text-accent-blue'
           : 'border-border-default bg-surface text-text-secondary hover:border-white/10 hover:text-text-primary'

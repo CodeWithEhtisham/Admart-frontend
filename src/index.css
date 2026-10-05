@@ -34,6 +34,11 @@
   --font-heading: 'Fira Code', monospace;
   --font-body: 'Fira Sans', sans-serif;
   --font-mono: 'Fira Code', monospace;
+
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.25rem;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.375rem;
 }
 
 /* Light theme — overrides the semantic color tokens globally.
@@ -79,11 +84,18 @@ body {
   background-repeat: no-repeat;
   color: var(--color-text-primary);
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 1rem;
   line-height: 1.5;
   letter-spacing: 0.1px;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Calendar, gen, and library used 10–11px for readable UI. Floor those to xs. */
+.text-\[10px\],
+.text-\[11px\] {
+  font-size: var(--text-xs);
+  line-height: var(--text-xs--line-height);
 }
 
 ::selection {
