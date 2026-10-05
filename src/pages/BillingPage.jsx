@@ -198,6 +198,7 @@ export default function BillingPage() {
           data?.screenshot?.[0] ||
           data?.plan?.[0] ||
           data?.pack?.[0] ||
+          data?.transactionId?.[0] ||
           data?.non_field_errors?.[0] ||
           data?.message ||
           err?.message ||
@@ -221,9 +222,9 @@ export default function BillingPage() {
   const planKey = String(balance?.plan || 'free').toLowerCase()
   const currentPlan = balance?.planDetails || plans.find((p) => p.id === planKey)
   const features = currentPlan?.features || ['Choose a plan to unlock generation credits']
-  const resetLabel = balance?.creditsResetAt
-    ? formatCreditDate(balance.creditsResetAt)
-    : 'No automatic reset'
+  const resetLabel = balance?.creditsResetAt ? formatCreditDate(balance.creditsResetAt) : ''
+  const hasActivePaidPlan =
+    planKey !== 'free' && Boolean(balance?.creditsResetAt) && new Date(balance.creditsResetAt) > new Date()
 
   return (
     <AppLayout>
@@ -260,7 +261,7 @@ export default function BillingPage() {
                 </h2>
                 <p className="mt-1 text-text-secondary">
                   {totalLabel} credits allotment
-                  {balance?.creditsResetAt ? ` · Resets ${resetLabel}` : ''}
+                  {balance?.creditsResetAt ? ` · Ends ${resetLabel}` : ''}
                 </p>
               </div>
             </div>
@@ -298,7 +299,7 @@ export default function BillingPage() {
             <p className="mt-1 text-text-secondary">
               of {loading ? '—' : totalLabel} plan credits
             </p>
-            <p className="text-sm text-text-tertiary">{resetLabel}</p>
+            {resetLabel && <p className="text-sm text-text-tertiary">Plan ends {resetLabel}</p>}
             <div className="mt-5 h-2 overflow-hidden rounded-full bg-elevated">
               <div
                 className="h-full rounded-full bg-gradient-to-r from-accent-blue to-accent-violet transition-all"
@@ -534,6 +535,13 @@ export default function BillingPage() {
                 ? `An admin will review it and your +${formatCredits(selectedTarget.credits)} credits will be added directly to your balance.`
                 : 'An admin will review it and your monthly plan credits will be activated automatically.'}
             </p>
+            {selectedTarget.type !== 'topup' && hasActivePaidPlan && (
+              <p className="mt-3 rounded-xl border border-border-default bg-surface px-3.5 py-2.5 text-sm text-text-secondary">
+                {selectedTarget.id === planKey
+                  ? `Renewing early adds 30 days after your current period ends (${resetLabel}), and the new credits are added to your balance.`
+                  : 'Switching plans starts a new 30-day period once approved. Your leftover credits stay usable until it ends.'}
+              </p>
+            )}
 
             <div className="mt-5 grid gap-4 lg:grid-cols-2">
               <div className="rounded-xl border border-accent-blue/30 bg-accent-blue/5 p-4">
@@ -570,9 +578,10 @@ export default function BillingPage() {
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
                     <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-text-tertiary">
-                      Transaction ID (optional)
+                      Transaction ID
                     </label>
                     <input
+                      required
                       className="w-full rounded-xl border border-border-default bg-input px-3.5 py-2.5 text-sm text-text-primary outline-none placeholder:text-text-muted focus:border-accent-blue"
                       placeholder="e.g. EP-123456789"
                       value={transactionId}

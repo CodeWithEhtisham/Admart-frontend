@@ -408,7 +408,7 @@ function OverviewTab({ stats, onOpenUser }) {
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <KpiCard label="MRR" value={`$${formatNum(revenue.mrrUsd)}`} sub="active subscriptions" tone="text-success" />
-        <KpiCard label="Revenue (30d)" value={`$${formatNum(revenue.revenueThisMonthUsd)}`} sub={`${formatNum(revenue.paymentsThisMonth)} payments`} tone="text-accent-blue" />
+        <KpiCard label="Revenue (30d)" value={formatCurrencies(revenue.revenueThisMonth)} sub={`${formatNum(revenue.paymentsThisMonth)} payments`} tone="text-accent-blue" />
         <KpiCard label="Success rate" value={`${formatNum(jobs.combined?.successRate)}%`} sub={`${formatNum(jobs.combined?.succeeded)} succeeded · ${formatNum(jobs.combined?.failed)} failed`} tone="text-accent-violet" />
         <KpiCard label="Credits used" value={formatNum(credits.used)} sub={`of ${formatNum(credits.issued)} issued · ${formatNum(credits.remaining)} left`} tone="text-warning" />
       </div>
@@ -417,7 +417,7 @@ function OverviewTab({ stats, onOpenUser }) {
         <ChartCard title="Signups" hint="new customers / day">
           <MiniBarChart items={signups} format={formatNum} />
         </ChartCard>
-        <ChartCard title="Revenue" hint="paid revenue USD / day">
+        <ChartCard title="Revenue" hint="paid revenue PKR / day">
           <MiniBarChart items={revenueSeries} stacks={[{ key: 'value', color: 'bg-accent-violet' }]} format={formatMoney} />
         </ChartCard>
         <ChartCard title="Credits consumed" hint="Admart credits / day">
@@ -1031,11 +1031,13 @@ function PaymentsTab({ isSuperuser, refreshKey, showToast }) {
     [load, showToast],
   )
 
+  const byStatus = revenue?.byStatus || {}
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <KpiCard label="Total revenue" value={`$${formatMoney(revenue?.totalRevenueUsd)}`} sub="all time, paid" tone="text-success" />
-        <KpiCard label="This month" value={`$${formatMoney(revenue?.thisMonthUsd)}`} sub="last 30 days" tone="text-accent-blue" />
+        <KpiCard label="Total revenue" value={formatCurrencies(revenue?.totalRevenue)} sub="all time, paid" tone="text-success" />
+        <KpiCard label="This month" value={formatCurrencies(revenue?.thisMonth)} sub="last 30 days" tone="text-accent-blue" />
         <KpiCard label="Paid" value={formatNum(byStatus.paid || 0)} sub={`${formatNum(byStatus.failed || 0)} failed`} />
         <KpiCard label="Pending" value={formatNum(byStatus.pending || 0)} sub={`${formatNum(byStatus.refunded || 0)} refunded`} />
       </div>
@@ -1249,7 +1251,7 @@ function PlansTab({ refreshKey, onGoCustomers }) {
   }, [refreshKey])
 
   const byPlanRevenue = (revenue?.byPlan || []).reduce((acc, item) => {
-    acc[item.plan] = item.totalUsd
+    acc[item.plan] = item.totals
     return acc
   }, {})
 
@@ -1304,7 +1306,7 @@ function PlansTab({ refreshKey, onGoCustomers }) {
                   </div>
                 </div>
                 <div className="mt-3 rounded-xl bg-surface px-3 py-2 text-center text-xs text-text-muted">
-                  ${formatMoney(byPlanRevenue[p.id] || 0)} all-time revenue
+                  {formatCurrencies(byPlanRevenue[p.id])} all-time revenue
                 </div>
               </div>
             )
@@ -1610,6 +1612,16 @@ function formatMoney(value) {
   const n = Number(value ?? 0)
   if (!Number.isFinite(n)) return '0'
   return n.toLocaleString(undefined, { maximumFractionDigits: 2 })
+}
+
+const CURRENCY_SYMBOLS = { PKR: 'Rs ', USD: '$' }
+
+// Revenue arrives per currency ({ PKR: 7999, USD: 9 }); amounts are never summed across currencies.
+function formatCurrencies(totals) {
+  const parts = Object.entries(totals || {})
+    .filter(([, value]) => Number(value))
+    .map(([currency, value]) => `${CURRENCY_SYMBOLS[currency] ?? `${currency} `}${formatMoney(value)}`)
+  return parts.length ? parts.join(' · ') : 'Rs 0'
 }
 
 function formatAdminDateSafe(iso) {
