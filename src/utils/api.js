@@ -43,6 +43,9 @@ api.interceptors.response.use(
 
           const newAccessToken = response.data.access || response.data.accessToken
           window.localStorage.setItem('accessToken', newAccessToken)
+          // Refresh tokens rotate: the old one is revoked, so keep the new one.
+          const newRefreshToken = response.data.refresh || response.data.refreshToken
+          if (newRefreshToken) window.localStorage.setItem('refreshToken', newRefreshToken)
           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
           return api(originalRequest)
         } catch (refreshError) {
