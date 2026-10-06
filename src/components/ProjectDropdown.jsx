@@ -183,7 +183,7 @@ export default function ProjectDropdown() {
           <div className="fixed inset-0 z-[98]" aria-hidden />
 
           <div
-            className="absolute left-0 top-full z-[99] mt-2 w-[380px] animate-fade-slide-down rounded-2xl border border-border-default bg-panel shadow-2xl shadow-black/40"
+            className="absolute left-0 top-full z-[99] mt-2 w-[min(380px,calc(100vw-1.5rem))] animate-fade-slide-down rounded-2xl border border-border-default bg-panel shadow-2xl shadow-black/40"
             role="dialog"
             aria-label="Select a project"
           >
@@ -217,7 +217,7 @@ export default function ProjectDropdown() {
                   onClick={() => setTab(t.id)}
                   className={`relative px-3 py-2.5 text-xs font-semibold uppercase tracking-wider transition ${
                     tab === t.id
-                      ? 'text-accent-blue'
+                      ? 'text-link'
                       : 'text-text-muted hover:text-text-secondary'
                   }`}
                 >
@@ -297,7 +297,7 @@ export default function ProjectDropdown() {
             <div className="border-t border-border p-2">
               <button
                 type="button"
-                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-accent-blue transition hover:bg-accent-blue/10"
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-link transition hover:bg-accent-blue/10"
                 onClick={() => {
                   setOpen(false)
                   setSearch('')
@@ -345,7 +345,7 @@ function ProjectRow({ project, isActive, isPinned, onSelect, onTogglePin }) {
 
       {/* Active check */}
       {isActive && (
-        <span className="text-accent-blue text-sm shrink-0" aria-label="Active project">
+        <span className="text-link text-sm shrink-0" aria-label="Active project">
           ✓
         </span>
       )}

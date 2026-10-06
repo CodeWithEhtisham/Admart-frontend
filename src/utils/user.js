@@ -9,18 +9,13 @@ export function getStoredUser() {
 }
 
 /**
- * Derives a single uppercase initial for the avatar from the logged-in user.
- * Falls back through firstName → name → username → email, then to 'U'.
+ * Avatar initials, used everywhere the user is shown as letters: first + last
+ * initial, else the first two letters of the name or email, else 'U'.
  */
-export function getUserInitial() {
-  const user = getStoredUser()
-  const source =
-    user.firstName ||
-    user.first_name ||
-    user.name ||
-    user.username ||
-    user.email ||
-    ''
-  const ch = String(source).trim().charAt(0)
-  return ch ? ch.toUpperCase() : 'U'
+export function initialsFor(user) {
+  const first = user?.firstName || user?.first_name || ''
+  const last = user?.lastName || user?.last_name || ''
+  if (first && last) return `${first[0]}${last[0]}`.toUpperCase()
+  const source = first || user?.name || user?.username || user?.email || ''
+  return String(source).trim().slice(0, 2).toUpperCase() || 'U'
 }

@@ -1,28 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAppChrome } from '../utils/appChrome'
+import ProjectDropdown from './ProjectDropdown'
+import { Icon } from './icons'
+import { isAuthenticated } from '../utils/auth'
 import {
   CREDITS_CHANGE_EVENT,
   formatCredits,
   getCredits,
 } from '../utils/credits.js'
-
-function Icon({ children, className = 'h-5 w-5' }) {
-  return (
-    <svg
-      className={`shrink-0 ${className}`}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      {children}
-    </svg>
-  )
-}
 
 const Icons = {
   dashboard: (
@@ -167,8 +153,8 @@ function NavItem({ item, active, collapsed }) {
 
   const badgeCls =
     item.badgeColor === 'red'
-      ? 'bg-error/20 text-error'
-      : 'bg-gradient-to-r from-accent-blue/25 to-accent-violet/25 text-accent-blue'
+      ? 'bg-error/20 text-danger'
+      : 'bg-gradient-to-r from-accent-blue/25 to-accent-violet/25 text-link'
 
   return (
     <Link to={item.to} className={`${base} ${state} ${layout}`} title={item.label}>
@@ -187,8 +173,24 @@ function NavItem({ item, active, collapsed }) {
 
 export default function AdmartSidebar() {
   const { pathname } = useLocation()
-  const { collapsed, theme, toggleCollapsed, toggleTheme } = useAppChrome()
-  const sidebarW = collapsed ? 'w-[72px]' : 'w-[260px]'
+  const { collapsed: collapsedPref, theme, toggleCollapsed, toggleTheme, mobileOpen, setMobileNav, isDesktop } =
+    useAppChrome()
+  // The compact rail is a desktop preference; the phone drawer always shows labels.
+  const collapsed = collapsedPref && isDesktop
+  const sidebarW = collapsed ? 'lg:w-[72px]' : 'lg:w-[260px]'
+
+  // Close the phone drawer on navigation and on Escape.
+  useEffect(() => {
+    setMobileNav(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only on route change
+  }, [pathname])
+  useEffect(() => {
+    if (!mobileOpen) return undefined
+    const onKey = (e) => e.key === 'Escape' && setMobileNav(false)
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mobileOpen])
   const [remaining, setRemaining] = useState(null)
   const [total, setTotal] = useState(null)
 
@@ -223,17 +225,49 @@ export default function AdmartSidebar() {
       : 0
 
   return (
+    <>
+    {mobileOpen && !isDesktop && (
+      <button
+        type="button"
+        aria-label="Close menu"
+        onClick={() => setMobileNav(false)}
+        className="fixed inset-0 z-[35] bg-black/60 backdrop-blur-sm lg:hidden"
+      />
+    )}
     <aside
-      className={`fixed bottom-0 left-0 top-0 z-40 flex flex-col border-r border-border bg-panel/80 backdrop-blur-xl transition-[width] duration-300 ease-out ${sidebarW}`}
+      id="app-sidebar"
+      aria-label="Main navigation"
+      className={`fixed bottom-0 left-0 top-0 z-40 flex w-[260px] flex-col border-r border-border bg-panel/95 backdrop-blur-xl transition-[width,transform] duration-300 ease-out lg:translate-x-0 lg:bg-panel/80 ${
+        mobileOpen ? 'translate-x-0' : '-translate-x-full'
+      } ${sidebarW}`}
     >
       <div className={`flex h-[60px] items-center gap-2.5 border-b border-border px-4 ${collapsed ? 'justify-center' : ''}`}>
-        <Link to="/dashboard" className="flex items-center gap-2.5 font-heading text-lg font-bold">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg gradient-bg font-heading text-base font-bold text-white shadow-lg gradient-glow">
+        <Link to="/dashboard" aria-label="Admart home" className="flex items-center gap-2.5 font-heading text-lg font-bold">
+          <span aria-hidden className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg gradient-bg font-heading text-base font-bold text-white shadow-lg gradient-glow">
             A
           </span>
-          {!collapsed && <span className="text-text-primary">dmart</span>}
+          {!collapsed && <span aria-hidden className="text-text-primary">dmart</span>}
         </Link>
+        {!isDesktop && (
+          <button
+            type="button"
+            onClick={() => setMobileNav(false)}
+            aria-label="Close menu"
+            className="ml-auto flex h-10 w-10 items-center justify-center rounded-xl text-text-secondary hover:bg-surface hover:text-text-primary"
+          >
+            <Icon>
+              <path d="M6 6l12 12M18 6L6 18" />
+            </Icon>
+          </button>
+        )}
       </div>
+
+      {/* On phones the top bar has no room for the project switcher, so it lives here. */}
+      {!isDesktop && isAuthenticated() && (
+        <div className="border-b border-border px-3 py-3">
+          <ProjectDropdown />
+        </div>
+      )}
 
       <nav className={`flex-1 space-y-6 overflow-y-auto py-4 ${collapsed ? 'px-2' : 'px-3'}`}>
         {NAV_SECTIONS.map((section) => (
@@ -311,7 +345,7 @@ export default function AdmartSidebar() {
           <button
             type="button"
             onClick={toggleCollapsed}
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-border-default bg-elevated py-2 text-sm text-text-secondary transition hover:text-text-primary"
+            className="hidden flex-1 items-center lg:flex justify-center gap-2 rounded-xl border border-border-default bg-elevated py-2 text-sm text-text-secondary transition hover:text-text-primary"
             aria-expanded={!collapsed}
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             title={collapsed ? 'Expand' : 'Collapse'}
@@ -322,5 +356,6 @@ export default function AdmartSidebar() {
         </div>
       </div>
     </aside>
+    </>
   )
 }

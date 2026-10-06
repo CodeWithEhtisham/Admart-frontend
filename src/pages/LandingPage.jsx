@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { formatCredits, getPlans } from '../utils/credits'
 import { isAuthenticated } from '../utils/auth'
+import { SUPPORT_EMAIL } from '../utils/site'
 
 const lm = (file) => `/leonardo-media/${file}`
 const posterOf = (video) =>
@@ -233,11 +234,11 @@ const heroMarquee = [
 
 function LogoMark({ className = '' }) {
   return (
-    <Link to="/" className={`flex items-center gap-2.5 ${className}`}>
-      <span className="flex h-9 w-9 items-center justify-center rounded-lg gradient-bg font-heading text-lg font-bold text-white shadow-lg gradient-glow">
+    <Link to="/" aria-label="Admart home" className={`flex items-center gap-2.5 ${className}`}>
+      <span aria-hidden className="flex h-9 w-9 items-center justify-center rounded-lg gradient-bg font-heading text-lg font-bold text-white shadow-lg gradient-glow">
         A
       </span>
-      <span className="font-heading text-xl font-semibold tracking-tight text-white">
+      <span aria-hidden className="font-heading text-xl font-semibold tracking-tight text-white">
         Admart
       </span>
     </Link>
@@ -510,7 +511,7 @@ export default function LandingPage() {
                 key={s.id}
                 href={`#${s.id}`}
                 aria-current={activeSection === s.id ? 'true' : undefined}
-                className={`text-sm transition duration-300 ${
+                className={`inline-block py-1.5 text-sm transition duration-300 ${
                   activeSection === s.id
                     ? 'font-semibold text-[#3B82F6] [text-shadow:0_0_14px_rgba(59,130,246,0.75)]'
                     : 'text-white/80 hover:text-white'
@@ -536,6 +537,8 @@ export default function LandingPage() {
           </div>
         </div>
       </header>
+
+      <main id="main-content">
 
       {/* ─── Hero ────────────────────────────────────────────────── */}
       <section
@@ -569,7 +572,7 @@ export default function LandingPage() {
             />
             36 AI models · images, videos, captions & publishing in one dashboard
           </p>
-          <h1 className="rv rv-up max-w-[16em] font-heading font-bold uppercase leading-[1.02] tracking-tight text-white text-[clamp(2rem,5.5vw,4.8rem)]">
+          <h1 className="max-w-[16em] font-heading font-bold uppercase leading-[1.02] tracking-tight text-white text-[clamp(2rem,5.5vw,4.8rem)]">
             Your AI social media <span className="gradient-text">handler</span>
           </h1>
           <p
@@ -951,7 +954,7 @@ export default function LandingPage() {
               }}
             >
                 <div className="flex h-full flex-col rounded-[calc(1rem-1px)] bg-[#0a0a0a] p-6">
-                  <div className="mb-4 flex gap-1" aria-label="5 out of 5 stars">
+                  <div className="mb-4 flex gap-1" role="img" aria-label="5 out of 5 stars">
                     {[0, 1, 2, 3, 4].map((s) => (
                       <svg key={s} className="h-4 w-4" viewBox="0 0 24 24" fill="#22C55E" aria-hidden>
                         <path d="M12 2 15 9h6l-5 5 2 8-6-4-6 4 2-8-5-5h6l3-7z" />
@@ -1027,6 +1030,8 @@ export default function LandingPage() {
         </div>
       </section>
 
+      </main>
+
       {/* ─── Footer ──────────────────────────────────────────────── */}
       <footer className="bg-black px-3 pb-4 pt-8 text-white sm:px-6 xl:px-10">
         <div className="mx-auto grid max-w-[1600px] gap-10 md:grid-cols-2 lg:grid-cols-5">
@@ -1037,19 +1042,44 @@ export default function LandingPage() {
               and whenever you want.
             </p>
           </div>
+          {/* Only links that lead somewhere real. */}
           {[
-            { heading: 'Product', links: ['Features', 'Pricing', 'Examples', 'API', 'Changelog'] },
-            { heading: 'Resources', links: ['Docs', 'Help Center', 'Tutorials', 'Community', 'Status'] },
-            { heading: 'Company', links: ['About', 'Blog', 'Careers', 'Contact', 'Press'] },
+            {
+              heading: 'Product',
+              links: [
+                ['Features', '#features'],
+                ['Pricing', '#pricing'],
+                ['Examples', '#showcase'],
+                ['FAQ', '#faq'],
+              ],
+            },
+            {
+              heading: 'Legal',
+              links: [
+                ['Privacy Policy', '/privacy'],
+                ['Terms of Service', '/terms'],
+                ['Data deletion', '/privacy#data-deletion'],
+              ],
+            },
+            {
+              heading: 'Support',
+              links: SUPPORT_EMAIL ? [['Email us', `mailto:${SUPPORT_EMAIL}`]] : [],
+            },
           ].map((col) => (
             <div key={col.heading}>
               <h3 className="font-heading text-sm font-bold uppercase text-white">{col.heading}</h3>
               <ul className="mt-4 space-y-3">
-                {col.links.map((l) => (
-                  <li key={l}>
-                    <a href="#product" className="text-sm text-white/60 transition hover:text-white">
-                      {l}
-                    </a>
+                {col.links.map(([label, href]) => (
+                  <li key={label}>
+                    {href.startsWith('/') ? (
+                      <Link to={href} className="inline-block py-1 text-sm text-white/70 transition hover:text-white">
+                        {label}
+                      </Link>
+                    ) : (
+                      <a href={href} className="inline-block py-1 text-sm text-white/70 transition hover:text-white">
+                        {label}
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -1057,13 +1087,14 @@ export default function LandingPage() {
           ))}
         </div>
         <div className="mx-auto mt-12 flex max-w-[1600px] flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row">
-          <p className="text-xs text-white/40">© 2026 Admart. All rights reserved.</p>
+          <p className="text-xs text-white/70">© 2026 Admart. All rights reserved.</p>
           <div className="flex gap-6">
-            {['Privacy', 'Terms', 'Cookies'].map((l) => (
-              <a key={l} href="#product" className="text-xs text-white/40 transition hover:text-white/70">
-                {l}
-              </a>
-            ))}
+            <Link to="/privacy" className="inline-block py-1.5 text-xs text-white/70 transition hover:text-white">
+              Privacy
+            </Link>
+            <Link to="/terms" className="inline-block py-1.5 text-xs text-white/70 transition hover:text-white">
+              Terms
+            </Link>
           </div>
         </div>
       </footer>

@@ -30,19 +30,19 @@ const selectCls = `${inputCls} appearance-none bg-input`
 const btnCls =
   'inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition'
 const btnPrimary = `${btnCls} bg-accent-blue text-white hover:bg-accent-blue/90 disabled:opacity-50`
-const btnGhost = `${btnCls} border border-border-default bg-elevated text-text-primary hover:border-accent-blue/40 hover:text-accent-blue`
+const btnGhost = `${btnCls} border border-border-default bg-elevated text-text-primary hover:border-accent-blue/40 hover:text-link`
 
 const PLAN_COLORS = {
   free: 'border-border-default bg-surface text-text-secondary',
-  basic: 'border-accent-blue/30 bg-accent-blue/10 text-accent-blue',
-  plus: 'border-accent-violet/30 bg-accent-violet/10 text-accent-violet',
+  basic: 'border-accent-blue/30 bg-accent-blue/10 text-link',
+  plus: 'border-accent-violet/30 bg-accent-violet/10 text-violet-text',
   pro: 'border-amber-400/30 bg-amber-400/10 text-amber-300',
 }
 
 const PAYMENT_COLORS = {
-  paid: 'border-success/30 bg-success/10 text-success',
+  paid: 'border-success/30 bg-success/10 text-success-text',
   pending: 'border-warning/30 bg-warning/10 text-warning',
-  failed: 'border-error/30 bg-error/10 text-error',
+  failed: 'border-error/30 bg-error/10 text-danger',
   refunded: 'border-border-default bg-surface text-text-tertiary',
 }
 
@@ -108,7 +108,7 @@ function StatusPill({ active }) {
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-        active ? 'border-success/30 bg-success/10 text-success' : 'border-error/30 bg-error/10 text-error'
+        active ? 'border-success/30 bg-success/10 text-success-text' : 'border-error/30 bg-error/10 text-danger'
       }`}
     >
       <span className={`h-1.5 w-1.5 rounded-full ${active ? 'bg-success' : 'bg-error'}`} />
@@ -287,7 +287,7 @@ export default function AdminPage() {
           <div>
             <div className="flex items-center gap-3">
               <h1 className="font-heading text-2xl font-bold text-text-primary">Admin Panel</h1>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-success/30 bg-success/10 px-2.5 py-0.5 text-xs font-semibold text-success">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-success/30 bg-success/10 px-2.5 py-0.5 text-xs font-semibold text-success-text">
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-success" /> LIVE
               </span>
             </div>
@@ -314,7 +314,7 @@ export default function AdminPage() {
               onClick={() => setTab(t.id)}
               className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
                 tab === t.id
-                  ? 'bg-accent-blue/15 text-accent-blue'
+                  ? 'bg-accent-blue/15 text-link'
                   : 'text-text-tertiary hover:bg-elevated hover:text-text-primary'
               }`}
             >
@@ -324,7 +324,7 @@ export default function AdminPage() {
         </div>
 
         {error && (
-          <div className="mb-4 rounded-xl border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+          <div className="mb-4 rounded-xl border border-error/30 bg-error/10 px-4 py-3 text-sm text-danger">
             {error}
           </div>
         )}
@@ -407,9 +407,9 @@ function OverviewTab({ stats, onOpenUser }) {
       </div>
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <KpiCard label="MRR" value={`$${formatNum(revenue.mrrUsd)}`} sub="active subscriptions" tone="text-success" />
-        <KpiCard label="Revenue (30d)" value={formatCurrencies(revenue.revenueThisMonth)} sub={`${formatNum(revenue.paymentsThisMonth)} payments`} tone="text-accent-blue" />
-        <KpiCard label="Success rate" value={`${formatNum(jobs.combined?.successRate)}%`} sub={`${formatNum(jobs.combined?.succeeded)} succeeded · ${formatNum(jobs.combined?.failed)} failed`} tone="text-accent-violet" />
+        <KpiCard label="MRR" value={`$${formatNum(revenue.mrrUsd)}`} sub="active subscriptions" tone="text-success-text" />
+        <KpiCard label="Revenue (30d)" value={formatCurrencies(revenue.revenueThisMonth)} sub={`${formatNum(revenue.paymentsThisMonth)} payments`} tone="text-link" />
+        <KpiCard label="Success rate" value={`${formatNum(jobs.combined?.successRate)}%`} sub={`${formatNum(jobs.combined?.succeeded)} succeeded · ${formatNum(jobs.combined?.failed)} failed`} tone="text-violet-text" />
         <KpiCard label="Credits used" value={formatNum(credits.used)} sub={`of ${formatNum(credits.issued)} issued · ${formatNum(credits.remaining)} left`} tone="text-warning" />
       </div>
 
@@ -467,7 +467,7 @@ function OverviewTab({ stats, onOpenUser }) {
             <ul className="divide-y divide-border-default">
               {payments.map((p) => (
                 <li key={p.id} className="flex items-center gap-3 py-2.5">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-success/10 text-xs font-bold text-success">$</div>
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-success/10 text-xs font-bold text-success-text">$</div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-text-primary">{p.email}</p>
                     <p className="text-xs text-text-muted">{formatAdminDateTime(p.createdAt)}</p>
@@ -682,7 +682,7 @@ function CreateUserModal({ onClose, showToast, onCreated }) {
             <option value="plus">Plus</option>
             <option value="pro">Pro</option>
           </select>
-          {error && <p className="text-xs text-error">{error}</p>}
+          {error && <p className="text-xs text-danger">{error}</p>}
         </div>
         <div className="mt-5 flex justify-end gap-2">
           <button className={btnGhost} onClick={onClose}>Cancel</button>
@@ -822,7 +822,7 @@ function UserDrawer({ userId, isSuperuser, showToast, onClose, onChanged }) {
             </div>
             <div className="rounded-xl border border-border-default bg-surface p-3">
               <p className="text-xs text-text-muted">Payments total</p>
-              <p className="mt-1 font-mono text-lg font-bold text-success">${formatMoney(user.paymentsTotal)}</p>
+              <p className="mt-1 font-mono text-lg font-bold text-success-text">${formatMoney(user.paymentsTotal)}</p>
               <p className="text-xs text-text-muted">{formatNum(user.jobCount)} jobs · {formatNum(user.projectCount)} projects</p>
             </div>
           </div>
@@ -864,7 +864,7 @@ function UserDrawer({ userId, isSuperuser, showToast, onClose, onChanged }) {
 
           {isSuperuser && (
             <div className="rounded-xl border border-border-default bg-surface p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-accent-blue">Superuser · Change plan</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-link">Superuser · Change plan</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 <select
                   className={`${selectCls} max-w-[8rem]`}
@@ -894,7 +894,7 @@ function UserDrawer({ userId, isSuperuser, showToast, onClose, onChanged }) {
 
           {isSuperuser && (
             <div className="rounded-xl border border-border-default bg-surface p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-accent-violet">Superuser · Adjust credits</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-violet-text">Superuser · Adjust credits</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 <input
                   className={`${inputCls} max-w-[7rem] font-mono`}
@@ -972,7 +972,7 @@ function UserDrawer({ userId, isSuperuser, showToast, onClose, onChanged }) {
           </div>
 
           {isSuperuser && (
-            <button className={`${btnCls} w-full justify-center border border-error/30 bg-error/10 text-error hover:bg-error/20`} disabled={!!busy} onClick={removeUser}>
+            <button className={`${btnCls} w-full justify-center border border-error/30 bg-error/10 text-danger hover:bg-error/20`} disabled={!!busy} onClick={removeUser}>
               {busy === 'delete' ? 'Deleting…' : 'Delete customer'}
             </button>
           )}
@@ -1036,8 +1036,8 @@ function PaymentsTab({ isSuperuser, refreshKey, showToast }) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <KpiCard label="Total revenue" value={formatCurrencies(revenue?.totalRevenue)} sub="all time, paid" tone="text-success" />
-        <KpiCard label="This month" value={formatCurrencies(revenue?.thisMonth)} sub="last 30 days" tone="text-accent-blue" />
+        <KpiCard label="Total revenue" value={formatCurrencies(revenue?.totalRevenue)} sub="all time, paid" tone="text-success-text" />
+        <KpiCard label="This month" value={formatCurrencies(revenue?.thisMonth)} sub="last 30 days" tone="text-link" />
         <KpiCard label="Paid" value={formatNum(byStatus.paid || 0)} sub={`${formatNum(byStatus.failed || 0)} failed`} />
         <KpiCard label="Pending" value={formatNum(byStatus.pending || 0)} sub={`${formatNum(byStatus.refunded || 0)} refunded`} />
       </div>
@@ -1087,8 +1087,8 @@ function PaymentsTab({ isSuperuser, refreshKey, showToast }) {
                       <span
                         className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
                           p.paymentType === 'topup'
-                            ? 'border border-success/30 bg-success/15 text-success'
-                            : 'border border-accent-blue/30 bg-accent-blue/15 text-accent-blue'
+                            ? 'border border-success/30 bg-success/15 text-success-text'
+                            : 'border border-accent-blue/30 bg-accent-blue/15 text-link'
                         }`}
                       >
                         {p.paymentType === 'topup' ? 'Top-up' : 'Sub'}
@@ -1103,7 +1103,7 @@ function PaymentsTab({ isSuperuser, refreshKey, showToast }) {
                   <td className="px-4 py-3"><PaymentPill status={p.status} /></td>
                   <td className="px-4 py-3 text-xs">
                     {p.screenshotUrl ? (
-                      <a href={p.screenshotUrl} target="_blank" rel="noopener noreferrer" className="font-medium text-accent-blue hover:underline">
+                      <a href={p.screenshotUrl} target="_blank" rel="noopener noreferrer" className="font-medium text-link hover:underline">
                         View proof
                       </a>
                     ) : (
@@ -1117,14 +1117,14 @@ function PaymentsTab({ isSuperuser, refreshKey, showToast }) {
                           <button
                             type="button"
                             onClick={() => handleReview(p.id, 'approve')}
-                            className="rounded-lg border border-success/40 bg-success/15 px-2.5 py-1 text-xs font-semibold text-success transition hover:bg-success hover:text-white"
+                            className="rounded-lg border border-success/40 bg-success/15 px-2.5 py-1 text-xs font-semibold text-success-text transition hover:bg-success hover:text-white"
                           >
                             Approve
                           </button>
                           <button
                             type="button"
                             onClick={() => handleReview(p.id, 'reject')}
-                            className="rounded-lg border border-error/40 bg-error/15 px-2.5 py-1 text-xs font-semibold text-error transition hover:bg-error hover:text-white"
+                            className="rounded-lg border border-error/40 bg-error/15 px-2.5 py-1 text-xs font-semibold text-danger transition hover:bg-error hover:text-white"
                           >
                             Reject
                           </button>
@@ -1211,7 +1211,7 @@ function RecordPaymentModal({ onClose, showToast, onCreated }) {
             </select>
           </div>
           <input className={inputCls} placeholder="Notes (optional)" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
-          {error && <p className="text-xs text-error">{error}</p>}
+          {error && <p className="text-xs text-danger">{error}</p>}
         </div>
         <div className="mt-5 flex justify-end gap-2">
           <button className={btnGhost} onClick={onClose}>Cancel</button>
@@ -1290,7 +1290,7 @@ function PlansTab({ refreshKey, onGoCustomers }) {
                 <ul className="mt-4 flex-1 space-y-1.5 text-sm text-text-secondary">
                   {(p.features || []).map((f) => (
                     <li key={f} className="flex items-start gap-2">
-                      <span className="mt-0.5 text-success">✓</span>
+                      <span className="mt-0.5 text-success-text">✓</span>
                       <span>{f}</span>
                     </li>
                   ))}
@@ -1301,7 +1301,7 @@ function PlansTab({ refreshKey, onGoCustomers }) {
                     <p className="text-xs text-text-muted">customers</p>
                   </div>
                   <div>
-                    <p className="font-heading text-xl font-bold text-accent-blue">{formatNum(p.activeSubscriptions)}</p>
+                    <p className="font-heading text-xl font-bold text-link">{formatNum(p.activeSubscriptions)}</p>
                     <p className="text-xs text-text-muted">active subs</p>
                   </div>
                 </div>
@@ -1316,7 +1316,7 @@ function PlansTab({ refreshKey, onGoCustomers }) {
 
       <div className="rounded-2xl border border-border-default bg-panel p-4 text-sm text-text-secondary">
         <span className="font-semibold text-text-primary">Change a customer's plan?</span> Open the{' '}
-        <button className="font-semibold text-accent-blue hover:underline" onClick={onGoCustomers}>
+        <button className="font-semibold text-link hover:underline" onClick={onGoCustomers}>
           Customers
         </button>{' '}
         tab and use the plan action in any customer's detail panel (superuser only).
@@ -1530,10 +1530,10 @@ function SettingsTab({ isSuperuser, refreshKey, showToast }) {
                     <span className="text-sm font-medium text-text-primary">{row.name}</span>
                   </div>
                   <div className="flex items-center gap-3 text-xs">
-                    <span className={p.connectEnabled ? 'text-success' : 'text-text-muted'}>
+                    <span className={p.connectEnabled ? 'text-success-text' : 'text-text-muted'}>
                       {p.connectEnabled ? 'Connect enabled' : 'Not configured'}
                     </span>
-                    <span className={`rounded-full border px-2 py-0.5 ${p.publishEnabled ? 'border-success/30 bg-success/10 text-success' : 'border-border-default bg-surface text-text-tertiary'}`}>
+                    <span className={`rounded-full border px-2 py-0.5 ${p.publishEnabled ? 'border-success/30 bg-success/10 text-success-text' : 'border-border-default bg-surface text-text-tertiary'}`}>
                       {p.publishEnabled ? 'Publish on' : 'Publish off'}
                     </span>
                   </div>

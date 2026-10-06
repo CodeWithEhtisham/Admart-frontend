@@ -88,7 +88,7 @@ export default function ResetPasswordPage() {
 
         {success ? (
           <div className="space-y-6 text-center animate-fade-slide-down">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-success/10 text-success">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-success/10 text-success-text">
               <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                 <polyline points="22 4 12 14.01 9 11.01" />
@@ -114,7 +114,7 @@ export default function ResetPasswordPage() {
             </p>
 
             {error && (
-              <div className="mt-4 rounded-xl border border-error/30 bg-error/10 p-3.5 text-xs font-medium text-error">
+              <div className="mt-4 rounded-xl border border-error/30 bg-error/10 p-3.5 text-xs font-medium text-danger">
                 {error}
               </div>
             )}
@@ -125,7 +125,7 @@ export default function ResetPasswordPage() {
                   <label htmlFor="new-password" className="text-xs font-medium text-text-tertiary">
                     New Password
                   </label>
-                  <span className={`min-h-[1rem] text-xs font-medium ${score <= 1 ? 'text-error' : score <= 3 ? 'text-warning' : 'text-success'}`}>
+                  <span className={`min-h-[1rem] text-xs font-medium ${score <= 1 ? 'text-danger' : score <= 3 ? 'text-warning' : 'text-success-text'}`}>
                     {newPassword ? strength.label : ''}
                   </span>
                 </div>
@@ -182,7 +182,7 @@ export default function ResetPasswordPage() {
               <button
                 type="button"
                 onClick={() => navigate('/auth')}
-                className="font-semibold text-accent-violet hover:underline"
+                className="font-semibold text-violet-text hover:underline"
               >
                 Sign In
               </button>

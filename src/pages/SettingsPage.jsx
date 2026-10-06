@@ -1,63 +1,29 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import api from '../utils/api'
-import { getStoredUser } from '../utils/user.js'
+import { getStoredUser, initialsFor } from '../utils/user.js'
+import { SUPPORT_EMAIL } from '../utils/site'
+import { Glyphs } from '../components/glyphs'
+import { Icon } from '../components/icons'
 
+// Only fields the API actually saves (PATCH /api/auth/me) live in the form.
 const INITIAL = {
   firstName: '',
   lastName: '',
   email: '',
   avatarUrl: '',
   googleId: '',
-  timezone: 'PKT',
-  language: 'en',
-  currentPassword: '',
-  newPassword: '',
-  confirmPassword: '',
-  aspect: '9:16',
-  videoStyle: 'cinematic',
-  aiModel: 'admart-v2',
-  voiceover: 'neutral-en',
-  autoCaptions: true,
-  autoMusic: true,
-  notif: {
-    genEmail: true,
-    genPush: true,
-    pubEmail: true,
-    pubPush: false,
-    weeklyEmail: true,
-    weeklyPush: false,
-    creditEmail: true,
-    creditPush: true,
-  },
-  webhookUrl: 'https://api.example.com/hooks/admart',
-  teamInviteEmail: '',
-  teamInviteRole: 'editor',
 }
-
-const TEAM = []
 
 const TABS = [
-  { id: 'profile', label: 'Profile', icon: '👤' },
-  { id: 'preferences', label: 'Preferences', icon: '🎛️' },
-  { id: 'api', label: 'API & Webhooks', icon: '🔑' },
-  { id: 'team', label: 'Team', icon: '👥' },
-  { id: 'danger', label: 'Danger Zone', icon: '⚠️', danger: true },
+  { id: 'profile', label: 'Profile', icon: Glyphs.user },
+  { id: 'preferences', label: 'Preferences', icon: Glyphs.sliders, soon: 'Default video style, captions and notification settings.' },
+  { id: 'api', label: 'API & Webhooks', icon: Glyphs.key, soon: 'API keys and webhooks for connecting Admart to your own tools.' },
+  { id: 'team', label: 'Team', icon: Glyphs.users, soon: 'Invite teammates to share projects and credits.' },
+  { id: 'danger', label: 'Danger Zone', icon: Glyphs.alert, danger: true },
 ]
-
-function userInitial(source) {
-  const value =
-    source?.firstName ||
-    source?.first_name ||
-    source?.name ||
-    source?.username ||
-    source?.email ||
-    ''
-  const ch = String(value).trim().charAt(0)
-  return ch ? ch.toUpperCase() : 'U'
-}
 
 function formFromUser(user, base = INITIAL) {
   return {
@@ -67,24 +33,7 @@ function formFromUser(user, base = INITIAL) {
     email: user?.email || '',
     avatarUrl: user?.avatarUrl || user?.avatar_url || '',
     googleId: user?.googleId || user?.google_id || '',
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
   }
-}
-
-function teamFromUser(user) {
-  if (!user?.email) return []
-  const name = `${user.firstName || user.first_name || ''} ${user.lastName || user.last_name || ''}`.trim()
-  return [
-    {
-      id: 'current-user',
-      name: name || user.email,
-      email: user.email,
-      role: 'Admin',
-      initial: userInitial(user),
-    },
-  ]
 }
 
 function updateStoredUser(user) {
@@ -92,24 +41,13 @@ function updateStoredUser(user) {
   window.localStorage.setItem('user', JSON.stringify(user))
 }
 
-function Toggle({ checked, onChange, ariaLabel }) {
+function ComingSoon({ title, text }) {
   return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      aria-label={ariaLabel}
-      onClick={() => onChange(!checked)}
-      className={`relative h-6 w-11 shrink-0 rounded-full transition ${
-        checked ? 'bg-accent-blue' : 'bg-elevated'
-      }`}
-    >
-      <span
-        className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition ${
-          checked ? 'left-5' : 'left-0.5'
-        }`}
-      />
-    </button>
+    <div className="mx-auto max-w-2xl rounded-2xl border border-border-default bg-panel p-8 text-center">
+      <h2 className="font-heading text-xl font-bold text-text-primary">{title}</h2>
+      <p className="mt-2 text-sm text-text-secondary">{text}</p>
+      <p className="mt-4 inline-block rounded-full bg-accent-blue/15 px-3 py-1 text-xs font-semibold text-link">Coming soon</p>
+    </div>
   )
 }
 
@@ -117,18 +55,11 @@ export default function SettingsPage() {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('profile')
   const [toast, setToast] = useState(null)
-  const [apiKeyVisible, setApiKeyVisible] = useState(false)
   const [saving, setSaving] = useState(false)
   const [savedSnapshot, setSavedSnapshot] = useState(INITIAL)
-  const [savedTeam, setSavedTeam] = useState(TEAM)
   const [form, setForm] = useState(INITIAL)
-  const [team, setTeam] = useState(TEAM)
 
-  const dirty = useMemo(
-    () =>
-      JSON.stringify(form) !== JSON.stringify(savedSnapshot) || JSON.stringify(team) !== JSON.stringify(savedTeam),
-    [form, savedSnapshot, team, savedTeam]
-  )
+  const dirty = useMemo(() => JSON.stringify(form) !== JSON.stringify(savedSnapshot), [form, savedSnapshot])
 
   const showToast = useCallback((msg) => {
     setToast(msg)
@@ -140,11 +71,8 @@ export default function SettingsPage() {
 
     const applyUser = (user) => {
       const nextForm = formFromUser(user)
-      const nextTeam = teamFromUser(user)
       setForm(nextForm)
       setSavedSnapshot(nextForm)
-      setTeam(nextTeam)
-      setSavedTeam(nextTeam)
     }
 
     applyUser(getStoredUser())
@@ -166,10 +94,6 @@ export default function SettingsPage() {
     setForm((f) => ({ ...f, ...patch }))
   }, [])
 
-  const updateNotif = useCallback((key, val) => {
-    setForm((f) => ({ ...f, notif: { ...f.notif, [key]: val } }))
-  }, [])
-
   const handleSave = async () => {
     setSaving(true)
     try {
@@ -180,11 +104,8 @@ export default function SettingsPage() {
       })
       updateStoredUser(data)
       const nextForm = formFromUser(data, form)
-      const nextTeam = teamFromUser(data)
       setForm(nextForm)
       setSavedSnapshot(nextForm)
-      setTeam(nextTeam)
-      setSavedTeam(nextTeam)
       showToast('Settings saved successfully.')
       navigate('.', { replace: true })
     } catch (err) {
@@ -196,21 +117,9 @@ export default function SettingsPage() {
 
   const handleCancel = () => {
     setForm(savedSnapshot)
-    setTeam(savedTeam)
   }
 
-  const handleDeleteAccount = () => {
-    if (
-      window.confirm(
-        'Delete your Admart account permanently? This cannot be undone. Type of action: irreversible data loss.'
-      )
-    ) {
-      showToast('Account deletion requested — this is a demo.')
-    }
-  }
-
-  const maskedKey = apiKeyVisible ? 'vid_sk_live_7f3a9c2e1b8d4a6f0e2c9b1d' : 'vid_sk_live_••••••••••••••••••••'
-  const profileInitial = userInitial(form)
+  const profileInitial = initialsFor(form)
   const isGoogleAccount = Boolean(form.googleId)
 
   return (
@@ -227,25 +136,26 @@ export default function SettingsPage() {
           </div>
         )}
 
-        <div className="flex min-h-0 flex-1">
-          <aside className="w-[220px] shrink-0 border-r border-border bg-panel py-6">
-            <nav className="flex flex-col gap-1 px-3">
+        <div id="main-content" role="main" tabIndex={-1} className="flex min-h-0 flex-1 flex-col md:flex-row">
+          {/* Tabs: a horizontal scroller on phones, a side column from md up. */}
+          <aside className="shrink-0 border-b border-border bg-panel py-3 md:w-[220px] md:border-b-0 md:border-r md:py-6">
+            <nav aria-label="Settings sections" className="flex gap-1 overflow-x-auto px-3 md:flex-col">
               {TABS.map((t) => (
                 <button
                   key={t.id}
                   type="button"
                   onClick={() => setActiveTab(t.id)}
-                  className={`flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition ${
+                  className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2.5 text-left text-sm font-medium transition md:w-full ${
                     t.danger
                       ? activeTab === t.id
-                        ? 'bg-error/15 text-error'
-                        : 'text-error/80 hover:bg-error/10'
+                        ? 'bg-error/15 text-danger'
+                        : 'text-danger hover:bg-error/10'
                       : activeTab === t.id
-                        ? 'bg-accent-blue/15 text-accent-blue'
+                        ? 'bg-accent-blue/15 text-link'
                         : 'text-text-secondary hover:bg-white/5 hover:text-text-primary'
                   }`}
                 >
-                  <span aria-hidden>{t.icon}</span>
+                  <Icon className="h-4 w-4">{t.icon}</Icon>
                   {t.label}
                 </button>
               ))}
@@ -253,7 +163,7 @@ export default function SettingsPage() {
           </aside>
 
           <div className="relative flex min-h-0 flex-1 flex-col">
-            <div className="flex-1 overflow-y-auto p-8 pb-28">
+            <div className="flex-1 overflow-y-auto p-4 pb-28 sm:p-8 sm:pb-28">
               {activeTab === 'profile' && (
                 <div className="mx-auto max-w-2xl space-y-8">
                   <div>
@@ -266,22 +176,15 @@ export default function SettingsPage() {
                           profileInitial
                         )}
                       </div>
-                      <div className="flex gap-2">
-                        <button
-                          type="button"
-                          onClick={() => showToast('Profile picture upload will be connected with media storage.')}
-                          className="rounded-xl border border-border-default bg-elevated px-4 py-2 text-sm font-medium text-text-primary hover:border-accent-blue/40"
-                        >
-                          Upload
-                        </button>
+                      {form.avatarUrl && (
                         <button
                           type="button"
                           onClick={() => update({ avatarUrl: '' })}
                           className="rounded-xl border border-border-default bg-input px-4 py-2 text-sm text-text-secondary hover:text-text-primary"
                         >
-                          Remove
+                          Remove photo
                         </button>
-                      </div>
+                      )}
                     </div>
                   </div>
 
@@ -317,378 +220,74 @@ export default function SettingsPage() {
                             : 'Email is used for sign in and cannot be changed here.'}
                         </p>
                       </label>
-                      <label className="block text-sm">
-                        <span className="text-text-tertiary">Timezone</span>
-                        <select
-                          value={form.timezone}
-                          onChange={(e) => update({ timezone: e.target.value })}
-                          className="mt-1 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
-                        >
-                          <option value="PKT">Pakistan Time (PKT)</option>
-                          <option value="UTC">UTC</option>
-                          <option value="EST">Eastern (US)</option>
-                        </select>
-                      </label>
-                      <label className="block text-sm">
-                        <span className="text-text-tertiary">Language</span>
-                        <select
-                          value={form.language}
-                          onChange={(e) => update({ language: e.target.value })}
-                          className="mt-1 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
-                        >
-                          <option value="en">English</option>
-                          <option value="ur">Urdu</option>
-                        </select>
-                      </label>
                     </div>
                   </div>
 
                   <div>
-                    <h2 className="font-heading text-xl font-bold text-text-primary">Change Password</h2>
-                    <div className="mt-4 grid gap-4">
-                      <label className="block text-sm">
-                        <span className="text-text-tertiary">Current password</span>
-                        <input
-                          type="password"
-                          value={form.currentPassword}
-                          onChange={(e) => update({ currentPassword: e.target.value })}
-                          className="mt-1 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
-                          autoComplete="current-password"
-                        />
-                      </label>
-                      <label className="block text-sm">
-                        <span className="text-text-tertiary">New password</span>
-                        <input
-                          type="password"
-                          value={form.newPassword}
-                          onChange={(e) => update({ newPassword: e.target.value })}
-                          className="mt-1 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
-                          autoComplete="new-password"
-                        />
-                      </label>
-                      <label className="block text-sm">
-                        <span className="text-text-tertiary">Confirm new password</span>
-                        <input
-                          type="password"
-                          value={form.confirmPassword}
-                          onChange={(e) => update({ confirmPassword: e.target.value })}
-                          className="mt-1 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
-                          autoComplete="new-password"
-                        />
-                      </label>
-                    </div>
+                    <h2 className="font-heading text-xl font-bold text-text-primary">Password</h2>
+                    <p className="mt-2 text-sm text-text-secondary">
+                      {isGoogleAccount
+                        ? 'You sign in with Google, so there is no Admart password to change.'
+                        : 'To change your password, we email you a secure one-time link.'}
+                    </p>
+                    {!isGoogleAccount && (
+                      <Link
+                        to="/auth/forgot-password"
+                        className="mt-3 inline-block rounded-xl border border-border-default bg-elevated px-4 py-2 text-sm font-semibold text-text-primary transition hover:border-accent-blue/40"
+                      >
+                        Email me a reset link
+                      </Link>
+                    )}
                   </div>
                 </div>
               )}
 
-              {activeTab === 'preferences' && (
-                <div className="mx-auto max-w-2xl space-y-10">
-                  <div>
-                    <h2 className="font-heading text-xl font-bold text-text-primary">Default Video Settings</h2>
-                    <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                      <label className="block text-sm">
-                        <span className="text-text-tertiary">Aspect ratio</span>
-                        <select
-                          value={form.aspect}
-                          onChange={(e) => update({ aspect: e.target.value })}
-                          className="mt-1 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
-                        >
-                          <option value="9:16">9:16 (Vertical)</option>
-                          <option value="16:9">16:9 (Landscape)</option>
-                          <option value="1:1">1:1 (Square)</option>
-                        </select>
-                      </label>
-                      <label className="block text-sm">
-                        <span className="text-text-tertiary">Video style</span>
-                        <select
-                          value={form.videoStyle}
-                          onChange={(e) => update({ videoStyle: e.target.value })}
-                          className="mt-1 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
-                        >
-                          <option value="cinematic">Cinematic</option>
-                          <option value="minimal">Minimal</option>
-                          <option value="bold">Bold &amp; bright</option>
-                        </select>
-                      </label>
-                      <label className="block text-sm">
-                        <span className="text-text-tertiary">AI model</span>
-                        <select
-                          value={form.aiModel}
-                          onChange={(e) => update({ aiModel: e.target.value })}
-                          className="mt-1 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
-                        >
-                          <option value="admart-v2">Admart v2 (recommended)</option>
-                          <option value="admart-v1">Admart v1</option>
-                        </select>
-                      </label>
-                      <label className="block text-sm">
-                        <span className="text-text-tertiary">Voiceover</span>
-                        <select
-                          value={form.voiceover}
-                          onChange={(e) => update({ voiceover: e.target.value })}
-                          className="mt-1 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
-                        >
-                          <option value="neutral-en">Neutral — English</option>
-                          <option value="warm-en">Warm — English</option>
-                        </select>
-                      </label>
-                    </div>
-                    <div className="mt-6 space-y-4">
-                      <div className="flex items-center justify-between rounded-xl border border-border-default bg-surface px-4 py-3">
-                        <div>
-                          <p className="font-medium text-text-primary">Auto-captions</p>
-                          <p className="text-xs text-text-tertiary">Generate captions on every render</p>
-                        </div>
-                        <Toggle
-                          checked={form.autoCaptions}
-                          onChange={(v) => update({ autoCaptions: v })}
-                          ariaLabel="Auto-captions"
-                        />
-                      </div>
-                      <div className="flex items-center justify-between rounded-xl border border-border-default bg-surface px-4 py-3">
-                        <div>
-                          <p className="font-medium text-text-primary">Auto-music</p>
-                          <p className="text-xs text-text-tertiary">Suggest background music automatically</p>
-                        </div>
-                        <Toggle checked={form.autoMusic} onChange={(v) => update({ autoMusic: v })} ariaLabel="Auto-music" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h2 className="font-heading text-xl font-bold text-text-primary">Notifications</h2>
-                    <div className="mt-4 overflow-hidden rounded-xl border border-border-default">
-                      <div className="grid grid-cols-[1fr_88px_88px] gap-2 border-b border-border bg-elevated px-4 py-2 text-xs font-semibold uppercase tracking-wide text-text-muted">
-                        <span>Event</span>
-                        <span className="text-center">Email</span>
-                        <span className="text-center">Push</span>
-                      </div>
-                      {[
-                        { label: 'Generation Complete', eKey: 'genEmail', pKey: 'genPush' },
-                        { label: 'Publish Success', eKey: 'pubEmail', pKey: 'pubPush' },
-                        { label: 'Weekly Report', eKey: 'weeklyEmail', pKey: 'weeklyPush' },
-                        { label: 'Credit Low Warning', eKey: 'creditEmail', pKey: 'creditPush' },
-                      ].map((row) => (
-                        <div
-                          key={row.label}
-                          className="grid grid-cols-[1fr_88px_88px] items-center gap-2 border-b border-border/80 px-4 py-3 last:border-0"
-                        >
-                          <span className="text-sm text-text-primary">{row.label}</span>
-                          <div className="flex justify-center">
-                            <Toggle
-                              checked={form.notif[row.eKey]}
-                              onChange={(v) => updateNotif(row.eKey, v)}
-                              ariaLabel={`${row.label} email`}
-                            />
-                          </div>
-                          <div className="flex justify-center">
-                            <Toggle
-                              checked={form.notif[row.pKey]}
-                              onChange={(v) => updateNotif(row.pKey, v)}
-                              ariaLabel={`${row.label} push`}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'api' && (
-                <div className="mx-auto max-w-2xl space-y-8">
-                  <div>
-                    <h2 className="font-heading text-xl font-bold text-text-primary">API Key</h2>
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      <input
-                        readOnly
-                        value={maskedKey}
-                        className="min-w-[240px] flex-1 rounded-xl border border-border-default bg-input px-3 py-2.5 font-mono text-sm text-text-primary"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setApiKeyVisible((v) => !v)}
-                        className="rounded-xl border border-border-default bg-elevated px-4 py-2.5 text-sm font-medium text-text-primary hover:border-accent-blue/40"
-                      >
-                        {apiKeyVisible ? 'Hide' : 'Reveal'}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => showToast('API key regenerated — update your integrations.')}
-                        className="rounded-xl border border-border-default bg-elevated px-4 py-2.5 text-sm font-medium text-text-primary hover:border-accent-blue/40"
-                      >
-                        Regenerate
-                      </button>
-                    </div>
-                  </div>
-                  <div>
-                    <h2 className="font-heading text-lg font-semibold text-text-primary">Webhook URL</h2>
-                    <input
-                      value={form.webhookUrl}
-                      onChange={(e) => update({ webhookUrl: e.target.value })}
-                      className="mt-2 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 font-mono text-sm text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
-                    />
-                  </div>
-                  <div className="rounded-2xl border border-border-default bg-surface p-5">
-                    <h3 className="font-heading text-lg font-semibold text-text-primary">Usage</h3>
-                    <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                      <div className="rounded-xl border border-border bg-panel px-4 py-3">
-                        <p className="text-xs text-text-tertiary">Calls (30d)</p>
-                        <p className="font-mono text-xl font-semibold text-text-primary">142</p>
-                      </div>
-                      <div className="rounded-xl border border-border bg-panel px-4 py-3">
-                        <p className="text-xs text-text-tertiary">Remaining</p>
-                        <p className="font-mono text-xl font-semibold text-accent-blue">48</p>
-                      </div>
-                      <div className="rounded-xl border border-border bg-panel px-4 py-3">
-                        <p className="text-xs text-text-tertiary">Uptime</p>
-                        <p className="font-mono text-xl font-semibold text-success">99.8%</p>
-                      </div>
-                    </div>
-                    <a
-                      href="https://docs.admart.example"
-                      className="mt-4 inline-flex text-sm font-medium text-accent-blue hover:underline"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      API documentation →
-                    </a>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'team' && (
-                <div className="mx-auto max-w-2xl space-y-8">
-                  <div className="space-y-3">
-                    {team.map((m) => (
-                      <div
-                        key={m.id}
-                        className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border-default bg-surface px-4 py-3"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full font-heading text-sm font-bold text-white gradient-bg">
-                            {m.initial}
-                          </div>
-                          <div>
-                            <p className="font-medium text-text-primary">{m.name}</p>
-                            <p className="text-xs text-text-tertiary">{m.email}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="rounded-full border border-border-default bg-panel px-2.5 py-0.5 text-xs font-medium text-text-secondary">
-                            {m.role}
-                          </span>
-                          {m.role !== 'Admin' && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setTeam((t) => t.filter((x) => x.id !== m.id))
-                                showToast('Member removed from team.')
-                              }}
-                              className="rounded-lg border border-error/30 px-2 py-1 text-xs font-medium text-error hover:bg-error/10"
-                            >
-                              Remove
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="rounded-xl border border-dashed border-border-default bg-input p-4">
-                    <p className="text-sm font-medium text-text-primary">Invite teammate</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <input
-                        type="email"
-                        placeholder="colleague@company.com"
-                        value={form.teamInviteEmail}
-                        onChange={(e) => update({ teamInviteEmail: e.target.value })}
-                        className="min-w-[200px] flex-1 rounded-xl border border-border-default bg-surface px-3 py-2.5 text-text-primary placeholder:text-text-muted focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
-                      />
-                      <select
-                        value={form.teamInviteRole}
-                        onChange={(e) => update({ teamInviteRole: e.target.value })}
-                        className="rounded-xl border border-border-default bg-surface px-3 py-2.5 text-text-primary"
-                      >
-                        <option value="editor">Editor</option>
-                        <option value="viewer">Viewer</option>
-                        <option value="admin">Admin</option>
-                      </select>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          showToast('Invite sent (demo).')
-                          update({ teamInviteEmail: '' })
-                        }}
-                        className="rounded-xl bg-accent-blue px-4 py-2.5 text-sm font-semibold text-white hover:bg-accent-blue/90"
-                      >
-                        Send Invite
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+              {TABS.filter((t) => t.soon && t.id === activeTab).map((t) => (
+                <ComingSoon key={t.id} title={t.label} text={t.soon} />
+              ))}
 
               {activeTab === 'danger' && (
-                <div className="mx-auto max-w-2xl space-y-6">
-                  <div className="rounded-2xl border border-error/30 bg-error/5 p-6">
-                    <h2 className="font-heading text-xl font-bold text-error">Danger Zone</h2>
-                    <p className="mt-2 text-sm text-text-secondary">
-                      Irreversible actions for your Admart workspace. Proceed with care.
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-border-default bg-surface p-5">
-                    <h3 className="font-heading text-lg font-semibold text-text-primary">Export Data</h3>
-                    <p className="mt-1 text-sm text-text-tertiary">
-                      Download a ZIP of your videos metadata, analytics exports, and account settings.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => showToast('Preparing data export…')}
-                      className="mt-4 rounded-xl border border-border-default bg-elevated px-4 py-2.5 text-sm font-semibold text-text-primary hover:border-accent-blue/40"
-                    >
-                      Export Data
-                    </button>
-                  </div>
-                  <div className="rounded-2xl border border-error/40 bg-error/5 p-5">
-                    <h3 className="font-heading text-lg font-semibold text-error">Delete Account</h3>
-                    <p className="mt-1 text-sm text-text-secondary">
-                      Permanently delete your account and associated content. This cannot be undone.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={handleDeleteAccount}
-                      className="mt-4 rounded-xl bg-error px-4 py-2.5 text-sm font-semibold text-white hover:bg-error/90"
-                    >
-                      Delete Account
-                    </button>
-                  </div>
+                <div className="mx-auto max-w-2xl rounded-2xl border border-error/40 bg-error/5 p-6">
+                  <h2 className="font-heading text-lg font-semibold text-danger">Delete account</h2>
+                  <p className="mt-2 text-sm text-text-secondary">
+                    Deleting your account removes your projects, generated media and connected social accounts.
+                    Self-service deletion is coming soon. Until then, email{' '}
+                    {SUPPORT_EMAIL ? (
+                      <a href={`mailto:${SUPPORT_EMAIL}`} className="text-link hover:underline">{SUPPORT_EMAIL}</a>
+                    ) : (
+                      'our support team'
+                    )}{' '}
+                    from the address on your account and we will delete it for you.
+                  </p>
                 </div>
               )}
             </div>
 
-            <div className="sticky bottom-0 z-20 flex flex-wrap items-center justify-between gap-3 border-t border-border bg-panel/95 px-8 py-4 backdrop-blur-md">
-              <p className={`text-sm ${dirty ? 'text-warning' : 'text-text-tertiary'}`}>
-                {dirty ? 'You have unsaved changes' : 'No unsaved changes'}
-              </p>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  disabled={!dirty}
-                  className="rounded-xl border border-border-default bg-input px-4 py-2.5 text-sm font-medium text-text-primary disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  disabled={!dirty || saving}
-                  className="rounded-xl bg-accent-blue px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-accent-blue/20 disabled:cursor-not-allowed disabled:opacity-40 hover:bg-accent-blue/90"
-                >
-                  {saving ? 'Saving...' : 'Save Changes'}
-                </button>
+            {activeTab === 'profile' && (
+              <div className="sticky bottom-0 z-20 flex flex-wrap items-center justify-between gap-3 border-t border-border bg-panel/95 px-4 py-4 backdrop-blur-md sm:px-8">
+                <p className={`text-sm ${dirty ? 'text-warning' : 'text-text-tertiary'}`}>
+                  {dirty ? 'You have unsaved changes' : 'No unsaved changes'}
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    disabled={!dirty}
+                    className="rounded-xl border border-border-default bg-input px-4 py-2.5 text-sm font-medium text-text-primary disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSave}
+                    disabled={!dirty || saving}
+                    className="rounded-xl bg-accent-blue px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-accent-blue/20 disabled:cursor-not-allowed disabled:opacity-40 hover:bg-accent-blue/90"
+                  >
+                    {saving ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

@@ -241,7 +241,7 @@ function PlatformCard({ platform, account, available, busy, onConnect, onDisconn
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="font-heading text-lg font-bold">{meta.name}</h2>
               {connected ? (
-                <span className="rounded-full border border-success/40 bg-success/15 px-2 py-0.5 text-xs font-semibold text-success">
+                <span className="rounded-full border border-success/40 bg-success/15 px-2 py-0.5 text-xs font-semibold text-success-text">
                   Connected
                 </span>
               ) : (
@@ -276,7 +276,7 @@ function PlatformCard({ platform, account, available, busy, onConnect, onDisconn
                 type="button"
                 onClick={() => onDisconnect(platform)}
                 disabled={busy}
-                className="rounded-xl border border-error/50 px-4 py-2 text-sm font-medium text-error transition hover:bg-error/10 disabled:opacity-50"
+                className="rounded-xl border border-error/50 px-4 py-2 text-sm font-medium text-danger transition hover:bg-error/10 disabled:opacity-50"
               >
                 {busy ? 'Working…' : 'Disconnect'}
               </button>
@@ -484,11 +484,11 @@ export default function SocialAccountsPage() {
     <AppLayout>
       <Topbar title="Social Accounts" />
 
-      <main className="space-y-6 p-7">
+      <main id="main-content" tabIndex={-1} className="space-y-6 p-4 sm:p-7">
         {!projectId ? (
           <p className="text-sm text-text-secondary">
             You need a project before connecting social accounts.{' '}
-            <Link to="/onboarding" className="font-medium text-accent-blue hover:underline">
+            <Link to="/onboarding" className="font-medium text-link hover:underline">
               Create a project
             </Link>
             .
@@ -500,7 +500,7 @@ export default function SocialAccountsPage() {
         )}
 
         <div className="flex gap-4 rounded-2xl border border-accent-blue/25 bg-accent-blue/10 px-5 py-4">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-blue/20 text-accent-blue">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-blue/20 text-link">
             <LinkIcon className="h-5 w-5" />
           </span>
           <div>
@@ -549,7 +549,7 @@ export default function SocialAccountsPage() {
                       <span
                         className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
                           connected
-                            ? 'border border-success/40 bg-success/15 text-success'
+                            ? 'border border-success/40 bg-success/15 text-success-text'
                             : 'border border-border-default bg-elevated text-text-tertiary'
                         }`}
                       >
@@ -566,7 +566,7 @@ export default function SocialAccountsPage() {
                       disabled={busyAds === key}
                       className={`mt-4 rounded-xl px-4 py-2 text-sm font-semibold disabled:opacity-50 ${
                         connected
-                          ? 'border border-error/50 text-error hover:bg-error/10'
+                          ? 'border border-error/50 text-danger hover:bg-error/10'
                           : 'gradient-bg text-white'
                       }`}
                     >

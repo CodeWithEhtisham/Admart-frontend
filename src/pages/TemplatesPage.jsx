@@ -804,18 +804,18 @@ export default function TemplatesPage() {
       <div className="min-h-screen bg-base">
         <Topbar title="Templates" />
 
-        <main className="space-y-6 p-7">
+        <main id="main-content" tabIndex={-1} className="space-y-6 p-4 sm:p-7">
           <section className="relative overflow-hidden rounded-2xl border border-border-default bg-panel px-6 py-8">
             <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-accent-blue/15 blur-3xl" />
             <div className="pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-accent-violet/15 blur-3xl" />
             <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div className="max-w-2xl">
-                <p className="text-xs font-semibold uppercase tracking-widest text-accent-blue">
+                <p className="text-xs font-semibold uppercase tracking-widest text-link">
                   Meigen.ai Prompt Gallery
                 </p>
-                <h1 className="mt-2 font-heading text-3xl font-bold text-text-primary">
+                <h2 className="mt-2 font-heading text-3xl font-bold text-text-primary">
                   Find a prompt, personalize it, and generate
-                </h1>
+                </h2>
                 <p className="mt-2 text-sm leading-6 text-text-secondary">
                   Community image and video prompts with their models. Edit the placeholders, check the credit
                   estimate, then open the generator.
@@ -937,7 +937,7 @@ export default function TemplatesPage() {
             </div>
 
             {error && (
-              <div className="mt-4 rounded-lg border border-error/30 bg-error/10 p-4 text-sm text-error">
+              <div className="mt-4 rounded-lg border border-error/30 bg-error/10 p-4 text-sm text-danger">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <span>{error}</span>
                   <button
@@ -1047,7 +1047,7 @@ export default function TemplatesPage() {
                 </div>
                 <div className="rounded-lg border border-border bg-surface p-3">
                   <p className="text-xs text-text-tertiary">Estimated credits</p>
-                  <p className="mt-1 font-mono text-sm font-semibold text-accent-blue">
+                  <p className="mt-1 font-mono text-sm font-semibold text-link">
                     {quoteLoading ? 'Checking...' : `${formatCredits(selectedCredit())} cr`}
                   </p>
                 </div>
@@ -1077,7 +1077,7 @@ export default function TemplatesPage() {
                         href={selected.sourceUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="ml-auto rounded-md border border-border px-2 py-1 font-semibold text-accent-blue transition hover:bg-accent-blue/10"
+                        className="ml-auto rounded-md border border-border px-2 py-1 font-semibold text-link transition hover:bg-accent-blue/10"
                       >
                         View original
                       </a>
@@ -1100,7 +1100,7 @@ export default function TemplatesPage() {
               <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-xs font-semibold uppercase text-accent-blue">
+                    <p className="text-xs font-semibold uppercase text-link">
                       {CATEGORY_LABELS[resolveCategory(selected)] || selected.category} · {selected.format}
                     </p>
                     <h2 id="template-modal-title" className="mt-1 font-heading text-2xl font-bold text-text-primary">
@@ -1176,7 +1176,7 @@ export default function TemplatesPage() {
 
                 {liveQuote?.creditsAfter != null && (
                   <div className="rounded-lg border border-accent-blue/30 bg-accent-blue/10 p-4 text-sm">
-                    <p className="font-semibold text-accent-blue">Live credit check</p>
+                    <p className="font-semibold text-link">Live credit check</p>
                     <p className="mt-1 text-text-secondary">
                       Cost {formatCredits(liveQuote.credits)} cr. After generation: {formatCredits(liveQuote.creditsAfter)} cr.
                     </p>
@@ -1184,7 +1184,7 @@ export default function TemplatesPage() {
                 )}
 
                 {modalError && (
-                  <div className="rounded-lg border border-error/30 bg-error/10 p-4 text-sm text-error">{modalError}</div>
+                  <div className="rounded-lg border border-error/30 bg-error/10 p-4 text-sm text-danger">{modalError}</div>
                 )}
               </div>
 

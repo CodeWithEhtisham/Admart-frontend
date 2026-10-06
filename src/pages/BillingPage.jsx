@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
+import { SUPPORT_EMAIL } from '../utils/site'
 import {
   CAPABILITY_LABELS,
   formatCredits,
@@ -17,12 +18,14 @@ import {
   notifyCreditsChanged,
   submitPayment,
 } from '../utils/credits.js'
+import { Glyphs } from '../components/glyphs'
+import { Icon } from '../components/icons'
 
 function TypeBadge({ type }) {
   const map = {
-    usage: 'border-error/30 bg-error/15 text-error',
-    purchase: 'border-accent-blue/30 bg-accent-blue/15 text-accent-blue',
-    topup: 'border-success/30 bg-success/15 text-success',
+    usage: 'border-error/30 bg-error/15 text-danger',
+    purchase: 'border-accent-blue/30 bg-accent-blue/15 text-link',
+    topup: 'border-success/30 bg-success/15 text-success-text',
   }
   const label = type === 'usage' ? 'Usage' : type === 'purchase' ? 'Purchase' : 'Top-up'
   return (
@@ -42,8 +45,8 @@ const PAYMENT_STATUS_LABELS = {
 function PaymentStatusBadge({ status }) {
   const map = {
     pending: 'border-warning/30 bg-warning/15 text-warning',
-    paid: 'border-success/30 bg-success/15 text-success',
-    failed: 'border-error/30 bg-error/15 text-error',
+    paid: 'border-success/30 bg-success/15 text-success-text',
+    failed: 'border-error/30 bg-error/15 text-danger',
     refunded: 'border-border-default bg-surface text-text-tertiary',
   }
   return (
@@ -239,9 +242,9 @@ export default function BillingPage() {
         </div>
       )}
 
-      <main className="space-y-10 p-7">
+      <main id="main-content" tabIndex={-1} className="space-y-10 p-4 sm:p-7">
         {error && (
-          <div className="rounded-xl border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+          <div className="rounded-xl border border-error/30 bg-error/10 px-4 py-3 text-sm text-danger">
             {error}{' '}
             <button type="button" onClick={load} className="underline">
               Retry
@@ -253,8 +256,8 @@ export default function BillingPage() {
           <div className="relative overflow-hidden rounded-2xl border border-accent-blue/40 bg-gradient-to-br from-accent-blue/10 via-accent-violet/10 to-transparent p-6 shadow-lg shadow-accent-blue/5">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <span className="inline-flex items-center gap-1 rounded-full border border-accent-blue/30 bg-accent-blue/15 px-3 py-1 text-xs font-semibold text-accent-blue">
-                  ⚡ Current Plan
+                <span className="inline-flex items-center gap-1 rounded-full border border-accent-blue/30 bg-accent-blue/15 px-3 py-1 text-xs font-semibold text-link">
+                  <Icon className="h-3.5 w-3.5">{Glyphs.bolt}</Icon> Current Plan
                 </span>
                 <h2 className="mt-4 font-heading text-3xl font-bold text-text-primary">
                   {loading ? '…' : formatPlanName(balance?.plan)}
@@ -268,7 +271,7 @@ export default function BillingPage() {
             <ul className="mt-6 space-y-2 text-sm text-text-secondary">
               {features.map((f) => (
                 <li key={f} className="flex items-center gap-2">
-                  <span className="text-success">✓</span>
+                  <span className="text-success-text">✓</span>
                   {f}
                 </li>
               ))}
@@ -284,9 +287,9 @@ export default function BillingPage() {
               <button
                 type="button"
                 onClick={() => document.getElementById('billing-topups')?.scrollIntoView({ behavior: 'smooth' })}
-                className="inline-flex items-center gap-2 rounded-xl border border-success/40 bg-success/15 px-4 py-2.5 text-sm font-semibold text-success hover:bg-success/25 transition"
+                className="inline-flex items-center gap-2 rounded-xl border border-success/40 bg-success/15 px-4 py-2.5 text-sm font-semibold text-success-text hover:bg-success/25 transition"
               >
-                ⚡ Buy additional credits
+                <Icon className="h-4 w-4">{Glyphs.bolt}</Icon> Buy additional credits
               </button>
             </div>
           </div>
@@ -315,7 +318,7 @@ export default function BillingPage() {
               </div>
               <div className="rounded-xl border border-border bg-surface px-3 py-3">
                 <p className="text-xs text-text-tertiary">Remaining</p>
-                <p className="font-mono text-lg font-semibold text-success">
+                <p className="font-mono text-lg font-semibold text-success-text">
                   {loading ? '—' : remainingLabel}
                 </p>
               </div>
@@ -344,7 +347,7 @@ export default function BillingPage() {
             </div>
           )}
           {lastRejected && !pendingPayment && (
-            <div className="mt-4 rounded-xl border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+            <div className="mt-4 rounded-xl border border-error/30 bg-error/10 px-4 py-3 text-sm text-danger">
               Your last payment ({lastRejected.planName}) was rejected
               {lastRejected.message ? `: ${lastRejected.message}` : '.'}{' '}
               You can submit a new payment below.
@@ -379,13 +382,13 @@ export default function BillingPage() {
                   <p className="mt-1 text-sm text-text-tertiary">
                     PKR {Number(plan.pricePkr || 0).toLocaleString()} approx
                   </p>
-                  <p className="mt-3 rounded-xl border border-border bg-panel px-3 py-2 font-mono text-sm font-semibold text-accent-blue">
+                  <p className="mt-3 rounded-xl border border-border bg-panel px-3 py-2 font-mono text-sm font-semibold text-link">
                     {formatCredits(plan.monthlyCredits)} credits monthly
                   </p>
                   <ul className="mt-5 flex-1 space-y-2 text-sm text-text-secondary">
                     {(plan.features || []).map((feature) => (
                       <li key={feature} className="flex gap-2">
-                        <span className="text-success">✓</span>
+                        <span className="text-success-text">✓</span>
                         <span>{feature}</span>
                       </li>
                     ))}
@@ -401,7 +404,7 @@ export default function BillingPage() {
                     }
                     className={`mt-5 w-full rounded-xl py-2.5 text-sm font-semibold transition ${
                       active
-                        ? 'cursor-not-allowed border border-accent-blue/40 bg-accent-blue/10 text-accent-blue'
+                        ? 'cursor-not-allowed border border-accent-blue/40 bg-accent-blue/10 text-link'
                         : inProcess
                           ? 'cursor-not-allowed border border-warning/40 bg-warning/10 text-warning'
                           : blockedByPending
@@ -435,8 +438,8 @@ export default function BillingPage() {
                 One-time credit booster packs. Credits never expire and do not alter your active subscription tier.
               </p>
             </div>
-            <span className="rounded-full border border-success/30 bg-success/10 px-3 py-1 text-xs font-semibold text-success">
-              ⚡ On-demand Boosters
+            <span className="rounded-full border border-success/30 bg-success/10 px-3 py-1 text-xs font-semibold text-success-text">
+              <Icon className="inline-block -mt-0.5 h-4 w-4">{Glyphs.bolt}</Icon> On-demand Boosters
             </span>
           </div>
 
@@ -465,13 +468,13 @@ export default function BillingPage() {
                   <p className="mt-1 text-sm text-text-tertiary">
                     PKR {Number(pack.pricePkr || 0).toLocaleString()} approx
                   </p>
-                  <p className="mt-3 rounded-xl border border-success/30 bg-success/10 px-3 py-2 font-mono text-sm font-semibold text-success">
+                  <p className="mt-3 rounded-xl border border-success/30 bg-success/10 px-3 py-2 font-mono text-sm font-semibold text-success-text">
                     +{formatCredits(pack.credits)} credits (never expires)
                   </p>
                   <ul className="mt-5 flex-1 space-y-2 text-sm text-text-secondary">
                     {(pack.features || []).map((feature) => (
                       <li key={feature} className="flex gap-2">
-                        <span className="text-success">✓</span>
+                        <span className="text-success-text">✓</span>
                         <span>{feature}</span>
                       </li>
                     ))}
@@ -492,7 +495,7 @@ export default function BillingPage() {
                           ? 'cursor-not-allowed border border-border-default bg-elevated text-text-muted'
                           : isSelected
                             ? 'border border-success bg-success text-white'
-                            : 'border border-success/40 bg-success/10 text-success hover:bg-success hover:text-white'
+                            : 'border border-success/40 bg-success/10 text-success-text hover:bg-success hover:text-white'
                     }`}
                   >
                     {inProcess
@@ -515,8 +518,8 @@ export default function BillingPage() {
               <span
                 className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                   selectedTarget.type === 'topup'
-                    ? 'border border-success/30 bg-success/15 text-success'
-                    : 'border border-accent-blue/30 bg-accent-blue/15 text-accent-blue'
+                    ? 'border border-success/30 bg-success/15 text-success-text'
+                    : 'border border-accent-blue/30 bg-accent-blue/15 text-link'
                 }`}
               >
                 {selectedTarget.type === 'topup' ? 'Credit Top-up' : 'Plan Subscription'}
@@ -545,7 +548,7 @@ export default function BillingPage() {
 
             <div className="mt-5 grid gap-4 lg:grid-cols-2">
               <div className="rounded-xl border border-accent-blue/30 bg-accent-blue/5 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-accent-blue">
+                <p className="text-xs font-semibold uppercase tracking-wide text-link">
                   EasyPaisa
                 </p>
                 <p className="mt-2 font-mono text-2xl font-bold text-text-primary">
@@ -572,7 +575,7 @@ export default function BillingPage() {
                     type="file"
                     accept="image/jpeg,image/png,image/webp"
                     onChange={(e) => setScreenshot(e.target.files?.[0] || null)}
-                    className="w-full rounded-xl border border-border-default bg-input px-3.5 py-2.5 text-sm text-text-primary file:mr-3 file:rounded-lg file:border-0 file:bg-accent-blue/20 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-accent-blue"
+                    className="w-full rounded-xl border border-border-default bg-input px-3.5 py-2.5 text-sm text-text-primary file:mr-3 file:rounded-lg file:border-0 file:bg-accent-blue/20 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-link"
                   />
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -601,7 +604,7 @@ export default function BillingPage() {
                   </div>
                 </div>
                 {submitError && (
-                  <p className="text-sm text-error">{submitError}</p>
+                  <p className="text-sm text-danger">{submitError}</p>
                 )}
                 <div className="flex items-center gap-3">
                   <button
@@ -667,7 +670,7 @@ export default function BillingPage() {
                     </p>
                   )}
                 </div>
-                <span className="shrink-0 text-right font-mono font-semibold text-accent-blue">
+                <span className="shrink-0 text-right font-mono font-semibold text-link">
                   {formatCredits(row.credits)}
                   {row.perImage ? ' x n' : ''} cr
                 </span>
@@ -686,12 +689,12 @@ export default function BillingPage() {
               <button
                 type="button"
                 onClick={load}
-                className="text-xs font-medium text-accent-blue hover:underline"
+                className="text-xs font-medium text-link hover:underline"
               >
                 Refresh
               </button>
             </div>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Scrollable table">
               <table className="w-full min-w-[720px] border-collapse text-left text-sm">
                 <thead>
                   <tr className="border-b border-border text-xs uppercase tracking-wide text-text-muted">
@@ -712,7 +715,7 @@ export default function BillingPage() {
                         <div className="flex items-center gap-2">
                           <span className="font-medium">{p.planName}</span>
                           {p.paymentType === 'topup' && (
-                            <span className="rounded-full border border-success/30 bg-success/15 px-2 py-0.5 text-[10px] font-semibold text-success">
+                            <span className="rounded-full border border-success/30 bg-success/15 px-2 py-0.5 text-[10px] font-semibold text-success-text">
                               Top-up
                             </span>
                           )}
@@ -724,7 +727,7 @@ export default function BillingPage() {
                       <td className="px-6 py-3">
                         <PaymentStatusBadge status={p.status} />
                         {p.status === 'failed' && p.message && (
-                          <p className="mt-1 max-w-xs text-xs text-error">{p.message}</p>
+                          <p className="mt-1 max-w-xs text-xs text-danger">{p.message}</p>
                         )}
                       </td>
                       <td className="px-6 py-3">
@@ -733,7 +736,7 @@ export default function BillingPage() {
                             href={p.screenshotUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs font-medium text-accent-blue hover:underline"
+                            className="text-xs font-medium text-link hover:underline"
                           >
                             View
                           </a>
@@ -755,12 +758,12 @@ export default function BillingPage() {
             <button
               type="button"
               onClick={load}
-              className="text-xs font-medium text-accent-blue hover:underline"
+              className="text-xs font-medium text-link hover:underline"
             >
               Refresh
             </button>
           </div>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Scrollable table">
             <table className="w-full min-w-[720px] border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-border text-xs uppercase tracking-wide text-text-muted">
@@ -797,7 +800,7 @@ export default function BillingPage() {
                               .replace(/^fal[/]/i, '')
                           : '—'}
                       </td>
-                      <td className="px-6 py-3 font-mono font-medium text-error">
+                      <td className="px-6 py-3 font-mono font-medium text-danger">
                         {cr > 0 ? `-${formatCredits(cr)}` : formatCredits(cr)}
                       </td>
                       <td className="px-6 py-3 text-text-secondary">{t.status || '—'}</td>
@@ -817,11 +820,14 @@ export default function BillingPage() {
         </section>
 
         <p className="text-center text-sm text-text-tertiary">
-          Questions?{' '}
-          <Link to="/settings" className="text-accent-blue hover:underline">
-            Contact support
-          </Link>{' '}
-          from Settings.
+          Questions about a payment?{' '}
+          {SUPPORT_EMAIL ? (
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="text-link underline">
+              Email {SUPPORT_EMAIL}
+            </a>
+          ) : (
+            'Contact our support team.'
+          )}
         </p>
       </main>
     </AppLayout>

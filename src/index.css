@@ -8,12 +8,19 @@
   --color-input: #0F172A;
 
   --color-text-primary: #F8FAFC;
-  --color-text-secondary: #94A3B8;
-  --color-text-tertiary: #64748B;
-  --color-text-muted: #475569;
+  /* All text tokens meet WCAG AA (4.5:1) on base/panel/elevated; keep that when tuning. */
+  --color-text-secondary: #C8D1DD;
+  --color-text-tertiary: #B0BCCC;
+  --color-text-muted: #A0ADC0;
 
-  --color-accent-blue: #3B82F6;
-  --color-accent-violet: #8B5CF6;
+  /* accent-blue is for fills/borders (white text on it is 5.2:1). Coloured TEXT uses
+     link/danger/success-text/violet-text, which are tuned per theme to stay >= 4.5:1 on panels. */
+  --color-accent-blue: #2563EB;
+  --color-link: #7CB3FB;
+  --color-danger: #F87171;
+  --color-success-text: #4ADE80;
+  --color-violet-text: #C4B5FD;
+  --color-accent-violet: #7C3AED; /* white text on it: 5.7:1 */
   --color-success: #22C55E;
   --color-warning: #EAB308;
   --color-error: #EF4444;
@@ -54,7 +61,11 @@
   --color-text-primary: #15161c;
   --color-text-secondary: #454b5c;
   --color-text-tertiary: #5d6477;
-  --color-text-muted: #8a91a3;
+  --color-text-muted: #62697c;
+  --color-link: #1D4ED8;
+  --color-danger: #DC2626;
+  --color-success-text: #166534;
+  --color-violet-text: #6D28D9;
 
   --color-border: rgba(15, 23, 42, 0.08);
   --color-border-default: rgba(15, 23, 42, 0.12);
@@ -270,5 +281,21 @@ body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* Respect the OS "reduce motion" setting: no decorative animation or smooth scrolling. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .rv {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

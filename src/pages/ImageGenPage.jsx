@@ -68,7 +68,7 @@ function Chip({ active, onClick, children, className = '' }) {
       onClick={onClick}
       className={`rounded-xl border px-3 py-2 text-center text-sm font-medium transition ${
         active
-          ? 'border-accent-blue bg-accent-blue/10 text-accent-blue'
+          ? 'border-accent-blue bg-accent-blue/10 text-link'
           : 'border-border-default bg-surface text-text-secondary hover:border-white/10 hover:text-text-primary'
       } ${className}`}
     >
@@ -196,7 +196,7 @@ function ModelPicker({ models, value, onChange, costsByModel = {} }) {
                   }}
                   className={`flex w-full items-start gap-2 rounded-lg px-3 py-2.5 text-left transition ${
                     active
-                      ? 'bg-accent-blue/15 text-accent-blue'
+                      ? 'bg-accent-blue/15 text-link'
                       : 'text-text-secondary hover:bg-elevated hover:text-text-primary'
                   }`}
                 >
@@ -210,7 +210,7 @@ function ModelPicker({ models, value, onChange, costsByModel = {} }) {
                     {m.strength ? (
                       <span
                         className={`mt-0.5 block text-[11px] ${
-                          active ? 'text-accent-blue/80' : 'text-text-tertiary'
+                          active ? 'text-link/80' : 'text-text-tertiary'
                         }`}
                       >
                         {m.strength}
@@ -219,7 +219,7 @@ function ModelPicker({ models, value, onChange, costsByModel = {} }) {
                     {costsByModel[m.id]?.credits ? (
                       <span
                         className={`mt-1 block font-mono text-[11px] ${
-                          active ? 'text-accent-blue/80' : 'text-text-tertiary'
+                          active ? 'text-link/80' : 'text-text-tertiary'
                         }`}
                       >
                         From {formatCredits(costsByModel[m.id].credits)} cr
@@ -867,7 +867,7 @@ export default function ImageGenPage() {
           <Topbar title="Image Studio" />
         </div>
 
-        <div className="shrink-0 border-b border-border bg-panel px-6">
+        <nav aria-label="Image tools" className="shrink-0 border-b border-border bg-panel px-3 sm:px-6">
           <div className="flex flex-wrap items-center justify-between gap-2 py-2">
             <div className="flex gap-1 overflow-x-auto">
               {IMAGE_CAPABILITIES.map((c) => {
@@ -879,7 +879,7 @@ export default function ImageGenPage() {
                     onClick={() => switchCapability(c.id)}
                     className={`shrink-0 rounded-lg px-3.5 py-2 text-sm font-medium transition ${
                       active
-                        ? 'bg-accent-blue/15 text-accent-blue'
+                        ? 'bg-accent-blue/15 text-link'
                         : 'text-text-secondary hover:bg-surface hover:text-text-primary'
                     }`}
                   >
@@ -895,9 +895,9 @@ export default function ImageGenPage() {
               </span>
             </p>
           </div>
-        </div>
+        </nav>
 
-        <div className="flex min-h-0 flex-1 overflow-hidden">
+        <div id="main-content" role="main" tabIndex={-1} className="flex min-h-0 flex-1 overflow-hidden">
           <div className="flex min-h-0 w-[380px] shrink-0 flex-col border-r border-border bg-panel">
             <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-5">
               {!projectId && (
@@ -1308,7 +1308,7 @@ export default function ImageGenPage() {
 
             <div className="shrink-0 border-t border-border bg-panel/95 p-4 backdrop-blur-sm">
               {jobError && (
-                <p className="mb-2 rounded-lg border border-error/30 bg-error/10 px-3 py-2 text-xs text-error">
+                <p className="mb-2 rounded-lg border border-error/30 bg-error/10 px-3 py-2 text-xs text-danger">
                   {jobError}
                   {(jobError.includes('credits') || jobError.includes('Credits')) && (
                     <>
@@ -1326,7 +1326,7 @@ export default function ImageGenPage() {
                   {!hasCredits && (
                     <>
                       {' '}
-                      <Link to="/billing" className="text-accent-blue underline">
+                      <Link to="/billing" className="text-link underline">
                         Billing
                       </Link>
                     </>
@@ -1540,7 +1540,7 @@ export default function ImageGenPage() {
             )}
 
             {jobStatus === 'failed' && !jobError && (
-              <div className="mb-6 rounded-xl border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+              <div className="mb-6 rounded-xl border border-error/30 bg-error/10 px-4 py-3 text-sm text-danger">
                 Generation failed. Adjust settings and try again.
               </div>
             )}
@@ -1601,14 +1601,14 @@ export default function ImageGenPage() {
                           <button
                             type="button"
                             onClick={() => setPreviewImg(img)}
-                            className="rounded-md bg-accent-blue/15 px-2 py-0.5 text-[10px] font-semibold text-accent-blue hover:bg-accent-blue/25"
+                            className="rounded-md bg-accent-blue/15 px-2 py-0.5 text-[10px] font-semibold text-link hover:bg-accent-blue/25"
                           >
                             Preview
                           </button>
                           <button
                             type="button"
                             onClick={() => saveResult(img)}
-                            className="rounded-md bg-accent-blue/15 px-2 py-0.5 text-[10px] font-semibold text-accent-blue hover:bg-accent-blue/25"
+                            className="rounded-md bg-accent-blue/15 px-2 py-0.5 text-[10px] font-semibold text-link hover:bg-accent-blue/25"
                           >
                             Save
                           </button>

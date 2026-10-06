@@ -63,7 +63,7 @@ function Chip({ active, onClick, children, className = '' }) {
       onClick={onClick}
       className={`rounded-xl border px-3 py-2 text-center text-sm font-medium transition ${
         active
-          ? 'border-accent-blue bg-accent-blue/10 text-accent-blue'
+          ? 'border-accent-blue bg-accent-blue/10 text-link'
           : 'border-border-default bg-surface text-text-secondary hover:border-white/10 hover:text-text-primary'
       } ${className}`}
     >
@@ -158,7 +158,7 @@ function ModelPicker({ models, value, onChange, costsByModel = {} }) {
                   }}
                   className={`flex w-full flex-col rounded-lg px-3 py-2.5 text-left transition ${
                     active
-                      ? 'bg-accent-blue/15 text-accent-blue'
+                      ? 'bg-accent-blue/15 text-link'
                       : 'text-text-secondary hover:bg-elevated hover:text-text-primary'
                   }`}
                 >
@@ -640,11 +640,11 @@ export default function VideoGenPage() {
   return (
     <AppLayout>
       <Topbar title="AI Video Gen" />
-      <div className="flex min-h-0 flex-1 flex-col gap-4 p-4 lg:flex-row lg:gap-6 lg:p-6">
+      <div id="main-content" role="main" tabIndex={-1} className="flex min-h-0 flex-1 flex-col gap-4 p-4 lg:flex-row lg:gap-6 lg:p-6">
         {/* Form */}
         <section className="w-full shrink-0 space-y-5 lg:w-[380px] lg:overflow-y-auto lg:pr-1">
           <div>
-            <h1 className="font-heading text-xl font-semibold text-text-primary">Generate video</h1>
+            <h2 className="font-heading text-xl font-semibold text-text-primary">Generate video</h2>
             <p className="mt-1 text-sm text-text-tertiary">
               Live model catalog — fields adapt to what each model needs.
             </p>
@@ -806,7 +806,7 @@ export default function VideoGenPage() {
           ) : null}
 
           {error ? (
-            <p className="rounded-xl border border-error/30 bg-error/10 px-3 py-2 text-sm text-error">
+            <p className="rounded-xl border border-error/30 bg-error/10 px-3 py-2 text-sm text-danger">
               {error}
             </p>
           ) : null}
@@ -883,7 +883,7 @@ export default function VideoGenPage() {
                           <button
                             type="button"
                             onClick={() => setPreviewItem(item)}
-                            className="rounded-lg border border-accent-blue/40 px-2 py-1 text-[11px] font-semibold text-accent-blue hover:bg-accent-blue/10"
+                            className="rounded-lg border border-accent-blue/40 px-2 py-1 text-[11px] font-semibold text-link hover:bg-accent-blue/10"
                           >
                             Preview
                           </button>
@@ -921,7 +921,7 @@ export default function VideoGenPage() {
                         <button
                           type="button"
                           onClick={() => onCancel(item.jobId)}
-                          className="text-[11px] text-error hover:underline"
+                          className="text-[11px] text-danger hover:underline"
                         >
                           Cancel
                         </button>

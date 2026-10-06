@@ -1172,7 +1172,7 @@ export default function WizardPage() {
                         <button
                           type="button"
                           onClick={() => removeTag(t)}
-                          className="text-text-muted hover:text-error"
+                          className="text-text-muted hover:text-danger"
                           aria-label={`Remove ${t}`}
                         >
                           ×
@@ -1271,7 +1271,7 @@ export default function WizardPage() {
                     <span className="rounded-full border border-border-default bg-elevated px-3 py-1 text-xs font-medium text-text-secondary">
                       {isImageOutputMode ? '~20 seconds' : '~45 seconds'}
                     </span>
-                    <p className="text-sm text-success">You have {creditsRemaining} credits</p>
+                    <p className="text-sm text-success-text">You have {creditsRemaining} credits</p>
                   </div>
                 </div>
 
@@ -1298,7 +1298,7 @@ export default function WizardPage() {
                     )}
 
                     {!isGeneratingTextImage && imageGenerationError && (
-                      <div className="rounded-xl border border-error/30 bg-error/10 p-4 text-sm text-error">
+                      <div className="rounded-xl border border-error/30 bg-error/10 p-4 text-sm text-danger">
                         {imageGenerationError}
                       </div>
                     )}
@@ -1324,14 +1324,14 @@ export default function WizardPage() {
                             <button
                               type="button"
                               onClick={handleDownloadGeneratedImage}
-                              className="font-medium text-accent-blue hover:text-accent-blue/80"
+                              className="font-medium text-link hover:text-link/80"
                             >
                               Download
                             </button>
                             <button
                               type="button"
                               onClick={handleSaveGeneratedImage}
-                              className="font-medium text-success hover:text-success/80"
+                              className="font-medium text-success-text hover:text-success-text/80"
                             >
                               Save
                             </button>
@@ -1350,7 +1350,7 @@ export default function WizardPage() {
                         {(assetActionMessage || assetActionError) && (
                           <div
                             className={`border-t border-border px-4 py-3 text-xs ${
-                              assetActionError ? 'text-error' : 'text-success'
+                              assetActionError ? 'text-danger' : 'text-success-text'
                             }`}
                           >
                             {assetActionError || assetActionMessage}
@@ -1451,10 +1451,10 @@ export default function WizardPage() {
             Save as Draft
           </button>
           {currentStep === 4 && isUploadMode && !uploadedMediaUrl && (
-            <span className="truncate text-xs text-error">Upload required</span>
+            <span className="truncate text-xs text-danger">Upload required</span>
           )}
           {currentStep === 4 && assetActionError && !isTextToImageMode && (
-            <span className="truncate text-xs text-error">{assetActionError}</span>
+            <span className="truncate text-xs text-danger">{assetActionError}</span>
           )}
         </div>
         <div className="flex shrink-0 items-center gap-2">

@@ -1,6 +1,8 @@
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
+import { Glyphs } from '../components/glyphs'
+import { Icon } from '../components/icons'
 
 const INITIAL_COLORS = [
   { hex: '#5b7cfa', role: 'Primary' },
@@ -14,12 +16,12 @@ const HEADING_FONTS = ['Space Grotesk', 'Inter', 'DM Sans', 'Playfair', 'Montser
 const BODY_FONTS = ['Inter', 'DM Sans', 'Roboto', 'Nunito']
 
 const TONE_PRESETS = [
-  { id: 'professional', icon: '💼', label: 'Professional', text: 'Communicate with authority and expertise. Use clear, concise language that builds trust and credibility. Maintain a polished, industry-standard tone in every piece of content.' },
-  { id: 'casual', icon: '😊', label: 'Casual & Friendly', text: 'Keep things relaxed and approachable! Use everyday language, contractions, and a warm conversational style that makes your audience feel like they\'re chatting with a friend.' },
-  { id: 'bold', icon: '⚡', label: 'Bold & Direct', text: 'Get straight to the point. No fluff, no filler. Use punchy, confident language that commands attention and drives action immediately.' },
-  { id: 'fun', icon: '🎉', label: 'Fun & Playful', text: 'Bring the energy! Use humor, wordplay, and an upbeat vibe. Make your audience smile while delivering your message with enthusiasm and creativity.' },
-  { id: 'premium', icon: '✨', label: 'Premium & Luxury', text: 'Evoke exclusivity and sophistication. Use refined, elegant language that positions your brand as aspirational and high-end. Every word should feel curated.' },
-  { id: 'custom', icon: '✏️', label: 'Custom' },
+  { id: 'professional', icon: Glyphs.briefcase, label: 'Professional', text: 'Communicate with authority and expertise. Use clear, concise language that builds trust and credibility. Maintain a polished, industry-standard tone in every piece of content.' },
+  { id: 'casual', icon: Glyphs.smile, label: 'Casual & Friendly', text: 'Keep things relaxed and approachable! Use everyday language, contractions, and a warm conversational style that makes your audience feel like they\'re chatting with a friend.' },
+  { id: 'bold', icon: Glyphs.bolt, label: 'Bold & Direct', text: 'Get straight to the point. No fluff, no filler. Use punchy, confident language that commands attention and drives action immediately.' },
+  { id: 'fun', icon: Glyphs.sparkles, label: 'Fun & Playful', text: 'Bring the energy! Use humor, wordplay, and an upbeat vibe. Make your audience smile while delivering your message with enthusiasm and creativity.' },
+  { id: 'premium', icon: Glyphs.sparkles, label: 'Premium & Luxury', text: 'Evoke exclusivity and sophistication. Use refined, elegant language that positions your brand as aspirational and high-end. Every word should feel curated.' },
+  { id: 'custom', icon: Glyphs.pencil, label: 'Custom' },
 ]
 
 const ASPECT_OPTIONS = ['16:9', '9:16', '1:1', '4:5']
@@ -28,7 +30,6 @@ const VOICE_OPTIONS = ['Auto', 'Neutral', 'Warm', 'Energetic']
 const WATERMARK_OPTIONS = ['Bottom Right', 'Bottom Left', 'Top Right', 'None']
 
 export default function BrandKitPage() {
-  const [toast, setToast] = useState(null)
   const [selectedColor, setSelectedColor] = useState(0)
   const [colors, setColors] = useState(INITIAL_COLORS)
   const [headingFont, setHeadingFont] = useState('Space Grotesk')
@@ -40,10 +41,6 @@ export default function BrandKitPage() {
   const [genVoice, setGenVoice] = useState('Auto')
   const [genWatermark, setGenWatermark] = useState('Bottom Right')
 
-  const showToast = useCallback((msg) => {
-    setToast(msg)
-    window.setTimeout(() => setToast(null), 2400)
-  }, [])
 
   const handleToneSelect = (preset) => {
     setSelectedTone(preset.id)
@@ -63,45 +60,28 @@ export default function BrandKitPage() {
     setSelectedColor(colors.length)
   }
 
-  const handleSave = () => {
-    showToast('✅ Brand Kit saved successfully!')
-  }
-
   return (
     <AppLayout>
       <div className="flex min-h-screen flex-col">
         {/* Topbar */}
         <Topbar title="Brand Kit" />
 
-        {toast && (
-          <div
-            role="status"
-            className="animate-slide-up fixed bottom-8 right-8 z-[60] rounded-xl border border-border-default bg-elevated px-4 py-3 text-sm text-text-primary shadow-xl"
-          >
-            {toast}
-          </div>
-        )}
 
         {/* Split Layout */}
-        <div className="flex min-h-0 flex-1">
+        <div id="main-content" role="main" tabIndex={-1} className="flex min-h-0 flex-1 flex-col lg:flex-row">
           {/* Editor Area */}
-          <div className="flex-1 overflow-y-auto p-7 space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-xs text-text-tertiary">Auto-applied to every generated video</p>
-              <button
-                type="button"
-                onClick={handleSave}
-                className="rounded-xl bg-gradient-to-r from-accent-blue to-accent-violet px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/20 hover:opacity-90"
-              >
-                Save Brand Kit
-              </button>
+          <div className="flex-1 space-y-6 overflow-y-auto p-4 sm:p-7">
+            {/* Nothing here is stored yet: say so instead of pretending to save. */}
+            <div role="note" className="rounded-xl border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-text-primary">
+              <span className="font-semibold">Preview only.</span> Saving your brand kit and applying it to generated
+              videos is coming soon. Changes on this page are not stored.
             </div>
 
             {/* 1. Logo Assets */}
             <section className="rounded-2xl border border-border-default bg-surface p-6">
               <div className="flex items-center gap-3 mb-5">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-blue/15">
-                  <span className="text-lg">🎨</span>
+                  <Icon className="h-5 w-5 text-link">{Glyphs.palette}</Icon>
                 </div>
                 <div>
                   <h2 className="font-heading text-lg font-bold text-text-primary">Logo Assets</h2>
@@ -109,7 +89,7 @@ export default function BrandKitPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                 {/* Slot 1: Filled */}
                 <div className="group relative flex aspect-video items-center justify-center rounded-xl border border-accent-blue/30 bg-panel overflow-hidden">
                   <div className="flex items-center gap-2.5">
@@ -120,7 +100,7 @@ export default function BrandKitPage() {
                   </div>
                   <button
                     type="button"
-                    className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-base/80 text-text-secondary opacity-0 transition group-hover:opacity-100 hover:text-error"
+                    className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-base/80 text-text-secondary opacity-0 transition group-hover:opacity-100 hover:text-danger"
                   >
                     ×
                   </button>
@@ -153,7 +133,7 @@ export default function BrandKitPage() {
             <section className="rounded-2xl border border-border-default bg-surface p-6">
               <div className="flex items-center gap-3 mb-5">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-violet/15">
-                  <span className="text-lg">🎨</span>
+                  <Icon className="h-5 w-5 text-link">{Glyphs.palette}</Icon>
                 </div>
                 <div>
                   <h2 className="font-heading text-lg font-bold text-text-primary">Color Palette</h2>
@@ -198,6 +178,7 @@ export default function BrandKitPage() {
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-text-muted">#</span>
                   <input
+                    aria-label="Hex color"
                     value={colors[selectedColor].hex.replace('#', '')}
                     onChange={(e) => handleColorHexChange(`#${e.target.value.replace('#', '')}`)}
                     maxLength={6}
@@ -214,7 +195,7 @@ export default function BrandKitPage() {
             <section className="rounded-2xl border border-border-default bg-surface p-6">
               <div className="flex items-center gap-3 mb-5">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-success/15">
-                  <span className="text-lg font-bold text-success">Aa</span>
+                  <span className="text-lg font-bold text-success-text">Aa</span>
                 </div>
                 <div>
                   <h2 className="font-heading text-lg font-bold text-text-primary">Typography</h2>
@@ -285,7 +266,7 @@ export default function BrandKitPage() {
             <section className="rounded-2xl border border-border-default bg-surface p-6">
               <div className="flex items-center gap-3 mb-5">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-warning/15">
-                  <span className="text-lg">💬</span>
+                  <Icon className="h-5 w-5 text-link">{Glyphs.message}</Icon>
                 </div>
                 <div>
                   <h2 className="font-heading text-lg font-bold text-text-primary">Tone of Voice</h2>
@@ -305,7 +286,7 @@ export default function BrandKitPage() {
                         : 'border border-border-default bg-elevated text-text-secondary hover:text-text-primary'
                     }`}
                   >
-                    {p.icon} {p.label}
+                    <Icon className="inline-block -mt-0.5 h-4 w-4">{p.icon}</Icon> {p.label}
                   </button>
                 ))}
               </div>
@@ -333,7 +314,7 @@ export default function BrandKitPage() {
             <section className="rounded-2xl border border-border-default bg-surface p-6">
               <div className="flex items-center gap-3 mb-5">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5">
-                  <span className="text-lg">⚙️</span>
+                  <Icon className="h-5 w-5 text-link">{Glyphs.gear}</Icon>
                 </div>
                 <div>
                   <h2 className="font-heading text-lg font-bold text-text-primary">Default Generation Settings</h2>
@@ -395,14 +376,14 @@ export default function BrandKitPage() {
           </div>
 
           {/* Live Preview Panel */}
-          <aside className="w-[340px] shrink-0 border-l border-border bg-panel overflow-y-auto">
+          <aside className="w-full shrink-0 overflow-y-auto border-t border-border bg-panel lg:w-[340px] lg:border-l lg:border-t-0">
             <div className="p-5 space-y-5">
               <h3 className="font-heading text-sm font-bold uppercase tracking-wider text-text-muted">Live Preview</h3>
 
               {/* Brand Score */}
               <div className="rounded-xl border border-success/30 bg-success/5 p-4">
                 <div className="flex items-center gap-3">
-                  <span className="font-heading text-4xl font-bold text-success">92</span>
+                  <span className="font-heading text-4xl font-bold text-success-text">92</span>
                   <div>
                     <p className="font-heading text-sm font-bold text-text-primary">Brand Kit Score</p>
                     <p className="text-xs text-text-tertiary">Strong · 4/5 elements configured</p>
@@ -484,10 +465,10 @@ export default function BrandKitPage() {
               {/* Apply Button */}
               <button
                 type="button"
-                onClick={handleSave}
-                className="w-full rounded-xl bg-gradient-to-r from-accent-blue to-accent-violet py-3 text-sm font-semibold text-white shadow-lg shadow-accent-blue/20 transition hover:opacity-90"
+                disabled
+                className="w-full cursor-not-allowed rounded-xl border border-border-default bg-elevated py-3 text-sm font-semibold text-text-secondary"
               >
-                ✅ Apply Brand Kit
+                Apply Brand Kit — coming soon
               </button>
             </div>
           </aside>

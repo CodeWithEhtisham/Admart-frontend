@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Glyphs } from '../components/glyphs'
+import { Icon } from '../components/icons'
 
 const PLATFORMS = [
   { id: 'tiktok', label: 'TikTok', dot: 'bg-tiktok' },
@@ -89,7 +91,7 @@ export default function ResultPage() {
         </Link>
         <span className="h-5 w-px bg-border-default" aria-hidden />
         <h1 className="font-heading text-base font-semibold tracking-tight">Video Result</h1>
-        <span className="ml-1 inline-flex items-center gap-1 rounded-full border border-success/30 bg-success/10 px-2.5 py-0.5 text-xs font-medium text-success">
+        <span className="ml-1 inline-flex items-center gap-1 rounded-full border border-success/30 bg-success/10 px-2.5 py-0.5 text-xs font-medium text-success-text">
           ✓ Ready
         </span>
         <div className="ml-auto flex items-center gap-2">
@@ -165,7 +167,7 @@ export default function ResultPage() {
                     <span className="font-mono text-[11px] text-white/80">0:05 / 0:15</span>
                     <div className="ml-2 flex flex-1 items-center gap-2">
                       <span className="text-white/70" aria-hidden>
-                        🔊
+                        <Icon className="h-4 w-4">{Glyphs.volume}</Icon>
                       </span>
                       <input
                         type="range"
@@ -228,7 +230,7 @@ export default function ResultPage() {
                 <h2 className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">Title</h2>
                 <button
                   type="button"
-                  className="text-xs font-medium text-accent-blue hover:text-accent-violet"
+                  className="text-xs font-medium text-link hover:text-violet-text"
                 >
                   Regenerate
                 </button>
@@ -245,7 +247,7 @@ export default function ResultPage() {
                 <h2 className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">Description</h2>
                 <button
                   type="button"
-                  className="text-xs font-medium text-accent-blue hover:text-accent-violet"
+                  className="text-xs font-medium text-link hover:text-violet-text"
                 >
                   Regenerate
                 </button>
@@ -299,7 +301,7 @@ export default function ResultPage() {
                 <h2 className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">Tags</h2>
                 <button
                   type="button"
-                  className="text-xs font-medium text-accent-blue hover:text-accent-violet"
+                  className="text-xs font-medium text-link hover:text-violet-text"
                 >
                   Regenerate
                 </button>
@@ -389,14 +391,14 @@ export default function ResultPage() {
           onClick={() => navigate('/publish')}
           className="rounded-lg gradient-bg px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/25"
         >
-          🚀 Publish Now
+          <Icon className="inline-block -mt-0.5 h-4 w-4">{Glyphs.send}</Icon> Publish Now
         </button>
         <button
           type="button"
           onClick={() => navigate('/publish')}
           className="rounded-lg border border-border-default bg-elevated px-4 py-2 text-sm font-medium text-text-primary transition hover:border-border-default"
         >
-          📅 Schedule
+          <Icon className="inline-block -mt-0.5 h-4 w-4">{Glyphs.calendar}</Icon> Schedule
         </button>
         <button
           type="button"
@@ -412,9 +414,9 @@ export default function ResultPage() {
         </button>
         <button
           type="button"
-          className="ml-auto rounded-lg border border-error/50 bg-transparent px-4 py-2 text-sm font-medium text-error transition hover:bg-error/10"
+          className="ml-auto rounded-lg border border-error/50 bg-transparent px-4 py-2 text-sm font-medium text-danger transition hover:bg-error/10"
         >
-          🗑 Delete
+          <Icon className="inline-block -mt-0.5 h-4 w-4">{Glyphs.trash}</Icon> Delete
         </button>
       </footer>
     </div>

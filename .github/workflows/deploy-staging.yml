@@ -29,8 +29,11 @@ jobs:
           VITE_API_URL: ${{ vars.VITE_API_URL }}
           VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
           VITE_GOOGLE_REDIRECT_URI: ${{ vars.VITE_GOOGLE_REDIRECT_URI }}
+          VITE_SUPPORT_EMAIL: ${{ vars.VITE_SUPPORT_EMAIL }}
+          VITE_COMPANY_NAME: ${{ vars.VITE_COMPANY_NAME }}
         run: |
           test -n "$VITE_API_URL" || { echo "Set the VITE_API_URL variable on the staging environment"; exit 1; }
+          test -n "$VITE_SUPPORT_EMAIL" || { echo "Set the VITE_SUPPORT_EMAIL variable (shown on Privacy/Terms)"; exit 1; }
           npm run build
       - name: Configure SSH
         env:

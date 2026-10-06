@@ -1,6 +1,7 @@
 /** Credits API — contract from frontend-credits.md */
 
 import api from './api'
+import { isAuthenticated } from './auth'
 
 export const CREDITS_CHANGE_EVENT = 'admart:credits-change'
 
@@ -21,7 +22,9 @@ export function notifyCreditsChanged(partial) {
   window.dispatchEvent(new CustomEvent(CREDITS_CHANGE_EVENT, { detail: partial }))
 }
 
+/** Current balance, or null when signed out (public pages render the shared chrome too). */
 export async function getCredits() {
+  if (!isAuthenticated()) return null
   const { data } = await api.get('/api/credits')
   return data
 }

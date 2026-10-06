@@ -27,7 +27,7 @@ import {
   resolveActiveProject,
   setActiveProject,
 } from '../utils/projects'
-import { getStoredUser } from '../utils/user.js'
+import { getStoredUser, initialsFor } from '../utils/user.js'
 
 const FILTERS = [
   { id: 'all', label: 'All' },
@@ -39,11 +39,11 @@ const FILTERS = [
 ]
 
 const STATUS_STYLES = {
-  ready: 'border-success/30 bg-success/10 text-success',
-  generating: 'border-accent-violet/30 bg-accent-violet/10 text-accent-violet',
-  published: 'border-accent-blue/30 bg-accent-blue/10 text-accent-blue',
+  ready: 'border-success/30 bg-success/10 text-success-text',
+  generating: 'border-accent-violet/30 bg-accent-violet/10 text-violet-text',
+  published: 'border-accent-blue/30 bg-accent-blue/10 text-link',
   scheduled: 'border-warning/30 bg-warning/10 text-warning',
-  failed: 'border-error/30 bg-error/10 text-error',
+  failed: 'border-error/30 bg-error/10 text-danger',
 }
 
 const PLATFORM_LABELS = {
@@ -129,9 +129,9 @@ function StatusBadge({ status }) {
 
 function MetricCard({ label, value, detail, tone, icon, children }) {
   const toneClass = {
-    blue: 'border-accent-blue/30 bg-accent-blue/10 text-accent-blue',
-    green: 'border-success/30 bg-success/10 text-success',
-    violet: 'border-accent-violet/30 bg-accent-violet/10 text-accent-violet',
+    blue: 'border-accent-blue/30 bg-accent-blue/10 text-link',
+    green: 'border-success/30 bg-success/10 text-success-text',
+    violet: 'border-accent-violet/30 bg-accent-violet/10 text-violet-text',
     yellow: 'border-warning/30 bg-warning/10 text-warning',
   }[tone]
 
@@ -164,7 +164,7 @@ function AssetThumb({ asset }) {
   if (status === 'failed') {
     return (
       <div className="absolute inset-0 flex flex-col items-center justify-center bg-error/10 px-4 text-center">
-        <p className="text-sm font-semibold text-error">Failed</p>
+        <p className="text-sm font-semibold text-danger">Failed</p>
         <p className="mt-1 line-clamp-2 text-xs text-text-muted">{asset.title}</p>
       </div>
     )
@@ -430,7 +430,7 @@ export default function DashboardPage() {
     <AppLayout>
       <Topbar title="Home" />
 
-      <main className="space-y-8 p-7">
+      <main id="main-content" tabIndex={-1} className="space-y-8 p-4 sm:p-7">
         <section className="relative overflow-hidden rounded-2xl border border-border-default bg-surface/50 p-6 backdrop-blur-sm">
           <div
             className="pointer-events-none absolute -right-20 -top-24 h-56 w-56 rounded-full bg-accent-blue/10 blur-[80px]"
@@ -444,7 +444,7 @@ export default function DashboardPage() {
             <div className="min-w-0">
               <div className="flex items-center gap-3">
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl gradient-bg font-heading text-lg font-bold text-white shadow-lg gradient-glow">
-                  {firstName.charAt(0).toUpperCase()}
+                  {initialsFor(user)}
                 </span>
                 <div className="min-w-0">
                   <p className="font-heading text-xl font-bold text-text-primary">
@@ -579,7 +579,7 @@ export default function DashboardPage() {
                 <h2 className="font-heading text-xl font-bold text-text-primary">Recent Content</h2>
                 {assetMessage && <p className="mt-1 text-xs text-text-tertiary">{assetMessage}</p>}
               </div>
-              <Link to="/library" className="text-sm font-medium text-accent-blue hover:underline">
+              <Link to="/library" className="text-sm font-medium text-link hover:underline">
                 View library
               </Link>
             </div>
@@ -640,7 +640,7 @@ export default function DashboardPage() {
             )}
           </div>
 
-          <aside className="space-y-5">
+          <section aria-label="Project overview" className="space-y-5">
             <section className="rounded-2xl border border-border-default bg-surface/50 backdrop-blur-sm p-5">
               <h2 className="font-heading text-lg font-bold text-text-primary">Project Snapshot</h2>
               <div className="mt-4 space-y-3 text-sm">
@@ -692,7 +692,7 @@ export default function DashboardPage() {
                 </Link>
               </div>
             </section>
-          </aside>
+          </section>
         </section>
       </main>
     </AppLayout>

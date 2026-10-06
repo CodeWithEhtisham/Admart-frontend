@@ -41,7 +41,7 @@ function statusLine(ev) {
 
 const STATUS_STYLES = {
   published: {
-    pill: 'border-success/40 bg-success/20 text-success',
+    pill: 'border-success/40 bg-success/20 text-success-text',
     dot: 'bg-success',
     bar: 'from-success/30 to-success/10',
     label: 'Published',
@@ -53,13 +53,13 @@ const STATUS_STYLES = {
     label: 'Scheduled',
   },
   generating: {
-    pill: 'border-accent-violet/40 bg-accent-violet/20 text-accent-violet',
+    pill: 'border-accent-violet/40 bg-accent-violet/20 text-violet-text',
     dot: 'bg-accent-violet',
     bar: 'from-accent-violet/30 to-accent-violet/10',
     label: 'Generating',
   },
   failed: {
-    pill: 'border-error/40 bg-error/20 text-error',
+    pill: 'border-error/40 bg-error/20 text-danger',
     dot: 'bg-error',
     bar: 'from-error/30 to-error/10',
     label: 'Failed',
@@ -285,7 +285,7 @@ export default function CalendarPage() {
       <div className="min-h-screen pb-24">
         <Topbar title="Calendar" />
 
-        <div className="flex flex-wrap items-center gap-4 border-b border-border bg-panel/90 px-5 py-3 lg:px-7">
+        <div role="navigation" aria-label="Calendar months" className="flex flex-wrap items-center gap-4 border-b border-border bg-panel/90 px-5 py-3 lg:px-7">
           <div className="flex flex-wrap items-center gap-3">
             <button
               type="button"
@@ -295,9 +295,9 @@ export default function CalendarPage() {
             >
               ‹
             </button>
-            <h1 className="min-w-[160px] font-heading text-lg font-bold">
+            <h2 className="min-w-[160px] font-heading text-lg font-bold">
               {MONTH_NAMES[currentMonth]} {currentYear}
-            </h1>
+            </h2>
             <button
               type="button"
               onClick={goNextMonth}
@@ -309,7 +309,7 @@ export default function CalendarPage() {
             <button
               type="button"
               onClick={goToday}
-              className="rounded-xl border border-accent-blue/40 bg-accent-blue/15 px-3 py-1.5 text-sm font-medium text-accent-blue"
+              className="rounded-xl border border-accent-blue/40 bg-accent-blue/15 px-3 py-1.5 text-sm font-medium text-link"
             >
               Today
             </button>
@@ -357,14 +357,14 @@ export default function CalendarPage() {
           </div>
         </div>
 
-        <main className="p-7">
+        <main id="main-content" tabIndex={-1} className="p-7">
           {!projectId ? (
             <p className="mb-4 rounded-xl border border-border-default bg-surface px-4 py-3 text-sm text-text-secondary">
               Select a project to see scheduled posts and generations.
             </p>
           ) : null}
           {error ? (
-            <p className="mb-4 rounded-xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error">{error}</p>
+            <p className="mb-4 rounded-xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-danger">{error}</p>
           ) : null}
           {viewMode === 'month' && (
             <div className="overflow-hidden rounded-2xl border border-border-default bg-panel">
@@ -444,7 +444,7 @@ export default function CalendarPage() {
                       <p className="text-[10px] font-semibold uppercase text-text-muted">
                         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getDay()]}
                       </p>
-                      <p className={`font-heading text-xl font-bold ${isToday ? 'text-accent-blue' : 'text-text-primary'}`}>
+                      <p className={`font-heading text-xl font-bold ${isToday ? 'text-link' : 'text-text-primary'}`}>
                         {d.getDate()}
                       </p>
                     </button>
@@ -487,7 +487,7 @@ export default function CalendarPage() {
                     <button
                       type="button"
                       onClick={() => openDay(new Date(currentYear, currentMonth, dayNum))}
-                      className="text-sm font-medium text-accent-blue hover:underline"
+                      className="text-sm font-medium text-link hover:underline"
                     >
                       Open day
                     </button>
@@ -523,7 +523,9 @@ export default function CalendarPage() {
         </main>
 
         <div
-          className={`fixed bottom-0 left-[260px] right-0 z-20 flex flex-wrap items-center gap-6 border-t border-border bg-panel/95 px-7 py-3 backdrop-blur ${
+          role="region"
+          aria-label="Calendar legend"
+          className={`fixed bottom-0 left-0 right-0 z-20 lg:left-[260px] flex flex-wrap items-center gap-6 border-t border-border bg-panel/95 px-7 py-3 backdrop-blur ${
             panelOpen ? 'mr-[300px]' : ''
           }`}
         >
@@ -546,6 +548,7 @@ export default function CalendarPage() {
           panelOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
         aria-hidden={!panelOpen}
+        inert={!panelOpen}
       >
         <div className="flex h-[60px] items-center justify-between border-b border-border px-5">
           <div>
@@ -596,7 +599,7 @@ export default function CalendarPage() {
                       </span>
                     </div>
                     <p className="mt-2 text-sm text-text-secondary">{statusLine(ev)}</p>
-                    {ev.error ? <p className="mt-1 text-xs text-error">{ev.error}</p> : null}
+                    {ev.error ? <p className="mt-1 text-xs text-danger">{ev.error}</p> : null}
                     <p className="mt-2 text-xs text-text-tertiary">{ev.time}</p>
                   </div>
                 </article>

@@ -21,11 +21,11 @@ import {
 } from '../utils/projects'
 
 const STATUS_STYLES = {
-  published: 'border-success/30 bg-success/10 text-success',
+  published: 'border-success/30 bg-success/10 text-success-text',
   generating: 'border-warning/30 bg-warning/10 text-warning',
-  ready: 'border-accent-blue/30 bg-accent-blue/10 text-accent-blue',
+  ready: 'border-accent-blue/30 bg-accent-blue/10 text-link',
   scheduled: 'border-warning/30 bg-warning/10 text-warning',
-  failed: 'border-error/30 bg-error/10 text-error',
+  failed: 'border-error/30 bg-error/10 text-danger',
 }
 
 function SearchIcon({ className }) {
@@ -49,7 +49,7 @@ function AssetThumb({ asset }) {
   if (asset.status === 'failed') {
     return (
       <div className="absolute inset-0 flex flex-col items-center justify-center bg-error/10 px-3 text-center">
-        <p className="text-xs font-semibold text-error">Failed</p>
+        <p className="text-xs font-semibold text-danger">Failed</p>
         <p className="mt-1 line-clamp-2 text-[11px] text-text-muted">{asset.title}</p>
       </div>
     )
@@ -397,7 +397,7 @@ export default function LibraryPage() {
       <button
         type="button"
         disabled={deleting}
-        className="block w-full px-3 py-2 text-left text-error hover:bg-error/10 disabled:opacity-50"
+        className="block w-full px-3 py-2 text-left text-danger hover:bg-error/10 disabled:opacity-50"
         onClick={(e) => {
           e.stopPropagation()
           handleDeleteOne(asset)
@@ -413,7 +413,7 @@ export default function LibraryPage() {
       <div className="flex min-h-screen flex-col">
         <Topbar title="Library" />
 
-        <div className="relative flex-1">
+        <div id="main-content" role="main" tabIndex={-1} className="relative flex-1">
           {nSelected > 0 && (
             <div className="sticky top-0 z-20 flex items-center gap-3 border-b-2 border-accent-blue bg-elevated px-6 py-3 shadow-lg shadow-accent-blue/10">
               <span className="text-sm font-medium text-text-primary">{nSelected} selected</span>
@@ -421,7 +421,7 @@ export default function LibraryPage() {
                 type="button"
                 disabled={deleting}
                 onClick={handleDeleteSelected}
-                className="rounded-lg bg-error/10 px-3 py-1.5 text-sm font-semibold text-error transition hover:bg-error/20 disabled:opacity-50"
+                className="rounded-lg bg-error/10 px-3 py-1.5 text-sm font-semibold text-danger transition hover:bg-error/20 disabled:opacity-50"
               >
                 {deleting ? 'Deleting…' : 'Delete'}
               </button>
@@ -513,6 +513,7 @@ export default function LibraryPage() {
                 />
               </div>
               <select
+                aria-label="Filter by status"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="rounded-lg border border-border-default bg-input px-3 py-2 text-sm outline-none focus:border-accent-blue/50"
@@ -525,6 +526,7 @@ export default function LibraryPage() {
                 <option value="scheduled">Scheduled</option>
               </select>
               <select
+                aria-label="Sort by"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="rounded-lg border border-border-default bg-input px-3 py-2 text-sm outline-none focus:border-accent-blue/50"
@@ -564,7 +566,7 @@ export default function LibraryPage() {
               <button
                 type="button"
                 onClick={selectAllVisible}
-                className="text-sm font-medium text-accent-blue hover:underline"
+                className="text-sm font-medium text-link hover:underline"
                 disabled={!filtered.length}
               >
                 Select all
@@ -572,7 +574,7 @@ export default function LibraryPage() {
             </div>
 
             {error ? (
-              <div className="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+              <div className="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-danger">
                 {error}
                 <button type="button" onClick={() => load()} className="ml-3 underline">
                   Retry

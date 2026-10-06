@@ -154,7 +154,7 @@ export default function OnboardingPage() {
             </div>
 
             {error && (
-              <p className="rounded-xl border border-error/30 bg-error/10 px-4 py-2.5 text-sm text-error">
+              <p className="rounded-xl border border-error/30 bg-error/10 px-4 py-2.5 text-sm text-danger">
                 {error}
               </p>
             )}

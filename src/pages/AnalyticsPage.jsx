@@ -87,7 +87,7 @@ function LineChart({ series, platformIds }) {
 
   return (
     <div className="flex h-full flex-col rounded-2xl border border-border-default bg-surface p-5">
-      <h3 className="font-heading text-lg font-semibold text-text-primary">Posts over time</h3>
+      <h2 className="font-heading text-lg font-semibold text-text-primary">Posts over time</h2>
       {!ids.length ? (
         <p className="mt-4 text-sm text-text-secondary">Connect a social account to plot posts over time.</p>
       ) : (
@@ -165,7 +165,7 @@ function MixDonut({ title, centerValue, centerLabel, segments }) {
 
   return (
     <div className="flex h-full flex-col rounded-2xl border border-border-default bg-surface p-5">
-      <h3 className="font-heading text-lg font-semibold text-text-primary">{title}</h3>
+      <h2 className="font-heading text-lg font-semibold text-text-primary">{title}</h2>
       <div className="mt-4 flex flex-1 flex-col items-center justify-center gap-6">
         <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
           <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90">
@@ -257,7 +257,7 @@ function OutcomeBars({ byPlatform }) {
 
   return (
     <div className="flex h-full min-w-0 flex-col rounded-2xl border border-border-default bg-surface p-5">
-      <h3 className="font-heading text-lg font-semibold text-text-primary">Outcomes by platform</h3>
+      <h2 className="font-heading text-lg font-semibold text-text-primary">Outcomes by platform</h2>
       <p className="mt-1 text-sm text-text-secondary">Succeeded vs failed sends for each connected account.</p>
       {!rows.length ? (
         <p className="mt-6 text-sm text-text-secondary">Connect a platform to see outcomes.</p>
@@ -445,6 +445,7 @@ export default function AnalyticsPage() {
   const [platformFilter, setPlatformFilter] = useState('all')
   const [data, setData] = useState(null)
   const [error, setError] = useState('')
+  const [locked, setLocked] = useState('') // plan doesn't include analytics: show upgrade, not an error
   const [loading, setLoading] = useState(true)
   const [projectId, setProjectId] = useState(() => getCachedActiveProject()?.id || '')
 
@@ -466,10 +467,15 @@ export default function AnalyticsPage() {
     setError('')
     getProjectAnalytics(projectId, { range: dateRange, platform: platformFilter })
       .then((payload) => {
-        if (!cancelled) setData(payload)
+        if (cancelled) return
+        setData(payload)
+        setLocked('')
       })
       .catch((err) => {
-        if (!cancelled) setError(err.response?.data?.message || 'Could not load analytics.')
+        if (cancelled) return
+        const body = err.response?.data
+        if (body?.code === 'PLAN_FEATURE_LOCKED') setLocked(body.message)
+        else setError(body?.message || 'Could not load analytics.')
       })
       .finally(() => {
         if (!cancelled) setLoading(false)
@@ -527,7 +533,28 @@ export default function AnalyticsPage() {
   return (
     <AppLayout>
       <Topbar title="Analytics" />
-      <main className="space-y-8 p-7">
+      <main id="main-content" tabIndex={-1} className="space-y-8 p-4 sm:p-7">
+        {locked ? (
+          <section className="mx-auto mt-6 max-w-lg rounded-2xl border border-accent-violet/40 bg-panel p-8 text-center sm:mt-16">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-violet/15 text-violet-text">
+              <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+                <rect x="5" y="11" width="14" height="10" rx="2" />
+                <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+              </svg>
+            </div>
+            <h2 className="mt-5 font-heading text-xl font-bold text-text-primary">Analytics is available on Pro</h2>
+            <p className="mt-2 text-sm text-text-secondary">
+              See views, likes and publish results for every post across your connected accounts. {locked}
+            </p>
+            <Link
+              to="/billing"
+              className="mt-6 inline-block rounded-xl bg-accent-violet px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+            >
+              See plans and upgrade
+            </Link>
+          </section>
+        ) : (
+        <>
         <div className="flex flex-wrap items-center justify-end gap-3">
           <div className="flex rounded-xl border border-border-default bg-input p-1">
             {RANGES.map((r) => (
@@ -546,6 +573,7 @@ export default function AnalyticsPage() {
             ))}
           </div>
           <select
+            aria-label="Filter by platform"
             value={connected.length === 1 ? connected[0] : platformFilter}
             onChange={(e) => setPlatformFilter(e.target.value)}
             disabled={!connected.length}
@@ -575,7 +603,7 @@ export default function AnalyticsPage() {
           </p>
         ) : null}
         {error ? (
-          <p className="rounded-xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error">{error}</p>
+          <p className="rounded-xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-danger">{error}</p>
         ) : null}
         {loading ? <p className="text-sm text-text-muted">Loading publish activity…</p> : null}
 
@@ -612,7 +640,7 @@ export default function AnalyticsPage() {
 
         <section className="overflow-hidden rounded-2xl border border-border-default bg-surface">
           <div className="border-b border-border px-5 py-4">
-            <h3 className="font-heading text-lg font-semibold text-text-primary">Published posts</h3>
+            <h2 className="font-heading text-lg font-semibold text-text-primary">Published posts</h2>
             <p className="mt-1 text-sm text-text-secondary">
               Each video is grouped. Every platform is its own row, then a total for that post.
             </p>
@@ -636,7 +664,7 @@ export default function AnalyticsPage() {
                   <tr>
                     <td colSpan={8} className="px-5 py-8 text-sm text-text-secondary">
                       No posts in this range.{' '}
-                      <Link to="/library" className="font-medium text-accent-blue hover:underline">
+                      <Link to="/library" className="font-medium text-link hover:underline">
                         Open library
                       </Link>{' '}
                       and publish an asset to see it here.
@@ -738,6 +766,8 @@ export default function AnalyticsPage() {
             </table>
           </div>
         </section>
+        </>
+        )}
       </main>
     </AppLayout>
   )

@@ -2,6 +2,10 @@ import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
 import AuthPage from './pages/AuthPage'
 import AuthCallbackPage from './pages/AuthCallbackPage'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
+import PrivacyPage from './pages/PrivacyPage'
+import TermsPage from './pages/TermsPage'
 import OnboardingPage from './pages/OnboardingPage'
 import DashboardPage from './pages/DashboardPage'
 import ProgressPage from './pages/ProgressPage'
@@ -36,9 +40,14 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
+      <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
+      {/* Target of the emailed reset link (FRONTEND_URL/auth/reset-password?token=...). */}
+      <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
       <Route path="/auth/*" element={<AuthPage />} />
       <Route path="/auth-callback" element={<AuthCallbackPage />} />
       <Route path="/templates" element={<TemplatesPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="/terms" element={<TermsPage />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/onboarding" element={<OnboardingPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />

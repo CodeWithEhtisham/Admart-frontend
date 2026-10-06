@@ -232,7 +232,7 @@ function LogoLink() {
         <span className="font-heading text-xl font-bold tracking-tight text-text-primary">
           Admart
         </span>
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-accent-blue -mt-1">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-link -mt-1">
           Studio AI
         </span>
       </div>
@@ -381,7 +381,7 @@ export default function AuthPage() {
             <button
               type="button"
               onClick={() => setMode('sign-in')}
-              className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-200 ${
+              className={`whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-200 ${
                 !isSignUp
                   ? 'gradient-bg text-white shadow-md'
                   : 'text-text-secondary hover:text-text-primary'
@@ -392,7 +392,7 @@ export default function AuthPage() {
             <button
               type="button"
               onClick={() => setMode('sign-up')}
-              className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-200 ${
+              className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-200 ${
                 isSignUp
                   ? 'gradient-bg text-white shadow-md'
                   : 'text-text-secondary hover:text-text-primary'
@@ -428,7 +428,7 @@ export default function AuthPage() {
 
             {/* Form Title & Subtitle */}
             <div className="space-y-1.5">
-              <div className="inline-flex items-center gap-2 rounded-full border border-accent-blue/30 bg-accent-blue/10 px-3 py-0.5 text-[11px] font-semibold text-accent-blue">
+              <div className="inline-flex items-center gap-2 rounded-full border border-accent-blue/30 bg-accent-blue/10 px-3 py-0.5 text-[11px] font-semibold text-link">
                 <span className="h-1.5 w-1.5 rounded-full bg-accent-blue animate-pulse" />
                 <span>{isSignUp ? '🎁 5 Free Starter Credits' : '⚡ AI Marketing Cloud'}</span>
               </div>
@@ -444,7 +444,7 @@ export default function AuthPage() {
 
             {/* Error or Notice Alert */}
             {displayError && (
-              <div className="mt-5 rounded-xl border border-error/40 bg-error/15 p-3.5 text-xs text-error backdrop-blur-md">
+              <div className="mt-5 rounded-xl border border-error/40 bg-error/15 p-3.5 text-xs text-danger backdrop-blur-md">
                 <div className="flex items-start gap-2.5">
                   <svg className="h-4 w-4 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <circle cx="12" cy="12" r="10" />
@@ -493,11 +493,12 @@ export default function AuthPage() {
               {isSignUp && (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-text-secondary">
+                    <label htmlFor="auth-first-name" className="mb-1 block text-xs font-semibold text-text-secondary">
                       First Name
                     </label>
                     <div className="relative">
                       <input
+                    id="auth-first-name"
                         type="text"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
@@ -517,11 +518,12 @@ export default function AuthPage() {
                     </div>
                   </div>
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-text-secondary">
+                    <label htmlFor="auth-last-name" className="mb-1 block text-xs font-semibold text-text-secondary">
                       Last Name
                     </label>
                     <div className="relative">
                       <input
+                    id="auth-last-name"
                         type="text"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
@@ -544,11 +546,12 @@ export default function AuthPage() {
               )}
 
               <div>
-                <label className="mb-1 block text-xs font-semibold text-text-secondary">
+                <label htmlFor="auth-email" className="mb-1 block text-xs font-semibold text-text-secondary">
                   Email address
                 </label>
                 <div className="relative">
                   <input
+                    id="auth-email"
                     type="email"
                     required
                     value={email}
@@ -572,12 +575,18 @@ export default function AuthPage() {
 
               <div>
                 <div className="mb-1 flex items-center justify-between">
-                  <label className="text-xs font-semibold text-text-secondary">
+                  <label htmlFor="auth-password" className="text-xs font-semibold text-text-secondary">
                     Password
                   </label>
+                  {!isSignUp && (
+                    <Link to="/auth/forgot-password" className="inline-block py-1 text-xs font-semibold text-link hover:underline">
+                      Forgot password?
+                    </Link>
+                  )}
                 </div>
                 <div className="relative">
                   <input
+                    id="auth-password"
                     type={showPassword ? 'text' : 'password'}
                     required
                     value={password}
@@ -650,6 +659,13 @@ export default function AuthPage() {
                   </>
                 )}
               </button>
+              {isSignUp && (
+                <p className="text-center text-xs text-text-tertiary">
+                  By creating an account you agree to our{' '}
+                  <Link to="/terms" className="text-link underline">Terms</Link> and{' '}
+                  <Link to="/privacy" className="text-link underline">Privacy Policy</Link>.
+                </p>
+              )}
             </form>
 
             {/* Bottom Quick Switch Link */}
@@ -661,7 +677,7 @@ export default function AuthPage() {
                     <button
                       type="button"
                       onClick={() => setMode('sign-in')}
-                      className="font-semibold text-accent-blue hover:text-accent-blue/80 underline underline-offset-2 transition"
+                      className="font-semibold text-link hover:text-link/80 underline underline-offset-2 transition"
                     >
                       Sign In
                     </button>
@@ -688,7 +704,7 @@ export default function AuthPage() {
           
           {/* Showcase Banner Header */}
           <div className="mb-6 space-y-2 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 rounded-full border border-accent-blue/30 bg-accent-blue/15 px-3 py-1 text-xs font-semibold text-accent-blue backdrop-blur-md">
+            <div className="inline-flex items-center gap-2 rounded-full border border-accent-blue/30 bg-accent-blue/15 px-3 py-1 text-xs font-semibold text-link backdrop-blur-md">
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>LIVE MULTI-PLATFORM PREVIEWS</span>
             </div>

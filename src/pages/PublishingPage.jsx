@@ -5,6 +5,7 @@ import FacebookPostForm from '../components/FacebookPostForm.jsx'
 import InstagramPostForm from '../components/InstagramPostForm.jsx'
 import YoutubeUploadForm from '../components/YoutubeUploadForm.jsx'
 import { mediaBlockReason, platformAccepts, PROVIDER_PLACEMENTS } from '../utils/platformMedia.js'
+import { getCredits } from '../utils/credits.js'
 import {
   boostAsAd,
   getCachedActiveProject,
@@ -12,12 +13,14 @@ import {
   listSocialAccounts,
   publishToAccounts,
 } from '../utils/projects.js'
+import { Glyphs } from '../components/glyphs'
+import { Icon } from '../components/icons'
 
 const ORGANIC_META = [
-  { id: 'tiktok', name: 'TikTok', icon: '🎵', color: 'text-tiktok', dot: 'bg-tiktok' },
-  { id: 'youtube', name: 'YouTube', icon: '▶️', color: 'text-youtube', dot: 'bg-youtube' },
-  { id: 'instagram', name: 'Instagram', icon: '📸', color: 'text-instagram', dot: 'bg-instagram' },
-  { id: 'facebook', name: 'Facebook', icon: 'f', color: 'text-facebook', dot: 'bg-facebook' },
+  { id: 'tiktok', name: 'TikTok', icon: Glyphs.music, color: 'text-tiktok', dot: 'bg-tiktok' },
+  { id: 'youtube', name: 'YouTube', icon: Glyphs.play, color: 'text-youtube', dot: 'bg-youtube' },
+  { id: 'instagram', name: 'Instagram', icon: Glyphs.camera, color: 'text-instagram', dot: 'bg-instagram' },
+  { id: 'facebook', name: 'Facebook', icon: Glyphs.facebook, color: 'text-facebook', dot: 'bg-facebook' },
 ]
 
 const ADS_PLACEMENT_META = [
@@ -43,12 +46,13 @@ function ChevronLeftIcon({ className }) {
   )
 }
 
-function Toggle({ checked, onChange, disabled }) {
+function Toggle({ checked, onChange, disabled, label }) {
   return (
     <button
       type="button"
       role="switch"
       aria-checked={checked}
+      aria-label={label}
       disabled={disabled}
       onClick={() => !disabled && onChange(!checked)}
       className={`relative h-6 w-11 shrink-0 rounded-full transition ${
@@ -102,6 +106,8 @@ export default function PublishingPage() {
   const [showModal, setShowModal] = useState(false)
   const [scheduleOpen, setScheduleOpen] = useState(false)
   const [scheduleAt, setScheduleAt] = useState('')
+  // Plan flag from the balance endpoint; null until known (don't hide the button while loading).
+  const [canSchedule, setCanSchedule] = useState(null)
   const [showToast, setShowToast] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
   const [stayAfterToast, setStayAfterToast] = useState(false)
@@ -253,6 +259,15 @@ export default function PublishingPage() {
     }
   }
 
+  useEffect(() => {
+    getCredits()
+      .then((bal) => {
+        const limits = bal?.planDetails?.limits
+        if (limits) setCanSchedule(Boolean(limits.can_schedule_publishing))
+      })
+      .catch(() => {})
+  }, [])
+
   const openSchedule = () => {
     const fromYt = ytPayload?.publishAt ? toDatetimeLocal(ytPayload.publishAt) : ''
     setScheduleAt(fromYt || toDatetimeLocal(new Date(Date.now() + 60 * 60 * 1000)))
@@ -292,7 +307,7 @@ export default function PublishingPage() {
       </header>
 
       <div className="flex min-h-0 flex-1 overflow-hidden">
-        <aside className="flex w-[300px] shrink-0 flex-col border-r border-border bg-panel">
+        <aside aria-label="Platforms" className="flex w-[300px] shrink-0 flex-col border-r border-border bg-panel">
           <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4">
             <div className="overflow-hidden rounded-xl border border-border-default bg-surface shadow-lg">
               <div className={`relative w-full ${isImage ? 'aspect-square' : 'aspect-video'}`}>
@@ -381,7 +396,7 @@ export default function PublishingPage() {
                           className="flex min-w-0 flex-1 items-center gap-2 text-left"
                         >
                           <span className={`flex h-8 w-8 items-center justify-center rounded-lg bg-elevated text-base ${p.color}`}>
-                            {p.icon}
+                            <Icon className="h-4 w-4">{p.icon}</Icon>
                           </span>
                           <span className="min-w-0">
                             <span className="block truncate text-sm font-medium">{p.name}</span>
@@ -389,6 +404,7 @@ export default function PublishingPage() {
                           </span>
                         </button>
                         <Toggle
+                          label={`Publish to ${p.name}`}
                           checked={Boolean(toggles[p.id]) && !disabled}
                           disabled={disabled}
                           onChange={(v) => {
@@ -407,7 +423,7 @@ export default function PublishingPage() {
                 {!connectedAds.length ? (
                   <div className="rounded-xl border border-border bg-input p-3 text-sm text-text-secondary">
                     Connect an ads account
-                    <Link to="/social" className="mt-2 block font-medium text-accent-blue hover:underline">
+                    <Link to="/social" className="mt-2 block font-medium text-link hover:underline">
                       Connect ads →
                     </Link>
                   </div>
@@ -442,6 +458,7 @@ export default function PublishingPage() {
                             <span className={`h-2 w-2 rounded-full ${p.dot}`} />
                             <p className="min-w-0 flex-1 text-sm">{p.name}</p>
                             <Toggle
+                              label={`Boost on ${p.name}`}
                               checked={Boolean(adsPlacements[p.id])}
                               onChange={(v) => setAdsPlacements((prev) => ({ ...prev, [p.id]: v }))}
                             />
@@ -459,7 +476,7 @@ export default function PublishingPage() {
         <main className="min-h-0 min-w-0 flex-1 overflow-y-auto bg-base p-6">
           <section className="mx-auto max-w-2xl space-y-4">
             {error ? (
-              <p className="rounded-xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error">{error}</p>
+              <p className="rounded-xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-danger">{error}</p>
             ) : null}
 
             {mode === 'post' ? (
@@ -503,7 +520,7 @@ export default function PublishingPage() {
                     {!selected?.connected ? (
                       <p className="mt-2 text-sm text-text-secondary">
                         Connect {selected?.name} in Social Accounts, then come back to publish.
-                        <Link to="/social" className="mt-2 block font-medium text-accent-blue hover:underline">
+                        <Link to="/social" className="mt-2 block font-medium text-link hover:underline">
                           Open Social Accounts →
                         </Link>
                       </p>
@@ -588,14 +605,24 @@ export default function PublishingPage() {
               >
                 Save draft
               </button>
-              <button
-                type="button"
-                onClick={openSchedule}
-                disabled={footerDisabled}
-                className="rounded-lg border border-border-default px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Schedule
-              </button>
+              {canSchedule === false ? (
+                <Link
+                  to="/billing"
+                  title="Scheduled publishing is included in Plus and Pro"
+                  className="rounded-lg border border-border-default px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary"
+                >
+                  Schedule · <span className="text-violet-text">Plus</span>
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={openSchedule}
+                  disabled={footerDisabled}
+                  className="rounded-lg border border-border-default px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Schedule
+                </button>
+              )}
             </>
           ) : null}
           <button
@@ -690,7 +717,7 @@ export default function PublishingPage() {
         </div>
       )}
       {showToast && (
-        <div className="animate-slide-up fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-xl border border-success/30 bg-panel px-5 py-3 text-sm font-medium text-success shadow-xl">
+        <div className="animate-slide-up fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-xl border border-success/30 bg-panel px-5 py-3 text-sm font-medium text-success-text shadow-xl">
           {toastMessage}
         </div>
       )}

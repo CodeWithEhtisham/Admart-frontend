@@ -5,13 +5,8 @@ import { CREDITS_CHANGE_EVENT, formatCredits, getCredits } from '../utils/credit
 import { clearActiveProject } from '../utils/projects'
 import api from '../utils/api'
 import { clearSession, getStoredUser, isAuthenticated } from '../utils/auth'
-
-function getInitials(firstName, lastName, email) {
-  if (firstName && lastName) return `${firstName[0]}${lastName[0]}`.toUpperCase()
-  if (firstName) return firstName.slice(0, 2).toUpperCase()
-  if (email) return email.slice(0, 2).toUpperCase()
-  return 'U'
-}
+import { useAppChrome } from '../utils/appChrome'
+import { initialsFor } from '../utils/user.js'
 
 /**
  * Shared top navigation bar used by every in-app page.
@@ -19,6 +14,7 @@ function getInitials(firstName, lastName, email) {
  * controls stay consistent across the authenticated workspace.
  */
 export default function Topbar({ title }) {
+  const { mobileOpen, setMobileNav } = useAppChrome()
   const navigate = useNavigate()
   const [searchOpen, setSearchOpen] = useState(false)
   const [creditsRemaining, setCreditsRemaining] = useState(null)
@@ -105,17 +101,35 @@ export default function Topbar({ title }) {
         </div>
       )}
 
-      <header className="sticky top-0 z-30 flex h-[60px] items-center justify-between gap-4 border-b border-border bg-base/75 px-7 backdrop-blur-xl">
-        <div className="flex shrink-0 items-center gap-4">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-sm text-text-secondary">
-            <Link to="/dashboard" className="hover:text-text-primary">
+      <header className="sticky top-0 z-30 flex h-[60px] items-center justify-between gap-2 border-b border-border bg-base/75 px-3 backdrop-blur-xl sm:gap-4 sm:px-7">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-4">
+          <button
+            type="button"
+            onClick={() => setMobileNav(true)}
+            aria-label="Open menu"
+            aria-controls="app-sidebar"
+            aria-expanded={mobileOpen}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border-default bg-surface text-text-primary lg:hidden"
+          >
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1 text-sm text-text-secondary">
+            <Link to="/dashboard" className="hidden py-1 hover:text-text-primary sm:inline-block">
               Dashboard
             </Link>
-            <span className="text-text-muted">/</span>
-            <span className="font-heading text-lg font-bold text-text-primary">{title}</span>
+            <span className="hidden text-text-muted sm:inline">/</span>
+            <h1 className="truncate font-heading text-lg font-bold text-text-primary">{title}</h1>
           </nav>
-          <span className="text-text-muted">|</span>
-          <ProjectDropdown />
+          {authenticated && (
+            <>
+              <span className="hidden text-text-muted lg:inline">|</span>
+              <div className="hidden lg:block">
+                <ProjectDropdown />
+              </div>
+            </>
+          )}
         </div>
 
         <button
@@ -153,9 +167,13 @@ export default function Topbar({ title }) {
           <button
             type="button"
             onClick={() => setSearchOpen(true)}
-            className="rounded-xl border border-border-default bg-surface px-3 py-2 text-sm md:hidden"
+            aria-label="Search"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-border-default bg-surface text-text-secondary md:hidden"
           >
-            Search
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-3.5-3.5" />
+            </svg>
           </button>
 
           <Link
@@ -167,7 +185,6 @@ export default function Topbar({ title }) {
               <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
               <path d="M13.73 21a2 2 0 0 1-3.46 0" />
             </svg>
-            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-error" />
           </Link>
 
           {!authenticated ? (
@@ -193,7 +210,7 @@ export default function Topbar({ title }) {
                 className="flex h-9 w-9 items-center justify-center rounded-full gradient-bg font-heading text-xs font-bold text-white shadow-md shadow-accent-blue/20 transition hover:opacity-90"
                 title={user?.email || 'User profile'}
               >
-                {getInitials(user?.firstName, user?.lastName, user?.email)}
+                {initialsFor(user)}
               </button>
 
               {userMenuOpen && (
@@ -214,7 +231,7 @@ export default function Topbar({ title }) {
                   <button
                     type="button"
                     onClick={handleSignOut}
-                    className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-error transition hover:bg-error/10"
+                    className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-danger transition hover:bg-error/10"
                   >
                     Sign out
                   </button>

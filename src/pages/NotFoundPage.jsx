@@ -1,8 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom'
+import { Glyphs } from '../components/glyphs'
+import { Icon } from '../components/icons'
 
 const EMPTY_STATES = [
   {
-    icon: '🎬',
+    icon: Glyphs.film,
     accent: 'blue',
     badge: 'Videos',
     title: 'No videos yet',
@@ -12,7 +14,7 @@ const EMPTY_STATES = [
     variant: 'gradient',
   },
   {
-    icon: '📊',
+    icon: Glyphs.chart,
     accent: 'violet',
     badge: 'Analytics',
     title: 'No data to show yet',
@@ -22,7 +24,7 @@ const EMPTY_STATES = [
     variant: 'outline',
   },
   {
-    icon: '🔗',
+    icon: Glyphs.link,
     accent: 'green',
     badge: 'Social',
     title: 'No accounts connected',
@@ -32,7 +34,7 @@ const EMPTY_STATES = [
     variant: 'gradient',
   },
   {
-    icon: '📅',
+    icon: Glyphs.calendar,
     accent: 'yellow',
     badge: 'Calendar',
     title: 'Nothing scheduled',
@@ -42,7 +44,7 @@ const EMPTY_STATES = [
     variant: 'outline',
   },
   {
-    icon: '◈',
+    icon: Glyphs.sparkles,
     accent: 'grey',
     badge: 'Templates',
     title: 'No favourites yet',
@@ -52,7 +54,7 @@ const EMPTY_STATES = [
     variant: 'outline',
   },
   {
-    icon: '🔔',
+    icon: Glyphs.bell,
     accent: 'blue',
     badge: 'Notifications',
     title: 'All caught up!',
@@ -65,22 +67,22 @@ const EMPTY_STATES = [
 
 const ACCENT_MAP = {
   blue: {
-    badge: 'border-accent-blue/30 bg-accent-blue/15 text-accent-blue',
+    badge: 'border-accent-blue/30 bg-accent-blue/15 text-link',
     iconBg: 'bg-accent-blue/10',
     gradient: 'from-accent-blue to-accent-violet',
-    outline: 'border-accent-blue/40 text-accent-blue hover:bg-accent-blue/10',
+    outline: 'border-accent-blue/40 text-link hover:bg-accent-blue/10',
   },
   violet: {
-    badge: 'border-accent-violet/30 bg-accent-violet/15 text-accent-violet',
+    badge: 'border-accent-violet/30 bg-accent-violet/15 text-violet-text',
     iconBg: 'bg-accent-violet/10',
     gradient: 'from-accent-violet to-pink-500',
-    outline: 'border-accent-violet/40 text-accent-violet hover:bg-accent-violet/10',
+    outline: 'border-accent-violet/40 text-violet-text hover:bg-accent-violet/10',
   },
   green: {
-    badge: 'border-success/30 bg-success/15 text-success',
+    badge: 'border-success/30 bg-success/15 text-success-text',
     iconBg: 'bg-success/10',
     gradient: 'from-success to-tiktok',
-    outline: 'border-success/40 text-success hover:bg-success/10',
+    outline: 'border-success/40 text-success-text hover:bg-success/10',
   },
   yellow: {
     badge: 'border-warning/30 bg-warning/15 text-warning',
@@ -97,18 +99,18 @@ const ACCENT_MAP = {
 }
 
 const QUICK_LINKS = [
-  { icon: '✦', label: 'Create Video', to: '/create' },
-  { icon: '▤', label: 'My Videos', to: '/library' },
-  { icon: '⧉', label: 'Templates', to: '/templates' },
-  { icon: '📈', label: 'Analytics', to: '/analytics' },
-  { icon: '⚡', label: 'Social Accounts', to: '/social' },
+  { icon: Glyphs.film, label: 'Create Video', to: '/create' },
+  { icon: Glyphs.chart, label: 'My Videos', to: '/library' },
+  { icon: Glyphs.sparkles, label: 'Templates', to: '/templates' },
+  { icon: Glyphs.trending, label: 'Analytics', to: '/analytics' },
+  { icon: Glyphs.link, label: 'Social Accounts', to: '/social' },
 ]
 
 export default function NotFoundPage() {
   const navigate = useNavigate()
 
   return (
-    <div className="min-h-screen bg-base font-body text-text-primary">
+    <main className="min-h-screen bg-base font-body text-text-primary">
       <style>{`
         @keyframes float404 {
           0%, 100% { transform: translateY(0); }
@@ -179,7 +181,7 @@ export default function NotFoundPage() {
               to={link.to}
               className="inline-flex items-center gap-2 rounded-full border border-border-default bg-surface px-4 py-2 text-xs font-medium text-text-secondary transition hover:border-white/15 hover:text-text-primary"
             >
-              <span aria-hidden>{link.icon}</span>
+              <Icon className="h-3.5 w-3.5">{link.icon}</Icon>
               {link.label}
             </Link>
           ))}
@@ -213,7 +215,7 @@ export default function NotFoundPage() {
 
                 {/* Icon */}
                 <div className={`flex h-20 w-20 items-center justify-center rounded-[20px] text-4xl ${a.iconBg}`}>
-                  {card.icon}
+                  <Icon className="h-9 w-9">{card.icon}</Icon>
                 </div>
 
                 <h3 className="mt-5 font-heading text-base font-semibold text-text-primary">
@@ -236,6 +238,6 @@ export default function NotFoundPage() {
           })}
         </div>
       </section>
-    </div>
+    </main>
   )
 }

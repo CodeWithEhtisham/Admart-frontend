@@ -12,10 +12,16 @@ export default function AppLayout({ children }) {
 
   return (
     <div className="min-h-screen bg-base font-body text-base text-text-primary">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-xl focus:bg-accent-blue focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
+      >
+        Skip to main content
+      </a>
       <AdmartSidebar />
       <div
         className={`min-h-screen transition-[margin] duration-300 ease-out ${
-          collapsed ? 'ml-[72px]' : 'ml-[260px]'
+          collapsed ? 'lg:ml-[72px]' : 'lg:ml-[260px]'
         }`}
       >
         {children}

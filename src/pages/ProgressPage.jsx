@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Glyphs } from '../components/glyphs'
+import { Icon } from '../components/icons'
 
 const STAGES = [
   'Analyzing Prompt',
@@ -158,7 +160,7 @@ export default function ProgressPage() {
                         <div
                           className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-xs font-mono ${
                             done
-                              ? 'border-success/50 bg-success/15 text-success'
+                              ? 'border-success/50 bg-success/15 text-success-text'
                               : active
                                 ? 'border-accent-blue bg-accent-blue/15 text-text-primary'
                                 : 'border-border-default bg-surface text-text-muted'
@@ -229,7 +231,7 @@ export default function ProgressPage() {
               <button
                 type="button"
                 onClick={() => navigate('/create')}
-                className="flex-1 rounded-xl border border-error/50 bg-transparent py-3 text-sm font-semibold text-error transition hover:bg-error/10"
+                className="flex-1 rounded-xl border border-error/50 bg-transparent py-3 text-sm font-semibold text-danger transition hover:bg-error/10"
               >
                 Cancel Generation
               </button>
@@ -242,7 +244,7 @@ export default function ProgressPage() {
                     : 'border-border-default bg-elevated text-text-secondary hover:text-text-primary'
                 }`}
               >
-                🔔 Notify when ready
+                <Icon className="inline-block -mt-0.5 h-4 w-4">{Glyphs.bell}</Icon> Notify when ready
               </button>
             </div>
           </div>
@@ -252,7 +254,7 @@ export default function ProgressPage() {
       {showSuccess && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm animate-slide-up">
           <div className="w-full max-w-md rounded-2xl border border-border-default bg-panel p-8 text-center shadow-2xl">
-            <p className="text-4xl">🎉</p>
+            <Icon className="mx-auto h-10 w-10 text-success-text">{Glyphs.sparkles}</Icon>
             <h2 className="mt-4 font-heading text-2xl font-bold text-text-primary">Your video is ready!</h2>
             <p className="mt-2 text-sm text-text-secondary">
               Review the cut, pick a thumbnail, and publish to your connected platforms.
