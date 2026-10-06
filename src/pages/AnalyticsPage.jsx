@@ -8,6 +8,9 @@ import {
   getProjectAnalytics,
 } from '../utils/projects.js'
 
+// Shared empty list so derived values keep a stable identity between renders.
+const NONE = []
+
 const PLATFORM_META = {
   tiktok: { name: 'TikTok', color: '#00f2ea', dot: 'bg-tiktok' },
   youtube: { name: 'YouTube', color: '#ff4444', dot: 'bg-youtube' },
@@ -153,14 +156,14 @@ function MixDonut({ title, centerValue, centerLabel, segments }) {
   const rows = (segments || []).filter((row) => Number(row.count || 0) >= 0)
   const total = rows.reduce((n, row) => n + Number(row.count || 0), 0)
   const sum = total || 1
-  let dashAcc = 0
-  const slices = rows.map((row) => {
-    const pct = Number(row.count || 0) / sum
-    const len = pct * c
-    const offset = -dashAcc
-    dashAcc += len
-    return { ...row, pct, len, offset }
-  })
+  const lens = rows.map((row) => (Number(row.count || 0) / sum) * c)
+  const slices = rows.map((row, i) => ({
+    ...row,
+    pct: lens[i] / c,
+    len: lens[i],
+    // each slice starts where the previous ones end
+    offset: -lens.slice(0, i).reduce((n, len) => n + len, 0),
+  }))
   const cx = size / 2
 
   return (
@@ -443,10 +446,9 @@ function exportCsv(posts) {
 export default function AnalyticsPage() {
   const [dateRange, setDateRange] = useState('30d')
   const [platformFilter, setPlatformFilter] = useState('all')
-  const [data, setData] = useState(null)
-  const [error, setError] = useState('')
-  const [locked, setLocked] = useState('') // plan doesn't include analytics: show upgrade, not an error
-  const [loading, setLoading] = useState(true)
+  // Last response, tagged with the request it answers; loading/error derive from it.
+  // locked = plan doesn't include analytics: show upgrade, not an error.
+  const [result, setResult] = useState({ key: '', data: null, error: '', locked: '' })
   const [projectId, setProjectId] = useState(() => getCachedActiveProject()?.id || '')
 
   useEffect(() => {
@@ -455,48 +457,40 @@ export default function AnalyticsPage() {
     return () => window.removeEventListener(PROJECT_CHANGE_EVENT, sync)
   }, [])
 
+  // Platforms come from the last response; a stale filter falls back to "all".
+  const connected = result.data?.connectedPlatforms || NONE
+  const requestPlatform =
+    connected.length && platformFilter !== 'all' && !connected.includes(platformFilter) ? 'all' : platformFilter
+  const requestKey = projectId ? `${projectId}|${dateRange}|${requestPlatform}` : ''
+
   useEffect(() => {
-    if (!projectId) {
-      setData(null)
-      setLoading(false)
-      setError('')
-      return undefined
-    }
+    if (!requestKey) return undefined
     let cancelled = false
-    setLoading(true)
-    setError('')
-    getProjectAnalytics(projectId, { range: dateRange, platform: platformFilter })
+    getProjectAnalytics(projectId, { range: dateRange, platform: requestPlatform })
       .then((payload) => {
-        if (cancelled) return
-        setData(payload)
-        setLocked('')
+        if (!cancelled) setResult({ key: requestKey, data: payload, error: '', locked: '' })
       })
       .catch((err) => {
         if (cancelled) return
         const body = err.response?.data
-        if (body?.code === 'PLAN_FEATURE_LOCKED') setLocked(body.message)
-        else setError(body?.message || 'Could not load analytics.')
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false)
+        const isLocked = body?.code === 'PLAN_FEATURE_LOCKED'
+        setResult({
+          key: requestKey,
+          data: null,
+          error: isLocked ? '' : body?.message || 'Could not load analytics.',
+          locked: isLocked ? body.message : '',
+        })
       })
     return () => {
       cancelled = true
     }
-  }, [projectId, dateRange, platformFilter])
+  }, [requestKey, projectId, dateRange, requestPlatform])
 
-  const connected = data?.connectedPlatforms || []
-
-  useEffect(() => {
-    if (!data) return
-    if (connected.length === 1 && platformFilter !== connected[0]) {
-      setPlatformFilter(connected[0])
-    } else if (connected.length > 1 && platformFilter !== 'all' && !connected.includes(platformFilter)) {
-      setPlatformFilter('all')
-    } else if (connected.length === 0 && platformFilter !== 'all') {
-      setPlatformFilter('all')
-    }
-  }, [connected, data, platformFilter])
+  const current = result.key === requestKey ? result : null
+  const data = requestKey ? result.data : null // keep showing the previous range while the next loads
+  const locked = requestKey ? result.locked : ''
+  const error = current?.error || ''
+  const loading = Boolean(requestKey) && !current
 
   const totals = data?.totals || { posts: 0, succeeded: 0, failed: 0, partial: 0, videos: 0, images: 0 }
   const series = data?.series || []
@@ -574,7 +568,7 @@ export default function AnalyticsPage() {
           </div>
           <select
             aria-label="Filter by platform"
-            value={connected.length === 1 ? connected[0] : platformFilter}
+            value={connected.length === 1 ? connected[0] : requestPlatform}
             onChange={(e) => setPlatformFilter(e.target.value)}
             disabled={!connected.length}
             className="rounded-xl border border-border-default bg-input px-3 py-2 text-sm text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue disabled:cursor-not-allowed disabled:opacity-50"

@@ -4,7 +4,7 @@ import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import api from '../utils/api'
 import { getStoredUser, initialsFor } from '../utils/user.js'
-import { SUPPORT_EMAIL } from '../utils/site'
+import { clearSession } from '../utils/auth'
 import { Glyphs } from '../components/glyphs'
 import { Icon } from '../components/icons'
 
@@ -15,6 +15,7 @@ const INITIAL = {
   email: '',
   avatarUrl: '',
   googleId: '',
+  hasPassword: true,
 }
 
 const TABS = [
@@ -33,6 +34,7 @@ function formFromUser(user, base = INITIAL) {
     email: user?.email || '',
     avatarUrl: user?.avatarUrl || user?.avatar_url || '',
     googleId: user?.googleId || user?.google_id || '',
+    hasPassword: user?.hasPassword !== false,
   }
 }
 
@@ -56,6 +58,9 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('profile')
   const [toast, setToast] = useState(null)
   const [saving, setSaving] = useState(false)
+  const [deleteSecret, setDeleteSecret] = useState('')
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
   const [savedSnapshot, setSavedSnapshot] = useState(INITIAL)
   const [form, setForm] = useState(INITIAL)
 
@@ -117,6 +122,28 @@ export default function SettingsPage() {
 
   const handleCancel = () => {
     setForm(savedSnapshot)
+  }
+
+  const handleDeleteAccount = async (e) => {
+    e.preventDefault()
+    setDeleting(true)
+    setDeleteError('')
+    try {
+      await api.post(
+        '/api/auth/delete-account',
+        form.hasPassword ? { password: deleteSecret } : { confirmEmail: deleteSecret },
+      )
+      clearSession()
+      navigate('/', { replace: true })
+    } catch (err) {
+      const data = err?.response?.data
+      setDeleteError(
+        err?.response?.status === 429
+          ? 'Too many attempts. Please wait a minute and try again.'
+          : data?.password?.[0] || data?.confirmEmail?.[0] || data?.message || 'Could not delete your account.',
+      )
+      setDeleting(false)
+    }
   }
 
   const profileInitial = initialsFor(form)
@@ -247,19 +274,49 @@ export default function SettingsPage() {
               ))}
 
               {activeTab === 'danger' && (
-                <div className="mx-auto max-w-2xl rounded-2xl border border-error/40 bg-error/5 p-6">
+                <form
+                  onSubmit={handleDeleteAccount}
+                  className="mx-auto max-w-2xl rounded-2xl border border-error/40 bg-error/5 p-6"
+                >
                   <h2 className="font-heading text-lg font-semibold text-danger">Delete account</h2>
-                  <p className="mt-2 text-sm text-text-secondary">
-                    Deleting your account removes your projects, generated media and connected social accounts.
-                    Self-service deletion is coming soon. Until then, email{' '}
-                    {SUPPORT_EMAIL ? (
-                      <a href={`mailto:${SUPPORT_EMAIL}`} className="text-link hover:underline">{SUPPORT_EMAIL}</a>
-                    ) : (
-                      'our support team'
-                    )}{' '}
-                    from the address on your account and we will delete it for you.
+                  <p className="mt-2 text-sm text-text-secondary">This permanently deletes, and cannot be undone:</p>
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-secondary">
+                    <li>your profile and sign-in</li>
+                    <li>all projects, generated images and videos, and uploads</li>
+                    <li>connected social and ad accounts (Admart&apos;s access tokens are erased)</li>
+                    <li>your plan and remaining credits</li>
+                  </ul>
+                  <p className="mt-3 text-sm text-text-secondary">
+                    Payment records (amount, plan and transaction ID) are kept for accounting, without your account.
+                    You may also want to remove Admart&apos;s access in your Google, Facebook or TikTok settings. See
+                    the <Link to="/privacy#data-deletion" className="text-link underline">Privacy Policy</Link>.
                   </p>
-                </div>
+                  <label htmlFor="delete-confirm" className="mt-5 block text-sm font-medium text-text-primary">
+                    {form.hasPassword ? 'Enter your password to confirm' : `Type your email (${form.email}) to confirm`}
+                  </label>
+                  <input
+                    id="delete-confirm"
+                    type={form.hasPassword ? 'password' : 'email'}
+                    autoComplete={form.hasPassword ? 'current-password' : 'off'}
+                    value={deleteSecret}
+                    onChange={(e) => setDeleteSecret(e.target.value)}
+                    aria-invalid={Boolean(deleteError)}
+                    aria-describedby={deleteError ? 'delete-error' : undefined}
+                    className="mt-2 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-text-primary focus:border-error focus:outline-none focus:ring-1 focus:ring-error"
+                  />
+                  {deleteError && (
+                    <p id="delete-error" role="alert" className="mt-2 text-sm text-danger">
+                      {deleteError}
+                    </p>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={!deleteSecret || deleting}
+                    className="mt-5 rounded-xl bg-red-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {deleting ? 'Deleting…' : 'Delete my account permanently'}
+                  </button>
+                </form>
               )}
             </div>
 

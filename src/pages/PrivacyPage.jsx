@@ -107,9 +107,10 @@ export default function PrivacyPage() {
       <section>
         <h2>How long we keep information</h2>
         <p>
-          We keep your information while your account is open. When you delete your account, we delete your account
-          details, projects, generated media and connected-account tokens within <Fill>number</Fill> days, except payment
-          records that we must keep for legal or accounting reasons.
+          We keep your information while your account is open. When you delete your account, your account details,
+          projects, generated media, uploads and connected-account tokens are deleted immediately, and copies in our
+          backups are removed within 14 days. We keep payment records (amount, plan, transaction ID, date and the
+          payer&apos;s email) for legal and accounting reasons; payment screenshots are deleted.
         </p>
       </section>
 
@@ -118,8 +119,12 @@ export default function PrivacyPage() {
         <ul>
           <li>You can update your name on the Settings page and disconnect social accounts on the Social Accounts page.</li>
           <li>
-            To get a copy of your data or to delete your account and its data, email <ContactEmail /> from the email
-            address on your account. We will confirm when it is done.
+            <strong>Delete your account yourself:</strong> sign in and go to Settings → Danger Zone. Deletion is
+            immediate and permanent.
+          </li>
+          <li>
+            If you can&apos;t sign in, or you want a copy of your data, email <ContactEmail /> from the email address on
+            your account and we will handle it and confirm when it is done.
           </li>
         </ul>
       </section>

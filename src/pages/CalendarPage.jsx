@@ -8,6 +8,9 @@ import {
   getProjectCalendar,
 } from '../utils/projects.js'
 
+// Shared empty list so derived values keep a stable identity between renders.
+const NONE = []
+
 const PLATFORMS = [
   { id: 'tiktok', code: 'T', label: 'TikTok', className: 'bg-tiktok' },
   { id: 'youtube', code: 'Y', label: 'YouTube', className: 'bg-youtube' },
@@ -157,9 +160,8 @@ export default function CalendarPage() {
     I: true,
     F: true,
   }))
-  const [rawEvents, setRawEvents] = useState([])
-  const [connectedIds, setConnectedIds] = useState([])
-  const [error, setError] = useState('')
+  // Last response, tagged with the month/project it answers (no resets inside the effect).
+  const [result, setResult] = useState({ key: '', events: [], connected: [], error: '' })
   const [projectId, setProjectId] = useState(() => getCachedActiveProject()?.id || '')
 
   useEffect(() => {
@@ -168,33 +170,30 @@ export default function CalendarPage() {
     return () => window.removeEventListener(PROJECT_CHANGE_EVENT, sync)
   }, [])
 
+  const requestKey = projectId ? `${projectId}|${currentYear}|${currentMonth}` : ''
+
   useEffect(() => {
-    if (!projectId) {
-      setRawEvents([])
-      setConnectedIds([])
-      setError('')
-      return undefined
-    }
+    if (!requestKey) return undefined
     let cancelled = false
-    setError('')
     getProjectCalendar(projectId, { year: currentYear, month: currentMonth + 1 })
       .then((payload) => {
         if (!cancelled) {
-          setRawEvents(payload.events || [])
-          setConnectedIds(payload.connectedPlatforms || [])
+          setResult({ key: requestKey, events: payload.events || [], connected: payload.connectedPlatforms || [], error: '' })
         }
       })
       .catch((err) => {
         if (!cancelled) {
-          setRawEvents([])
-          setConnectedIds([])
-          setError(err.response?.data?.message || 'Could not load calendar.')
+          setResult({ key: requestKey, events: [], connected: [], error: err.response?.data?.message || 'Could not load calendar.' })
         }
       })
     return () => {
       cancelled = true
     }
-  }, [projectId, currentYear, currentMonth])
+  }, [requestKey, projectId, currentYear, currentMonth])
+
+  const rawEvents = requestKey ? result.events : NONE
+  const connectedIds = requestKey ? result.connected : NONE
+  const error = result.key === requestKey ? result.error : ''
 
   const gridCells = useMemo(() => buildMonthGrid(currentYear, currentMonth), [currentYear, currentMonth])
 

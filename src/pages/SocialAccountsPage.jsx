@@ -471,7 +471,7 @@ export default function SocialAccountsPage() {
       await loadAccounts()
       const name = ADS_PROVIDERS.find((p) => p.key === provider)?.name || provider
       showToast(`${name} disconnected.`)
-    } catch (err) {
+    } catch {
       showToast(`Could not disconnect ${provider} ads.`)
     } finally {
       setBusyAds('')
