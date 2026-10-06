@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import {
   PROJECT_CHANGE_EVENT,
+  completeAdsConnect,
+  completeSocialConnect,
   connectAdsProvider,
   connectPlatform,
   disconnectAdsProvider,
@@ -373,20 +375,40 @@ export default function SocialAccountsPage() {
     loadAccounts()
   }, [loadAccounts])
 
-  // When the backend redirects back from the provider (/social?connected=… or ?error=…),
-  // show a toast, refresh the list, and strip the query flag from the URL.
+  // The OAuth code is used once; guards against StrictMode's double effect run.
+  const completedCodeRef = useRef(null)
+
+  // When the backend redirects back from the provider, either finish the connection
+  // (/social?oauth=…&code=…&state=…) or show its error (?error=… / ?adsError=…),
+  // then refresh the list and strip the query from the URL.
   useEffect(() => {
-    const connected = searchParams.get('connected')
+    const oauthKind = searchParams.get('oauth')
     const error = searchParams.get('error')
-    const adsConnected = searchParams.get('adsConnected')
     const adsError = searchParams.get('adsError')
-    if (!connected && !error && !adsConnected && !adsError) return
-    if (connected) {
-      setToast({ message: `${PLATFORM_META[connected]?.name || connected} connected.`, visible: true })
-    } else if (adsConnected) {
-      const name = ADS_PROVIDERS.find((p) => p.key === adsConnected)?.name || adsConnected
-      setToast({ message: `${name} connected.`, visible: true })
-    } else if (adsError) {
+    if (oauthKind) {
+      const platform = searchParams.get('platform') || ''
+      const code = searchParams.get('code') || ''
+      const state = searchParams.get('state') || ''
+      if (completedCodeRef.current === code) return
+      completedCodeRef.current = code
+      setSearchParams({}, { replace: true }) // don't leave the one-time code in the URL/history
+      const isAds = oauthKind === 'ads'
+      const name = isAds
+        ? ADS_PROVIDERS.find((p) => p.key === platform)?.name || platform
+        : PLATFORM_META[platform]?.name || platform
+      ;(isAds ? completeAdsConnect : completeSocialConnect)(platform, code, state)
+        .then(() => setToast({ message: `${name} connected.`, visible: true }))
+        .catch((err) =>
+          setToast({
+            message: err?.response?.data?.message || `Couldn't connect ${name}. Please try again.`,
+            visible: true,
+          }),
+        )
+        .finally(() => loadAccounts())
+      return
+    }
+    if (!error && !adsError) return
+    if (adsError) {
       const name = ADS_PROVIDERS.find((p) => p.key === adsError)?.name || adsError
       setToast({ message: `Couldn't connect ${name}. Please try again.`, visible: true })
     } else {

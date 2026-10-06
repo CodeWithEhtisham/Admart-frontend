@@ -92,12 +92,24 @@ export async function listSocialAccounts(projectId) {
 
 /**
  * Begin the OAuth handshake: ask the backend for the provider authorize URL,
- * then send the browser there. The backend handles the callback and redirects
- * the user back to /social?connected=<platform> (or ?error=<platform>).
+ * then send the browser there. The provider returns to the backend callback,
+ * which forwards the one-time code to /social?oauth=social&platform=…&code=…&state=…
+ * (or ?error=<platform>); the page then calls completeSocialConnect as the logged-in user.
  */
 export async function connectPlatform(projectId, platform) {
   const { data } = await api.get(`/api/projects/${projectId}/social/connect/${platform}/url`)
   window.location.href = data.authUrl
+  return data
+}
+
+/** Finish OAuth: attaches the account only if this user started the connection. */
+export async function completeSocialConnect(platform, code, state) {
+  const { data } = await api.post(`/api/social/complete/${platform}`, { code, state })
+  return data
+}
+
+export async function completeAdsConnect(provider, code, state) {
+  const { data } = await api.post(`/api/ads/complete/${provider}`, { code, state })
   return data
 }
 
