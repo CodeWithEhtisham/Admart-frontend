@@ -3,6 +3,7 @@ import { Link, Navigate, useLocation, useNavigate, useSearchParams } from 'react
 import api from '../utils/api'
 import { isAuthenticated, persistSession, startGoogleAuth, formatAuthError, NO_ACCOUNT_MESSAGE } from '../utils/auth'
 import { postLoginPath } from '../utils/projects'
+import BrandGlyph from '../components/BrandGlyph'
 
 // Showcase cards with real videos from public/leonardo-media
 const showcaseItems = [
@@ -226,7 +227,7 @@ function LogoLink() {
   return (
     <Link to="/" className="inline-flex items-center gap-2.5 group">
       <span className="flex h-10 w-10 items-center justify-center rounded-xl gradient-bg font-heading text-lg font-bold text-white shadow-lg gradient-glow transition-transform duration-200 group-hover:scale-105">
-        A
+        <BrandGlyph />
       </span>
       <div className="flex flex-col">
         <span className="font-heading text-xl font-bold tracking-tight text-text-primary">

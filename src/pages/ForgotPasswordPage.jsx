@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../utils/api'
+import BrandGlyph from '../components/BrandGlyph'
 
 /** Request a password-reset email. Same answer whether or not the email exists. */
 export default function ForgotPasswordPage() {
@@ -33,7 +34,7 @@ export default function ForgotPasswordPage() {
       <main className="relative w-full max-w-md rounded-2xl border border-border-default bg-panel p-8 shadow-xl">
         <Link to="/" className="mb-6 inline-flex items-center gap-2.5" aria-label="Admart home">
           <span aria-hidden className="flex h-10 w-10 items-center justify-center rounded-xl gradient-bg font-heading text-lg font-bold text-white shadow-lg">
-            A
+            <BrandGlyph />
           </span>
           <span aria-hidden className="font-heading text-xl font-semibold tracking-tight text-text-primary">
             Admart

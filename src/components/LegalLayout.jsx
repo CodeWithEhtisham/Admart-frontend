@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { LEGAL_LAST_UPDATED, SUPPORT_EMAIL } from '../utils/site'
+import BrandGlyph from './BrandGlyph'
 
 /** Shared shell for public legal pages (Privacy, Terms). */
 export default function LegalLayout({ title, children }) {
@@ -9,7 +10,7 @@ export default function LegalLayout({ title, children }) {
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4 sm:px-6">
           <Link to="/" className="flex items-center gap-2.5" aria-label="Admart home">
             <span aria-hidden className="flex h-9 w-9 items-center justify-center rounded-xl gradient-bg font-heading font-bold text-white">
-              A
+              <BrandGlyph />
             </span>
             <span aria-hidden className="font-heading text-lg font-semibold">Admart</span>
           </Link>

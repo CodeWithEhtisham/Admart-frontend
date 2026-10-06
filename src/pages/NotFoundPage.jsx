@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { Glyphs } from '../components/glyphs'
 import { Icon } from '../components/icons'
+import BrandGlyph from '../components/BrandGlyph'
 
 const EMPTY_STATES = [
   {
@@ -120,9 +121,11 @@ export default function NotFoundPage() {
 
       {/* Simple nav bar */}
       <nav className="flex h-[60px] items-center border-b border-border bg-panel px-6">
-        <Link to="/dashboard" className="font-heading text-lg font-bold">
-          <span className="gradient-text">A</span>
-          <span className="text-text-primary">dmart</span>
+        <Link to="/dashboard" aria-label="Admart home" className="flex items-center gap-2.5 font-heading text-lg font-bold">
+          <span aria-hidden className="flex h-8 w-8 items-center justify-center rounded-lg gradient-bg text-base text-white">
+            <BrandGlyph />
+          </span>
+          <span aria-hidden className="text-text-primary">Admart</span>
         </Link>
       </nav>
 

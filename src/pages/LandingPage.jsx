@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { formatCredits, getPlans } from '../utils/credits'
 import { isAuthenticated } from '../utils/auth'
 import { SUPPORT_EMAIL } from '../utils/site'
+import BrandGlyph from '../components/BrandGlyph'
 
 const lm = (file) => `/leonardo-media/${file}`
 const posterOf = (video) =>
@@ -236,7 +237,7 @@ function LogoMark({ className = '' }) {
   return (
     <Link to="/" aria-label="Admart home" className={`flex items-center gap-2.5 ${className}`}>
       <span aria-hidden className="flex h-9 w-9 items-center justify-center rounded-lg gradient-bg font-heading text-lg font-bold text-white shadow-lg gradient-glow">
-        A
+        <BrandGlyph />
       </span>
       <span aria-hidden className="font-heading text-xl font-semibold tracking-tight text-white">
         Admart

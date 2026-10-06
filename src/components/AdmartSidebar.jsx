@@ -4,6 +4,7 @@ import { useAppChrome } from '../utils/appChrome'
 import ProjectDropdown from './ProjectDropdown'
 import { Icon } from './icons'
 import { isAuthenticated } from '../utils/auth'
+import BrandGlyph from './BrandGlyph'
 import {
   CREDITS_CHANGE_EVENT,
   formatCredits,
@@ -244,9 +245,9 @@ export default function AdmartSidebar() {
       <div className={`flex h-[60px] items-center gap-2.5 border-b border-border px-4 ${collapsed ? 'justify-center' : ''}`}>
         <Link to="/dashboard" aria-label="Admart home" className="flex items-center gap-2.5 font-heading text-lg font-bold">
           <span aria-hidden className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg gradient-bg font-heading text-base font-bold text-white shadow-lg gradient-glow">
-            A
+            <BrandGlyph />
           </span>
-          {!collapsed && <span aria-hidden className="text-text-primary">dmart</span>}
+          {!collapsed && <span aria-hidden className="text-text-primary">Admart</span>}
         </Link>
         {!isDesktop && (
           <button
