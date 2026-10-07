@@ -4,14 +4,13 @@ import { listFacebookPages } from '../utils/projects.js'
 const fieldClass =
   'w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm outline-none focus:border-accent-blue/50'
 
-export default function FacebookPostForm({ projectId, connected, initialCaption, onPayloadChange, onError }) {
+export default function FacebookPostForm({ projectId, connected, onPayloadChange, onError }) {
   const [pages, setPages] = useState([])
   const [pageId, setPageId] = useState('')
-  const [caption, setCaption] = useState(initialCaption || '')
 
   useEffect(() => {
-    onPayloadChange?.({ caption, pageId })
-  }, [caption, pageId, onPayloadChange])
+    onPayloadChange?.({ pageId })
+  }, [pageId, onPayloadChange])
 
   useEffect(() => {
     if (!connected || !projectId) return undefined
@@ -37,10 +36,8 @@ export default function FacebookPostForm({ projectId, connected, initialCaption,
   return (
     <div className="space-y-4 rounded-xl border border-border-default bg-panel p-5">
       <div>
-        <h2 className="font-heading text-lg font-semibold">Facebook settings</h2>
-        <p className="mt-1 text-sm text-text-secondary">
-          Posts to a Facebook Page you manage, connected through Meta.
-        </p>
+        <h2 className="font-heading text-lg font-semibold">Facebook</h2>
+        <p className="mt-1 text-sm text-text-secondary">Posts the caption above to a Page you manage.</p>
       </div>
       <label className="block">
         <span className="mb-1 block text-xs text-text-tertiary">Page</span>
@@ -52,15 +49,6 @@ export default function FacebookPostForm({ projectId, connected, initialCaption,
             </option>
           ))}
         </select>
-      </label>
-      <label className="block">
-        <span className="mb-1 block text-xs text-text-tertiary">Caption</span>
-        <textarea
-          value={caption}
-          onChange={(e) => setCaption(e.target.value)}
-          rows={5}
-          className={fieldClass}
-        />
       </label>
     </div>
   )

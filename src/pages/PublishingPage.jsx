@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import PreviewModal from '../components/PreviewModal.jsx'
 import FacebookPostForm from '../components/FacebookPostForm.jsx'
-import InstagramPostForm from '../components/InstagramPostForm.jsx'
 import YoutubeUploadForm from '../components/YoutubeUploadForm.jsx'
 import { mediaBlockReason, platformAccepts, PROVIDER_PLACEMENTS } from '../utils/platformMedia.js'
 import { getCredits } from '../utils/credits.js'
@@ -81,9 +80,7 @@ export default function PublishingPage() {
   const publishAsset = location.state || {}
   const isImage = publishAsset.type === 'image' && Boolean(publishAsset.imageUrl)
   const isVideo = publishAsset.type === 'video' && Boolean(publishAsset.videoUrl)
-  const assetTitle =
-    publishAsset.title ||
-    (isImage ? 'Untitled image' : isVideo ? 'Untitled video' : 'Summer Product Launch — Cinematic Showcase 2024')
+  const assetTitle = publishAsset.title || (isImage ? 'Untitled image' : 'Untitled video')
   const backTo = isImage ? '/image-gen' : isVideo ? '/video-gen' : '/result'
   const assetKind = isImage ? 'image' : 'video'
   const sourceUrl = isImage ? publishAsset.imageUrl : publishAsset.videoUrl
@@ -91,7 +88,6 @@ export default function PublishingPage() {
   const [mode, setMode] = useState('post')
   const [accountsByPlatform, setAccountsByPlatform] = useState({})
   const [adAccounts, setAdAccounts] = useState([])
-  const [selectedId, setSelectedId] = useState(isImage ? 'instagram' : 'youtube')
   const [toggles, setToggles] = useState({
     tiktok: platformAccepts('tiktok', isImage ? 'image' : 'video'),
     youtube: platformAccepts('youtube', isImage ? 'image' : 'video'),
@@ -116,7 +112,8 @@ export default function PublishingPage() {
   const [error, setError] = useState('')
   const [ytPayload, setYtPayload] = useState(null)
   const [fbPayload, setFbPayload] = useState(null)
-  const [igPayload, setIgPayload] = useState(null)
+  // One caption for every platform that takes one (Facebook, Instagram); YouTube has its own title.
+  const [caption, setCaption] = useState(assetTitle)
 
   const platforms = ORGANIC_META.map((p) => {
     const acc = accountsByPlatform[p.id]
@@ -209,8 +206,8 @@ export default function PublishingPage() {
           title: assetTitle,
           platforms: activeOrganic.map((p) => p.id),
           youtube,
-          facebook: fbPayload || { caption: assetTitle, pageId: '' },
-          instagram: igPayload || { caption: assetTitle },
+          facebook: { caption, pageId: fbPayload?.pageId || '' },
+          instagram: { caption },
         })
         if (action === 'draft') {
           setStayAfterToast(true)
@@ -269,8 +266,7 @@ export default function PublishingPage() {
   }, [])
 
   const openSchedule = () => {
-    const fromYt = ytPayload?.publishAt ? toDatetimeLocal(ytPayload.publishAt) : ''
-    setScheduleAt(fromYt || toDatetimeLocal(new Date(Date.now() + 60 * 60 * 1000)))
+    setScheduleAt(toDatetimeLocal(new Date(Date.now() + 60 * 60 * 1000)))
     setScheduleOpen(true)
   }
 
@@ -281,17 +277,17 @@ export default function PublishingPage() {
     return ADS_PROVIDER_LABELS[adsProvider] || 'Use as ad'
   }, [connectedAds.length, adsProvider])
 
-  const selected = platforms.find((p) => p.id === selectedId) || platforms[0]
   const youtubeReady = platforms.some((p) => p.id === 'youtube' && canPost(p))
   const facebookReady = platforms.some((p) => p.id === 'facebook' && canPost(p))
-  const instagramReady = platforms.some((p) => p.id === 'instagram' && canPost(p))
-  const customFormReady =
-    (selected?.id === 'youtube' && youtubeReady) ||
-    (selected?.id === 'facebook' && facebookReady) ||
-    (selected?.id === 'instagram' && instagramReady)
+  const isActive = (id) => activeOrganic.some((p) => p.id === id)
+  const usesCaption = activeOrganic.some((p) => p.id !== 'youtube')
+  const connectedPlatforms = platforms.filter((p) => p.connected)
+  const missingPlatforms = platforms.filter((p) => !p.connected)
+  const activeNames = activeOrganic.map((p) => p.name).join(', ')
+  const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`
 
   return (
-    <div className="relative flex h-screen min-h-0 flex-col bg-base font-body text-text-primary">
+    <div className="relative flex min-h-screen flex-col bg-base font-body text-text-primary lg:h-screen">
       <header className="flex h-[60px] shrink-0 items-center gap-3 border-b border-border bg-panel px-4">
         <Link
           to={backTo}
@@ -306,10 +302,32 @@ export default function PublishingPage() {
         </h1>
       </header>
 
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-        <aside aria-label="Platforms" className="flex w-[300px] shrink-0 flex-col border-r border-border bg-panel">
-          <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4">
-            <div className="overflow-hidden rounded-xl border border-border-default bg-surface shadow-lg">
+      <div className="flex flex-1 flex-col lg:min-h-0 lg:flex-row lg:overflow-hidden">
+        <aside
+          aria-label="Where to publish"
+          className="shrink-0 border-b border-border bg-panel lg:flex lg:w-[380px] lg:flex-col lg:border-b-0 lg:border-r"
+        >
+          <div className="space-y-5 p-4 lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
+            <div className="grid grid-cols-2 gap-1 rounded-xl border border-border-default bg-input p-1">
+              {[
+                ['post', 'Post'],
+                ['ad', 'Boost as ad'],
+              ].map(([id, label]) => (
+                <button
+                  key={id}
+                  type="button"
+                  aria-pressed={mode === id}
+                  onClick={() => setMode(id)}
+                  className={`rounded-lg px-3 py-2 text-sm font-semibold ${
+                    mode === id ? 'bg-elevated text-text-primary' : 'text-text-tertiary hover:text-text-primary'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <div className="mx-auto w-full max-w-xs overflow-hidden rounded-xl border border-border-default bg-surface shadow-lg lg:max-w-none">
               <div className={`relative w-full ${isImage ? 'aspect-square' : 'aspect-video'}`}>
                 {isImage ? (
                   <img src={publishAsset.imageUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
@@ -320,10 +338,7 @@ export default function PublishingPage() {
                     className="absolute inset-0 h-full w-full bg-black object-contain"
                   />
                 ) : (
-                  <>
-                    <div className="absolute inset-0 gradient-bg" />
-                    <div className="absolute inset-0 bg-linear-to-t from-base/90 via-transparent to-transparent" />
-                  </>
+                  <div className="absolute inset-0 gradient-bg" />
                 )}
                 {isImage || isVideo ? (
                   <button
@@ -336,86 +351,58 @@ export default function PublishingPage() {
                   </button>
                 ) : null}
               </div>
-              <div className="p-3">
-                <p className="font-heading text-sm font-semibold leading-snug">{assetTitle}</p>
-              </div>
+              <p className="p-3 font-heading text-sm font-semibold leading-snug">{assetTitle}</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-1 rounded-xl border border-border-default bg-input p-1">
-              <button
-                type="button"
-                onClick={() => setMode('post')}
-                className={`rounded-lg px-3 py-2 text-xs font-semibold ${
-                  mode === 'post' ? 'bg-elevated text-text-primary' : 'text-text-muted'
-                }`}
-              >
-                Post to accounts
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode('ad')}
-                className={`rounded-lg px-3 py-2 text-xs font-semibold ${
-                  mode === 'ad' ? 'bg-elevated text-text-primary' : 'text-text-muted'
-                }`}
-              >
-                Use as ad
-              </button>
-            </div>
-          </div>
-        </aside>
-
-        <aside className="flex w-[260px] shrink-0 flex-col border-r border-border bg-panel">
-          <div className="min-h-0 flex-1 overflow-y-auto p-4">
             {mode === 'post' ? (
               <div>
-                <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-tertiary">Platforms</h2>
-                <div className="space-y-2">
-                  {platforms.map((p) => {
-                    const mediaBlocked = !platformAccepts(p.id, assetKind)
-                    const disabled = !p.connected || mediaBlocked
-                    const hint = mediaBlocked
-                      ? mediaBlockReason(p.id, assetKind)
-                      : !p.connected
-                        ? 'Not connected'
-                        : p.handle
-                    const selectedRow = selectedId === p.id
-                    return (
-                      <div
-                        key={p.id}
-                        className={`flex items-center gap-2 rounded-xl border px-2.5 py-2 ${
-                          selectedRow
-                            ? 'border-accent-blue/50 bg-elevated'
-                            : disabled
-                              ? 'border-border bg-input/40 opacity-60'
-                              : 'border-border-default bg-input'
-                        }`}
-                      >
-                        <button
-                          type="button"
-                          onClick={() => setSelectedId(p.id)}
-                          className="flex min-w-0 flex-1 items-center gap-2 text-left"
+                <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-tertiary">Post to</h2>
+                {connectedPlatforms.length === 0 ? (
+                  <p className="rounded-xl border border-border bg-input p-3 text-sm text-text-secondary">
+                    No accounts connected yet.
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {connectedPlatforms.map((p) => {
+                      const blocked = !platformAccepts(p.id, assetKind)
+                      return (
+                        <div
+                          key={p.id}
+                          className={`flex items-center gap-3 rounded-xl border px-3 py-2 ${
+                            blocked ? 'border-border bg-input/40' : 'border-border-default bg-input'
+                          }`}
                         >
-                          <span className={`flex h-8 w-8 items-center justify-center rounded-lg bg-elevated text-base ${p.color}`}>
+                          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-elevated ${p.color}`}>
                             <Icon className="h-4 w-4">{p.icon}</Icon>
                           </span>
-                          <span className="min-w-0">
+                          <span className="min-w-0 flex-1">
                             <span className="block truncate text-sm font-medium">{p.name}</span>
-                            <span className="block truncate text-[11px] text-text-muted">{hint}</span>
+                            <span
+                              className="block truncate text-xs text-text-tertiary"
+                              title={blocked ? mediaBlockReason(p.id, assetKind) : undefined}
+                            >
+                              {blocked ? mediaBlockReason(p.id, assetKind) : p.handle}
+                            </span>
                           </span>
-                        </button>
-                        <Toggle
-                          label={`Publish to ${p.name}`}
-                          checked={Boolean(toggles[p.id]) && !disabled}
-                          disabled={disabled}
-                          onChange={(v) => {
-                            setToggles((prev) => ({ ...prev, [p.id]: v }))
-                            if (v) setSelectedId(p.id)
-                          }}
-                        />
-                      </div>
-                    )
-                  })}
-                </div>
+                          <Toggle
+                            label={`Publish to ${p.name}`}
+                            checked={Boolean(toggles[p.id]) && !blocked}
+                            disabled={blocked}
+                            onChange={(v) => setToggles((prev) => ({ ...prev, [p.id]: v }))}
+                          />
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+                {missingPlatforms.length ? (
+                  <p className="mt-3 text-xs text-text-tertiary">
+                    Not connected: {missingPlatforms.map((p) => p.name).join(', ')}.{' '}
+                    <Link to="/social" className="font-medium text-link hover:underline">
+                      Connect more →
+                    </Link>
+                  </p>
+                ) : null}
               </div>
             ) : (
               <div className="space-y-4">
@@ -473,16 +460,50 @@ export default function PublishingPage() {
           </div>
         </aside>
 
-        <main className="min-h-0 min-w-0 flex-1 overflow-y-auto bg-base p-6">
-          <section className="mx-auto max-w-2xl space-y-4">
+        <main className="min-w-0 flex-1 bg-base p-4 sm:p-6 lg:min-h-0 lg:overflow-y-auto">
+          <section className="mx-auto max-w-5xl space-y-4">
             {error ? (
-              <p className="rounded-xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-danger">{error}</p>
+              <p role="alert" className="rounded-xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-danger">
+                {error}
+              </p>
             ) : null}
 
             {mode === 'post' ? (
               <>
+                {activeOrganic.length === 0 ? (
+                  <div className="rounded-xl border border-border-default bg-panel p-5">
+                    <h2 className="font-heading text-lg font-semibold">Choose where to post</h2>
+                    <p className="mt-2 text-sm text-text-secondary">
+                      {connectedPlatforms.length
+                        ? 'Turn on at least one account under "Post to".'
+                        : 'Connect YouTube, Meta (Facebook + Instagram), TikTok or Snapchat first.'}
+                    </p>
+                    {!connectedPlatforms.length ? (
+                      <Link to="/social" className="mt-3 inline-block text-sm font-medium text-link hover:underline">
+                        Open Social Accounts →
+                      </Link>
+                    ) : null}
+                  </div>
+                ) : null}
+
+                {usesCaption ? (
+                  <label className="block rounded-xl border border-border-default bg-panel p-5">
+                    <span className="font-heading text-lg font-semibold">Caption</span>
+                    <span className="mt-1 block text-sm text-text-secondary">
+                      Used for {activeOrganic.filter((p) => p.id !== 'youtube').map((p) => p.name).join(' and ')}.
+                    </span>
+                    <textarea
+                      value={caption}
+                      onChange={(e) => setCaption(e.target.value)}
+                      rows={4}
+                      maxLength={2200}
+                      className="mt-3 w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm outline-none focus:border-accent-blue/50"
+                    />
+                  </label>
+                ) : null}
+
                 {youtubeReady ? (
-                  <div className={selected?.id === 'youtube' ? '' : 'hidden'}>
+                  <div className={isActive('youtube') ? '' : 'hidden'}>
                     <YoutubeUploadForm
                       projectId={getCachedActiveProject()?.id}
                       connected
@@ -497,41 +518,13 @@ export default function PublishingPage() {
                 ) : null}
 
                 {facebookReady ? (
-                  <div className={selected?.id === 'facebook' ? '' : 'hidden'}>
+                  <div className={isActive('facebook') ? '' : 'hidden'}>
                     <FacebookPostForm
                       projectId={getCachedActiveProject()?.id}
                       connected
-                      initialCaption={assetTitle}
                       onPayloadChange={setFbPayload}
                       onError={setError}
                     />
-                  </div>
-                ) : null}
-
-                {instagramReady ? (
-                  <div className={selected?.id === 'instagram' ? '' : 'hidden'}>
-                    <InstagramPostForm initialCaption={assetTitle} onPayloadChange={setIgPayload} />
-                  </div>
-                ) : null}
-
-                {!customFormReady ? (
-                  <div className="rounded-xl border border-border-default bg-panel p-5">
-                    <h2 className="font-heading text-lg font-semibold">{selected?.name} settings</h2>
-                    {!selected?.connected ? (
-                      <p className="mt-2 text-sm text-text-secondary">
-                        Connect {selected?.name} in Social Accounts, then come back to publish.
-                        <Link to="/social" className="mt-2 block font-medium text-link hover:underline">
-                          Open Social Accounts →
-                        </Link>
-                      </p>
-                    ) : !platformAccepts(selected.id, assetKind) ? (
-                      <p className="mt-2 text-sm text-text-secondary">{mediaBlockReason(selected.id, assetKind)}</p>
-                    ) : (
-                      <p className="mt-2 text-sm text-text-secondary">
-                        Caption and visibility use {selected.name} defaults for this first publish. Toggle it on in
-                        Platforms to include it.
-                      </p>
-                    )}
                   </div>
                 ) : null}
               </>
@@ -546,33 +539,35 @@ export default function PublishingPage() {
                     <p className="text-sm text-text-secondary">
                       {adsCopy}. Same creative, budget and dates. Custom audiences and reporting come later.
                     </p>
-                    <label className="block text-xs text-text-tertiary">Daily budget (USD)</label>
-                    <input
-                      type="number"
-                      min="1"
-                      value={budget}
-                      onChange={(e) => setBudget(e.target.value)}
-                      className="w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm outline-none focus:border-accent-blue/50"
-                    />
+                    <label className="block">
+                      <span className="mb-1 block text-xs text-text-tertiary">Daily budget (USD)</span>
+                      <input
+                        type="number"
+                        min="1"
+                        value={budget}
+                        onChange={(e) => setBudget(e.target.value)}
+                        className="w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm outline-none focus:border-accent-blue/50"
+                      />
+                    </label>
                     <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="mb-1 block text-xs text-text-tertiary">Start</label>
+                      <label className="block">
+                        <span className="mb-1 block text-xs text-text-tertiary">Start</span>
                         <input
                           type="date"
                           value={startDate}
                           onChange={(e) => setStartDate(e.target.value)}
                           className="w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm"
                         />
-                      </div>
-                      <div>
-                        <label className="mb-1 block text-xs text-text-tertiary">End</label>
+                      </label>
+                      <label className="block">
+                        <span className="mb-1 block text-xs text-text-tertiary">End</span>
                         <input
                           type="date"
                           value={endDate}
                           onChange={(e) => setEndDate(e.target.value)}
                           className="w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm"
                         />
-                      </div>
+                      </label>
                     </div>
                   </>
                 )}
@@ -582,15 +577,19 @@ export default function PublishingPage() {
         </main>
       </div>
 
-      <footer className="flex h-[72px] shrink-0 items-center gap-3 border-t border-border bg-panel px-4">
+      <footer className="sticky bottom-0 z-10 flex shrink-0 flex-wrap items-center gap-3 border-t border-border bg-panel px-4 py-3 lg:h-[72px] lg:py-0">
         <p className="text-sm text-text-secondary">
           {mode === 'post' ? (
             <>
-              Publishing to <span className="font-semibold text-text-primary">{activeCount}</span> platforms
+              Publishing to{' '}
+              <span className="font-semibold text-text-primary">{plural(activeCount, 'platform')}</span>
             </>
           ) : (
             <>
-              Boosting on <span className="font-semibold text-text-primary">{selectedPlacements.length}</span> placements
+              Boosting on{' '}
+              <span className="font-semibold text-text-primary">
+                {plural(selectedPlacements.length, 'placement')}
+              </span>
             </>
           )}
         </p>
@@ -649,7 +648,7 @@ export default function PublishingPage() {
             </h2>
             <p className="mt-2 text-sm text-text-secondary">
               {mode === 'post'
-                ? `Publish this ${assetKind} to the selected accounts.`
+                ? `Publish this ${assetKind} to ${activeNames}.`
                 : `Create a ${ADS_PROVIDER_LABELS[adsProvider] || 'ads'} campaign with this ${assetKind}.`}
             </p>
             <div className="mt-6 flex justify-end gap-2">
