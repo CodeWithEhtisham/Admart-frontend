@@ -17,7 +17,7 @@
      link/danger/success-text/violet-text, which are tuned per theme to stay >= 4.5:1 on panels. */
   --color-accent-blue: #2563EB;
   --color-link: #7CB3FB;
-  --color-danger: #F87171;
+  --color-danger: #FB9494; /* >= 4.5:1 even on the lightest surface (#334155) */
   --color-success-text: #4ADE80;
   --color-violet-text: #C4B5FD;
   --color-accent-violet: #7C3AED; /* white text on it: 5.7:1 */

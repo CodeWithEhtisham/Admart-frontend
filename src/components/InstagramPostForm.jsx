@@ -15,8 +15,8 @@ export default function InstagramPostForm({ initialCaption, onPayloadChange }) {
       <div>
         <h2 className="font-heading text-lg font-semibold">Instagram settings</h2>
         <p className="mt-1 text-sm text-text-secondary">
-          Posts to the connected Professional account. Reconnect Instagram after publishing is turned
-          on. Instagram must be able to download the file from a public URL.
+          Posts to the Instagram Professional account linked to your Facebook Page (connected through
+          Meta). Instagram must be able to download the file from a public URL.
         </p>
       </div>
       <label className="block">

@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
+import { Glyphs } from '../components/glyphs'
+import { Icon } from '../components/icons'
 import {
   PROJECT_CHANGE_EVENT,
   completeAdsConnect,
@@ -15,18 +17,16 @@ import {
   listSocialAccounts,
 } from '../utils/projects'
 
-// YouTube, Facebook, Instagram, TikTok and Snapchat are live; the rest show as coming soon.
+// YouTube, Meta (Facebook + Instagram + ads), TikTok and Snapchat are live; the rest show as coming soon.
 const ADS_PROVIDERS = [
   { key: 'google', name: 'YouTube Ads', description: 'Google Ads. Connect YouTube first to host the video, then this ads account to spend.' },
-  { key: 'meta', name: 'Meta Ads', description: 'Facebook + Instagram ads from one ad account.' },
   { key: 'tiktok', name: 'TikTok Ads', description: 'TikTok Marketing API — separate from Login Kit.' },
   { key: 'snap', name: 'Snap Ads', description: 'Snap Marketing API — Login Kit cannot post organically.' },
 ]
 
 const PLATFORMS = [
   { key: 'youtube', available: true },
-  { key: 'facebook', available: true },
-  { key: 'instagram', available: true },
+  { key: 'meta', available: true }, // Facebook Page + linked Instagram + Meta ads, one login
   { key: 'tiktok', available: true },
   { key: 'snapchat', available: true },
   { key: 'shopify', available: false },
@@ -36,6 +36,12 @@ const PLATFORMS = [
 ]
 
 const PLATFORM_META = {
+  meta: {
+    name: 'Meta',
+    description: 'Your Facebook Page, its linked Instagram account and Meta ads, connected with one login.',
+    gradient: 'linear-gradient(90deg, #1877f2, #c13584)',
+    iconBg: 'bg-facebook',
+  },
   tiktok: {
     name: 'TikTok',
     description: 'Short-form vertical video and live engagement.',
@@ -47,18 +53,6 @@ const PLATFORM_META = {
     description: 'Long-form, Shorts, and community posts.',
     gradient: 'linear-gradient(90deg, #ff4444, #cc0000)',
     iconBg: 'bg-youtube',
-  },
-  instagram: {
-    name: 'Instagram',
-    description: 'Feed photos and Reels on a Professional account. Reconnect after publishing is turned on.',
-    gradient: 'linear-gradient(90deg, #e6683c, #c13584)',
-    iconBg: 'bg-instagram',
-  },
-  facebook: {
-    name: 'Facebook',
-    description: 'Posts to a Facebook Page you manage. Reconnect after publishing is turned on.',
-    gradient: 'linear-gradient(90deg, #1877f2, #0d5dbf)',
-    iconBg: 'bg-facebook',
   },
   snapchat: {
     name: 'Snapchat',
@@ -94,6 +88,7 @@ const PLATFORM_META = {
 }
 
 function PlatformIcon({ platform, className = 'h-6 w-6' }) {
+  if (platform === 'meta') return <PlatformIcon platform="facebook" className={className} />
   const common = {
     viewBox: '0 0 24 24',
     fill: 'currentColor',
@@ -266,11 +261,6 @@ function PlatformCard({ platform, account, available, busy, onConnect, onDisconn
                 {account.handle && <p className="truncate text-xs text-text-tertiary">{account.handle}</p>}
               </div>
             </div>
-            {platform === 'instagram' && !account.displayName && !account.handle && (
-              <p className="rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-xs text-warning">
-                Connect a Professional (Business or Creator) Instagram account. Personal accounts cannot connect.
-              </p>
-            )}
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
@@ -292,9 +282,7 @@ function PlatformCard({ platform, account, available, busy, onConnect, onDisconn
             </p>
             <p className="mt-2 max-w-sm text-sm text-text-secondary">
               {available
-                ? platform === 'instagram'
-                  ? 'Sign in with Instagram. Requires a Professional (Business or Creator) account.'
-                  : 'Publish directly from Admart and sync insights for performance tracking.'
+                ? 'Publish directly from Admart and sync insights for performance tracking.'
                 : "We're putting the finishing touches on this integration."}
             </p>
             {available ? (
@@ -316,6 +304,123 @@ function PlatformCard({ platform, account, available, busy, onConnect, onDisconn
                 Coming soon
               </button>
             )}
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
+
+const INSTAGRAM_SKIP_REASONS = {
+  no_linked_instagram: 'No Instagram account is linked to your Facebook Page. Link a Professional Instagram account to the Page in Meta Business Suite, then reconnect.',
+  plan_limit: 'Instagram was not added because your plan allows only one connection per project. Upgrade to add it.',
+}
+
+/** One card for the single "Connect Meta" login: Page, linked Instagram, ad account. */
+function MetaCard({ facebook, instagram, ads, busy, onConnect, onDisconnect }) {
+  const meta = PLATFORM_META.meta
+  // Older separate Facebook / Instagram / ads connections still show here.
+  const connected = Boolean(facebook?.connected || instagram?.connected || ads?.connected)
+  const rows = [
+    {
+      label: 'Facebook Page',
+      icon: 'facebook',
+      value: facebook?.connected ? facebook.displayName : '',
+      empty: facebook?.connected ? 'No Page found. Reconnect after creating a Page.' : 'Not connected yet. Use Connect Meta below.',
+    },
+    {
+      label: 'Instagram',
+      icon: 'instagram',
+      value: instagram?.connected ? `@${instagram.handle || instagram.displayName}` : '',
+      empty: 'Not linked: needs a Professional account linked to the Page.',
+    },
+    {
+      label: 'Ads account',
+      glyph: Glyphs.chart,
+      value: ads?.connected ? ads.displayName : '',
+      empty: 'No ad account yet (or ads not enabled for this app).',
+    },
+  ]
+  return (
+    <section className="overflow-hidden rounded-2xl border border-border-default bg-surface">
+      <div className="h-0.5" style={{ background: meta.gradient }} />
+      <div className="space-y-5 p-6">
+        <div className="flex items-start gap-4">
+          <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-white ${meta.iconBg} ${connected ? '' : 'opacity-70'}`} aria-hidden>
+            <PlatformIcon platform="meta" className="h-6 w-6" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="font-heading text-lg font-bold">Meta · Facebook, Instagram &amp; Ads</h2>
+              <span
+                className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                  connected ? 'border border-success/40 bg-success/15 text-success-text' : 'border border-border-default bg-elevated text-text-tertiary'
+                }`}
+              >
+                {connected ? (facebook?.connected ? 'Connected' : 'Partly connected') : 'Not Connected'}
+              </span>
+            </div>
+            <p className="mt-1 text-sm text-text-secondary">{meta.description}</p>
+          </div>
+        </div>
+
+        {connected ? (
+          <>
+            <dl className="divide-y divide-border-default rounded-xl border border-border-default bg-input">
+              {rows.map((row) => (
+                <div key={row.label} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-4 py-3">
+                  <dt className="flex items-center gap-2 text-sm text-text-tertiary">
+                    {row.icon ? <PlatformIcon platform={row.icon} className="h-4 w-4" /> : <Icon className="h-4 w-4">{row.glyph}</Icon>}
+                    {row.label}
+                  </dt>
+                  <dd className={`min-w-0 text-sm ${row.value ? 'font-medium text-text-primary' : 'text-text-tertiary'}`}>
+                    {row.value || row.empty}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            <div className="flex flex-wrap gap-2">
+              {!facebook?.connected && (
+                <button
+                  type="button"
+                  onClick={() => onConnect('meta')}
+                  disabled={busy}
+                  className="rounded-xl gradient-bg px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                >
+                  {busy ? 'Connecting…' : 'Connect Meta →'}
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => onDisconnect('meta')}
+                disabled={busy}
+                className="rounded-xl border border-error/50 px-4 py-2 text-sm font-medium text-danger transition hover:bg-error/10 disabled:opacity-50"
+              >
+                {busy ? 'Working…' : 'Disconnect Meta'}
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-col items-center rounded-2xl border border-dashed border-border-default bg-input px-6 py-10 text-center">
+            <span className={`flex h-14 w-14 items-center justify-center rounded-2xl text-white ${meta.iconBg}`}>
+              <PlatformIcon platform="meta" className="h-7 w-7" />
+            </span>
+            <p className="mt-4 font-heading text-lg font-semibold text-text-primary">Connect Facebook, Instagram &amp; Meta Ads</p>
+            <p className="mt-2 max-w-sm text-sm text-text-secondary">
+              One Facebook login connects your Page, the Instagram Professional account linked to it, and your ad
+              account for boosting posts.
+            </p>
+            <button
+              type="button"
+              onClick={() => onConnect('meta')}
+              disabled={busy}
+              className="mt-8 inline-flex items-center gap-2 rounded-xl gradient-bg px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-blue/25 disabled:opacity-50"
+            >
+              {busy ? 'Connecting…' : 'Connect Meta →'}
+            </button>
+            <p className="mt-4 max-w-sm text-xs text-text-tertiary">
+              On Facebook&apos;s screen, tick your Page, its Instagram account and your ad account.
+            </p>
           </div>
         )}
       </div>
@@ -397,7 +502,14 @@ export default function SocialAccountsPage() {
         ? ADS_PROVIDERS.find((p) => p.key === platform)?.name || platform
         : PLATFORM_META[platform]?.name || platform
       ;(isAds ? completeAdsConnect : completeSocialConnect)(platform, code, state)
-        .then(() => setToast({ message: `${name} connected.`, visible: true }))
+        .then((result) => {
+          if (platform !== 'meta') return setToast({ message: `${name} connected.`, visible: true })
+          const parts = ['Facebook']
+          if (result?.instagram) parts.push(`Instagram @${result.instagram.username}`)
+          if (result?.ads) parts.push('Meta Ads')
+          const note = INSTAGRAM_SKIP_REASONS[result?.instagramSkipped] || ''
+          setToast({ message: `Connected ${parts.join(', ')}.${note ? ` ${note}` : ''}`, visible: true })
+        })
         .catch((err) =>
           setToast({
             message: err?.response?.data?.message || `Couldn't connect ${name}. Please try again.`,
@@ -478,7 +590,12 @@ export default function SocialAccountsPage() {
     }
   }
 
-  const connectedCount = PLATFORMS.filter((p) => accountsByPlatform[p.key]?.connected).length
+  const livePlatforms = PLATFORMS.filter((p) => p.available)
+  const connectedCount = livePlatforms.filter((p) =>
+    p.key === 'meta'
+      ? accountsByPlatform.facebook?.connected || accountsByPlatform.instagram?.connected || adAccountsByProvider.meta?.connected
+      : accountsByPlatform[p.key]?.connected,
+  ).length
 
   return (
     <AppLayout>
@@ -495,7 +612,7 @@ export default function SocialAccountsPage() {
           </p>
         ) : (
           <p className="text-sm text-text-secondary">
-            {loading ? 'Loading…' : `${connectedCount} of ${PLATFORMS.length} platforms connected`}
+            {loading ? 'Loading…' : `${connectedCount} of ${livePlatforms.length} platforms connected`}
           </p>
         )}
 
@@ -509,14 +626,26 @@ export default function SocialAccountsPage() {
               Admart uses industry-standard OAuth so we never store your passwords. Connections are
               per project — switching projects switches the connected accounts. For YouTube, Google
               shows your Gmail first; on the next screen pick the YouTube channel (Brand Account),
-              not the Gmail name.
+              not the Gmail name. For Meta, one Facebook login connects your Page, its linked
+              Instagram account and your ad account.
             </p>
           </div>
         </div>
 
         {projectId && (
           <div className="grid gap-6 lg:grid-cols-2">
-            {PLATFORMS.map(({ key, available }) => (
+            {PLATFORMS.map(({ key, available }) =>
+              key === 'meta' ? (
+                <MetaCard
+                  key={key}
+                  facebook={accountsByPlatform.facebook}
+                  instagram={accountsByPlatform.instagram}
+                  ads={adAccountsByProvider.meta}
+                  busy={busyPlatform === key}
+                  onConnect={handleConnect}
+                  onDisconnect={handleDisconnect}
+                />
+              ) : (
               <PlatformCard
                 key={key}
                 platform={key}
@@ -526,7 +655,8 @@ export default function SocialAccountsPage() {
                 onConnect={handleConnect}
                 onDisconnect={handleDisconnect}
               />
-            ))}
+              ),
+            )}
           </div>
         )}
 
@@ -535,7 +665,7 @@ export default function SocialAccountsPage() {
             <div>
               <h2 className="font-heading text-lg font-bold">Ads accounts</h2>
               <p className="mt-1 text-sm text-text-secondary">
-                Separate from organic Connect. Meta covers Facebook and Instagram ads together.
+                Meta ads (Facebook + Instagram) come with Connect Meta above. Other ad platforms connect here.
               </p>
             </div>
             <div className="grid gap-4 lg:grid-cols-3">

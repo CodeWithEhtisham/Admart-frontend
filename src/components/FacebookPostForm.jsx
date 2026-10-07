@@ -26,7 +26,7 @@ export default function FacebookPostForm({ projectId, connected, initialCaption,
       .catch((err) => {
         onError?.(
           err.response?.data?.message ||
-            'Could not load Facebook Pages. Reconnect Facebook after turning on publishing.',
+            'Could not load Facebook Pages. Reconnect Meta on the Social Accounts page.',
         )
       })
     return () => {
@@ -39,7 +39,7 @@ export default function FacebookPostForm({ projectId, connected, initialCaption,
       <div>
         <h2 className="font-heading text-lg font-semibold">Facebook settings</h2>
         <p className="mt-1 text-sm text-text-secondary">
-          Posts to a Facebook Page you manage. Reconnect Facebook after publishing is turned on.
+          Posts to a Facebook Page you manage, connected through Meta.
         </p>
       </div>
       <label className="block">
