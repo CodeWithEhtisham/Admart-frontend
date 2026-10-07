@@ -1,8 +1,9 @@
-import { useState, useRef } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Link, Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import api from '../utils/api'
 import { isAuthenticated, persistSession, startGoogleAuth, formatAuthError, NO_ACCOUNT_MESSAGE } from '../utils/auth'
 import { postLoginPath } from '../utils/projects'
+import { formatCredits, getPlans } from '../utils/credits'
 import BrandGlyph from '../components/BrandGlyph'
 
 // Showcase cards with real videos from public/leonardo-media
@@ -271,6 +272,13 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [mutedCardIndex, setMutedCardIndex] = useState(-1) // -1 means all muted
+  // Free credits on sign-up come from an admin setting; only advertise them when there are some.
+  const [freeCredits, setFreeCredits] = useState(0)
+  useEffect(() => {
+    getPlans()
+      .then((data) => setFreeCredits(Number(data?.freeSignupCredits) || 0))
+      .catch(() => {})
+  }, [])
   const displayError = error || noticeMessage(notice)
 
   if (isAuthenticated()) {
@@ -691,7 +699,7 @@ export default function AuthPage() {
                       onClick={() => setMode('sign-up')}
                       className="font-semibold text-emerald-400 hover:text-emerald-300 underline underline-offset-2 transition"
                     >
-                      Create account (5 free credits)
+                      {freeCredits > 0 ? `Create account (${formatCredits(freeCredits)} free credits)` : 'Create account'}
                     </button>
                   </>
                 )}
