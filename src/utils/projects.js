@@ -70,6 +70,11 @@ export async function createProject(payload) {
   return normalizeProject(data)
 }
 
+export async function getProject(id) {
+  const { data } = await api.get(`/api/projects/${id}`)
+  return normalizeProject(data)
+}
+
 export async function updateProject(id, payload) {
   const { data } = await api.patch(`/api/projects/${id}`, payload)
   return normalizeProject(data)
