@@ -264,6 +264,15 @@ function PlatformCard({ platform, account, available, busy, onConnect, onDisconn
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
+                onClick={() => onConnect(platform)}
+                disabled={busy}
+                title="Sign in again, e.g. to switch channel or after the connection expired"
+                className="rounded-xl border border-border-default px-4 py-2 text-sm font-medium text-text-secondary transition hover:text-text-primary disabled:opacity-50"
+              >
+                Reconnect
+              </button>
+              <button
+                type="button"
                 onClick={() => onDisconnect(platform)}
                 disabled={busy}
                 className="rounded-xl border border-error/50 px-4 py-2 text-sm font-medium text-danger transition hover:bg-error/10 disabled:opacity-50"
