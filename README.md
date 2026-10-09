@@ -217,3 +217,4 @@ npm run dev
 3. `requirements.txt` has no pinned versions; fal is called via `requests` (no fal SDK package).
 
 For live request/response shapes, prefer **`/api/docs/`** over this README.
+<!-- CI/CD deployment verification -->
