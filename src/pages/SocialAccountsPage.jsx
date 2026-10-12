@@ -19,7 +19,7 @@ import {
 
 // YouTube, Meta (Facebook + Instagram + ads), TikTok and Snapchat are live; the rest show as coming soon.
 const ADS_PROVIDERS = [
-  { key: 'google', name: 'YouTube Ads', description: 'Google Ads. Connect YouTube first to host the video, then this ads account to spend.' },
+  { key: 'google', name: 'Google Ads', description: 'Shown on the YouTube card.' },
   { key: 'tiktok', name: 'TikTok Ads', description: 'TikTok Marketing API — separate from Login Kit.' },
   { key: 'snap', name: 'Snap Ads', description: 'Snap Marketing API — Login Kit cannot post organically.' },
 ]
@@ -50,7 +50,7 @@ const PLATFORM_META = {
   },
   youtube: {
     name: 'YouTube',
-    description: 'Long-form, Shorts, and community posts.',
+    description: 'Long-form, Shorts, and community posts. Google Ads optional.',
     gradient: 'linear-gradient(90deg, #ff4444, #cc0000)',
     iconBg: 'bg-youtube',
   },
@@ -215,7 +215,46 @@ function ChannelAvatar({ src, fallback }) {
   )
 }
 
-function PlatformCard({ platform, account, available, busy, onConnect, onDisconnect }) {
+/** Optional Google Ads row on the YouTube card: its own Google sign-in, so uploaders never see the ads permission. */
+function GoogleAdsRow({ ads, youtubeConnected, busy, onConnect, onDisconnect }) {
+  const connected = Boolean(ads?.connected)
+  if (!connected && !youtubeConnected) return null
+  return (
+    <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border-default bg-input px-4 py-3">
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-medium">
+          Google Ads <span className="text-xs font-normal text-text-tertiary">· optional</span>
+        </p>
+        <p className="text-xs text-text-tertiary">
+          {connected
+            ? ads.displayName || 'Connected'
+            : 'Boost your videos as YouTube ads. Uses a separate Google sign-in.'}
+        </p>
+      </div>
+      {connected ? (
+        <button
+          type="button"
+          onClick={onDisconnect}
+          disabled={busy}
+          className="rounded-xl border border-error/50 px-3 py-1.5 text-sm font-medium text-danger transition hover:bg-error/10 disabled:opacity-50"
+        >
+          {busy ? 'Working…' : 'Disconnect ads'}
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={onConnect}
+          disabled={busy}
+          className="rounded-xl border border-border-default px-3 py-1.5 text-sm font-medium text-text-secondary transition hover:text-text-primary disabled:opacity-50"
+        >
+          {busy ? 'Connecting…' : 'Add Google Ads'}
+        </button>
+      )}
+    </div>
+  )
+}
+
+function PlatformCard({ platform, account, available, busy, onConnect, onDisconnect, children }) {
   const meta = PLATFORM_META[platform]
   const connected = Boolean(account?.connected)
 
@@ -315,6 +354,7 @@ function PlatformCard({ platform, account, available, busy, onConnect, onDisconn
             )}
           </div>
         )}
+        {children}
       </div>
     </section>
   )
@@ -663,7 +703,17 @@ export default function SocialAccountsPage() {
                 busy={busyPlatform === key}
                 onConnect={handleConnect}
                 onDisconnect={handleDisconnect}
-              />
+              >
+                {key === 'youtube' ? (
+                  <GoogleAdsRow
+                    ads={adAccountsByProvider.google}
+                    youtubeConnected={Boolean(accountsByPlatform.youtube?.connected)}
+                    busy={busyAds === 'google'}
+                    onConnect={() => handleConnectAds('google')}
+                    onDisconnect={() => handleDisconnectAds('google')}
+                  />
+                ) : null}
+              </PlatformCard>
               ),
             )}
           </div>
@@ -674,11 +724,11 @@ export default function SocialAccountsPage() {
             <div>
               <h2 className="font-heading text-lg font-bold">Ads accounts</h2>
               <p className="mt-1 text-sm text-text-secondary">
-                Meta ads (Facebook + Instagram) come with Connect Meta above. Other ad platforms connect here.
+                Meta ads come with Connect Meta and Google Ads is on the YouTube card above. TikTok and Snap ads connect here.
               </p>
             </div>
-            <div className="grid gap-4 lg:grid-cols-3">
-              {ADS_PROVIDERS.map(({ key, name, description }) => {
+            <div className="grid gap-4 lg:grid-cols-2">
+              {ADS_PROVIDERS.filter(({ key }) => key !== 'google').map(({ key, name, description }) => {
                 const account = adAccountsByProvider[key]
                 const connected = Boolean(account?.connected)
                 return (
