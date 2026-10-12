@@ -270,6 +270,8 @@ function MediaPreview({ template, large = false }) {
           key={template.videoUrl || previewUrl}
           src={template.videoUrl || previewUrl}
           poster={isVideoUrl(previewUrl) ? undefined : previewUrl}
+          // Preview hosts (meigen CDN) return 403 when hotlinked with a referrer.
+          referrerPolicy="no-referrer"
           muted
           playsInline
           loop
@@ -297,6 +299,8 @@ function MediaPreview({ template, large = false }) {
       <img
         src={previewUrl}
         alt=""
+        // Preview hosts (meigen CDN) return 403 when hotlinked with a referrer.
+        referrerPolicy="no-referrer"
         className="h-full w-full object-cover"
         loading="lazy"
         onError={() => setImgError(true)}
@@ -376,6 +380,8 @@ function TemplateCard({ template, onOpen, isFavorite, onToggleFavorite }) {
                     src={template.author.avatar}
                     alt=""
                     loading="lazy"
+                    // Author avatar hosts return 403 when hotlinked with a referrer.
+                    referrerPolicy="no-referrer"
                     className="h-4 w-4 rounded-full object-cover"
                     onError={(e) => { e.currentTarget.style.display = 'none' }}
                   />
@@ -1087,6 +1093,8 @@ export default function TemplatesPage() {
                       <img
                         src={selected.author.avatar}
                         alt=""
+                        // Author avatar hosts return 403 when hotlinked with a referrer.
+                        referrerPolicy="no-referrer"
                         className="h-5 w-5 rounded-full object-cover"
                         loading="lazy"
                         onError={(e) => { e.currentTarget.style.display = 'none' }}

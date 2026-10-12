@@ -72,12 +72,16 @@ export default function PreviewModal({ type, src, title, onClose, onDownload }) 
             controls
             autoPlay
             playsInline
+            // Remote CDNs may return 403 when hotlinked with a referrer.
+            referrerPolicy="no-referrer"
             className="max-h-full max-w-full rounded-lg bg-black shadow-2xl"
           />
         ) : (
           <img
             src={src}
             alt={title || 'Preview'}
+            // Remote CDNs may return 403 when hotlinked with a referrer.
+            referrerPolicy="no-referrer"
             className="max-h-full max-w-full rounded-lg object-contain shadow-2xl"
           />
         )}
