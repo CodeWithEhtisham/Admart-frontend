@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { isAuthenticated } from '../utils/auth'
+import { CATEGORY_LABELS } from '../utils/templateCategories'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import { formatCredits, quoteCredits } from '../utils/credits.js'
@@ -39,18 +40,6 @@ const SORT_OPTIONS = [
   { id: 'new', label: 'Newest' },
 ]
 
-const CATEGORY_OPTIONS = [
-  { id: 'all', label: 'All' },
-  { id: 'ads-product', label: 'Ads & Product' },
-  { id: 'brand-logo', label: 'Brand & Logo' },
-  { id: 'video', label: 'Videos' },
-  { id: 'illustration-3d', label: 'Illustration & 3D' },
-  { id: 'posters-visuals', label: 'Posters & Visuals' },
-  { id: 'portraits', label: 'Portraits' },
-  { id: 'storyboard-characters', label: 'Storyboard & Characters' },
-  { id: 'wallpaper', label: 'Wallpaper' },
-]
-const CATEGORY_LABELS = Object.fromEntries(CATEGORY_OPTIONS.map((item) => [item.id, item.label]))
 // Rows synced before the meigen-style categories: map on read so old cards and
 // favorites still land under the right tab until the gallery refresh rewrites them.
 const LEGACY_CATEGORY_MAP = {
@@ -454,8 +443,25 @@ export default function TemplatesPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const signedIn = isAuthenticated()
+  const [searchParams, setSearchParams] = useSearchParams()
+  // Category lives in the URL (?category=id) so the sidebar links, the browser
+  // back button, and shared/bookmarked links all stay in sync with the gallery.
+  const category = searchParams.get('category') || 'all'
+  const setCategory = useCallback(
+    (id) => {
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev)
+          if (!id || id === 'all') next.delete('category')
+          else next.set('category', id)
+          return next
+        },
+        { replace: true },
+      )
+    },
+    [setSearchParams],
+  )
   const [media, setMedia] = useState('all')
-  const [category, setCategory] = useState('all')
   const [modelFilter, setModelFilter] = useState('all')
   const [sort, setSort] = useState('featured')
   const [search, setSearch] = useState('')
@@ -506,11 +512,6 @@ export default function TemplatesPage() {
     [],
   )
 
-  const handleCategorySelect = useCallback((id) => {
-    setShowFavorites(false)
-    setCategory(id)
-  }, [])
-
   const handleSortSelect = useCallback((id) => {
     setShowFavorites(false)
     setSort(id)
@@ -524,6 +525,12 @@ export default function TemplatesPage() {
   const handleFavoritesToggle = useCallback(() => {
     setShowFavorites((current) => !current)
   }, [])
+
+  // Category now lives in the URL (sidebar links navigate to ?category=id), so a
+  // category change must also leave favorites mode — mirroring the old pills.
+  useEffect(() => {
+    setShowFavorites(false)
+  }, [category])
 
   const fetchTemplates = useCallback(
     async ({ cursor = null, append = false } = {}) => {
@@ -867,27 +874,12 @@ export default function TemplatesPage() {
             </div>
           </section>
 
-          <section>
+          <section className="space-y-4">
+
+            <div className="space-y-4">
             <div className="rounded-xl border border-border-default bg-panel p-4">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
                 <div className="flex flex-col gap-2">
-                  <div className="flex flex-wrap gap-2">
-                    <select
-                      value={category}
-                      onChange={(e) => handleCategorySelect(e.target.value)}
-                      className="h-11 min-w-[220px] rounded-lg border border-border-default bg-input px-3 text-sm font-semibold text-text-primary outline-none focus:border-accent-blue"
-                      aria-label="Filter by category"
-                    >
-                      {CATEGORY_OPTIONS.map((item) => (
-                        <option key={item.id} value={item.id}>
-                          {item.label}
-                          {item.id !== 'all' && hostStats[item.id]
-                            ? ` (${(hostStats[item.id].images || 0) + (hostStats[item.id].videos || 0)})`
-                            : ''}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
                   <div className="flex flex-wrap gap-2">
                   {MEDIA_OPTIONS.map((item) => (
                     <button
@@ -1039,6 +1031,7 @@ export default function TemplatesPage() {
                   )}
                 </>
               )}
+            </div>
             </div>
           </section>
         </main>

@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { useAppChrome } from '../utils/appChrome'
 import ProjectDropdown from './ProjectDropdown'
 import { Icon } from './icons'
 import { isAuthenticated } from '../utils/auth'
 import BrandGlyph from './BrandGlyph'
+import { CATEGORY_OPTIONS as TEMPLATE_CATEGORIES } from '../utils/templateCategories'
 import {
   CREDITS_CHANGE_EVENT,
   formatCredits,
@@ -174,11 +175,16 @@ function NavItem({ item, active, collapsed }) {
 
 export default function AdmartSidebar() {
   const { pathname } = useLocation()
+  const [searchParams] = useSearchParams()
   const { collapsed: collapsedPref, theme, toggleCollapsed, toggleTheme, mobileOpen, setMobileNav, isDesktop } =
     useAppChrome()
   // The compact rail is a desktop preference; the phone drawer always shows labels.
   const collapsed = collapsedPref && isDesktop
   const sidebarW = collapsed ? 'lg:w-[72px]' : 'lg:w-[260px]'
+  // Show the template category shortcuts directly under the Templates link, but
+  // only while the user is actually on the templates gallery.
+  const onTemplates = pathname === '/templates' || pathname.startsWith('/templates/')
+  const activeCategory = searchParams.get('category') || 'all'
 
   // Close the phone drawer on navigation and on Escape.
   useEffect(() => {
@@ -285,12 +291,34 @@ export default function AdmartSidebar() {
             )}
             <div className="space-y-1">
               {section.items.map((item) => (
-                <NavItem
-                  key={item.to}
-                  item={item}
-                  active={pathname === item.to || pathname.startsWith(`${item.to}/`)}
-                  collapsed={collapsed}
-                />
+                <div key={item.to}>
+                  <NavItem
+                    item={item}
+                    active={pathname === item.to || pathname.startsWith(`${item.to}/`)}
+                    collapsed={collapsed}
+                  />
+                  {item.to === '/templates' && onTemplates && !collapsed && (
+                    <div className="mt-1 space-y-0.5 border-l border-border-default pl-3 ml-3">
+                      {TEMPLATE_CATEGORIES.map((cat) => {
+                        const catActive = activeCategory === cat.id
+                        return (
+                          <Link
+                            key={cat.id}
+                            to={cat.id === 'all' ? '/templates' : `/templates?category=${cat.id}`}
+                            aria-current={catActive ? 'page' : undefined}
+                            className={`flex items-center rounded-lg px-3 py-1.5 text-[13px] font-medium transition ${
+                              catActive
+                                ? 'bg-accent-blue/15 text-text-primary'
+                                : 'text-text-tertiary hover:bg-white/5 hover:text-text-primary'
+                            }`}
+                          >
+                            {cat.label}
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           </div>
