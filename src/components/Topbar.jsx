@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import ProjectDropdown from './ProjectDropdown'
 import { CREDITS_CHANGE_EVENT, formatCredits, getCredits } from '../utils/credits.js'
-import { clearActiveProject } from '../utils/projects'
+import { clearActiveProject, getCachedActiveProject, PROJECT_CHANGE_EVENT } from '../utils/projects'
+import { getInbox } from '../utils/agents'
 import api from '../utils/api'
 import { clearSession, getStoredUser, isAuthenticated } from '../utils/auth'
 import { useAppChrome } from '../utils/appChrome'
@@ -19,6 +20,7 @@ export default function Topbar({ title }) {
   const [searchOpen, setSearchOpen] = useState(false)
   const [creditsRemaining, setCreditsRemaining] = useState(null)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [waiting, setWaiting] = useState(0) // agent runs waiting for the user (bell badge)
 
   const authenticated = isAuthenticated()
   const user = getStoredUser()
@@ -61,6 +63,26 @@ export default function Topbar({ title }) {
     return () => {
       cancelled = true
       window.removeEventListener(CREDITS_CHANGE_EVENT, onChange)
+    }
+  }, [authenticated])
+
+  useEffect(() => {
+    if (!authenticated) return undefined
+    let cancelled = false
+    const load = () => {
+      const projectId = getCachedActiveProject()?.id
+      if (!projectId) return
+      getInbox(projectId)
+        .then((data) => {
+          if (!cancelled) setWaiting(data.waiting || 0)
+        })
+        .catch(() => {})
+    }
+    load()
+    window.addEventListener(PROJECT_CHANGE_EVENT, load)
+    return () => {
+      cancelled = true
+      window.removeEventListener(PROJECT_CHANGE_EVENT, load)
     }
   }, [authenticated])
 
@@ -183,8 +205,16 @@ export default function Topbar({ title }) {
           <Link
             to="/notifications"
             className="relative rounded-xl border border-border-default bg-surface p-2"
-            aria-label="Notifications"
+            aria-label={waiting ? `Notifications, ${waiting} waiting for you` : 'Notifications'}
           >
+            {waiting ? (
+              <span
+                aria-hidden
+                className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent-blue px-1 text-[11px] font-bold text-white"
+              >
+                {waiting > 9 ? '9+' : waiting}
+              </span>
+            ) : null}
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
               <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
               <path d="M13.73 21a2 2 0 0 1-3.46 0" />

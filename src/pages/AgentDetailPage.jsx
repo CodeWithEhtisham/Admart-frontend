@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
+import AgentAutopilot from '../components/AgentAutopilot.jsx'
 import { AgentIcon, KindBadge, StatusBadge } from '../components/AgentBits.jsx'
 import {
   ConceptPicker,
@@ -24,6 +25,7 @@ import { getCachedActiveProject, PROJECT_CHANGE_EVENT } from '../utils/projects'
 
 const OPEN = ['queued', 'running']
 const POLL_MS = 3000
+const AUTOPILOT_POLL_MS = 15000
 const STUCK_MS = 60 * 1000 // queued longer than this: the worker is probably not running
 const PAUSE_TITLES = {
   concept: 'Pick a concept',
@@ -34,7 +36,7 @@ const PAUSE_TITLES = {
 
 function RunCard({ run, agentType, agent, busy, now, onAction, onApprove }) {
   const finished = ['needs_review', 'approved', 'succeeded'].includes(run.status)
-  const label = run.input.topic || (run.input.text || '').slice(0, 80)
+  const label = run.input.topic || (run.input.auto ? 'Auto topic (picking one…)' : (run.input.text || '').slice(0, 80))
   const paused = run.status === 'needs_review' ? run.step : ''
   const act = (action, payload) => onAction(run, action, payload)
   return (
@@ -178,14 +180,16 @@ export default function AgentDetailPage() {
   }, [navigate, projectId])
 
   const working = runs.some((r) => OPEN.includes(r.status))
+  const autopilot = Boolean(deployment?.autopilot)
   useEffect(() => {
-    if (!working) return undefined
+    // Fast while something runs; slow with Autopilot on, so scheduled runs appear without a reload.
+    if (!working && !autopilot) return undefined
     const t = setInterval(() => {
       setNow(Date.now())
       load()
-    }, POLL_MS)
+    }, working ? POLL_MS : AUTOPILOT_POLL_MS)
     return () => clearInterval(t)
-  }, [working, load])
+  }, [working, autopilot, load])
 
   const agent = deployment?.agent
   const isText = agent?.inputKind === 'text'
@@ -321,6 +325,15 @@ export default function AgentDetailPage() {
                 )}
               </div>
             </section>
+          ) : null}
+
+          {agent?.inputKind === 'topic' && deployment ? (
+            <AgentAutopilot
+              key={deployment.id}
+              deployment={deployment}
+              agent={agent}
+              onSave={async (payload) => setDeployment(await updateDeployment(projectId, deploymentId, payload))}
+            />
           ) : null}
 
           {agent ? (

@@ -46,3 +46,8 @@ export async function runAction(projectId, id, runId, action, payload = {}) {
   const { data } = await api.post(`/api/projects/${projectId}/agents/${id}/runs/${runId}/${action}`, payload)
   return data
 }
+
+export async function getInbox(projectId) {
+  const { data } = await api.get(`/api/projects/${projectId}/agents/inbox`)
+  return data
+}

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import { AgentIcon, KindBadge, StatusBadge } from '../components/AgentBits.jsx'
-import { deployAgent, getAgentCatalog, listDeployments, PLATFORM_NAMES } from '../utils/agents'
+import { deployAgent, getAgentCatalog, getInbox, listDeployments, PLATFORM_NAMES } from '../utils/agents'
 import { formatCredits } from '../utils/credits'
 import { getCachedActiveProject, listSocialAccounts, PROJECT_CHANGE_EVENT } from '../utils/projects'
 
@@ -239,6 +239,7 @@ export default function AgentsPage() {
   const [project, setProject] = useState(() => getCachedActiveProject())
   const [catalog, setCatalog] = useState([])
   const [deployments, setDeployments] = useState([])
+  const [waiting, setWaiting] = useState([])
   const [tab, setTab] = useState('all')
   const [deploying, setDeploying] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -250,12 +251,14 @@ export default function AgentsPage() {
     setLoading(true)
     setError('')
     try {
-      const [agents, mine] = await Promise.all([
+      const [agents, mine, inbox] = await Promise.all([
         getAgentCatalog(),
         active?.id ? listDeployments(active.id) : Promise.resolve([]),
+        active?.id ? getInbox(active.id) : Promise.resolve({ items: [] }),
       ])
       setCatalog(agents)
       setDeployments(mine)
+      setWaiting((inbox.items || []).filter((i) => i.status === 'needs_review'))
     } catch {
       setError('Could not load agents. Refresh to try again.')
     } finally {
@@ -298,6 +301,34 @@ export default function AgentsPage() {
             </p>
           ) : null}
 
+          {waiting.length ? (
+            <section className="space-y-3" aria-labelledby="waiting-title">
+              <h2 id="waiting-title" className="font-heading text-lg font-bold">
+                Waiting for you ({waiting.length})
+              </h2>
+              <ul className="divide-y divide-border-default overflow-hidden rounded-2xl border border-accent-blue/40 bg-surface">
+                {waiting.map((item) => (
+                  <li key={item.runId}>
+                    <Link
+                      to={`/agents/${item.deploymentId}`}
+                      className="flex flex-wrap items-center gap-3 px-5 py-3 transition hover:bg-elevated"
+                    >
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-medium">{item.title}</span>
+                        <span className="block text-xs text-text-tertiary">{item.agent}</span>
+                      </span>
+                      <span className="text-sm font-medium text-link">
+                        {{ concept: 'Pick a concept', script: 'Review script', storyboard: 'Review storyboard' }[item.step] ||
+                          'Review Short'}{' '}
+                        →
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
           {deployments.length ? (
             <section className="space-y-3">
               <h2 className="font-heading text-lg font-bold">My agents</h2>
@@ -316,6 +347,11 @@ export default function AgentsPage() {
                         {d.monthlyCreditLimit ? ` of ${formatCredits(d.monthlyCreditLimit)}` : ''}
                       </p>
                     </div>
+                    {d.autopilot ? (
+                      <span className="rounded-full border border-accent-blue/60 bg-accent-blue/15 px-2 py-0.5 text-xs font-semibold text-text-primary">
+                        Autopilot
+                      </span>
+                    ) : null}
                     <StatusBadge status={d.status} />
                     <span className="text-sm font-medium text-link">Open →</span>
                   </Link>
