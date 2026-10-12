@@ -66,6 +66,13 @@ const Icons = {
       <path d="M7 8.2l2.5 2.2M14.5 10.4L17 8.2M7 15.8l2.5-2.2M14.5 13.6L17 15.8" />
     </Icon>
   ),
+  agents: (
+    <Icon>
+      <rect x="5" y="8" width="14" height="11" rx="3" />
+      <path d="M12 8V4.5M9.5 13h.01M14.5 13h.01M9.5 16.5h5" />
+      <circle cx="12" cy="3.5" r="1" />
+    </Icon>
+  ),
   analytics: (
     <Icon>
       <path d="M4 19V5M4 19h16" />
@@ -122,6 +129,7 @@ const NAV_SECTIONS = [
       { to: '/video-gen', label: 'AI Video Gen', icon: Icons.createVideo },
       { to: '/library', label: 'Library', icon: Icons.library },
       { to: '/templates', label: 'Templates', icon: Icons.templates },
+      { to: '/agents', label: 'Agents', icon: Icons.agents },
     ],
   },
   {

@@ -19,6 +19,8 @@ import AnalyticsPage from './pages/AnalyticsPage'
 import BillingPage from './pages/BillingPage'
 import SettingsPage from './pages/SettingsPage'
 import BrandKitPage from './pages/BrandKitPage'
+import AgentsPage from './pages/AgentsPage'
+import AgentDetailPage from './pages/AgentDetailPage'
 import NotificationsPage from './pages/NotificationsPage'
 import ImageGenPage from './pages/ImageGenPage'
 import VideoGenPage from './pages/VideoGenPage'
@@ -63,6 +65,8 @@ export default function App() {
         <Route path="/billing" element={<BillingPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/brand-kit" element={<BrandKitPage />} />
+        <Route path="/agents" element={<AgentsPage />} />
+        <Route path="/agents/:deploymentId" element={<AgentDetailPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/image-gen" element={<ImageGenPage />} />
       </Route>

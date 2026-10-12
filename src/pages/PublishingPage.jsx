@@ -510,6 +510,7 @@ export default function PublishingPage() {
                       videoUrl={publishAsset.videoUrl}
                       initialTitle={assetTitle}
                       initialDescription={publishAsset.prompt || ''}
+                      initialTags={(publishAsset.tags || []).join(', ')}
                       initialThumbnail={publishAsset.thumbnailUrl || ''}
                       onPayloadChange={setYtPayload}
                       onError={setError}
