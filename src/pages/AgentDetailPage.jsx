@@ -66,9 +66,19 @@ function RunCard({ run, agentType, agent, busy, now, onAction, onApprove }) {
       ) : null}
 
       {run.status === 'failed' ? (
-        <p role="alert" className="mt-3 text-sm text-danger">
-          {run.error}
-        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <p role="alert" className="min-w-0 flex-1 text-sm text-danger">
+            {run.error}
+          </p>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => act('retry')}
+            className="rounded-xl border border-border-default px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary disabled:opacity-50"
+          >
+            Try again ({formatCredits(run.credits)} credits)
+          </button>
+        </div>
       ) : null}
 
       {paused ? <h3 className="mt-5 font-heading text-[1rem] font-semibold">{PAUSE_TITLES[paused] || 'Ready for review'}</h3> : null}
@@ -178,7 +188,7 @@ export default function AgentDetailPage() {
   }, [working, load])
 
   const agent = deployment?.agent
-  const isText = agent && agent.inputLabel !== 'Topic'
+  const isText = agent?.inputKind === 'text'
 
   const run = async (e) => {
     e.preventDefault()
@@ -242,7 +252,7 @@ export default function AgentDetailPage() {
     try {
       const updated = await runAction(projectId, deploymentId, r.id, action, payload)
       setRuns((prev) => prev.map((x) => (x.id === updated.id ? updated : x)))
-      if (action === 'discard' || action === 'regenerate') getCredits().then(notifyCreditsChanged).catch(() => {})
+      if (['discard', 'regenerate', 'retry'].includes(action)) getCredits().then(notifyCreditsChanged).catch(() => {})
     } catch (err) {
       setError(err.response?.data?.message || 'That did not work. Please try again.')
     } finally {
