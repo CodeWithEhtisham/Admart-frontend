@@ -38,6 +38,10 @@ export default function Topbar({ title }) {
   }
 
   useEffect(() => {
+    if (!authenticated) {
+      setCreditsRemaining(null)
+      return undefined
+    }
     let cancelled = false
     getCredits()
       .then((bal) => {
@@ -58,7 +62,7 @@ export default function Topbar({ title }) {
       cancelled = true
       window.removeEventListener(CREDITS_CHANGE_EVENT, onChange)
     }
-  }, [])
+  }, [authenticated])
 
   const onSearchKey = useCallback((event) => {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {

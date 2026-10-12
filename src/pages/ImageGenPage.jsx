@@ -182,10 +182,9 @@ function ModelPicker({ models, value, onChange, costsByModel = {} }) {
           role="listbox"
           className="absolute left-0 right-0 z-40 mt-1.5 max-h-64 overflow-y-auto rounded-xl border border-border-default bg-panel p-1 shadow-xl shadow-black/40"
         >
-          {models
-            .filter((m) => m.enabled !== false)
-            .map((m) => {
+          {models.map((m) => {
             const active = m.id === value
+            const isNew = m.isNew || m.source === 'provider'
             return (
               <li key={m.id} role="option" aria-selected={active}>
                 <button
@@ -206,7 +205,14 @@ function ModelPicker({ models, value, onChange, costsByModel = {} }) {
                     }`}
                   />
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-medium">{m.label}</span>
+                    <span className="flex items-center gap-1.5 text-sm font-medium">
+                      <span>{m.label}</span>
+                      {isNew ? (
+                        <span className="rounded bg-accent-blue/20 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-link">
+                          New
+                        </span>
+                      ) : null}
+                    </span>
                     {m.strength ? (
                       <span
                         className={`mt-0.5 block text-[11px] ${
@@ -224,41 +230,16 @@ function ModelPicker({ models, value, onChange, costsByModel = {} }) {
                       >
                         From {formatCredits(costsByModel[m.id].credits)} cr
                       </span>
+                    ) : m.pricing?.admartUnitPrice ? (
+                      <span className="mt-1 block font-mono text-[11px] text-text-muted">
+                        ~{formatCredits(m.pricing.admartUnitPrice)} cr
+                      </span>
                     ) : null}
                   </span>
                 </button>
               </li>
             )
           })}
-          {models.some((m) => m.enabled === false) ? (
-            <li className="mt-1 border-t border-border-default px-3 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wide text-text-muted">
-              New — coming soon
-            </li>
-          ) : null}
-          {models
-            .filter((m) => m.enabled === false)
-            .map((m) => (
-              <li key={m.id}>
-                <div className="flex w-full items-start gap-2 rounded-lg px-3 py-2.5 opacity-55">
-                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-text-muted/30" />
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-medium text-text-tertiary">
-                      {m.label}
-                    </span>
-                    {m.strength ? (
-                      <span className="mt-0.5 block text-[11px] text-text-muted">
-                        {m.strength}
-                      </span>
-                    ) : null}
-                    {m.pricing?.admartUnitPrice ? (
-                      <span className="mt-1 block font-mono text-[11px] text-text-muted">
-                        ~{formatCredits(m.pricing.admartUnitPrice)} cr
-                      </span>
-                    ) : null}
-                  </span>
-                </div>
-              </li>
-            ))}
         </ul>
       ) : null}
     </div>

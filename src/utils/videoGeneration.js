@@ -225,6 +225,164 @@ export const DEFAULT_VIDEO_CATALOG = {
         ]
       },
       "strength": "Fast / low cost"
+    },
+    {
+      "id": "bytedance/seedance-2.5/text-to-video",
+      "label": "Seedance 2.5",
+      "family": "seedance",
+      "default": false,
+      "inputs": "text",
+      "falImageKeys": {},
+      "fields": {
+        "seed": true,
+        "duration": [
+          "4s",
+          "6s",
+          "8s",
+          "10s",
+          "12s"
+        ],
+        "aspectRatio": [
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4"
+        ],
+        "resolution": [
+          "720p",
+          "1080p",
+          "4k"
+        ],
+        "generateAudio": true
+      },
+      "strength": "High fidelity dynamic motion"
+    },
+    {
+      "id": "fal-ai/kling-video/v3/pro/text-to-video",
+      "label": "Kling 3.0 Pro",
+      "family": "kling",
+      "default": false,
+      "inputs": "text",
+      "falImageKeys": {},
+      "fields": {
+        "seed": true,
+        "duration": [
+          "5",
+          "10"
+        ],
+        "aspectRatio": [
+          "16:9",
+          "9:16",
+          "1:1"
+        ]
+      },
+      "strength": "Next-gen cinematic motion"
+    },
+    {
+      "id": "fal-ai/kling-video/v3/standard/text-to-video",
+      "label": "Kling 3.0 Standard",
+      "family": "kling",
+      "default": false,
+      "inputs": "text",
+      "falImageKeys": {},
+      "fields": {
+        "seed": true,
+        "duration": [
+          "5",
+          "10"
+        ],
+        "aspectRatio": [
+          "16:9",
+          "9:16",
+          "1:1"
+        ]
+      },
+      "strength": "Balanced next-gen motion"
+    },
+    {
+      "id": "fal-ai/veo3.1/fast",
+      "label": "Veo 3.1 Fast",
+      "family": "veo",
+      "default": false,
+      "inputs": "text",
+      "falImageKeys": {},
+      "fields": {
+        "seed": true,
+        "duration": [
+          "4s",
+          "6s",
+          "8s"
+        ],
+        "aspectRatio": [
+          "16:9",
+          "9:16"
+        ],
+        "resolution": [
+          "720p",
+          "1080p"
+        ],
+        "generateAudio": true
+      },
+      "strength": "Rapid generation with audio"
+    },
+    {
+      "id": "minimax/h3-max/text-to-video",
+      "label": "MiniMax H3 Max",
+      "family": "minimax",
+      "default": false,
+      "inputs": "text",
+      "falImageKeys": {},
+      "fields": {
+        "seed": true,
+        "duration": [
+          "6",
+          "10"
+        ]
+      },
+      "strength": "Ultra high-res social clips"
+    },
+    {
+      "id": "minimax/h3-max-turbo/text-to-video",
+      "label": "MiniMax H3 Max Turbo",
+      "family": "minimax",
+      "default": false,
+      "inputs": "text",
+      "falImageKeys": {},
+      "fields": {
+        "seed": true,
+        "duration": [
+          "6",
+          "10"
+        ]
+      },
+      "strength": "Fast high-res video"
+    },
+    {
+      "id": "alibaba/wan-3.0/text-to-video",
+      "label": "Wan 3.0",
+      "family": "wan",
+      "default": false,
+      "inputs": "text",
+      "falImageKeys": {},
+      "fields": {
+        "seed": true,
+        "duration": [
+          "5",
+          "10"
+        ],
+        "aspectRatio": [
+          "16:9",
+          "9:16",
+          "1:1"
+        ],
+        "resolution": [
+          "720p",
+          "1080p"
+        ],
+        "negativePrompt": true
+      },
+      "strength": "Next-gen coherent scenes"
     }
   ],
   "imageToVideo": [
@@ -389,6 +547,133 @@ export const DEFAULT_VIDEO_CATALOG = {
         ]
       },
       "strength": "Stylized motion"
+    },
+    {
+      "id": "bytedance/seedance-2.5/image-to-video",
+      "label": "Seedance 2.5",
+      "family": "seedance",
+      "default": false,
+      "inputs": "image",
+      "falImageKeys": {
+        "start": "image_url"
+      },
+      "fields": {
+        "seed": true,
+        "duration": [
+          "4s",
+          "6s",
+          "8s",
+          "10s"
+        ],
+        "aspectRatio": [
+          "auto",
+          "16:9",
+          "9:16",
+          "1:1"
+        ],
+        "resolution": [
+          "720p",
+          "1080p"
+        ],
+        "generateAudio": true
+      },
+      "strength": "Smooth image animation"
+    },
+    {
+      "id": "fal-ai/kling-video/v3/pro/image-to-video",
+      "label": "Kling 3.0 Pro",
+      "family": "kling",
+      "default": false,
+      "inputs": "image",
+      "falImageKeys": {
+        "start": "image_url"
+      },
+      "fields": {
+        "seed": true,
+        "duration": [
+          "5",
+          "10"
+        ]
+      },
+      "strength": "Hyper-realistic animation"
+    },
+    {
+      "id": "fal-ai/kling-video/v3/standard/image-to-video",
+      "label": "Kling 3.0 Standard",
+      "family": "kling",
+      "default": false,
+      "inputs": "image",
+      "falImageKeys": {
+        "start": "image_url"
+      },
+      "fields": {
+        "seed": true,
+        "duration": [
+          "5",
+          "10"
+        ]
+      },
+      "strength": "Balanced motion from image"
+    },
+    {
+      "id": "fal-ai/kling-video/v2.6/pro/image-to-video",
+      "label": "Kling 2.6 Pro",
+      "family": "kling",
+      "default": false,
+      "inputs": "image",
+      "falImageKeys": {
+        "start": "image_url"
+      },
+      "fields": {
+        "seed": true,
+        "duration": [
+          "5",
+          "10"
+        ]
+      },
+      "strength": "Fluid motion"
+    },
+    {
+      "id": "fal-ai/veo3.1/fast/image-to-video",
+      "label": "Veo 3.1 Fast",
+      "family": "veo",
+      "default": false,
+      "inputs": "image",
+      "falImageKeys": {
+        "start": "image_url"
+      },
+      "fields": {
+        "seed": true,
+        "duration": [
+          "4s",
+          "6s",
+          "8s"
+        ],
+        "resolution": [
+          "720p",
+          "1080p"
+        ],
+        "generateAudio": true
+      },
+      "strength": "Quick animate with sound"
+    },
+    {
+      "id": "minimax/h3-max/image-to-video",
+      "label": "MiniMax H3 Max",
+      "family": "minimax",
+      "default": false,
+      "inputs": "image",
+      "falImageKeys": {
+        "start": "image_url"
+      },
+      "fields": {
+        "seed": true,
+        "duration": [
+          "6",
+          "10"
+        ]
+      },
+      "strength": "Detailed character animation"
     }
   ],
   "firstLastFrame": [
@@ -487,6 +772,56 @@ export const DEFAULT_VIDEO_CATALOG = {
         "generateAudio": true
       },
       "strength": "Start + optional end"
+    },
+    {
+      "id": "bytedance/seedance-2.5/image-to-video",
+      "label": "Seedance 2.5 Start→End",
+      "family": "seedance",
+      "default": false,
+      "inputs": "firstLast",
+      "falImageKeys": {
+        "start": "image_url",
+        "end": "end_image_url"
+      },
+      "fields": {
+        "seed": true,
+        "duration": [
+          "4s",
+          "6s",
+          "8s"
+        ],
+        "aspectRatio": [
+          "auto",
+          "16:9",
+          "9:16",
+          "1:1"
+        ],
+        "resolution": [
+          "720p",
+          "1080p"
+        ],
+        "generateAudio": true
+      },
+      "strength": "Start & end keyframe transition"
+    },
+    {
+      "id": "fal-ai/kling-video/v3/pro/image-to-video",
+      "label": "Kling 3.0 Pro Start→End",
+      "family": "kling",
+      "default": false,
+      "inputs": "firstLast",
+      "falImageKeys": {
+        "start": "image_url",
+        "end": "tail_image_url"
+      },
+      "fields": {
+        "seed": true,
+        "duration": [
+          "5",
+          "10"
+        ]
+      },
+      "strength": "Seamless keyframe animation"
     },
     {
       "id": "fal-ai/kling-video/v2.5-turbo/pro/image-to-video",

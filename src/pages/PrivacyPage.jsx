@@ -57,8 +57,8 @@ export default function PrivacyPage() {
       <section>
         <h2>AI providers</h2>
         <p>
-          To create images and videos, we send your prompt and any images you provide to our AI generation provider,
-          fal.ai. When you use &quot;Enhance prompt&quot;, your prompt is sent to Google&apos;s Gemini API. These
+          To create images and videos, we send your prompt and any images you provide to our secure cloud AI generation
+          infrastructure. When you use &quot;Enhance prompt&quot;, your prompt is sent to Google&apos;s Gemini API. These
           providers process the data to return results to us.
         </p>
       </section>

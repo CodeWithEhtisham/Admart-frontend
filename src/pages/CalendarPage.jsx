@@ -7,6 +7,7 @@ import {
   getCachedActiveProject,
   getProjectCalendar,
 } from '../utils/projects.js'
+import { isAuthenticated } from '../utils/auth'
 
 // Shared empty list so derived values keep a stable identity between renders.
 const NONE = []
@@ -173,7 +174,7 @@ export default function CalendarPage() {
   const requestKey = projectId ? `${projectId}|${currentYear}|${currentMonth}` : ''
 
   useEffect(() => {
-    if (!requestKey) return undefined
+    if (!isAuthenticated() || !requestKey) return undefined
     let cancelled = false
     getProjectCalendar(projectId, { year: currentYear, month: currentMonth + 1 })
       .then((payload) => {

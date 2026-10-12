@@ -1,4 +1,5 @@
 import api from './api'
+import { isAuthenticated } from './auth'
 import { needsOnboarding } from './projects'
 
 export const PENDING_TEMPLATE_USE_KEY = 'admart:pending-template-use'
@@ -19,6 +20,7 @@ export async function recordTemplateUse(templateId) {
 }
 
 export async function listFavoriteTemplates() {
+  if (!isAuthenticated()) return { items: [], count: 0 }
   const { data } = await api.get('/api/templates/favorites')
   return data
 }

@@ -1,4 +1,5 @@
 import api from './api'
+import { isAuthenticated } from './auth'
 
 // Broadcast when the active project changes so any component can react.
 export const PROJECT_CHANGE_EVENT = 'admart:project-change'
@@ -58,6 +59,9 @@ export async function postLoginPath(user, intended = '/dashboard') {
 
 // ─── API calls ────────────────────────────────────────────────────────
 export async function listProjects() {
+  if (!isAuthenticated()) {
+    return { projects: [], activeProjectId: null }
+  }
   const { data } = await api.get('/api/projects')
   return {
     projects: (data.projects || []).map(normalizeProject),

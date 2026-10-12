@@ -1,7 +1,7 @@
 import axios from 'axios'
-import { clearSession, getAccessToken, getRefreshToken } from './auth'
+import { clearSession, getAccessToken, getRefreshToken, isTokenExpired } from './auth'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:8000')
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -9,17 +9,6 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 })
-
-api.interceptors.request.use(
-  (config) => {
-    const token = getAccessToken()
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => Promise.reject(error),
-)
 
 // Refresh tokens rotate and the old one is revoked, so a page load that fires several
 // requests with an expired access token must share ONE refresh call. Otherwise the
@@ -46,6 +35,30 @@ async function refreshAccessToken() {
   }
 }
 
+api.interceptors.request.use(
+  async (config) => {
+    let token = getAccessToken()
+    if (token) {
+      if (isTokenExpired(token)) {
+        const refreshToken = getRefreshToken()
+        if (refreshToken && !isTokenExpired(refreshToken)) {
+          try {
+            refreshing = refreshing || refreshAccessToken().finally(() => (refreshing = null))
+            token = await refreshing
+          } catch {
+            /* refresh failed */
+          }
+        }
+      }
+      if (token && !isTokenExpired(token)) {
+        config.headers.Authorization = `Bearer ${token}`
+      }
+    }
+    return config
+  },
+  (error) => Promise.reject(error),
+)
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -54,13 +67,18 @@ api.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      originalRequest.url !== '/api/auth/refresh' &&
-      getRefreshToken()
+      originalRequest.url !== '/api/auth/refresh'
     ) {
       originalRequest._retry = true
+      const refreshToken = getRefreshToken()
+      if (!refreshToken || isTokenExpired(refreshToken)) {
+        clearSession()
+        return Promise.reject(error)
+      }
+
       // Sent with an old token that has since been refreshed: just retry with the new one.
       const current = getAccessToken()
-      if (current && originalRequest.headers.Authorization !== `Bearer ${current}`) {
+      if (current && originalRequest.headers.Authorization !== `Bearer ${current}` && !isTokenExpired(current)) {
         originalRequest.headers.Authorization = `Bearer ${current}`
         return api(originalRequest)
       }
@@ -70,10 +88,11 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
         return api(originalRequest)
       } catch (refreshError) {
-        // Only a rejected token means "signed out"; a network blip or server error should not.
-        const status = refreshError.response?.status
-        if (status === 401 || status === 400) {
-          clearSession()
+        clearSession()
+        const isPublic =
+          ['/', '/templates', '/privacy', '/terms'].includes(window.location.pathname) ||
+          window.location.pathname.startsWith('/auth')
+        if (!isPublic) {
           window.location.href = '/auth'
         }
         return Promise.reject(refreshError)

@@ -107,7 +107,8 @@ function normalizeTemplate(raw) {
   const quickFields = normalizeQuickFields(config)
   const sourceModelName =
     config.sourceModelName || config.source_model_name || config.sourceModel || config.source_model || ''
-  const modelName = config.modelName || config.model_name || sourceModelName || config.model || 'Default model'
+  const rawModelName = config.modelName || config.model_name || sourceModelName || config.model || 'Default model'
+  const modelName = rawModelName.replace(/^fal[.-]?ai\//i, '').replace(/^fal\//i, '')
   return {
     id: String(raw?.id || ''),
     title: raw?.title || 'Untitled template',
@@ -134,7 +135,16 @@ function normalizeTemplate(raw) {
     trending: Boolean(raw?.trending),
     estimatedCredits: raw?.estimatedCredits || config.estimatedCredits || null,
     createdAt: raw?.createdAt || raw?.created_at || null,
-    author: config.author || null,
+    author:
+      config.author && typeof config.author === 'object'
+        ? {
+            ...config.author,
+            avatar:
+              config.author.avatar && !config.author.avatar.includes('pbs.twimg.com')
+                ? config.author.avatar
+                : null,
+          }
+        : null,
     videoUrl: config.videoUrl || '',
     source: config.source || '',
   }
@@ -242,6 +252,7 @@ function MediaPreview({ template, large = false }) {
   const hasVideo = Boolean(template.videoUrl || isVideoUrl(previewUrl))
   const videoRef = useRef(null)
   const [playing, setPlaying] = useState(false)
+  const [imgError, setImgError] = useState(false)
 
   const togglePlay = useCallback((event) => {
     event?.stopPropagation?.()
@@ -282,12 +293,20 @@ function MediaPreview({ template, large = false }) {
         />
       )
     }
-    return <img src={previewUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
+    return (
+      <img
+        src={previewUrl}
+        alt=""
+        className="h-full w-full object-cover"
+        loading="lazy"
+        onError={() => setImgError(true)}
+      />
+    )
   }
 
   return (
     <div className={`relative w-full overflow-hidden bg-surface ${aspectClass(template.settings?.aspectRatio)}`}>
-      {(hasVideo || previewUrl) ? (
+      {(hasVideo || (previewUrl && !imgError)) ? (
         renderPreview()
       ) : (
         <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center">
@@ -1055,7 +1074,9 @@ export default function TemplatesPage() {
 
               <div className="mt-4 rounded-lg border border-border bg-surface p-3">
                 <p className="text-xs font-semibold uppercase text-text-muted">Generator model id</p>
-                <p className="mt-1 break-all font-mono text-xs text-text-secondary">{selected.model}</p>
+                <p className="mt-1 break-all font-mono text-xs text-text-secondary">
+                  {selected.model ? selected.model.replace(/^fal[.-]?ai\//i, '').replace(/^fal\//i, '') : '—'}
+                </p>
               </div>
 
               {selected.author?.name && (
@@ -1068,6 +1089,7 @@ export default function TemplatesPage() {
                         alt=""
                         className="h-5 w-5 rounded-full object-cover"
                         loading="lazy"
+                        onError={(e) => { e.currentTarget.style.display = 'none' }}
                       />
                     )}
                     <span className="font-medium text-text-primary">{selected.author.name}</span>

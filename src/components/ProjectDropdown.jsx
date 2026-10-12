@@ -8,6 +8,7 @@ import {
   resolveActiveProject,
   setActiveProject as cacheActiveProject,
 } from '../utils/projects'
+import { isAuthenticated } from '../utils/auth'
 
 // Re-export so existing importers (if any) keep working from this module too.
 export { PROJECT_CHANGE_EVENT }
@@ -39,6 +40,10 @@ export default function ProjectDropdown() {
 
   // Load the user's projects from the backend on mount.
   useEffect(() => {
+    if (!isAuthenticated()) {
+      setLoading(false)
+      return undefined
+    }
     let cancelled = false
     listProjects()
       .then((data) => {

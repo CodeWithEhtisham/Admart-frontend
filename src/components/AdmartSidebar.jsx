@@ -196,6 +196,11 @@ export default function AdmartSidebar() {
   const [total, setTotal] = useState(null)
 
   useEffect(() => {
+    if (!isAuthenticated()) {
+      setRemaining(null)
+      setTotal(null)
+      return undefined
+    }
     let cancelled = false
     getCredits()
       .then((bal) => {

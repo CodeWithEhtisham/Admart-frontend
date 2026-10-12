@@ -13,18 +13,39 @@ export const IMAGE_CAPABILITIES = [
 export const TEXT_TO_IMAGE_MODELS = [
   { id: 'fal-ai/flux/dev', label: 'Flux Dev', family: 'flux', strength: 'Balanced quality' },
   { id: 'fal-ai/flux/schnell', label: 'Flux Schnell', family: 'flux', strength: 'Fast drafts' },
+  { id: 'fal-ai/flux-2-pro', label: 'Flux 2 Pro', family: 'flux', strength: 'Latest FLUX.2 — sharp text & photorealism' },
+  { id: 'fal-ai/flux-pro/v1.1', label: 'FLUX 1.1 Pro', family: 'flux', strength: 'Ultra-fast high-res generation' },
   { id: 'fal-ai/nano-banana-2', label: 'Nano Banana 2', family: 'nano', strength: 'Fast Google quality' },
   { id: 'fal-ai/nano-banana-pro', label: 'Nano Banana Pro', family: 'nano', strength: 'Higher fidelity' },
+  { id: 'google/nano-banana-2.1', label: 'Nano Banana 2.1', family: 'nano', strength: 'Google high-speed fidelity' },
+  { id: 'fal-ai/nano-banana', label: 'Nano Banana', family: 'nano', strength: 'Lightweight, fast generations' },
   { id: 'fal-ai/ideogram/v3', label: 'Ideogram V3', family: 'ideogram', strength: 'Text / posters / logos' },
-  // Note: partner id is openai/… not fal-ai/openai/…
   { id: 'openai/gpt-image-2', label: 'GPT Image 2', family: 'openai', strength: 'Best typography' },
+  { id: 'openai/gpt-image-2.5/flare/text-to-image', label: 'GPT Image 2.5 Flare', family: 'openai', strength: 'Fast typography & sharp logos' },
+  { id: 'openai/gpt-image-2.5/sunburst/text-to-image', label: 'GPT Image 2.5 Sunburst', family: 'openai', strength: 'Creative advertising designs' },
+  { id: 'bytedance/seedream/v5/pro/text-to-image', label: 'Seedream 5.0 Pro', family: 'seedream', strength: 'Rich dynamic styling' },
 ]
 
 export const EDIT_MODELS = [
   { id: 'fal-ai/nano-banana-2/edit', label: 'Nano Banana 2 Edit', family: 'nano' },
   { id: 'fal-ai/nano-banana-pro/edit', label: 'Nano Banana Pro Edit', family: 'nano' },
+  { id: 'google/nano-banana-2.1/edit', label: 'Nano Banana 2.1 Edit', family: 'nano' },
+  { id: 'fal-ai/nano-banana/edit', label: 'Nano Banana Edit', family: 'nano' },
   { id: 'fal-ai/flux-pro/kontext', label: 'Flux Kontext Pro', family: 'flux' },
   { id: 'openai/gpt-image-2/edit', label: 'GPT Image 2 Edit', family: 'openai' },
+  { id: 'openai/gpt-image-2.5/flare/edit', label: 'GPT Image 2.5 Flare Edit', family: 'openai' },
+  { id: 'openai/gpt-image-2.5/sunburst/edit', label: 'GPT Image 2.5 Sunburst Edit', family: 'openai' },
+  { id: 'bytedance/seedream/v5/pro/edit', label: 'Seedream 5.0 Pro Edit', family: 'seedream' },
+  { id: 'wan/v2.6/image-to-image', label: 'Wan 2.6 Edit', family: 'wan' },
+]
+
+export const MULTI_EDIT_MODELS = [
+  { id: 'fal-ai/nano-banana-pro/edit', label: 'Nano Banana Pro Edit', family: 'nano' },
+  { id: 'fal-ai/nano-banana-2/edit', label: 'Nano Banana 2 Edit', family: 'nano' },
+  { id: 'google/nano-banana-2.1/edit', label: 'Nano Banana 2.1 Edit', family: 'nano' },
+  { id: 'openai/gpt-image-2/edit', label: 'GPT Image 2 Edit', family: 'openai' },
+  { id: 'openai/gpt-image-2.5/flare/edit', label: 'GPT Image 2.5 Flare Edit', family: 'openai' },
+  { id: 'bytedance/seedream/v5/pro/edit', label: 'Seedream 5.0 Pro Edit', family: 'seedream' },
   { id: 'wan/v2.6/image-to-image', label: 'Wan 2.6 Edit', family: 'wan' },
 ]
 
@@ -45,7 +66,7 @@ export const REMBG_MODELS = [
 export const DEFAULT_IMAGE_CATALOG = {
   textToImage: TEXT_TO_IMAGE_MODELS,
   edit: EDIT_MODELS,
-  multiEdit: EDIT_MODELS,
+  multiEdit: MULTI_EDIT_MODELS,
   upscale: UPSCALE_MODELS,
   removeBackground: REMBG_MODELS,
 }
