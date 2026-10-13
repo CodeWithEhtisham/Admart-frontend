@@ -10,6 +10,42 @@ const secondaryBtn =
 const dangerBtn =
   'rounded-xl border border-error/50 px-4 py-2 text-sm font-medium text-danger hover:bg-error/10 disabled:opacity-50'
 
+const BAND_STYLE = {
+  STRONG: 'border-success/40 bg-success/15 text-success-text',
+  WORKABLE: 'border-warning/60 bg-warning/15 text-text-primary',
+  WEAK: 'border-error/40 bg-error/10 text-danger',
+}
+
+/** Hook score from the hook formulas checker, e.g. "Hook 74 · strong". */
+export function HookScore({ concept }) {
+  if (concept.score == null) return null
+  return (
+    <span className="inline-flex flex-wrap items-center gap-1.5 text-xs">
+      <span
+        title="A quick check of the opening line: specific, talks to you, has stakes and a question. A guide, not a promise."
+        className={`rounded-full border px-2 py-0.5 font-semibold ${BAND_STYLE[concept.band] || BAND_STYLE.WORKABLE}`}
+      >
+        Hook {concept.score} · {(concept.band || '').toLowerCase()}
+      </span>
+      {concept.formula ? <span className="text-text-tertiary">{concept.formula}</span> : null}
+    </span>
+  )
+}
+
+/** Title tips from the title + thumbnail checker. */
+export function TitleCheck({ run }) {
+  if (!run.titleCheck?.length) return run.title ? <p className="text-xs text-success-text">✓ Title and thumbnail text look good</p> : null
+  return (
+    <ul className="space-y-0.5 text-xs text-text-secondary" aria-label="Title tips">
+      {run.titleCheck.map((tip) => (
+        <li key={tip}>
+          <span aria-hidden className="text-warning">▲</span> {tip}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 export function Research({ research, open = false }) {
   if (!research?.notes) return null
   return (
@@ -55,6 +91,9 @@ export function ConceptPicker({ run, styles, busy, onContinue, onDiscard }) {
           >
             <input type="radio" name={`concept-${run.id}`} checked={index === i} onChange={() => choose(i)} className="sr-only" />
             <span className="block font-semibold">{c.title}</span>
+            <span className="mt-2 block">
+              <HookScore concept={c} />
+            </span>
             <span className="mt-2 block text-text-secondary">“{c.hook}”</span>
             <span className="mt-2 block text-xs text-text-tertiary">{c.angle}</span>
             <span className="mt-2 inline-block rounded-full border border-border-default px-2 py-0.5 text-xs text-text-secondary">
@@ -63,6 +102,9 @@ export function ConceptPicker({ run, styles, busy, onContinue, onDiscard }) {
           </label>
         ))}
       </fieldset>
+      {run.concepts[index]?.fix && run.concepts[index]?.band !== 'STRONG' ? (
+        <p className="text-xs text-text-tertiary">Tip for this hook: {run.concepts[index].fix}</p>
+      ) : null}
       <div className="grid gap-3 sm:grid-cols-[1fr_200px]">
         <label className="block text-sm">
           <span className="text-text-tertiary">Opening line (hook)</span>
@@ -96,6 +138,7 @@ const MAX_SCENES = 7
 
 export function ScriptEditor({ run, busy, onContinue, onDiscard }) {
   const [title, setTitle] = useState(run.title)
+  const [thumb, setThumb] = useState(run.thumbnailText || '')
   const [description, setDescription] = useState(run.description)
   const [tags, setTags] = useState(run.tags.join(', '))
   const [scenes, setScenes] = useState(() =>
@@ -114,6 +157,11 @@ export function ScriptEditor({ run, busy, onContinue, onDiscard }) {
         <span className="text-text-tertiary">Title</span>
         <input value={title} maxLength={90} onChange={(e) => setTitle(e.target.value)} className={`mt-1 ${field}`} />
       </label>
+      <label className="block text-sm">
+        <span className="text-text-tertiary">Thumbnail text (2-4 words that add to the title)</span>
+        <input value={thumb} maxLength={40} onChange={(e) => setThumb(e.target.value)} className={`mt-1 ${field}`} />
+      </label>
+      <TitleCheck run={run} />
       <ol className="space-y-3">
         {scenes.map((s, i) => (
           <li key={i} className="rounded-xl border border-border-default bg-input p-3">
@@ -188,7 +236,7 @@ export function ScriptEditor({ run, busy, onContinue, onDiscard }) {
         <button
           type="button"
           disabled={busy || !valid}
-          onClick={() => onContinue({ title, description, tags: tags.split(','), scenes })}
+          onClick={() => onContinue({ title, thumbnail_text: thumb, description, tags: tags.split(','), scenes })}
           className={primaryBtn}
         >
           Approve script → make voice &amp; visuals
@@ -334,6 +382,8 @@ export function ScriptView({ run }) {
   return (
     <div className="space-y-3 text-sm">
       <p className="font-heading text-[1rem] font-semibold">{run.title}</p>
+      {run.thumbnailText ? <p className="text-xs text-text-tertiary">Thumbnail text: {run.thumbnailText}</p> : null}
+      <TitleCheck run={run} />
       <ol className="space-y-2">
         {run.scenes.map((s, i) => (
           <li key={i} className="rounded-xl border border-border-default bg-input px-3 py-2">

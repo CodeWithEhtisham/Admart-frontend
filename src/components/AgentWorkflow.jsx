@@ -5,6 +5,7 @@ import { formatCredits } from '../utils/credits'
 import {
   ConceptPicker,
   FinalReview,
+  HookScore,
   Research,
   SceneVisual,
   ScriptEditor,
@@ -125,6 +126,9 @@ function Details({ step, run, agent, waiting, busy, act, onApprove }) {
               <span className="block font-semibold">
                 {c.title}
                 {picked ? <span className="ml-1 text-xs font-medium text-link">(picked)</span> : null}
+              </span>
+              <span className="mt-1 block">
+                <HookScore concept={c} />
               </span>
               <span className="mt-1 block text-text-secondary">“{c.hook}”</span>
               <span className="mt-1 block text-xs text-text-tertiary">{c.angle}</span>
