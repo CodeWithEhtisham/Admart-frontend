@@ -13,14 +13,16 @@ import {
 } from './AgentRunViews.jsx'
 
 const SERVICES = {
+  openrouter: 'OpenRouter',
+  fal: 'fal.ai',
+  pexels: 'Pexels',
+  // Older runs
   gemini: 'Gemini',
   groq: 'Groq',
-  kokoro: 'Kokoro (free voice)',
+  kokoro: 'Kokoro',
   openai: 'OpenAI',
   cloudflare: 'Cloudflare AI',
-  fal: 'fal.ai',
-  local: 'Whisper (on our server)',
-  pexels: 'Pexels',
+  local: 'Whisper',
 }
 // A run paused at a check-in shows it on the step that made the thing to check.
 const WAITING_ON = { concept: 'concepts', script: 'script', storyboard: 'visuals', final: 'review' }
