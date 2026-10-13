@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import { AgentIcon, KindBadge, StatusBadge } from '../components/AgentBits.jsx'
+import AgentStylePicker from '../components/AgentStylePicker.jsx'
 import { deployAgent, getAgentCatalog, getInbox, listDeployments, PLATFORM_NAMES } from '../utils/agents'
 import { formatCredits } from '../utils/credits'
 import { getCachedActiveProject, listSocialAccounts, PROJECT_CHANGE_EVENT } from '../utils/projects'
@@ -21,7 +22,7 @@ function DeployDialog({ agent, projectId, onClose, onDeployed }) {
   const large = agent.kind === 'large'
   const [connected, setConnected] = useState(null)
   const [niche, setNiche] = useState('')
-  const [style, setStyle] = useState('')
+  const [look, setLook] = useState({})
   const [checkpoints, setCheckpoints] = useState('final')
   const [music, setMusic] = useState(true)
   const [stock, setStock] = useState(true)
@@ -48,7 +49,7 @@ function DeployDialog({ agent, projectId, onClose, onDeployed }) {
     try {
       const deployment = await deployAgent(projectId, {
         agentType: agent.slug,
-        config: large ? { niche: niche.trim(), style, checkpoints, music, stock } : {},
+        config: large ? { niche: niche.trim(), ...look, checkpoints, music, stock } : look,
         monthlyCreditLimit: limit.trim() || null,
       })
       onDeployed(deployment)
@@ -64,7 +65,7 @@ function DeployDialog({ agent, projectId, onClose, onDeployed }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="deploy-title"
-        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-border-default bg-panel p-6 shadow-2xl"
+        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-border-default bg-panel p-6 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-3">
@@ -111,22 +112,18 @@ function DeployDialog({ agent, projectId, onClose, onDeployed }) {
             </label>
           ) : null}
 
+          {agent.voices?.length || agent.tones?.length || agent.styles?.length ? (
+            <section aria-labelledby="look-title" className="rounded-xl border border-border-default bg-input px-4 py-3">
+              <h3 id="look-title" className="mb-3 font-medium">
+                {agent.voices?.length ? 'Voice & style' : 'Style'}
+              </h3>
+              <AgentStylePicker agent={agent} value={look} onChange={(patch) => setLook((prev) => ({ ...prev, ...patch }))} />
+            </section>
+          ) : null}
+
           <details className="rounded-xl border border-border-default bg-input px-4 py-3">
             <summary className="cursor-pointer font-medium">More options</summary>
             <div className="mt-3 space-y-4">
-              {agent.styles?.length ? (
-                <label className="block">
-                  <span className="text-text-tertiary">Visual style</span>
-                  <select value={style} onChange={(e) => setStyle(e.target.value)} className={fieldClass}>
-                    <option value="">Let the agent choose per video</option>
-                    {agent.styles.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              ) : null}
               {agent.review ? (
                 <>
                   <label className="flex items-start gap-2">

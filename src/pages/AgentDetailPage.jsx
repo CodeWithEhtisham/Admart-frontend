@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import AgentAutopilot from '../components/AgentAutopilot.jsx'
+import AgentSettingsDialog from '../components/AgentSettingsDialog.jsx'
 import { AgentIcon, KindBadge, StatusBadge } from '../components/AgentBits.jsx'
 import AgentWorkflow, { HowItWorks } from '../components/AgentWorkflow.jsx'
 import {
@@ -32,6 +33,7 @@ export default function AgentDetailPage() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [confirmRemove, setConfirmRemove] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
   const [now, setNow] = useState(() => Date.now())
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -181,6 +183,13 @@ export default function AgentDetailPage() {
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowSettings(true)}
+                  className="rounded-xl border border-border-default px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary"
+                >
+                  Settings
+                </button>
                 <button
                   type="button"
                   onClick={() => setStatus(deployment.status === 'active' ? 'paused' : 'active')}
@@ -334,6 +343,14 @@ export default function AgentDetailPage() {
           ) : null}
         </main>
       </div>
+
+      {showSettings && deployment ? (
+        <AgentSettingsDialog
+          deployment={deployment}
+          onClose={() => setShowSettings(false)}
+          onSave={async (payload) => setDeployment(await updateDeployment(projectId, deploymentId, payload))}
+        />
+      ) : null}
     </AppLayout>
   )
 }
