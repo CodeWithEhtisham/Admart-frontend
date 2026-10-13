@@ -49,7 +49,7 @@ export default function NotificationsPage() {
             <ul className="divide-y divide-border-default overflow-hidden rounded-2xl border border-border-default bg-surface">
               {items.map((item) => (
                 <li key={item.runId}>
-                  <Link to={`/agents/${item.deploymentId}`} className="flex items-start gap-3 px-5 py-4 transition hover:bg-elevated">
+                  <Link to={`/agents/${item.deploymentId}?run=${item.runId}`} className="flex items-start gap-3 px-5 py-4 transition hover:bg-elevated">
                     <span
                       aria-hidden
                       className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${item.status === 'failed' ? 'bg-error' : 'bg-accent-blue'}`}

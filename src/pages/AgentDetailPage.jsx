@@ -1,20 +1,15 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import AgentAutopilot from '../components/AgentAutopilot.jsx'
 import { AgentIcon, KindBadge, StatusBadge } from '../components/AgentBits.jsx'
-import {
-  ConceptPicker,
-  FinalReview,
-  ScriptEditor,
-  ScriptView,
-  StepProgress,
-  Storyboard,
-} from '../components/AgentRunViews.jsx'
+import AgentWorkflow, { HowItWorks } from '../components/AgentWorkflow.jsx'
 import {
   getDeployment,
   listRuns,
+  runStatusText,
+  runTitle,
   removeDeployment,
   runAction,
   startRun,
@@ -26,119 +21,6 @@ import { getCachedActiveProject, PROJECT_CHANGE_EVENT } from '../utils/projects'
 const OPEN = ['queued', 'running']
 const POLL_MS = 3000
 const AUTOPILOT_POLL_MS = 15000
-const STUCK_MS = 60 * 1000 // queued longer than this: the worker is probably not running
-const PAUSE_TITLES = {
-  concept: 'Pick a concept',
-  script: 'Review the script',
-  storyboard: 'Review the storyboard',
-  final: 'Review the finished Short',
-}
-
-function RunCard({ run, agentType, agent, busy, now, onAction, onApprove }) {
-  const finished = ['needs_review', 'approved', 'succeeded'].includes(run.status)
-  const label = run.input.topic || (run.input.auto ? 'Auto topic (picking one…)' : (run.input.text || '').slice(0, 80))
-  const paused = run.status === 'needs_review' ? run.step : ''
-  const act = (action, payload) => onAction(run, action, payload)
-  return (
-    <article className="rounded-2xl border border-border-default bg-surface p-5">
-      <div className="flex flex-wrap items-start gap-3">
-        <div className="min-w-0 flex-1">
-          <p className="font-medium">{run.title || run.concept?.title || label}</p>
-          <p className="text-xs text-text-tertiary">
-            {new Date(run.createdAt).toLocaleString()} · {formatCredits(run.credits)} credits
-          </p>
-        </div>
-        <StatusBadge status={run.status} />
-      </div>
-
-      {agentType === 'youtube-shorts' && run.status !== 'discarded' ? (
-        <div className="mt-4">
-          <StepProgress run={run} />
-        </div>
-      ) : null}
-
-      {OPEN.includes(run.status) ? (
-        <p className="mt-2 text-xs text-text-tertiary">
-          {run.status !== 'queued'
-            ? 'Working on it. This page updates by itself.'
-            : now - new Date(run.updatedAt || run.createdAt).getTime() > STUCK_MS
-              ? 'Still waiting to start. The agents worker may not be running. Your credits are refunded if it fails.'
-              : 'Waiting to start…'}
-        </p>
-      ) : null}
-
-      {run.status === 'failed' ? (
-        <div className="mt-3 flex flex-wrap items-center gap-3">
-          <p role="alert" className="min-w-0 flex-1 text-sm text-danger">
-            {run.error}
-          </p>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => act('retry')}
-            className="rounded-xl border border-border-default px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary disabled:opacity-50"
-          >
-            Try again ({formatCredits(run.credits)} credits)
-          </button>
-        </div>
-      ) : null}
-
-      {paused ? <h3 className="mt-5 font-heading text-[1rem] font-semibold">{PAUSE_TITLES[paused] || 'Ready for review'}</h3> : null}
-
-      {paused === 'concept' ? (
-        <div className="mt-3">
-          <ConceptPicker
-            run={run}
-            styles={agent?.styles || []}
-            busy={busy}
-            onContinue={(p) => act('continue', p)}
-            onDiscard={() => act('discard')}
-          />
-        </div>
-      ) : null}
-
-      {paused === 'script' ? (
-        <div className="mt-3">
-          <ScriptEditor run={run} busy={busy} onContinue={(p) => act('continue', p)} onDiscard={() => act('discard')} />
-        </div>
-      ) : null}
-
-      {paused === 'storyboard' ? (
-        <div className="mt-3">
-          <Storyboard
-            run={run}
-            busy={busy}
-            redoCredits={agent?.redoCredits}
-            onContinue={(p) => act('continue', p)}
-            onRegenerate={(p) => act('regenerate', p)}
-            onDiscard={() => act('discard')}
-          />
-        </div>
-      ) : null}
-
-      {finished && agentType === 'youtube-shorts' && run.videoUrl ? (
-        <div className="mt-4">
-          <FinalReview run={run} busy={busy} onApprove={() => onApprove(run)} onDiscard={() => act('discard')} />
-        </div>
-      ) : null}
-
-      {finished && agentType === 'script-writer' ? (
-        <div className="mt-4">
-          <ScriptView run={run} />
-        </div>
-      ) : null}
-
-      {finished && agentType === 'voiceover' && run.scenes[0]?.audioUrl ? (
-        <div className="mt-4 flex flex-wrap items-center gap-3">
-          <audio src={run.scenes[0].audioUrl} controls className="w-full max-w-md" />
-          <a href={run.scenes[0].audioUrl} download className="text-sm font-medium text-link hover:underline">
-            Download MP3
-          </a>
-        </div>
-      ) : null}
-    </article>
-  )
-}
 
 export default function AgentDetailPage() {
   const { deploymentId } = useParams()
@@ -151,6 +33,7 @@ export default function AgentDetailPage() {
   const [error, setError] = useState('')
   const [confirmRemove, setConfirmRemove] = useState(false)
   const [now, setNow] = useState(() => Date.now())
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const load = useCallback(async () => {
     if (!projectId) return
@@ -194,8 +77,12 @@ export default function AgentDetailPage() {
   const agent = deployment?.agent
   const isText = agent?.inputKind === 'text'
   const canAutoTopic = !isText && Boolean(deployment?.config?.niche)
-  const ready = runs.filter((r) => r.status === 'needs_review')
-  const others = runs.filter((r) => r.status !== 'needs_review')
+  const selected =
+    runs.find((r) => r.id === searchParams.get('run')) ||
+    runs.find((r) => r.status === 'needs_review') ||
+    runs.find((r) => OPEN.includes(r.status)) ||
+    runs[0]
+  const select = (id) => setSearchParams({ run: id }, { replace: true })
 
   const run = async (e) => {
     e.preventDefault()
@@ -204,6 +91,7 @@ export default function AgentDetailPage() {
     try {
       const created = await startRun(projectId, deploymentId, isText ? { text: value } : { topic: value })
       setRuns((prev) => [created, ...prev])
+      select(created.id)
       setValue('')
       getCredits().then(notifyCreditsChanged).catch(() => {})
     } catch (err) {
@@ -330,73 +218,110 @@ export default function AgentDetailPage() {
             </section>
           ) : null}
 
-          {agent ? (
-            <form onSubmit={run} className="rounded-2xl border border-border-default bg-surface p-5">
-              <label className="block text-sm">
-                <span className="font-heading text-[1rem] font-semibold">
-                  {deployment?.agentType === 'youtube-shorts' ? 'Make a Short' : 'Run now'}
-                </span>
-                <span className="mt-1 block text-text-tertiary">
-                  {canAutoTopic ? `${agent.inputLabel} (optional: leave it blank and the agent picks one)` : agent.inputLabel}
-                </span>
-                {isText ? (
-                  <textarea
-                    rows={5}
-                    maxLength={3000}
-                    value={value}
-                    onChange={(e) => setValue(e.target.value)}
-                    placeholder={agent.inputHint}
-                    className="mt-1 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-sm focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
-                  />
-                ) : (
-                  <input
-                    value={value}
-                    maxLength={200}
-                    onChange={(e) => setValue(e.target.value)}
-                    placeholder={agent.inputHint}
-                    className="mt-1 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-sm focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
-                  />
-                )}
-              </label>
-              <div className="mt-3 flex flex-wrap items-center gap-3">
-                <button
-                  type="submit"
-                  disabled={busy || (!value.trim() && !canAutoTopic) || deployment?.status !== 'active'}
-                  className="rounded-xl gradient-bg px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/25 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {busy ? 'Starting…' : value.trim() || !canAutoTopic ? 'Make it' : 'Let the agent pick'}
-                </button>
-                <span className="text-xs text-text-tertiary">
-                  {deployment?.status === 'active'
-                    ? `About ${formatCredits(agent.estimatedCredits)} credits. Refunded if it fails.`
-                    : 'This agent is paused. Resume it to run.'}
-                </span>
-              </div>
-            </form>
-          ) : null}
-
           {error ? (
             <p role="alert" className="rounded-xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-danger">
               {error}
             </p>
           ) : null}
 
-          {ready.length && deployment ? (
-            <section className="space-y-3">
-              <h2 className="font-heading text-lg font-bold">Ready for you ({ready.length})</h2>
-              {ready.map((r) => (
-                <RunCard
-                  key={r.id}
-                  run={r}
-                  agentType={deployment.agentType}
-                  agent={agent}
-                  busy={busy}
-                  now={now}
-                  onApprove={approve}
-                  onAction={act}
-                />
-              ))}
-            </section>
+          {deployment ? (
+            <div className="grid items-start gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
+              <aside className="space-y-4">
+              {agent ? (
+                <form onSubmit={run} className="rounded-2xl border border-border-default bg-surface p-4">
+                  <label className="block text-sm">
+                    <span className="font-heading text-[1rem] font-semibold">
+                      {deployment?.agentType === 'youtube-shorts' ? 'Make a Short' : 'Run now'}
+                    </span>
+                    <span className="mt-1 block text-text-tertiary">
+                      {canAutoTopic ? `${agent.inputLabel} (optional: leave it blank and the agent picks one)` : agent.inputLabel}
+                    </span>
+                    {isText ? (
+                      <textarea
+                        rows={5}
+                        maxLength={3000}
+                        value={value}
+                        onChange={(e) => setValue(e.target.value)}
+                        placeholder={agent.inputHint}
+                        className="mt-1 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-sm focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
+                      />
+                    ) : (
+                      <input
+                        value={value}
+                        maxLength={200}
+                        onChange={(e) => setValue(e.target.value)}
+                        placeholder={agent.inputHint}
+                        className="mt-1 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-sm focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
+                      />
+                    )}
+                  </label>
+                  <div className="mt-3 flex flex-wrap items-center gap-3">
+                    <button
+                      type="submit"
+                      disabled={busy || (!value.trim() && !canAutoTopic) || deployment?.status !== 'active'}
+                      className="rounded-xl gradient-bg px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/25 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {busy ? 'Starting…' : value.trim() || !canAutoTopic ? 'Make it' : 'Let the agent pick'}
+                    </button>
+                    <span className="text-xs text-text-tertiary">
+                      {deployment?.status === 'active'
+                        ? `About ${formatCredits(agent.estimatedCredits)} credits. Refunded if it fails.`
+                        : 'This agent is paused. Resume it to run.'}
+                    </span>
+                  </div>
+                </form>
+              ) : null}
+
+                {runs.length ? (
+                  <nav aria-label="Runs" className="overflow-hidden rounded-2xl border border-border-default bg-surface">
+                    <ul className="max-h-[60vh] divide-y divide-border-default overflow-y-auto">
+                      {runs.map((r) => {
+                        const active = r.id === selected?.id
+                        return (
+                          <li key={r.id}>
+                            <button
+                              type="button"
+                              onClick={() => select(r.id)}
+                              aria-current={active ? 'true' : undefined}
+                              className={`block w-full px-4 py-3 text-left transition ${active ? 'bg-accent-blue/10' : 'hover:bg-elevated'}`}
+                            >
+                              <span className="block truncate text-sm font-medium">{runTitle(r)}</span>
+                              <span
+                                className={`mt-0.5 block text-xs ${
+                                  r.status === 'needs_review'
+                                    ? 'font-semibold text-link'
+                                    : r.status === 'failed'
+                                      ? 'text-danger'
+                                      : 'text-text-tertiary'
+                                }`}
+                              >
+                                {runStatusText(r)} · {new Date(r.createdAt).toLocaleDateString()}
+                              </span>
+                            </button>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </nav>
+                ) : null}
+              </aside>
+
+              <div className="min-w-0">
+                {selected ? (
+                  <AgentWorkflow
+                    key={selected.id}
+                    run={selected}
+                    agent={agent}
+                    busy={busy}
+                    now={now}
+                    onAction={act}
+                    onApprove={approve}
+                  />
+                ) : (
+                  <HowItWorks agent={agent} />
+                )}
+              </div>
+            </div>
           ) : null}
 
           {agent?.inputKind === 'topic' && deployment ? (
@@ -406,25 +331,6 @@ export default function AgentDetailPage() {
               agent={agent}
               onSave={async (payload) => setDeployment(await updateDeployment(projectId, deploymentId, payload))}
             />
-          ) : null}
-
-          {deployment ? (
-            <section className="space-y-3">
-              <h2 className="font-heading text-lg font-bold">History</h2>
-              {others.length === 0 ? <p className="text-sm text-text-tertiary">Nothing here yet.</p> : null}
-              {others.map((r) => (
-                <RunCard
-                  key={r.id}
-                  run={r}
-                  agentType={deployment.agentType}
-                  agent={agent}
-                  busy={busy}
-                  now={now}
-                  onApprove={approve}
-                  onAction={act}
-                />
-              ))}
-            </section>
           ) : null}
         </main>
       </div>

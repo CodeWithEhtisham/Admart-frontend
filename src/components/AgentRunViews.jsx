@@ -1,20 +1,6 @@
 import { useState } from 'react'
 import { formatCredits } from '../utils/credits'
 
-const STEP_LABELS = {
-  research: 'Research',
-  concepts: 'Concepts',
-  script: 'Script',
-  voice: 'Voice',
-  captions: 'Captions',
-  visuals: 'Visuals',
-  render: 'Editing',
-  finish: 'Saving',
-}
-// Where a paused (or just-resumed) run sits in the step list.
-const GATE_STEP = { concept: 'pick_concept', script: 'review_script', storyboard: 'review_storyboard' }
-const isGate = (step) => step.startsWith('pick_') || step.startsWith('review_')
-
 const field =
   'w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue'
 const primaryBtn =
@@ -24,38 +10,10 @@ const secondaryBtn =
 const dangerBtn =
   'rounded-xl border border-error/50 px-4 py-2 text-sm font-medium text-danger hover:bg-error/10 disabled:opacity-50'
 
-export function StepProgress({ run }) {
-  const steps = run.steps
-  const at = run.status === 'running' ? steps.indexOf(run.step) : steps.indexOf(GATE_STEP[run.step] || run.step)
-  return (
-    <ol className="flex flex-wrap gap-2" aria-label="Progress">
-      {steps.map((step, i) => {
-        if (isGate(step)) return null
-        const state = i < at ? 'done' : i === at && run.status === 'running' ? 'now' : 'todo'
-        return (
-          <li
-            key={step}
-            className={`rounded-full border px-2.5 py-1 text-xs font-medium ${
-              state === 'done'
-                ? 'border-success/40 bg-success/15 text-success-text'
-                : state === 'now'
-                  ? 'border-accent-blue/50 bg-accent-blue/15 text-link'
-                  : 'border-border-default text-text-tertiary'
-            }`}
-          >
-            {state === 'done' ? '✓ ' : state === 'now' ? '… ' : ''}
-            {STEP_LABELS[step] || step}
-          </li>
-        )
-      })}
-    </ol>
-  )
-}
-
-function Research({ research }) {
+export function Research({ research, open = false }) {
   if (!research?.notes) return null
   return (
-    <details className="rounded-xl border border-border-default bg-input px-4 py-3 text-sm">
+    <details open={open} className="rounded-xl border border-border-default bg-input px-4 py-3 text-sm">
       <summary className="cursor-pointer font-medium">Research notes</summary>
       <p className="mt-2 whitespace-pre-line text-text-secondary">{research.notes}</p>
       {research.sources?.length ? (
@@ -243,7 +201,7 @@ export function ScriptEditor({ run, busy, onContinue, onDiscard }) {
   )
 }
 
-function SceneVisual({ scene }) {
+export function SceneVisual({ scene }) {
   if (scene.clipUrl) {
     return <video src={scene.clipUrl} muted loop autoPlay playsInline className="aspect-[9/16] w-full rounded-lg bg-black object-cover" />
   }

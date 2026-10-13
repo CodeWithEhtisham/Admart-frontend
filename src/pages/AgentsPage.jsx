@@ -277,7 +277,7 @@ export default function AgentsPage() {
                 {waiting.map((item) => (
                   <li key={item.runId}>
                     <Link
-                      to={`/agents/${item.deploymentId}`}
+                      to={`/agents/${item.deploymentId}?run=${item.runId}`}
                       className="flex flex-wrap items-center gap-3 px-5 py-3 transition hover:bg-elevated"
                     >
                       <span className="min-w-0 flex-1">
