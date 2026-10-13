@@ -2,6 +2,12 @@ import { useState } from 'react'
 import { formatCredits } from '../utils/credits'
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+const PRESETS = {
+  1: [2],
+  3: [0, 2, 4],
+  5: [0, 1, 2, 3, 4],
+  7: [0, 1, 2, 3, 4, 5, 6],
+}
 const field =
   'w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue'
 
@@ -49,6 +55,7 @@ export default function AgentAutopilot({ deployment, agent, onSave }) {
   }
 
   const perWeek = days.length
+  const preset = PRESETS[perWeek]?.join() === days.join() ? String(perWeek) : 'custom'
   const nextRun = deployment.autopilot && deployment.nextRunAt ? new Date(deployment.nextRunAt) : null
 
   return (
@@ -59,8 +66,7 @@ export default function AgentAutopilot({ deployment, agent, onSave }) {
             Autopilot
           </h2>
           <p className="mt-1 text-sm text-text-secondary">
-            Run this agent on a schedule. Every result waits in your inbox for approval. Nothing is posted on its
-            own.
+            Makes new videos on a schedule. Each one waits here for your approval.
           </p>
         </div>
         <button
@@ -77,50 +83,66 @@ export default function AgentAutopilot({ deployment, agent, onSave }) {
       </div>
 
       <div className="mt-4 space-y-4">
-        <fieldset>
-          <legend className="text-sm text-text-tertiary">Days</legend>
-          <div className="mt-1 flex flex-wrap gap-1.5">
-            {DAYS.map((label, d) => (
-              <button
-                key={label}
-                type="button"
-                aria-pressed={days.includes(d)}
-                onClick={() => toggleDay(d)}
-                className={`rounded-lg px-3 py-1.5 text-sm font-medium ${
-                  days.includes(d)
-                    ? 'bg-accent-blue text-white'
-                    : 'border border-border-default bg-elevated text-text-secondary hover:text-text-primary'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </fieldset>
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block text-sm">
-            <span className="text-text-tertiary">Time</span>
+            <span className="text-text-tertiary">How often</span>
+            <select
+              value={preset}
+              onChange={(e) => PRESETS[e.target.value] && setDays(PRESETS[e.target.value])}
+              className={`mt-1 ${field}`}
+            >
+              <option value="1">Once a week</option>
+              <option value="3">3 times a week</option>
+              <option value="5">Every weekday</option>
+              <option value="7">Every day</option>
+              {preset === 'custom' ? <option value="custom">Custom days</option> : null}
+            </select>
+          </label>
+          <label className="block text-sm">
+            <span className="text-text-tertiary">At ({tz})</span>
             <input type="time" value={at} onChange={(e) => setAt(e.target.value)} className={`mt-1 ${field}`} />
           </label>
-          <div className="text-sm">
-            <span className="text-text-tertiary">Time zone</span>
-            <p className="mt-1 rounded-lg border border-border-default bg-input px-3 py-2 text-text-secondary">{tz}</p>
-          </div>
         </div>
-        <label className="block text-sm">
-          <span className="text-text-tertiary">Upcoming topics (one per line, used in order)</span>
-          <textarea
-            rows={4}
-            value={topics}
-            onChange={(e) => setTopics(e.target.value)}
-            placeholder={'e.g. Why espresso has crema\nThe history of instant coffee'}
-            className={`mt-1 ${field} resize-y`}
-          />
-        </label>
-        <label className="block text-sm">
-          <span className="text-text-tertiary">Channel niche (when the list is empty, the agent picks a fresh topic)</span>
-          <input value={niche} maxLength={300} onChange={(e) => setNiche(e.target.value)} className={`mt-1 ${field}`} />
-        </label>
+
+        <details className="rounded-xl border border-border-default bg-input px-4 py-3">
+          <summary className="cursor-pointer text-sm font-medium">More options</summary>
+          <div className="mt-3 space-y-4">
+            <fieldset>
+              <legend className="text-sm text-text-tertiary">Pick exact days</legend>
+              <div className="mt-1 flex flex-wrap gap-1.5">
+                {DAYS.map((label, d) => (
+                  <button
+                    key={label}
+                    type="button"
+                    aria-pressed={days.includes(d)}
+                    onClick={() => toggleDay(d)}
+                    className={`rounded-lg px-3 py-1.5 text-sm font-medium ${
+                      days.includes(d)
+                        ? 'bg-accent-blue text-white'
+                        : 'border border-border-default bg-elevated text-text-secondary hover:text-text-primary'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+            <label className="block text-sm">
+              <span className="text-text-tertiary">Channel niche (the agent picks topics from it)</span>
+              <input value={niche} maxLength={300} onChange={(e) => setNiche(e.target.value)} className={`mt-1 ${field}`} />
+            </label>
+            <label className="block text-sm">
+              <span className="text-text-tertiary">Your own topics (one per line, used first, in order)</span>
+              <textarea
+                rows={4}
+                value={topics}
+                onChange={(e) => setTopics(e.target.value)}
+                placeholder={'e.g. Why espresso has crema\nThe history of instant coffee'}
+                className={`mt-1 ${field} resize-y`}
+              />
+            </label>
+          </div>
+        </details>
 
         <p className="text-xs text-text-tertiary">
           {perWeek} run{perWeek === 1 ? '' : 's'} a week · about {formatCredits(agent?.estimatedCredits)} credits each

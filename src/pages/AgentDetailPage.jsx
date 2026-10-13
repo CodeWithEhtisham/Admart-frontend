@@ -193,6 +193,9 @@ export default function AgentDetailPage() {
 
   const agent = deployment?.agent
   const isText = agent?.inputKind === 'text'
+  const canAutoTopic = !isText && Boolean(deployment?.config?.niche)
+  const ready = runs.filter((r) => r.status === 'needs_review')
+  const others = runs.filter((r) => r.status !== 'needs_review')
 
   const run = async (e) => {
     e.preventDefault()
@@ -327,20 +330,15 @@ export default function AgentDetailPage() {
             </section>
           ) : null}
 
-          {agent?.inputKind === 'topic' && deployment ? (
-            <AgentAutopilot
-              key={deployment.id}
-              deployment={deployment}
-              agent={agent}
-              onSave={async (payload) => setDeployment(await updateDeployment(projectId, deploymentId, payload))}
-            />
-          ) : null}
-
           {agent ? (
             <form onSubmit={run} className="rounded-2xl border border-border-default bg-surface p-5">
               <label className="block text-sm">
-                <span className="font-heading text-[1rem] font-semibold">Run now</span>
-                <span className="mt-1 block text-text-tertiary">{agent.inputLabel}</span>
+                <span className="font-heading text-[1rem] font-semibold">
+                  {deployment?.agentType === 'youtube-shorts' ? 'Make a Short' : 'Run now'}
+                </span>
+                <span className="mt-1 block text-text-tertiary">
+                  {canAutoTopic ? `${agent.inputLabel} (optional: leave it blank and the agent picks one)` : agent.inputLabel}
+                </span>
                 {isText ? (
                   <textarea
                     rows={5}
@@ -363,10 +361,10 @@ export default function AgentDetailPage() {
               <div className="mt-3 flex flex-wrap items-center gap-3">
                 <button
                   type="submit"
-                  disabled={busy || !value.trim() || deployment?.status !== 'active'}
+                  disabled={busy || (!value.trim() && !canAutoTopic) || deployment?.status !== 'active'}
                   className="rounded-xl gradient-bg px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/25 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {busy ? 'Starting…' : 'Run now'}
+                  {busy ? 'Starting…' : value.trim() || !canAutoTopic ? 'Make it' : 'Let the agent pick'}
                 </button>
                 <span className="text-xs text-text-tertiary">
                   {deployment?.status === 'active'
@@ -383,11 +381,38 @@ export default function AgentDetailPage() {
             </p>
           ) : null}
 
+          {ready.length && deployment ? (
+            <section className="space-y-3">
+              <h2 className="font-heading text-lg font-bold">Ready for you ({ready.length})</h2>
+              {ready.map((r) => (
+                <RunCard
+                  key={r.id}
+                  run={r}
+                  agentType={deployment.agentType}
+                  agent={agent}
+                  busy={busy}
+                  now={now}
+                  onApprove={approve}
+                  onAction={act}
+                />
+              ))}
+            </section>
+          ) : null}
+
+          {agent?.inputKind === 'topic' && deployment ? (
+            <AgentAutopilot
+              key={deployment.id}
+              deployment={deployment}
+              agent={agent}
+              onSave={async (payload) => setDeployment(await updateDeployment(projectId, deploymentId, payload))}
+            />
+          ) : null}
+
           {deployment ? (
             <section className="space-y-3">
-              <h2 className="font-heading text-lg font-bold">Runs</h2>
-              {runs.length === 0 ? <p className="text-sm text-text-tertiary">No runs yet.</p> : null}
-              {runs.map((r) => (
+              <h2 className="font-heading text-lg font-bold">History</h2>
+              {others.length === 0 ? <p className="text-sm text-text-tertiary">Nothing here yet.</p> : null}
+              {others.map((r) => (
                 <RunCard
                   key={r.id}
                   run={r}

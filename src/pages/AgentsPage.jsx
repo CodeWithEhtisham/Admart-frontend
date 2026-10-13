@@ -16,14 +16,13 @@ const TABS = [
 const fieldClass =
   'mt-1 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-sm text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue'
 
-/** Large agents: Connect → Brief → Rules. Small agents: one confirm step. */
+/** One screen: what it needs, an optional niche, and everything else under "More options". */
 function DeployDialog({ agent, projectId, onClose, onDeployed }) {
-  const steps = agent.kind === 'large' ? ['Connect', 'Brief', 'Rules'] : ['Confirm']
-  const [step, setStep] = useState(0)
+  const large = agent.kind === 'large'
   const [connected, setConnected] = useState(null)
   const [niche, setNiche] = useState('')
   const [style, setStyle] = useState('')
-  const [checkpoints, setCheckpoints] = useState('all')
+  const [checkpoints, setCheckpoints] = useState('final')
   const [music, setMusic] = useState(true)
   const [stock, setStock] = useState(true)
   const [limit, setLimit] = useState('')
@@ -49,22 +48,15 @@ function DeployDialog({ agent, projectId, onClose, onDeployed }) {
     try {
       const deployment = await deployAgent(projectId, {
         agentType: agent.slug,
-        config:
-          agent.kind === 'large'
-            ? { niche: niche.trim(), style, checkpoints, music, stock }
-            : {},
+        config: large ? { niche: niche.trim(), style, checkpoints, music, stock } : {},
         monthlyCreditLimit: limit.trim() || null,
       })
       onDeployed(deployment)
     } catch (err) {
-      setError(err.response?.data?.message || 'Could not deploy the agent.')
+      setError(err.response?.data?.message || 'Could not start the agent.')
       setBusy(false)
     }
   }
-
-  const name = steps[step]
-  const last = step === steps.length - 1
-  const missing = agent.needs.filter((p) => connected && !connected.has(p))
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm" onClick={onClose}>
@@ -72,64 +64,56 @@ function DeployDialog({ agent, projectId, onClose, onDeployed }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="deploy-title"
-        className="w-full max-w-lg rounded-2xl border border-border-default bg-panel p-6 shadow-2xl"
+        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-border-default bg-panel p-6 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-3">
           <AgentIcon slug={agent.slug} kind={agent.kind} />
           <div>
             <h2 id="deploy-title" className="font-heading text-lg font-semibold">
-              Deploy {agent.name}
+              {agent.name}
             </h2>
-            {steps.length > 1 ? (
-              <p className="text-xs text-text-tertiary">
-                Step {step + 1} of {steps.length} · {name}
-              </p>
-            ) : null}
+            <p className="text-xs text-text-tertiary">About {formatCredits(agent.estimatedCredits)} credits per run</p>
           </div>
         </div>
 
         <div className="mt-5 space-y-4 text-sm">
-          {name === 'Connect' ? (
-            <>
-              <p className="text-text-secondary">This agent needs these accounts to publish what it makes:</p>
-              {agent.needs.map((p) => (
-                <div key={p} className="flex items-center justify-between rounded-xl border border-border-default bg-input px-4 py-3">
-                  <span className="font-medium">{PLATFORM_NAMES[p] || p}</span>
-                  {connected === null ? (
-                    <span className="text-xs text-text-tertiary">Checking…</span>
-                  ) : connected.has(p) ? (
-                    <span className="rounded-full border border-success/40 bg-success/15 px-2 py-0.5 text-xs font-semibold text-success-text">
-                      Connected
-                    </span>
-                  ) : (
-                    <Link to="/social" className="text-sm font-medium text-link hover:underline">
-                      Connect →
-                    </Link>
-                  )}
-                </div>
-              ))}
-              {missing.length ? (
-                <p className="text-xs text-text-tertiary">
-                  You can deploy now and connect later. Videos are saved to your library either way.
-                </p>
-              ) : null}
-            </>
+          <p className="text-text-secondary">{agent.description}</p>
+
+          {agent.needs.map((p) => (
+            <div key={p} className="flex items-center justify-between rounded-xl border border-border-default bg-input px-4 py-3">
+              <span className="font-medium">{PLATFORM_NAMES[p] || p}</span>
+              {connected === null ? (
+                <span className="text-xs text-text-tertiary">Checking…</span>
+              ) : connected.has(p) ? (
+                <span className="rounded-full border border-success/40 bg-success/15 px-2 py-0.5 text-xs font-semibold text-success-text">
+                  Connected
+                </span>
+              ) : (
+                <Link to="/social" className="text-sm font-medium text-link hover:underline">
+                  Connect (optional) →
+                </Link>
+              )}
+            </div>
+          ))}
+
+          {large ? (
+            <label className="block">
+              <span className="text-text-tertiary">What is your channel about? (optional)</span>
+              <input
+                maxLength={300}
+                value={niche}
+                onChange={(e) => setNiche(e.target.value)}
+                placeholder="e.g. Quick coffee facts for beginners"
+                className={fieldClass}
+              />
+              <span className="mt-1 block text-xs text-text-tertiary">With this, the agent can pick topics for you.</span>
+            </label>
           ) : null}
 
-          {name === 'Brief' ? (
-            <>
-              <label className="block">
-                <span className="text-text-tertiary">Channel topic or niche (optional)</span>
-                <textarea
-                  rows={3}
-                  maxLength={300}
-                  value={niche}
-                  onChange={(e) => setNiche(e.target.value)}
-                  placeholder="e.g. Quick coffee facts and brewing tips for beginners"
-                  className={`${fieldClass} resize-none`}
-                />
-              </label>
+          <details className="rounded-xl border border-border-default bg-input px-4 py-3">
+            <summary className="cursor-pointer font-medium">More options</summary>
+            <div className="mt-3 space-y-4">
               {agent.styles?.length ? (
                 <label className="block">
                   <span className="text-text-tertiary">Visual style</span>
@@ -143,40 +127,23 @@ function DeployDialog({ agent, projectId, onClose, onDeployed }) {
                   </select>
                 </label>
               ) : null}
-              <p className="text-xs text-text-tertiary">
-                Tone of voice and caption colour come from your{' '}
-                <Link to="/brand-kit" className="text-link hover:underline">
-                  Brand Kit
-                </Link>
-                .
-              </p>
-            </>
-          ) : null}
-
-          {name === 'Rules' || name === 'Confirm' ? (
-            <>
-              {name === 'Confirm' ? <p className="text-text-secondary">{agent.description}</p> : null}
               {agent.review ? (
                 <>
-                  <fieldset className="rounded-xl border border-border-default bg-input px-4 py-3">
-                    <legend className="px-1 font-medium">Check-ins</legend>
-                    {[
-                      ['all', 'Every step', 'Pick the concept, edit the script and check the storyboard before money is spent on the next stage.'],
-                      ['final', 'Final video only', 'The agent decides everything and you review the finished Short.'],
-                    ].map(([id, label, hint]) => (
-                      <label key={id} className="mt-2 flex cursor-pointer items-start gap-2">
-                        <input type="radio" name="checkpoints" className="mt-1" checked={checkpoints === id} onChange={() => setCheckpoints(id)} />
-                        <span>
-                          <span className="block font-medium">{label}</span>
-                          <span className="text-xs text-text-tertiary">{hint}</span>
-                        </span>
-                      </label>
-                    ))}
-                    <p className="mt-2 text-xs text-text-tertiary">Either way, nothing is posted until you approve it.</p>
-                  </fieldset>
+                  <label className="flex items-start gap-2">
+                    <input
+                      type="checkbox"
+                      className="mt-1"
+                      checked={checkpoints === 'all'}
+                      onChange={(e) => setCheckpoints(e.target.checked ? 'all' : 'final')}
+                    />
+                    <span>
+                      <span className="block">Let me check each step</span>
+                      <span className="text-xs text-text-tertiary">Pick the concept, edit the script and check the pictures before the video is made.</span>
+                    </span>
+                  </label>
                   <label className="flex items-center gap-2">
                     <input type="checkbox" checked={music} onChange={(e) => setMusic(e.target.checked)} />
-                    Background music (quieter under the voice)
+                    Background music
                   </label>
                   <label className="flex items-center gap-2">
                     <input type="checkbox" checked={stock} onChange={(e) => setStock(e.target.checked)} />
@@ -184,12 +151,8 @@ function DeployDialog({ agent, projectId, onClose, onDeployed }) {
                   </label>
                 </>
               ) : null}
-              <div className="rounded-xl border border-border-default bg-input px-4 py-3">
-                <p className="font-medium">Runs: when you click Run now</p>
-                <p className="mt-1 text-xs text-text-tertiary">Scheduled runs are coming soon.</p>
-              </div>
               <label className="block">
-                <span className="text-text-tertiary">Monthly credit limit (optional)</span>
+                <span className="text-text-tertiary">Monthly credit limit</span>
                 <input
                   type="number"
                   min="0"
@@ -201,9 +164,10 @@ function DeployDialog({ agent, projectId, onClose, onDeployed }) {
                   className={fieldClass}
                 />
               </label>
-              <p className="text-xs text-text-tertiary">About {formatCredits(agent.estimatedCredits)} credits per run.</p>
-            </>
-          ) : null}
+            </div>
+          </details>
+
+          {agent.review ? <p className="text-xs text-text-tertiary">Nothing is posted until you approve it.</p> : null}
 
           {error ? (
             <p role="alert" className="text-danger">
@@ -215,18 +179,18 @@ function DeployDialog({ agent, projectId, onClose, onDeployed }) {
         <div className="mt-6 flex justify-end gap-2">
           <button
             type="button"
-            onClick={step ? () => setStep(step - 1) : onClose}
+            onClick={onClose}
             className="rounded-lg border border-border-default px-4 py-2 text-sm font-medium text-text-secondary"
           >
-            {step ? 'Back' : 'Cancel'}
+            Cancel
           </button>
           <button
             type="button"
-            onClick={last ? deploy : () => setStep(step + 1)}
+            onClick={deploy}
             disabled={busy}
             className="rounded-lg gradient-bg px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
           >
-            {last ? (busy ? 'Deploying…' : 'Deploy') : 'Next'}
+            {busy ? 'Starting…' : 'Start'}
           </button>
         </div>
       </div>
@@ -272,7 +236,10 @@ export default function AgentsPage() {
     return () => window.removeEventListener(PROJECT_CHANGE_EVENT, load)
   }, [load])
 
-  const shown = catalog.filter((a) => tab === 'all' || a.kind === tab)
+  // Full automations first: the Shorts agent is the main thing people come here for.
+  const shown = catalog
+    .filter((a) => tab === 'all' || a.kind === tab)
+    .sort((a, b) => (a.kind === 'large' ? 0 : 1) - (b.kind === 'large' ? 0 : 1))
   const deployedBySlug = Object.fromEntries(deployments.map((d) => [d.agentType, d]))
 
   return (
@@ -430,7 +397,7 @@ export default function AgentsPage() {
                         disabled={!project?.id}
                         className="mt-5 rounded-xl gradient-bg px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
                       >
-                        Deploy
+                        Start
                       </button>
                     )}
                   </article>
