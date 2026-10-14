@@ -1,17 +1,27 @@
 import { Link } from 'react-router-dom'
 import LegalLayout, { ContactEmail, Fill } from '../components/LegalLayout'
-import { COMPANY_NAME } from '../utils/site'
+import { COMPANY_ADDRESS, COMPANY_NAME } from '../utils/site'
 
-// Plans/credits/payments sections mirror how the backend actually works. Have it
-// reviewed before launch and fill every <Fill> placeholder.
+// Plans/credits/payments and agents sections mirror how the backend actually works. Have it
+// reviewed before launch.
 export default function TermsPage() {
   return (
     <LegalLayout title="Terms of Service">
       <section>
         <p>
           These terms apply when you use the Admart website and app, provided by {COMPANY_NAME} (&quot;Admart&quot;,
-          &quot;we&quot;). By creating an account or using Admart you agree to them. Please also read our{' '}
+          &quot;we&quot;), a company registered in Pakistan, at {COMPANY_ADDRESS || <Fill>registered address</Fill>}. By
+          creating an account or using Admart you agree to them. Please also read our{' '}
           <Link to="/privacy">Privacy Policy</Link>.
+        </p>
+      </section>
+
+      <section>
+        <h2>What Admart does</h2>
+        <p>
+          Admart helps you create social media content with AI (images, videos, scripts, voice-overs and captions), edit
+          your own videos, and publish or schedule posts on the accounts you connect, such as YouTube, Facebook and
+          Instagram. Agents can carry out several of these steps for you.
         </p>
       </section>
 
@@ -27,7 +37,7 @@ export default function TermsPage() {
       <section>
         <h2>Plans, credits and payments</h2>
         <ul>
-          <li>Generating images and videos uses credits. The cost is shown before you generate.</li>
+          <li>Generating content and running agents uses credits. The cost is shown before you start.</li>
           <li>
             A paid plan gives you its monthly credits for 30 days from when your payment is approved. Renewing the same
             plan early adds 30 days after your current period ends. When a plan ends without renewal, your account moves
@@ -38,10 +48,38 @@ export default function TermsPage() {
             Payments are made by EasyPaisa and confirmed after our team reviews the payment screenshot and transaction ID.
             Credits are added once a payment is approved.
           </li>
+          <li>If a generation or agent run fails, the credits reserved for it are returned automatically.</li>
+        </ul>
+      </section>
+
+      <section id="refunds">
+        <h2>Refunds</h2>
+        <p>
+          Plans and credit packs are not refundable once the payment is approved, whether or not the credits were used.
+          If you paid twice by mistake, paid the wrong amount, or paid and never received your credits, email{' '}
+          <ContactEmail /> within 7 days of the payment with the transaction ID. We will check it and, if confirmed,
+          refund the extra amount to the account it came from or add the missing credits. This does not affect any rights
+          you have under the law.
+        </p>
+      </section>
+
+      <section id="agents">
+        <h2>Agents, automation and scheduled posts</h2>
+        <ul>
           <li>
-            Refunds: <Fill>your refund policy, e.g. when a payment can be refunded and how to ask</Fill>.
+            Agents create content for you, such as Shorts, edited videos and posts. You review the result before anything
+            is published: an agent only posts to your accounts after you approve it.
           </li>
-          <li>If a generation fails, the credits reserved for it are returned automatically.</li>
+          <li>
+            When you schedule a post, Admart publishes it at the time you chose using the accounts you connected. You can
+            cancel a scheduled post before that time. If a platform rejects the post or is unavailable, we tell you and
+            it is not retried without you.
+          </li>
+          <li>Autopilot starts agent runs on the schedule you set and uses credits for each run, within any limit you set.</li>
+          <li>
+            AI results can be wrong, incomplete or similar to content made for others. Check facts, names and claims
+            before you publish.
+          </li>
         </ul>
       </section>
 
@@ -54,11 +92,15 @@ export default function TermsPage() {
           </li>
           <li>
             You allow us to store, process and send your content as needed to run Admart, including to our AI providers
-            and to the social accounts you ask us to publish to.
+            and to the accounts you ask us to publish to.
           </li>
           <li>
-            AI-generated results can be similar to results created for others. You are responsible for checking that what
-            you publish is lawful and follows each platform&apos;s rules.
+            You must have the rights to anything you upload, including music, footage and the voices and faces of people
+            shown, and you are responsible for what you publish.
+          </li>
+          <li>
+            Follow each platform&apos;s rules for AI-generated or altered content, for example YouTube&apos;s disclosure of
+            realistic altered or synthetic content.
           </li>
         </ul>
       </section>
@@ -71,7 +113,7 @@ export default function TermsPage() {
           <li>sexualises minors, or is sexually explicit without the consent of the people shown;</li>
           <li>harasses, threatens or promotes violence or hatred against people or groups;</li>
           <li>impersonates real people or deceives viewers, such as fake endorsements or misleading deepfakes;</li>
-          <li>is spam or breaks the rules of the platforms you publish to.</li>
+          <li>is spam, misleading engagement bait, or breaks the rules of the platforms you publish to.</li>
         </ul>
         <p className="mt-3">
           Do not try to break, overload or get around Admart&apos;s security or credit system, or access other users&apos;
@@ -79,20 +121,40 @@ export default function TermsPage() {
         </p>
       </section>
 
-      <section>
+      <section id="platforms">
         <h2>Connected platforms and third-party services</h2>
-        <p>
-          When you connect YouTube, Facebook, Instagram, TikTok or Snapchat, your use of those services is also governed by
-          their own terms, including the{' '}
-          <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer">YouTube Terms of Service</a>.
-          These platforms can change or limit what Admart can do, and we are not responsible for their decisions.
+        <p>When you connect an account, your use of that platform is also governed by its own terms:</p>
+        <ul>
+          <li>
+            YouTube: Admart uses YouTube API Services, and by connecting YouTube you agree to the{' '}
+            <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer">YouTube Terms of Service</a>{' '}
+            and the{' '}
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>.
+          </li>
+          <li>
+            Facebook and Instagram: the{' '}
+            <a href="https://www.facebook.com/terms.php" target="_blank" rel="noopener noreferrer">Meta Terms of Service</a>{' '}
+            and{' '}
+            <a href="https://help.instagram.com/581066165581870" target="_blank" rel="noopener noreferrer">Instagram Terms of Use</a>.
+          </li>
+          <li>
+            TikTok: the{' '}
+            <a href="https://www.tiktok.com/legal/page/global/terms-of-service/en" target="_blank" rel="noopener noreferrer">
+              TikTok Terms of Service
+            </a>
+            .
+          </li>
+        </ul>
+        <p className="mt-3">
+          These platforms can change or limit what Admart can do, and we are not responsible for their decisions, such as
+          removing a post. You can disconnect any account at any time on the Social Accounts page.
         </p>
       </section>
 
       <section>
         <h2>Suspension and ending your account</h2>
         <p>
-          You can stop using Admart at any time and ask us to delete your account. We may suspend or close accounts that
+          You can stop using Admart at any time and delete your account in Settings. We may suspend or close accounts that
           break these terms or put other users or the service at risk.
         </p>
       </section>
@@ -111,7 +173,7 @@ export default function TermsPage() {
         <h2>Changes and governing law</h2>
         <p>
           We may update these terms; if the changes are significant we will tell you in the app or by email. These terms
-          are governed by the laws of <Fill>country / jurisdiction</Fill>.
+          are governed by the laws of Pakistan, and the courts of Pakistan have jurisdiction over any dispute.
         </p>
         <p className="mt-3">
           Contact: <ContactEmail />.
