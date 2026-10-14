@@ -6,7 +6,7 @@ import { COMPANY_ADDRESS, COMPANY_NAME } from '../utils/site'
 // code, especially the platform permissions and AI providers, which platform reviewers check.
 export default function PrivacyPage() {
   return (
-    <LegalLayout title="Privacy Policy">
+    <LegalLayout title="Privacy" accent="Policy" sub="What we collect, why, who we share it with, and how to delete it.">
       <section>
         <p>
           This policy explains what information {COMPANY_NAME} (&quot;Admart&quot;, &quot;we&quot;) collects when you

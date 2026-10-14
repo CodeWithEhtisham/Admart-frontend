@@ -6,7 +6,7 @@ import { COMPANY_ADDRESS, COMPANY_NAME } from '../utils/site'
 // reviewed before launch.
 export default function TermsPage() {
   return (
-    <LegalLayout title="Terms of Service">
+    <LegalLayout title="Terms of" accent="Service" sub="The rules for using Admart, its agents and the accounts you connect.">
       <section>
         <p>
           These terms apply when you use the Admart website and app, provided by {COMPANY_NAME} (&quot;Admart&quot;,
