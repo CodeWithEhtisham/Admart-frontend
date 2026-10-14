@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { formatCredits } from '../utils/credits'
 
 const STYLE_LOOKS = {
   cinematic: ['Film-like, dramatic light', 'from-amber-500 via-orange-700 to-slate-900'],
@@ -115,6 +116,80 @@ export default function AgentStylePicker({ agent, value, onChange }) {
                 {s} seconds
               </button>
             ))}
+          </div>
+        </Group>
+      ) : null}
+
+      {agent.formats?.length ? (
+        <Group label="Format">
+          <div className="grid gap-2 sm:grid-cols-2">
+            {agent.formats.map((f) => {
+              const on = (value.format || '9:16') === f.id
+              const [name, use] = f.label.split(' · ')
+              return (
+                <button
+                  key={f.id}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => onChange({ format: f.id })}
+                  className={`flex items-center gap-3 rounded-xl border px-3 py-2 text-left ${on ? 'border-accent-blue bg-accent-blue/10' : 'border-border-default bg-input'}`}
+                >
+                  <span aria-hidden className="flex h-9 w-9 shrink-0 items-center justify-center">
+                    <span
+                      className="block rounded-sm border-2 border-current text-text-secondary"
+                      style={{ width: { '9:16': 18, '1:1': 26, '4:5': 22, original: 32 }[f.id], height: { '9:16': 32, '1:1': 26, '4:5': 28, original: 20 }[f.id] }}
+                    />
+                  </span>
+                  <span className="min-w-0 text-sm">
+                    <span className="block font-medium">{name}</span>
+                    {use ? <span className="block text-xs text-text-tertiary">{use}</span> : null}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </Group>
+      ) : null}
+
+      {agent.cutStyles?.length ? (
+        <Group label="Cut style">
+          <div className="flex flex-wrap gap-1.5">
+            {agent.cutStyles.map((c) => {
+              const [name, hint] = c.label.split(' · ')
+              const on = (value.cut || 'normal') === c.id
+              return (
+                <button key={c.id} type="button" aria-pressed={on} title={hint} onClick={() => onChange({ cut: c.id })} className={chip(on)}>
+                  {name}
+                </button>
+              )
+            })}
+          </div>
+          <p className="mt-1 text-xs text-text-tertiary">
+            {(agent.cutStyles.find((c) => c.id === (value.cut || 'normal'))?.label || '').split(' · ')[1]}
+          </p>
+        </Group>
+      ) : null}
+
+      {agent.audioLevels?.length ? (
+        <Group label="Audio cleanup">
+          <div className="grid gap-2 sm:grid-cols-3">
+            {agent.audioLevels.map((a) => {
+              const [name, hint] = a.label.split(' · ')
+              const on = (value.audio || 'standard') === a.id
+              return (
+                <button
+                  key={a.id}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => onChange({ audio: a.id })}
+                  className={`rounded-xl border px-3 py-2 text-left text-sm ${on ? 'border-accent-blue bg-accent-blue/10' : 'border-border-default bg-input'}`}
+                >
+                  <span className="block font-medium">{name}</span>
+                  <span className="block text-xs text-text-tertiary">{hint}</span>
+                  <span className="mt-1 block text-xs font-semibold text-text-secondary">~{formatCredits(a.creditsPerMinute)} credits/min</span>
+                </button>
+              )
+            })}
           </div>
         </Group>
       ) : null}

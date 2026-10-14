@@ -4,6 +4,7 @@ import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import AgentAutopilot from '../components/AgentAutopilot.jsx'
 import AgentSettingsDialog from '../components/AgentSettingsDialog.jsx'
+import AgentVideoPicker from '../components/AgentVideoPicker.jsx'
 import { AgentIcon, KindBadge, StatusBadge } from '../components/AgentBits.jsx'
 import AgentWorkflow, { HowItWorks } from '../components/AgentWorkflow.jsx'
 import {
@@ -86,12 +87,16 @@ export default function AgentDetailPage() {
     runs[0]
   const select = (id) => setSearchParams({ run: id }, { replace: true })
 
-  const run = async (e) => {
+  const run = (e) => {
     e.preventDefault()
+    start(isText ? { text: value } : { topic: value })
+  }
+
+  const start = async (payload) => {
     setBusy(true)
     setError('')
     try {
-      const created = await startRun(projectId, deploymentId, isText ? { text: value } : { topic: value })
+      const created = await startRun(projectId, deploymentId, payload)
       setRuns((prev) => [created, ...prev])
       select(created.id)
       setValue('')
@@ -236,7 +241,16 @@ export default function AgentDetailPage() {
           {deployment ? (
             <div className="grid items-start gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
               <aside className="space-y-4">
-              {agent ? (
+              {agent?.inputKind === 'video' ? (
+                <AgentVideoPicker
+                  agent={agent}
+                  config={deployment.config}
+                  projectId={projectId}
+                  busy={busy}
+                  paused={deployment.status !== 'active'}
+                  onStart={start}
+                />
+              ) : agent ? (
                 <form onSubmit={run} className="rounded-2xl border border-border-default bg-surface p-4">
                   <label className="block text-sm">
                     <span className="font-heading text-[1rem] font-semibold">

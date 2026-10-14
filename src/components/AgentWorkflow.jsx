@@ -11,7 +11,9 @@ import {
   ScriptEditor,
   ScriptView,
   Storyboard,
+  TitleCheck,
 } from './AgentRunViews.jsx'
+import AgentEditReview from './AgentEditReview.jsx'
 
 const SERVICES = {
   openrouter: 'OpenRouter',
@@ -26,8 +28,9 @@ const SERVICES = {
   local: 'Whisper',
 }
 // A run paused at a check-in shows it on the step that made the thing to check.
-const WAITING_ON = { concept: 'concepts', script: 'script', storyboard: 'visuals', final: 'review' }
-const GATE_STEP = { concept: 'pick_concept', script: 'review_script', storyboard: 'review_storyboard' }
+const WAITING_ON = { concept: 'concepts', script: 'script', storyboard: 'visuals', edit: 'plan_edit', final: 'review' }
+const GATE_STEP = { concept: 'pick_concept', script: 'review_script', storyboard: 'review_storyboard', edit: 'review_edit' }
+const AUDIO_NAMES = { basic: 'Basic', standard: 'Standard', studio: 'Studio' }
 const STUCK_MS = 60 * 1000
 
 const seconds = (n) => (n < 60 ? `${Math.max(1, Math.round(n))}s` : `${Math.floor(n / 60)}m ${Math.round(n % 60)}s`)
@@ -55,6 +58,25 @@ function stepStates(run, steps) {
 }
 
 function summary(step, run) {
+  const cutCount = (run.cuts || []).filter((c) => !c.keep).length
+  switch (step) {
+    case 'prepare':
+      return run.sourceSeconds ? `${seconds(run.sourceSeconds)} video` : 'Video checked'
+    case 'transcribe':
+      return run.transcript?.length ? `${run.transcript.length} words` : 'No speech found'
+    case 'clean_audio':
+      return run.audioFallback
+        ? `${AUDIO_NAMES[run.audioLevelUsed]} (the ${AUDIO_NAMES[run.audioLevel]} service was unavailable)`
+        : `${AUDIO_NAMES[run.audioLevelUsed] || ''} cleanup`
+    case 'plan_edit':
+      return `${cutCount} cuts${run.captionFixes?.length ? ` · ${run.captionFixes.length} caption fixes` : ''}`
+    case 'render_edit':
+      return run.removedSeconds != null ? `${seconds(run.duration || 0)} video · ${seconds(run.removedSeconds)} removed` : ''
+    case 'package':
+      return run.title || ''
+    default:
+      break
+  }
   const scenes = run.scenes
   const words = scenes.reduce((n, s) => n + s.narration.split(/\s+/).filter(Boolean).length, 0)
   switch (step) {
@@ -103,7 +125,74 @@ const STATE_TEXT = {
   stopped: 'Stopped',
 }
 
+function EditDetails({ step, run, waiting, busy, act }) {
+  if (step === 'prepare') {
+    return <video src={run.sourceUrl} controls playsInline className="max-h-80 w-full max-w-sm rounded-xl bg-black" />
+  }
+  if (step === 'transcribe') {
+    return <p className="max-h-48 overflow-y-auto whitespace-pre-line text-text-secondary">{run.transcript.map((w) => w.word).join(' ')}</p>
+  }
+  if (step === 'clean_audio') {
+    return (
+      <div className="grid gap-2 sm:grid-cols-2">
+        <label className="text-xs text-text-tertiary">
+          Original sound
+          <audio src={run.audioUrl} controls className="mt-1 h-8 w-full" />
+        </label>
+        <label className="text-xs text-text-tertiary">
+          Cleaned sound
+          <audio src={run.audioCleanUrl} controls className="mt-1 h-8 w-full" />
+        </label>
+      </div>
+    )
+  }
+  if (step === 'plan_edit') {
+    if (waiting) {
+      return <AgentEditReview run={run} busy={busy} onContinue={(p) => act('continue', p)} onDiscard={() => act('discard')} />
+    }
+    const counts = {}
+    for (const c of run.cuts.filter((c) => !c.keep)) for (const r of c.reasons) counts[r] = (counts[r] || 0) + 1
+    return (
+      <ul className="space-y-0.5 text-sm text-text-secondary">
+        {Object.entries(counts).map(([reason, n]) => (
+          <li key={reason}>
+            {n} × {reason}
+          </li>
+        ))}
+        {run.captionFixes.map((f) => (
+          <li key={f.index}>
+            Caption: {f.from} → {f.to}
+          </li>
+        ))}
+      </ul>
+    )
+  }
+  if (step === 'render_edit') {
+    return (
+      <ul className="space-y-0.5 text-xs text-success-text" aria-label="Quality checks">
+        {run.checks.map((c) => (
+          <li key={c}>✓ {c}</li>
+        ))}
+      </ul>
+    )
+  }
+  if (step === 'package') {
+    return (
+      <div className="space-y-1">
+        <p className="font-medium">{run.title}</p>
+        {run.thumbnailText ? <p className="text-xs text-text-tertiary">Thumbnail text: {run.thumbnailText}</p> : null}
+        <TitleCheck run={run} />
+        {run.thumbnailUrl ? <img src={run.thumbnailUrl} alt="Thumbnail" className="mt-2 max-h-48 rounded-lg" /> : null}
+      </div>
+    )
+  }
+  return null
+}
+
+const EDIT_STEPS = ['prepare', 'transcribe', 'clean_audio', 'plan_edit', 'render_edit', 'package']
+
 function Details({ step, run, agent, waiting, busy, act, onApprove }) {
+  if (EDIT_STEPS.includes(step)) return <EditDetails step={step} run={run} waiting={waiting} busy={busy} act={act} />
   if (step === 'research') return <Research research={run.research} open />
   if (step === 'concepts') {
     if (waiting) {
@@ -223,6 +312,12 @@ function Details({ step, run, agent, waiting, busy, act, onApprove }) {
 }
 
 function hasDetails(step, run) {
+  if (step === 'prepare') return Boolean(run.sourceUrl)
+  if (step === 'transcribe') return run.transcript?.length > 0
+  if (step === 'clean_audio') return Boolean(run.audioCleanUrl)
+  if (step === 'plan_edit') return Array.isArray(run.cuts) && run.cuts.length + (run.captionFixes?.length || 0) > 0
+  if (step === 'render_edit') return run.checks.length > 0
+  if (step === 'package') return Boolean(run.title)
   if (step === 'research') return Boolean(run.research?.notes)
   if (step === 'concepts') return run.concepts.length > 0
   if (['script', 'voice', 'visuals', 'captions'].includes(step)) return run.scenes.length > 0

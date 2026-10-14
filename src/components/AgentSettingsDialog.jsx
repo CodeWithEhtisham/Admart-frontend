@@ -7,6 +7,7 @@ const field =
 /** Change an agent's niche, voice & style and check-ins after it has started. Applies to the next run. */
 export default function AgentSettingsDialog({ deployment, onClose, onSave }) {
   const agent = deployment.agent
+  const video = agent?.inputKind === 'video'
   const [config, setConfig] = useState(() => ({ ...(deployment.config || {}) }))
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -45,7 +46,7 @@ export default function AgentSettingsDialog({ deployment, onClose, onSave }) {
         <p className="mt-1 text-xs text-text-tertiary">Changes apply to the next run.</p>
 
         <div className="mt-5 space-y-5 text-sm">
-          {agent?.kind === 'large' ? (
+          {agent?.kind === 'large' && !video ? (
             <label className="block">
               <span className="text-text-tertiary">What is your channel about?</span>
               <input maxLength={300} value={config.niche || ''} onChange={(e) => set({ niche: e.target.value })} className={field} />
@@ -62,16 +63,28 @@ export default function AgentSettingsDialog({ deployment, onClose, onSave }) {
                   checked={(config.checkpoints || 'all') === 'all'}
                   onChange={(e) => set({ checkpoints: e.target.checked ? 'all' : 'final' })}
                 />
-                Let me check each step (idea, script, pictures)
+                {video ? 'Let me review the cuts before the video is made' : 'Let me check each step (idea, script, pictures)'}
               </label>
+              {video ? (
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" checked={config.captions !== false} onChange={(e) => set({ captions: e.target.checked })} />
+                  Burn in captions
+                </label>
+              ) : null}
               <label className="flex items-center gap-2">
-                <input type="checkbox" checked={config.music !== false} onChange={(e) => set({ music: e.target.checked })} />
+                <input
+                  type="checkbox"
+                  checked={video ? Boolean(config.music) : config.music !== false}
+                  onChange={(e) => set({ music: e.target.checked })}
+                />
                 Background music
               </label>
-              <label className="flex items-center gap-2">
-                <input type="checkbox" checked={config.stock !== false} onChange={(e) => set({ stock: e.target.checked })} />
-                Use free stock video where it fits
-              </label>
+              {agent.styles?.length ? (
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" checked={config.stock !== false} onChange={(e) => set({ stock: e.target.checked })} />
+                  Use free stock video where it fits
+                </label>
+              ) : null}
             </div>
           ) : null}
 

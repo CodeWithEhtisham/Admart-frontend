@@ -4,7 +4,7 @@ import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import { AgentIcon, KindBadge, StatusBadge } from '../components/AgentBits.jsx'
 import AgentStylePicker from '../components/AgentStylePicker.jsx'
-import { deployAgent, getAgentCatalog, getInbox, listDeployments, PLATFORM_NAMES } from '../utils/agents'
+import { costText, deployAgent, getAgentCatalog, getInbox, listDeployments, PLATFORM_NAMES } from '../utils/agents'
 import { formatCredits } from '../utils/credits'
 import { getCachedActiveProject, listSocialAccounts, PROJECT_CHANGE_EVENT } from '../utils/projects'
 
@@ -20,12 +20,14 @@ const fieldClass =
 /** One screen: what it needs, an optional niche, and everything else under "More options". */
 function DeployDialog({ agent, projectId, onClose, onDeployed }) {
   const large = agent.kind === 'large'
+  const video = agent.inputKind === 'video'
   const [connected, setConnected] = useState(null)
   const [niche, setNiche] = useState('')
   const [look, setLook] = useState({})
-  const [checkpoints, setCheckpoints] = useState('final')
-  const [music, setMusic] = useState(true)
+  const [checkpoints, setCheckpoints] = useState(video ? 'all' : 'final')
+  const [music, setMusic] = useState(!video)
   const [stock, setStock] = useState(true)
+  const [captions, setCaptions] = useState(true)
   const [limit, setLimit] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -49,7 +51,11 @@ function DeployDialog({ agent, projectId, onClose, onDeployed }) {
     try {
       const deployment = await deployAgent(projectId, {
         agentType: agent.slug,
-        config: large ? { niche: niche.trim(), ...look, checkpoints, music, stock } : look,
+        config: video
+          ? { ...look, checkpoints, music, captions }
+          : large
+            ? { niche: niche.trim(), ...look, checkpoints, music, stock }
+            : look,
         monthlyCreditLimit: limit.trim() || null,
       })
       onDeployed(deployment)
@@ -74,7 +80,7 @@ function DeployDialog({ agent, projectId, onClose, onDeployed }) {
             <h2 id="deploy-title" className="font-heading text-lg font-semibold">
               {agent.name}
             </h2>
-            <p className="text-xs text-text-tertiary">About {formatCredits(agent.estimatedCredits)} credits per run</p>
+            <p className="text-xs text-text-tertiary first-letter:uppercase">{costText(agent)}</p>
           </div>
         </div>
 
@@ -98,7 +104,7 @@ function DeployDialog({ agent, projectId, onClose, onDeployed }) {
             </div>
           ))}
 
-          {large ? (
+          {large && !video ? (
             <label className="block">
               <span className="text-text-tertiary">What is your channel about? (optional)</span>
               <input
@@ -112,10 +118,10 @@ function DeployDialog({ agent, projectId, onClose, onDeployed }) {
             </label>
           ) : null}
 
-          {agent.voices?.length || agent.tones?.length || agent.styles?.length ? (
+          {agent.voices?.length || agent.tones?.length || agent.styles?.length || agent.formats?.length ? (
             <section aria-labelledby="look-title" className="rounded-xl border border-border-default bg-input px-4 py-3">
               <h3 id="look-title" className="mb-3 font-medium">
-                {agent.voices?.length ? 'Voice & style' : 'Style'}
+                {video ? 'How to edit' : agent.voices?.length ? 'Voice & style' : 'Style'}
               </h3>
               <AgentStylePicker agent={agent} value={look} onChange={(patch) => setLook((prev) => ({ ...prev, ...patch }))} />
             </section>
@@ -134,18 +140,30 @@ function DeployDialog({ agent, projectId, onClose, onDeployed }) {
                       onChange={(e) => setCheckpoints(e.target.checked ? 'all' : 'final')}
                     />
                     <span>
-                      <span className="block">Let me check each step</span>
-                      <span className="text-xs text-text-tertiary">Pick the concept, edit the script and check the pictures before the video is made.</span>
+                      <span className="block">{video ? 'Let me review the cuts' : 'Let me check each step'}</span>
+                      <span className="text-xs text-text-tertiary">
+                        {video
+                          ? 'See what will be cut and fix caption spelling before the video is made.'
+                          : 'Pick the concept, edit the script and check the pictures before the video is made.'}
+                      </span>
                     </span>
                   </label>
+                  {video ? (
+                    <label className="flex items-center gap-2">
+                      <input type="checkbox" checked={captions} onChange={(e) => setCaptions(e.target.checked)} />
+                      Burn in captions
+                    </label>
+                  ) : null}
                   <label className="flex items-center gap-2">
                     <input type="checkbox" checked={music} onChange={(e) => setMusic(e.target.checked)} />
                     Background music
                   </label>
-                  <label className="flex items-center gap-2">
-                    <input type="checkbox" checked={stock} onChange={(e) => setStock(e.target.checked)} />
-                    Use free stock video where it fits
-                  </label>
+                  {agent.styles?.length ? (
+                    <label className="flex items-center gap-2">
+                      <input type="checkbox" checked={stock} onChange={(e) => setStock(e.target.checked)} />
+                      Use free stock video where it fits
+                    </label>
+                  ) : null}
                 </>
               ) : null}
               <label className="block">
@@ -377,7 +395,7 @@ export default function AgentsPage() {
                       ) : null}
                       <div>
                         <dt className="inline">Cost: </dt>
-                        <dd className="inline">about {formatCredits(agent.estimatedCredits)} credits per run</dd>
+                        <dd className="inline">{costText(agent)}</dd>
                       </div>
                     </dl>
                     {deployed ? (

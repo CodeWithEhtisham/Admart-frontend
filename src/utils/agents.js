@@ -1,3 +1,4 @@
+import { formatCredits } from './credits'
 import api from './api'
 
 export const PLATFORM_NAMES = { youtube: 'YouTube', facebook: 'Facebook', instagram: 'Instagram' }
@@ -62,6 +63,12 @@ export const AGENT_STEPS = {
   visuals: ['Pictures', 'Makes a picture or finds a stock clip for every scene.'],
   render: ['Video', 'Edits it all into a vertical video with music and captions.'],
   finish: ['Save', 'Saves the video and thumbnail to your Library.'],
+  prepare: ['Check video', 'Reads your video: length, shape and sound.'],
+  transcribe: ['Transcript', 'Writes down every word you say, with its exact timing.'],
+  clean_audio: ['Clean audio', 'Removes background noise and evens out your voice.'],
+  plan_edit: ['Edit plan', 'Finds pauses, um/uh, restarts and bad frames to cut, and fixes caption spelling.'],
+  render_edit: ['Video', 'Makes the edited video in your format, with captions and levelled sound.'],
+  package: ['Title & thumbnail', 'Writes the title, description and thumbnail text from what you said.'],
   review: ['Your review', 'You watch it and decide. Nothing is posted without you.'],
 }
 
@@ -75,10 +82,16 @@ const STATUS_TEXT = {
 }
 
 export function runTitle(run) {
-  return run.title || run.concept?.title || run.input.topic || (run.input.auto ? 'Agent is picking a topic…' : (run.input.text || '').slice(0, 80))
+  return run.title || run.concept?.title || run.input.topic || run.input.title || (run.input.auto ? 'Agent is picking a topic…' : (run.input.text || '').slice(0, 80))
 }
 
 export function runStatusText(run) {
   if (run.status === 'running') return `Working: ${AGENT_STEPS[run.step]?.[0] || 'getting started'}`
   return STATUS_TEXT[run.status] || run.status
+}
+
+/** "about 2 credits per run" / "about 1 credit per minute of video". */
+export function costText(agent) {
+  const unit = agent?.creditUnit === 'minute' ? 'minute of video' : 'run'
+  return `about ${formatCredits(agent?.estimatedCredits)} credits per ${unit}`
 }
