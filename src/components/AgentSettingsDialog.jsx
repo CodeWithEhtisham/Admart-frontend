@@ -55,6 +55,17 @@ export default function AgentSettingsDialog({ deployment, onClose, onSave }) {
 
           <AgentStylePicker agent={agent || {}} value={config} onChange={set} />
 
+          {agent?.clipLengths?.length ? (
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={(config.checkpoints || 'all') === 'all'}
+                onChange={(e) => set({ checkpoints: e.target.checked ? 'all' : 'final' })}
+              />
+              Let me pick and trim the clips before they are made
+            </label>
+          ) : null}
+
           {agent?.review ? (
             <div className="space-y-2">
               <label className="flex items-center gap-2">

@@ -118,7 +118,7 @@ function DeployDialog({ agent, projectId, onClose, onDeployed }) {
             </label>
           ) : null}
 
-          {agent.voices?.length || agent.tones?.length || agent.styles?.length || agent.formats?.length ? (
+          {agent.voices?.length || agent.tones?.length || agent.styles?.length || agent.formats?.length || agent.clipLengths?.length ? (
             <section aria-labelledby="look-title" className="rounded-xl border border-border-default bg-input px-4 py-3">
               <h3 id="look-title" className="mb-3 font-medium">
                 {video ? 'How to edit' : agent.voices?.length ? 'Voice & style' : 'Style'}
@@ -130,6 +130,20 @@ function DeployDialog({ agent, projectId, onClose, onDeployed }) {
           <details className="rounded-xl border border-border-default bg-input px-4 py-3">
             <summary className="cursor-pointer font-medium">More options</summary>
             <div className="mt-3 space-y-4">
+              {agent.clipLengths?.length ? (
+                <label className="flex items-start gap-2">
+                  <input
+                    type="checkbox"
+                    className="mt-1"
+                    checked={checkpoints === 'all'}
+                    onChange={(e) => setCheckpoints(e.target.checked ? 'all' : 'final')}
+                  />
+                  <span>
+                    <span className="block">Let me pick the clips</span>
+                    <span className="text-xs text-text-tertiary">See every moment the agent found, with its score, and trim it before the clips are made.</span>
+                  </span>
+                </label>
+              ) : null}
               {agent.review ? (
                 <>
                   <label className="flex items-start gap-2">

@@ -151,6 +151,59 @@ export default function AgentStylePicker({ agent, value, onChange }) {
         </Group>
       ) : null}
 
+      {agent.clipLengths?.length ? (
+        <>
+          <Group label="Clip length">
+            <div className="flex flex-wrap gap-1.5">
+              {agent.clipLengths.map((c) => {
+                const [name, hint] = c.label.split(' · ')
+                const on = (value.clipLength || 'medium') === c.id
+                return (
+                  <button key={c.id} type="button" aria-pressed={on} title={hint} onClick={() => onChange({ clipLength: c.id })} className={chip(on)}>
+                    {name}
+                  </button>
+                )
+              })}
+            </div>
+            <p className="mt-1 text-xs text-text-tertiary">
+              {(agent.clipLengths.find((c) => c.id === (value.clipLength || 'medium'))?.label || '').split(' · ')[1]}
+            </p>
+          </Group>
+          <Group label="How many clips (at most)">
+            <div className="flex flex-wrap gap-1.5">
+              {agent.clipCounts.map((n) => {
+                const on = Number(value.clipCount || 5) === n
+                return (
+                  <button key={n} type="button" aria-pressed={on} onClick={() => onChange({ clipCount: n })} className={`${chip(on)} min-w-10 tabular-nums`}>
+                    {n}
+                  </button>
+                )
+              })}
+            </div>
+          </Group>
+          <Group label="Framing">
+            <div className="grid gap-2 sm:grid-cols-2">
+              {agent.layouts.map((l) => {
+                const on = (value.layout || 'crop') === l.id
+                const [name, use] = l.label.split(' (')
+                return (
+                  <button
+                    key={l.id}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => onChange({ layout: l.id })}
+                    className={`rounded-xl border px-3 py-2 text-left text-sm ${on ? 'border-accent-blue bg-accent-blue/10' : 'border-border-default bg-input'}`}
+                  >
+                    <span className="block font-medium">{name}</span>
+                    {use ? <span className="block text-xs text-text-tertiary">{use.replace(/\)$/, '')}</span> : null}
+                  </button>
+                )
+              })}
+            </div>
+          </Group>
+        </>
+      ) : null}
+
       {agent.cutStyles?.length ? (
         <Group label="Cut style">
           <div className="flex flex-wrap gap-1.5">

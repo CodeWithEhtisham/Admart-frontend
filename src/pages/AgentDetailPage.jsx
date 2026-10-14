@@ -5,6 +5,7 @@ import Topbar from '../components/Topbar'
 import AgentAutopilot from '../components/AgentAutopilot.jsx'
 import AgentSettingsDialog from '../components/AgentSettingsDialog.jsx'
 import AgentVideoPicker from '../components/AgentVideoPicker.jsx'
+import AgentClipSource from '../components/AgentClipSource.jsx'
 import { AgentIcon, KindBadge, StatusBadge } from '../components/AgentBits.jsx'
 import AgentWorkflow, { HowItWorks } from '../components/AgentWorkflow.jsx'
 import {
@@ -90,7 +91,8 @@ export default function AgentDetailPage() {
         agent.voices?.length ||
         agent.tones?.length ||
         agent.lengths?.length ||
-        agent.formats?.length),
+        agent.formats?.length ||
+        agent.clipLengths?.length),
   )
   const selected =
     runs.find((r) => r.id === searchParams.get('run')) ||
@@ -255,7 +257,16 @@ export default function AgentDetailPage() {
           {deployment ? (
             <div className="grid items-start gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
               <aside className="space-y-4">
-              {agent?.inputKind === 'video' ? (
+              {agent?.clipLengths?.length ? (
+                <AgentClipSource
+                  agent={agent}
+                  config={deployment.config}
+                  projectId={projectId}
+                  busy={busy}
+                  paused={deployment.status !== 'active'}
+                  onStart={start}
+                />
+              ) : agent?.inputKind === 'video' ? (
                 <AgentVideoPicker
                   agent={agent}
                   config={deployment.config}

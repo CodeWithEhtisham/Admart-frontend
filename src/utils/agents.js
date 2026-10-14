@@ -75,6 +75,11 @@ export const AGENT_STEPS = {
   write_post: ['Posts', 'Writes a post for each connected platform from what is said in the video.'],
   wait: ['Scheduled', 'Waits until the time you picked.'],
   post: ['Post', 'Posts it to each platform you picked.'],
+  get_video: ['Get video', 'Downloads the YouTube video or reads your upload: length, shape and sound.'],
+  transcribe_long: ['Transcript', 'Writes down every word that is said, with its exact timing.'],
+  find_clips: ['Best moments', 'Reads the whole transcript and scores the moments that work as clips.'],
+  render_clips: ['Clips', 'Makes each moment a vertical clip with captions and a hook title.'],
+  finish_clips: ['Save', 'Saves every clip to your Library.'],
   review: ['Your review', 'You watch it and decide. Nothing is posted without you.'],
 }
 
@@ -105,6 +110,6 @@ export function runStatusText(run) {
 
 /** "about 2 credits per run" / "about 1 credit per minute of video". */
 export function costText(agent) {
-  const unit = agent?.creditUnit === 'minute' ? 'minute of video' : 'run'
+  const unit = { minute: 'minute of video', hour: 'hour of video' }[agent?.creditUnit] || 'run'
   return `about ${formatCredits(agent?.estimatedCredits)} credits per ${unit}`
 }

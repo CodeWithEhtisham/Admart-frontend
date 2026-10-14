@@ -16,6 +16,7 @@ import {
 import AgentEditReview from './AgentEditReview.jsx'
 import AgentPostReview from './AgentPostReview.jsx'
 import AgentTrendList from './AgentTrendList.jsx'
+import { ClipPicker, ClipResults } from './AgentClipReview.jsx'
 
 const SERVICES = {
   openrouter: 'OpenRouter',
@@ -30,8 +31,8 @@ const SERVICES = {
   local: 'Whisper',
 }
 // A run paused at a check-in shows it on the step that made the thing to check.
-const WAITING_ON = { concept: 'concepts', script: 'script', storyboard: 'visuals', edit: 'plan_edit', post: 'write_post', final: 'review' }
-const GATE_STEP = { concept: 'pick_concept', script: 'review_script', storyboard: 'review_storyboard', edit: 'review_edit', post: 'review_post' }
+const WAITING_ON = { concept: 'concepts', script: 'script', storyboard: 'visuals', edit: 'plan_edit', post: 'write_post', clips: 'find_clips', final: 'review' }
+const GATE_STEP = { concept: 'pick_concept', script: 'review_script', storyboard: 'review_storyboard', edit: 'review_edit', post: 'review_post', clips: 'review_clips' }
 const AUDIO_NAMES = { basic: 'Basic', standard: 'Standard', studio: 'Studio' }
 const STUCK_MS = 60 * 1000
 
@@ -91,6 +92,22 @@ function summary(step, run) {
       return run.removedSeconds != null ? `${seconds(run.duration || 0)} video · ${seconds(run.removedSeconds)} removed` : ''
     case 'package':
       return run.title || ''
+    case 'get_video':
+      return run.sourceSeconds ? `${seconds(run.sourceSeconds)} video${run.sourceTitle ? ` · ${run.sourceTitle}` : ''}` : 'Video checked'
+    case 'transcribe_long':
+      return 'Every word, with its timing'
+    case 'find_clips': {
+      const kept = (run.moments || []).filter((m) => m.keep !== false).length
+      return run.clips?.length || run.status !== 'needs_review'
+        ? `${kept} of ${run.moments?.length || 0} moments picked`
+        : `${run.moments?.length || 0} moments found`
+    }
+    case 'render_clips': {
+      const made = (run.clips || []).filter((c) => c.videoUrl).length
+      return `${made} clip${made === 1 ? '' : 's'} made`
+    }
+    case 'finish_clips':
+      return 'In your Library'
     default:
       break
   }
@@ -246,11 +263,42 @@ function PostDetails({ step, run, waiting, busy, act }) {
   return null
 }
 
+function ClipDetails({ step, run, waiting, busy, act }) {
+  if (step === 'get_video') {
+    return run.sourceUrl ? (
+      <video src={run.sourceUrl} controls playsInline preload="metadata" className="max-h-80 w-full max-w-sm rounded-xl bg-black" />
+    ) : null
+  }
+  if (step === 'find_clips') {
+    if (waiting) return <ClipPicker run={run} busy={busy} onContinue={(p) => act('continue', p)} onDiscard={() => act('discard')} />
+    return (
+      <ol className="space-y-1 text-sm">
+        {run.moments.map((m, i) => (
+          <li key={i} className={m.keep === false ? 'text-text-tertiary line-through' : ''}>
+            <span className="tabular-nums text-text-tertiary">{m.score}</span> {m.title}
+          </li>
+        ))}
+      </ol>
+    )
+  }
+  if (step === 'render_clips') return <ClipResults run={run} />
+  if (step === 'finish_clips') {
+    return (
+      <Link to="/library" className="text-sm font-medium text-link hover:underline">
+        Open Library →
+      </Link>
+    )
+  }
+  return null
+}
+
+const CLIP_STEPS = ['get_video', 'transcribe_long', 'find_clips', 'render_clips', 'finish_clips']
 const POST_STEPS = ['fetch', 'listen', 'write_post', 'post']
 const EDIT_STEPS = ['prepare', 'transcribe', 'clean_audio', 'plan_edit', 'render_edit', 'package']
 
 function Details({ step, run, agent, waiting, busy, act, onApprove }) {
   if (step === 'trends') return <AgentTrendList run={run} />
+  if (CLIP_STEPS.includes(step)) return <ClipDetails step={step} run={run} waiting={waiting} busy={busy} act={act} />
   if (POST_STEPS.includes(step)) return <PostDetails step={step} run={run} waiting={waiting} busy={busy} act={act} />
   if (EDIT_STEPS.includes(step)) return <EditDetails step={step} run={run} waiting={waiting} busy={busy} act={act} />
   if (step === 'research') return <Research research={run.research} open />
@@ -373,6 +421,11 @@ function Details({ step, run, agent, waiting, busy, act, onApprove }) {
 
 function hasDetails(step, run) {
   if (step === 'trends') return run.trends?.length > 0
+  if (step === 'get_video') return Boolean(run.sourceUrl)
+  if (step === 'transcribe_long') return false
+  if (step === 'find_clips') return run.moments?.length > 0
+  if (step === 'render_clips') return run.clips?.length > 0
+  if (step === 'finish_clips') return true
   if (step === 'fetch') return Boolean(run.sourceUrl)
   if (step === 'listen') return run.transcript?.length > 0
   if (step === 'write_post') return Boolean(run.posts && Object.keys(run.posts).length)
