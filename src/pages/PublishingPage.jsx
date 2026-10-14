@@ -81,7 +81,8 @@ export default function PublishingPage() {
   const isImage = publishAsset.type === 'image' && Boolean(publishAsset.imageUrl)
   const isVideo = publishAsset.type === 'video' && Boolean(publishAsset.videoUrl)
   const assetTitle = publishAsset.title || (isImage ? 'Untitled image' : 'Untitled video')
-  const backTo = isImage ? '/image-gen' : isVideo ? '/video-gen' : '/result'
+  // Back to wherever the user came from (Library, an agent, Image/Video Gen); Library if opened directly.
+  const goBack = () => (location.key !== 'default' ? navigate(-1) : navigate('/library'))
   const assetKind = isImage ? 'image' : 'video'
   const sourceUrl = isImage ? publishAsset.imageUrl : publishAsset.videoUrl
 
@@ -167,10 +168,10 @@ export default function PublishingPage() {
     if (!showToast) return
     const t = setTimeout(() => {
       setShowToast(false)
-      if (!stayAfterToast) navigate(isImage ? '/image-gen' : isVideo ? '/video-gen' : '/dashboard')
+      if (!stayAfterToast) goBack()
     }, 1800)
     return () => clearTimeout(t)
-  }, [showToast, stayAfterToast, navigate, isImage, isVideo])
+  }, [showToast, stayAfterToast]) // eslint-disable-line react-hooks/exhaustive-deps -- goBack is a fresh closure each render
 
   const confirmAction = async (action = 'publish', scheduledAtValue = '') => {
     const projectId = getCachedActiveProject()?.id
@@ -289,13 +290,14 @@ export default function PublishingPage() {
   return (
     <div className="relative flex min-h-screen flex-col bg-base font-body text-text-primary lg:h-screen">
       <header className="flex h-[60px] shrink-0 items-center gap-3 border-b border-border bg-panel px-4">
-        <Link
-          to={backTo}
+        <button
+          type="button"
+          onClick={goBack}
           className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm text-text-secondary transition hover:bg-elevated hover:text-text-primary"
         >
           <ChevronLeftIcon className="h-4 w-4" />
           Back
-        </Link>
+        </button>
         <span className="h-5 w-px bg-border-default" aria-hidden />
         <h1 className="font-heading text-xl font-semibold tracking-tight">
           {isImage ? 'Publish Image' : 'Publish Video'}

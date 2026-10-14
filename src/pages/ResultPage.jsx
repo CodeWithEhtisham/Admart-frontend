@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Glyphs } from '../components/glyphs'
 import { Icon } from '../components/icons'
 
@@ -55,6 +55,7 @@ function PauseIcon({ className }) {
 
 export default function ResultPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [playing, setPlaying] = useState(false)
   const [progress, setProgress] = useState(35)
   const [activePlatform, setActivePlatform] = useState('tiktok')
@@ -82,13 +83,14 @@ export default function ResultPage() {
   return (
     <div className="flex h-screen min-h-0 flex-col bg-base font-body text-text-primary">
       <header className="flex h-[60px] shrink-0 items-center gap-3 border-b border-border bg-panel px-4">
-        <Link
-          to="/dashboard"
+        <button
+          type="button"
+          onClick={() => (location.key !== 'default' ? navigate(-1) : navigate('/dashboard'))}
           className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm text-text-secondary transition hover:bg-elevated hover:text-text-primary"
         >
           <ChevronLeftIcon className="h-4 w-4" />
           Back
-        </Link>
+        </button>
         <span className="h-5 w-px bg-border-default" aria-hidden />
         <h1 className="font-heading text-base font-semibold tracking-tight">Video Result</h1>
         <span className="ml-1 inline-flex items-center gap-1 rounded-full border border-success/30 bg-success/10 px-2.5 py-0.5 text-xs font-medium text-success-text">
