@@ -49,6 +49,12 @@ const Icons = {
       <rect x="13" y="13" width="8" height="8" rx="1.5" />
     </Icon>
   ),
+  publish: (
+    <Icon>
+      <path d="M12 15V4M7.5 8.5L12 4l4.5 4.5" />
+      <path d="M4 14v4.5A1.5 1.5 0 005.5 20h13a1.5 1.5 0 001.5-1.5V14" />
+    </Icon>
+  ),
   calendar: (
     <Icon>
       <rect x="3" y="4.5" width="18" height="16" rx="2" />
@@ -135,6 +141,7 @@ const NAV_SECTIONS = [
   {
     label: 'Publish',
     items: [
+      { to: '/publish', label: 'Publish', icon: Icons.publish },
       { to: '/calendar', label: 'Calendar', icon: Icons.calendar },
       { to: '/social', label: 'Social Accounts', icon: Icons.social },
     ],

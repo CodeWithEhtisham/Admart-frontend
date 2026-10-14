@@ -338,7 +338,12 @@ export default function PublishingPage() {
                     className="absolute inset-0 h-full w-full bg-black object-contain"
                   />
                 ) : (
-                  <div className="absolute inset-0 gradient-bg" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 gradient-bg p-4 text-center text-sm font-semibold text-white">
+                    Nothing picked yet
+                    <Link to="/library" className="rounded-lg bg-black/30 px-3 py-1.5 text-xs hover:bg-black/50">
+                      Pick from your Library
+                    </Link>
+                  </div>
                 )}
                 {isImage || isVideo ? (
                   <button
@@ -351,7 +356,7 @@ export default function PublishingPage() {
                   </button>
                 ) : null}
               </div>
-              <p className="p-3 font-heading text-sm font-semibold leading-snug">{assetTitle}</p>
+              {isImage || isVideo ? <p className="p-3 font-heading text-sm font-semibold leading-snug">{assetTitle}</p> : null}
             </div>
 
             {mode === 'post' ? (
