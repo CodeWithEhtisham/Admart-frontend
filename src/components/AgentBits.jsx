@@ -7,6 +7,7 @@ const AGENT_GLYPHS = {
   voiceover: Glyphs.volume,
   'video-editor': Glyphs.camera,
   'cross-poster': Glyphs.send,
+  'trend-finder': Glyphs.trending,
 }
 
 export function AgentIcon({ slug, kind }) {

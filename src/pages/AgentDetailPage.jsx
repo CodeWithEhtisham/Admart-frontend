@@ -268,7 +268,7 @@ export default function AgentDetailPage() {
                 <form onSubmit={run} className="rounded-2xl border border-border-default bg-surface p-4">
                   <label className="block text-sm">
                     <span className="font-heading text-[1rem] font-semibold">
-                      {deployment?.agentType === 'youtube-shorts' ? 'Make a Short' : 'Run now'}
+                      {{ 'youtube-shorts': 'Make a Short', 'trend-finder': 'Find trends' }[deployment?.agentType] || 'Run now'}
                     </span>
                     <span className="mt-1 block text-text-tertiary">
                       {canAutoTopic ? `${agent.inputLabel} (optional: leave it blank and the agent picks one)` : agent.inputLabel}
@@ -298,7 +298,13 @@ export default function AgentDetailPage() {
                       disabled={busy || (!value.trim() && !canAutoTopic) || deployment?.status !== 'active'}
                       className="rounded-xl gradient-bg px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/25 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      {busy ? 'Starting…' : value.trim() || !canAutoTopic ? 'Make it' : 'Let the agent pick'}
+                      {busy
+                        ? 'Starting…'
+                        : deployment?.agentType === 'trend-finder'
+                          ? 'Find trends'
+                          : value.trim() || !canAutoTopic
+                            ? 'Make it'
+                            : 'Let the agent pick'}
                     </button>
                     <span className="text-xs text-text-tertiary">
                       {deployment?.status === 'active'
@@ -361,7 +367,7 @@ export default function AgentDetailPage() {
             </div>
           ) : null}
 
-          {agent?.inputKind === 'topic' && deployment ? (
+          {agent?.inputKind === 'topic' && !agent.steps.includes('trends') && deployment ? (
             <AgentAutopilot
               key={deployment.id}
               deployment={deployment}

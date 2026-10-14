@@ -15,6 +15,7 @@ import {
 } from './AgentRunViews.jsx'
 import AgentEditReview from './AgentEditReview.jsx'
 import AgentPostReview from './AgentPostReview.jsx'
+import AgentTrendList from './AgentTrendList.jsx'
 
 const SERVICES = {
   openrouter: 'OpenRouter',
@@ -62,6 +63,8 @@ function summary(step, run) {
   const cutCount = (run.cuts || []).filter((c) => !c.keep).length
   const sent = Object.entries(run.posted || {})
   switch (step) {
+    case 'trends':
+      return `${run.trends?.length || 0} trends found`
     case 'fetch':
       return run.sourceSeconds ? `${seconds(run.sourceSeconds)} video${run.short ? ' · Short' : ''}` : 'Video checked'
     case 'listen':
@@ -247,6 +250,7 @@ const POST_STEPS = ['fetch', 'listen', 'write_post', 'post']
 const EDIT_STEPS = ['prepare', 'transcribe', 'clean_audio', 'plan_edit', 'render_edit', 'package']
 
 function Details({ step, run, agent, waiting, busy, act, onApprove }) {
+  if (step === 'trends') return <AgentTrendList run={run} />
   if (POST_STEPS.includes(step)) return <PostDetails step={step} run={run} waiting={waiting} busy={busy} act={act} />
   if (EDIT_STEPS.includes(step)) return <EditDetails step={step} run={run} waiting={waiting} busy={busy} act={act} />
   if (step === 'research') return <Research research={run.research} open />
@@ -368,6 +372,7 @@ function Details({ step, run, agent, waiting, busy, act, onApprove }) {
 }
 
 function hasDetails(step, run) {
+  if (step === 'trends') return run.trends?.length > 0
   if (step === 'fetch') return Boolean(run.sourceUrl)
   if (step === 'listen') return run.transcript?.length > 0
   if (step === 'write_post') return Boolean(run.posts && Object.keys(run.posts).length)
@@ -388,7 +393,7 @@ function hasDetails(step, run) {
 
 function StepRow({ step, state, run, agent, entry, busy, act, onApprove }) {
   const auto = state === 'waiting' || (step === 'review' && run.status === 'needs_review')
-  const [open, setOpen] = useState(auto)
+  const [open, setOpen] = useState(auto || step === 'trends') // the trends are the whole result
   const [label, help] = STEPS[step] || [step, '']
   const reached = state !== 'todo' && state !== 'queued'
   const expandable = reached && hasDetails(step, run)

@@ -69,6 +69,7 @@ export const AGENT_STEPS = {
   plan_edit: ['Edit plan', 'Finds pauses, um/uh, restarts and bad frames to cut, and fixes caption spelling.'],
   render_edit: ['Video', 'Makes the edited video in your format, with captions and levelled sound.'],
   package: ['Title & thumbnail', 'Writes the title, description and thumbnail text from what you said.'],
+  trends: ['Trends', "Searches the web for what's rising this week in your niche, with a hook for each."],
   fetch: ['Check video', 'Reads your video: length, shape and sound.'],
   listen: ['Transcript', 'Writes down what is said in the first 3 minutes.'],
   write_post: ['Posts', 'Writes a post for each connected platform from what is said in the video.'],
