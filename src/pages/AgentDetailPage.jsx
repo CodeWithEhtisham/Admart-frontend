@@ -9,6 +9,7 @@ import { AgentIcon, KindBadge, StatusBadge } from '../components/AgentBits.jsx'
 import AgentWorkflow, { HowItWorks } from '../components/AgentWorkflow.jsx'
 import {
   getDeployment,
+  isScheduled,
   listRuns,
   runStatusText,
   runTitle,
@@ -65,7 +66,7 @@ export default function AgentDetailPage() {
     return () => window.removeEventListener(PROJECT_CHANGE_EVENT, leave)
   }, [navigate, projectId])
 
-  const working = runs.some((r) => OPEN.includes(r.status))
+  const working = runs.some((r) => OPEN.includes(r.status) && !isScheduled(r))
   const autopilot = Boolean(deployment?.autopilot)
   useEffect(() => {
     // Fast while something runs; slow with Autopilot on, so scheduled runs appear without a reload.
@@ -80,10 +81,21 @@ export default function AgentDetailPage() {
   const agent = deployment?.agent
   const isText = agent?.inputKind === 'text'
   const canAutoTopic = !isText && Boolean(deployment?.config?.niche)
+  // Same conditions as the sections AgentSettingsDialog shows.
+  const hasSettings = Boolean(
+    agent &&
+      ((agent.kind === 'large' && agent.inputKind !== 'video') ||
+        agent.review ||
+        agent.styles?.length ||
+        agent.voices?.length ||
+        agent.tones?.length ||
+        agent.lengths?.length ||
+        agent.formats?.length),
+  )
   const selected =
     runs.find((r) => r.id === searchParams.get('run')) ||
     runs.find((r) => r.status === 'needs_review') ||
-    runs.find((r) => OPEN.includes(r.status)) ||
+    runs.find((r) => OPEN.includes(r.status) && !isScheduled(r)) ||
     runs[0]
   const select = (id) => setSearchParams({ run: id }, { replace: true })
 
@@ -188,13 +200,15 @@ export default function AgentDetailPage() {
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowSettings(true)}
-                  className="rounded-xl border border-border-default px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary"
-                >
-                  Settings
-                </button>
+                {hasSettings ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowSettings(true)}
+                    className="rounded-xl border border-border-default px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary"
+                  >
+                    Settings
+                  </button>
+                ) : null}
                 <button
                   type="button"
                   onClick={() => setStatus(deployment.status === 'active' ? 'paused' : 'active')}

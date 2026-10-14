@@ -69,6 +69,11 @@ export const AGENT_STEPS = {
   plan_edit: ['Edit plan', 'Finds pauses, um/uh, restarts and bad frames to cut, and fixes caption spelling.'],
   render_edit: ['Video', 'Makes the edited video in your format, with captions and levelled sound.'],
   package: ['Title & thumbnail', 'Writes the title, description and thumbnail text from what you said.'],
+  fetch: ['Check video', 'Reads your video: length, shape and sound.'],
+  listen: ['Transcript', 'Writes down what is said in the first 3 minutes.'],
+  write_post: ['Posts', 'Writes a post for each connected platform from what is said in the video.'],
+  wait: ['Scheduled', 'Waits until the time you picked.'],
+  post: ['Post', 'Posts it to each platform you picked.'],
   review: ['Your review', 'You watch it and decide. Nothing is posted without you.'],
 }
 
@@ -85,7 +90,14 @@ export function runTitle(run) {
   return run.title || run.concept?.title || run.input.topic || run.input.title || (run.input.auto ? 'Agent is picking a topic…' : (run.input.text || '').slice(0, 80))
 }
 
+/** A Cross-poster run waiting for its scheduled time. */
+export const isScheduled = (run) => run.status === 'queued' && run.step === 'wait'
+
+export const whenText = (iso) =>
+  new Date(iso).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+
 export function runStatusText(run) {
+  if (isScheduled(run) && run.postAt) return `Scheduled: ${whenText(run.postAt)}`
   if (run.status === 'running') return `Working: ${AGENT_STEPS[run.step]?.[0] || 'getting started'}`
   return STATUS_TEXT[run.status] || run.status
 }

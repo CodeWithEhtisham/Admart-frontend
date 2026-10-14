@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AGENT_STEPS as STEPS, runStatusText, runTitle } from '../utils/agents'
+import { AGENT_STEPS as STEPS, PLATFORM_NAMES, isScheduled, runStatusText, runTitle, whenText } from '../utils/agents'
 import { formatCredits } from '../utils/credits'
 import {
   ConceptPicker,
@@ -14,6 +14,7 @@ import {
   TitleCheck,
 } from './AgentRunViews.jsx'
 import AgentEditReview from './AgentEditReview.jsx'
+import AgentPostReview from './AgentPostReview.jsx'
 
 const SERVICES = {
   openrouter: 'OpenRouter',
@@ -28,8 +29,8 @@ const SERVICES = {
   local: 'Whisper',
 }
 // A run paused at a check-in shows it on the step that made the thing to check.
-const WAITING_ON = { concept: 'concepts', script: 'script', storyboard: 'visuals', edit: 'plan_edit', final: 'review' }
-const GATE_STEP = { concept: 'pick_concept', script: 'review_script', storyboard: 'review_storyboard', edit: 'review_edit' }
+const WAITING_ON = { concept: 'concepts', script: 'script', storyboard: 'visuals', edit: 'plan_edit', post: 'write_post', final: 'review' }
+const GATE_STEP = { concept: 'pick_concept', script: 'review_script', storyboard: 'review_storyboard', edit: 'review_edit', post: 'review_post' }
 const AUDIO_NAMES = { basic: 'Basic', standard: 'Standard', studio: 'Studio' }
 const STUCK_MS = 60 * 1000
 
@@ -59,7 +60,20 @@ function stepStates(run, steps) {
 
 function summary(step, run) {
   const cutCount = (run.cuts || []).filter((c) => !c.keep).length
+  const sent = Object.entries(run.posted || {})
   switch (step) {
+    case 'fetch':
+      return run.sourceSeconds ? `${seconds(run.sourceSeconds)} video${run.short ? ' · Short' : ''}` : 'Video checked'
+    case 'listen':
+      return run.transcript?.length ? `${run.transcript.length} words` : 'No speech found'
+    case 'write_post':
+      return `${Object.keys(run.posts || {}).length} posts written`
+    case 'wait':
+      return run.postAt ? `Posted on time (${whenText(run.postAt)})` : 'Posted right away'
+    case 'post':
+      return sent
+        .map(([p, r]) => `${PLATFORM_NAMES[p]} ${r.status === 'succeeded' ? '✓' : r.status === 'unknown' ? '?' : '✗'}`)
+        .join(' · ')
     case 'prepare':
       return run.sourceSeconds ? `${seconds(run.sourceSeconds)} video` : 'Video checked'
     case 'transcribe':
@@ -189,9 +203,51 @@ function EditDetails({ step, run, waiting, busy, act }) {
   return null
 }
 
+function PostDetails({ step, run, waiting, busy, act }) {
+  if (step === 'fetch') {
+    return run.sourceUrl ? <video src={run.sourceUrl} controls playsInline className="max-h-80 w-full max-w-sm rounded-xl bg-black" /> : null
+  }
+  if (step === 'listen') {
+    return <p className="max-h-48 overflow-y-auto text-text-secondary">{run.transcript.map((w) => w.word).join(' ')}</p>
+  }
+  if (step === 'write_post') {
+    if (waiting) return <AgentPostReview run={run} busy={busy} onContinue={(p) => act('continue', p)} onDiscard={() => act('discard')} />
+    return (
+      <ul className="space-y-2 text-sm">
+        {(run.chosen || []).map((p) => (
+          <li key={p} className="rounded-xl border border-border-default bg-input p-3">
+            <span className="text-xs font-semibold text-text-tertiary">{PLATFORM_NAMES[p]}</span>
+            <p className="mt-1 whitespace-pre-line">{p === 'youtube' ? run.posts.youtube.title : run.posts[p]?.caption}</p>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+  if (step === 'post') {
+    return (
+      <ul className="space-y-1 text-sm">
+        {Object.entries(run.posted).map(([p, r]) => (
+          <li key={p} className={r.status === 'succeeded' ? 'text-success-text' : 'text-danger'}>
+            {r.status === 'succeeded' ? '✓' : '✗'} {PLATFORM_NAMES[p]}
+            {r.error ? `: ${r.error}` : ''}
+          </li>
+        ))}
+        <li>
+          <Link to="/calendar" className="text-xs font-medium text-link hover:underline">
+            See it in the Calendar →
+          </Link>
+        </li>
+      </ul>
+    )
+  }
+  return null
+}
+
+const POST_STEPS = ['fetch', 'listen', 'write_post', 'post']
 const EDIT_STEPS = ['prepare', 'transcribe', 'clean_audio', 'plan_edit', 'render_edit', 'package']
 
 function Details({ step, run, agent, waiting, busy, act, onApprove }) {
+  if (POST_STEPS.includes(step)) return <PostDetails step={step} run={run} waiting={waiting} busy={busy} act={act} />
   if (EDIT_STEPS.includes(step)) return <EditDetails step={step} run={run} waiting={waiting} busy={busy} act={act} />
   if (step === 'research') return <Research research={run.research} open />
   if (step === 'concepts') {
@@ -312,6 +368,10 @@ function Details({ step, run, agent, waiting, busy, act, onApprove }) {
 }
 
 function hasDetails(step, run) {
+  if (step === 'fetch') return Boolean(run.sourceUrl)
+  if (step === 'listen') return run.transcript?.length > 0
+  if (step === 'write_post') return Boolean(run.posts && Object.keys(run.posts).length)
+  if (step === 'post') return Boolean(run.posted && Object.keys(run.posted).length)
   if (step === 'prepare') return Boolean(run.sourceUrl)
   if (step === 'transcribe') return run.transcript?.length > 0
   if (step === 'clean_audio') return Boolean(run.audioCleanUrl)
@@ -333,7 +393,12 @@ function StepRow({ step, state, run, agent, entry, busy, act, onApprove }) {
   const reached = state !== 'todo' && state !== 'queued'
   const expandable = reached && hasDetails(step, run)
   const shown = expandable && (open || auto)
-  const note = state === 'done' ? summary(step, run) : STATE_TEXT[state] || help
+  const note =
+    state === 'done'
+      ? summary(step, run)
+      : step === 'wait' && isScheduled(run) && run.postAt
+        ? `Posts ${whenText(run.postAt)}`
+        : STATE_TEXT[state] || help
   const extra = state === 'working' && ['voice', 'visuals'].includes(step) ? summary(step, run) : ''
 
   return (
@@ -374,7 +439,7 @@ export default function AgentWorkflow({ run, agent, busy, now, onAction, onAppro
   const steps = [...(agent?.steps || []), ...(agent?.review ? ['review'] : [])]
   const states = stepStates(run, steps)
   const act = (action, payload) => onAction(run, action, payload)
-  const stuck = run.status === 'queued' && now - new Date(run.updatedAt || run.createdAt).getTime() > STUCK_MS
+  const stuck = run.status === 'queued' && !isScheduled(run) && now - new Date(run.updatedAt || run.createdAt).getTime() > STUCK_MS
 
   return (
     <article className="rounded-2xl border border-border-default bg-surface p-5">
@@ -393,6 +458,22 @@ export default function AgentWorkflow({ run, agent, busy, now, onAction, onAppro
         <p className="mt-3 text-xs text-warning">
           Still waiting to start. The agents worker may not be running. Your credits are refunded if it fails.
         </p>
+      ) : null}
+
+      {isScheduled(run) ? (
+        <div className="mt-3 flex flex-col gap-3 rounded-xl border border-accent-blue/40 bg-accent-blue/5 px-4 py-3 sm:flex-row sm:items-center">
+          <p className="min-w-0 flex-1 text-sm">
+            Scheduled for <span className="font-semibold">{whenText(run.postAt)}</span>. The posts go out by themselves then.
+          </p>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => act('discard')}
+            className="self-start rounded-xl border border-border-default bg-surface px-4 py-2 text-sm font-medium text-text-secondary hover:text-danger disabled:opacity-50"
+          >
+            Cancel (credits refunded)
+          </button>
+        </div>
       ) : null}
 
       {run.status === 'failed' ? (

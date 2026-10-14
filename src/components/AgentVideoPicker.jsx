@@ -28,7 +28,8 @@ export default function AgentVideoPicker({ agent, config, projectId, busy, pause
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
   const fileInput = useRef(null)
-  const max = agent.maxSeconds || 180
+  const max = agent.maxSeconds // only the Video Editor has a length limit
+  const perMinuteAgent = agent.creditUnit === 'minute'
 
   useEffect(() => {
     listLibraryAssets('video', { projectId, limit: 24 })
@@ -40,7 +41,7 @@ export default function AgentVideoPicker({ agent, config, projectId, busy, pause
     if (!file) return
     setError('')
     const length = await fileSeconds(file)
-    if (length && length > max + 1) {
+    if (max && length && length > max + 1) {
       setError(`This video is ${formatDuration(length)} long. The Video Editor takes videos up to ${max / 60} minutes.`)
       return
     }
@@ -62,12 +63,18 @@ export default function AgentVideoPicker({ agent, config, projectId, busy, pause
   const perMinute = Number(level?.creditsPerMinute ?? agent.estimatedCredits ?? 0)
   const chosen = videos?.find((v) => v.id === selected)
   const length = seconds[selected] ?? chosen?.durationSeconds
-  const estimate = length ? `About ${formatCredits(perMinute * Math.max(length, 1) / 60)} credits for this video.` : `About ${formatCredits(perMinute)} credits per minute of video.`
+  const estimate = !perMinuteAgent
+    ? `About ${formatCredits(agent.estimatedCredits)} credits.`
+    : length
+      ? `About ${formatCredits(perMinute * Math.max(length, 1) / 60)} credits for this video.`
+      : `About ${formatCredits(perMinute)} credits per minute of video.`
 
   return (
     <section className="rounded-2xl border border-border-default bg-surface p-4">
-      <h2 className="font-heading text-[1rem] font-semibold">Edit a video</h2>
-      <p className="mt-1 text-sm text-text-tertiary">Pick a video from your Library or upload one (up to {max / 60} minutes).</p>
+      <h2 className="font-heading text-[1rem] font-semibold">{max ? 'Edit a video' : 'Post a video'}</h2>
+      <p className="mt-1 text-sm text-text-tertiary">
+        Pick a video from your Library or upload one{max ? ` (up to ${max / 60} minutes)` : ''}.
+      </p>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <input
@@ -120,7 +127,7 @@ export default function AgentVideoPicker({ agent, config, projectId, busy, pause
           onClick={() => onStart({ assetId: selected })}
           className="rounded-xl gradient-bg px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/25 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {busy ? 'Starting…' : 'Edit this video'}
+          {busy ? 'Starting…' : max ? 'Edit this video' : 'Write the posts'}
         </button>
         <span className="text-xs text-text-tertiary">{paused ? 'This agent is paused. Resume it to run.' : `${estimate} Refunded if it fails.`}</span>
       </div>

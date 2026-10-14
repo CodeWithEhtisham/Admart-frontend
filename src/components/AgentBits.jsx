@@ -5,6 +5,8 @@ const AGENT_GLYPHS = {
   'youtube-shorts': Glyphs.film,
   'script-writer': Glyphs.pencil,
   voiceover: Glyphs.volume,
+  'video-editor': Glyphs.camera,
+  'cross-poster': Glyphs.send,
 }
 
 export function AgentIcon({ slug, kind }) {
