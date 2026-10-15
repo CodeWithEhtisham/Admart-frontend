@@ -56,7 +56,9 @@ export default function PrivacyPage() {
             <strong>YouTube (Google):</strong> permissions to manage your YouTube account and upload videos. We use them
             to show which channel is connected, upload the videos you approve with the title, description, tags, privacy
             and thumbnail you set, add them to a playlist you pick, and show view, like and comment counts for videos
-            published through Admart.
+            published through Admart. With the YouTube Analytics permissions we read your channel's views, watch time,
+            subscribers gained and lost, top videos and, for monetized channels, estimated revenue, only to build the
+            Growth Reports you ask for.
           </li>
           <li>
             <strong>Facebook and Instagram (Meta):</strong> permissions to list your Facebook Pages and linked Instagram
@@ -76,7 +78,10 @@ export default function PrivacyPage() {
         </ul>
         <p className="mt-3">
           View, like and comment counts are fetched from the platform when you open Analytics or the Calendar, and are not
-          stored by us. We keep the ID and link of each post you publish so you can find it again.
+          stored by us. We keep the ID and link of each post you publish so you can find it again. If you use the Growth
+          Report agent, each report keeps the numbers it shows (including YouTube Analytics and revenue) so you can look
+          back at it. We check access again every time a report runs, and disconnecting YouTube removes the YouTube
+          numbers from your saved reports.
         </p>
       </section>
 
@@ -87,7 +92,7 @@ export default function PrivacyPage() {
           <li>To post at the time you choose when you schedule a post. Nothing is posted without your approval.</li>
           <li>To manage your plan and credits, and to review and confirm payments.</li>
           <li>To keep the service secure, prevent abuse, and fix problems.</li>
-          <li>To send account emails such as password reset links.</li>
+          <li>To send account emails such as password reset links, and the Growth Reports you schedule, to your email and any addresses you add.</li>
         </ul>
         <p className="mt-3">We do not sell your personal information and we do not use it for advertising.</p>
       </section>

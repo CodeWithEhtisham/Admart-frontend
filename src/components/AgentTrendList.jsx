@@ -1,8 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { listDeployments, startRun, updateDeployment } from '../utils/agents'
-import { getCredits, notifyCreditsChanged } from '../utils/credits'
-import { getCachedActiveProject } from '../utils/projects'
+import { Link } from 'react-router-dom'
+import useShortsAgent from '../utils/useShortsAgent'
 import { HookScore } from './AgentRunViews.jsx'
 
 const btn =
@@ -10,48 +7,7 @@ const btn =
 
 /** Trend Finder results: each trend can start a Short or join the Shorts agent's Autopilot queue. */
 export default function AgentTrendList({ run }) {
-  const navigate = useNavigate()
-  const projectId = getCachedActiveProject()?.id
-  const [shorts, setShorts] = useState(undefined) // the project's Shorts agent, null if none
-  const [busy, setBusy] = useState('')
-  const [queued, setQueued] = useState(() => new Set())
-  const [error, setError] = useState('')
-
-  useEffect(() => {
-    if (!projectId) return
-    listDeployments(projectId)
-      .then((rows) => setShorts(rows.find((d) => d.agentType === 'youtube-shorts') || null))
-      .catch(() => setShorts(null))
-  }, [projectId])
-
-  useEffect(() => {
-    if (shorts) setQueued(new Set(shorts.topicQueue || []))
-  }, [shorts])
-
-  const makeShort = async (topic) => {
-    setBusy(topic)
-    setError('')
-    try {
-      const created = await startRun(projectId, shorts.id, { topic })
-      getCredits().then(notifyCreditsChanged).catch(() => {})
-      navigate(`/agents/${shorts.id}?run=${created.id}`)
-    } catch (err) {
-      setError(err.response?.data?.message || 'Could not start the Short.')
-      setBusy('')
-    }
-  }
-
-  const addToAutopilot = async (topic) => {
-    setBusy(topic)
-    setError('')
-    try {
-      setShorts(await updateDeployment(projectId, shorts.id, { topicQueue: [...(shorts.topicQueue || []), topic] }))
-    } catch (err) {
-      setError(err.response?.data?.message || 'Could not add it to Autopilot.')
-    } finally {
-      setBusy('')
-    }
-  }
+  const { shorts, queued, busy, error, makeShort, addToAutopilot } = useShortsAgent()
 
   return (
     <div className="space-y-3 text-sm">

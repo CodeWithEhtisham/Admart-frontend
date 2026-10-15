@@ -5,6 +5,7 @@ import Topbar from '../components/Topbar'
 import AgentAutopilot from '../components/AgentAutopilot.jsx'
 import AgentSettingsDialog from '../components/AgentSettingsDialog.jsx'
 import AgentVideoPicker from '../components/AgentVideoPicker.jsx'
+import AgentReportSchedule from '../components/AgentReportSchedule.jsx'
 import { AgentIcon, KindBadge, StatusBadge } from '../components/AgentBits.jsx'
 import AgentWorkflow, { HowItWorks } from '../components/AgentWorkflow.jsx'
 import {
@@ -255,7 +256,27 @@ export default function AgentDetailPage() {
           {deployment ? (
             <div className="grid items-start gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
               <aside className="space-y-4">
-              {agent?.inputKind === 'video' ? (
+              {agent?.inputKind === 'report' ? (
+                <section className="rounded-2xl border border-border-default bg-surface p-4">
+                  <h2 className="font-heading text-[1rem] font-semibold">Get a report now</h2>
+                  <p className="mt-1 text-sm text-text-tertiary">
+                    Covers the last {deployment.config?.period || 7} days and plans the next {deployment.config?.period || 7}.
+                  </p>
+                  <button
+                    type="button"
+                    disabled={busy || deployment.status !== 'active'}
+                    onClick={() => start({})}
+                    className="mt-3 rounded-xl gradient-bg px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/25 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {busy ? 'Starting…' : 'Make the report'}
+                  </button>
+                  <p className="mt-2 text-xs text-text-tertiary">
+                    {deployment.status === 'active'
+                      ? `About ${formatCredits(agent.estimatedCredits)} credits. Refunded if it fails.`
+                      : 'This agent is paused. Resume it to run.'}
+                  </p>
+                </section>
+              ) : agent?.inputKind === 'video' ? (
                 <AgentVideoPicker
                   agent={agent}
                   config={deployment.config}
@@ -365,6 +386,15 @@ export default function AgentDetailPage() {
                 )}
               </div>
             </div>
+          ) : null}
+
+          {agent?.inputKind === 'report' && deployment ? (
+            <AgentReportSchedule
+              key={deployment.id}
+              deployment={deployment}
+              agent={agent}
+              onSave={async (payload) => setDeployment(await updateDeployment(projectId, deploymentId, payload))}
+            />
           ) : null}
 
           {agent?.inputKind === 'topic' && !agent.steps.includes('trends') && deployment ? (
