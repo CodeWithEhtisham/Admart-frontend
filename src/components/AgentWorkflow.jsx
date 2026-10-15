@@ -17,6 +17,7 @@ import AgentEditReview from './AgentEditReview.jsx'
 import AgentPostReview from './AgentPostReview.jsx'
 import AgentTrendList from './AgentTrendList.jsx'
 import { ClipPicker, ClipResults } from './AgentClipReview.jsx'
+import AgentReport from './AgentReport.jsx'
 
 const SERVICES = {
   openrouter: 'OpenRouter',
@@ -66,6 +67,12 @@ function summary(step, run) {
   switch (step) {
     case 'trends':
       return `${run.trends?.length || 0} trends found`
+    case 'collect':
+      return run.numbers ? `${run.numbers.start} to ${run.numbers.end}` : ''
+    case 'analyze':
+      return run.report ? `${run.report.plan.length} posts planned` : ''
+    case 'deliver':
+      return run.emailError || (run.sentTo?.length ? `Sent to ${run.sentTo.join(', ')}` : '')
     case 'fetch':
       return run.sourceSeconds ? `${seconds(run.sourceSeconds)} video${run.short ? ' · Short' : ''}` : 'Video checked'
     case 'listen':
@@ -306,6 +313,7 @@ const EDIT_STEPS = ['prepare', 'transcribe', 'clean_audio', 'plan_edit', 'render
 function Details({ step, run, agent, waiting, busy, act, onApprove }) {
   if (step === 'trends') return <AgentTrendList run={run} />
   if (CLIP_STEPS.includes(step)) return <ClipDetails step={step} run={run} waiting={waiting} busy={busy} act={act} />
+  if (step === 'analyze') return <AgentReport run={run} />
   if (POST_STEPS.includes(step)) return <PostDetails step={step} run={run} waiting={waiting} busy={busy} act={act} />
   if (EDIT_STEPS.includes(step)) return <EditDetails step={step} run={run} waiting={waiting} busy={busy} act={act} />
   if (step === 'research') return <Research research={run.research} open />
@@ -433,6 +441,7 @@ function hasDetails(step, run) {
   if (step === 'find_clips') return run.moments?.length > 0
   if (step === 'render_clips') return run.clips?.length > 0
   if (step === 'finish_clips') return true
+  if (step === 'analyze') return Boolean(run.report)
   if (step === 'fetch') return Boolean(run.sourceUrl)
   if (step === 'listen') return run.transcript?.length > 0
   if (step === 'write_post') return Boolean(run.posts && Object.keys(run.posts).length)
@@ -453,7 +462,7 @@ function hasDetails(step, run) {
 
 function StepRow({ step, state, run, agent, entry, busy, act, onApprove }) {
   const auto = state === 'waiting' || (step === 'review' && run.status === 'needs_review')
-  const [open, setOpen] = useState(auto || step === 'trends') // the trends are the whole result
+  const [open, setOpen] = useState(auto || ['trends', 'analyze'].includes(step)) // the result itself
   const [label, help] = STEPS[step] || [step, '']
   const reached = state !== 'todo' && state !== 'queued'
   const expandable = reached && hasDetails(step, run)
