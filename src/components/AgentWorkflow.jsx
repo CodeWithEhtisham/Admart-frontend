@@ -135,6 +135,13 @@ function summary(step, run) {
   }
 }
 
+/** "downloading the video: 25% · 44 KB/s · about 55 min left" */
+function downloadText({ part, percent, speed, eta }) {
+  const rate = speed >= 1024 * 1024 ? `${(speed / 1024 / 1024).toFixed(1)} MB/s` : `${Math.round(speed / 1024)} KB/s`
+  const left = eta == null ? '' : eta < 90 ? ` · about ${Math.max(1, Math.round(eta))}s left` : ` · about ${Math.round(eta / 60)} min left`
+  return `downloading the ${part}: ${percent}%${speed ? ` · ${rate}` : ''}${left}`
+}
+
 function meta(entry) {
   if (!entry) return ''
   const took = (new Date(entry.finishedAt) - new Date(entry.startedAt)) / 1000
@@ -457,7 +464,12 @@ function StepRow({ step, state, run, agent, entry, busy, act, onApprove }) {
       : step === 'wait' && isScheduled(run) && run.postAt
         ? `Posts ${whenText(run.postAt)}`
         : STATE_TEXT[state] || help
-  const extra = state === 'working' && ['voice', 'visuals'].includes(step) ? summary(step, run) : ''
+  const extra =
+    state === 'working' && ['voice', 'visuals'].includes(step)
+      ? summary(step, run)
+      : state === 'working' && step === 'get_video' && run.download
+        ? downloadText(run.download)
+        : ''
 
   return (
     <li className="group relative pb-5 pl-10 last:pb-0">
@@ -498,6 +510,9 @@ export default function AgentWorkflow({ run, agent, busy, now, onAction, onAppro
   const states = stepStates(run, steps)
   const act = (action, payload) => onAction(run, action, payload)
   const stuck = run.status === 'queued' && !isScheduled(run) && now - new Date(run.updatedAt || run.createdAt).getTime() > STUCK_MS
+  const [confirmCancel, setConfirmCancel] = useState(false)
+  // A job that is waiting or working can be stopped, except while it is posting.
+  const cancellable = ['queued', 'running'].includes(run.status) && !isScheduled(run) && !(run.status === 'running' && run.step === 'post')
 
   return (
     <article className="rounded-2xl border border-border-default bg-surface p-5">
@@ -510,7 +525,35 @@ export default function AgentWorkflow({ run, agent, busy, now, onAction, onAppro
           </p>
         </div>
         <span className="rounded-full border border-border-default px-2.5 py-0.5 text-xs font-semibold text-text-secondary">{runStatusText(run)}</span>
+        {cancellable ? (
+          confirmCancel ? (
+            <span className="flex items-center gap-2">
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => act('discard')}
+                className="rounded-lg border border-error/50 px-3 py-1 text-xs font-semibold text-danger hover:bg-error/10 disabled:opacity-50"
+              >
+                Yes, stop it
+              </button>
+              <button type="button" onClick={() => setConfirmCancel(false)} className="text-xs text-text-secondary hover:text-text-primary">
+                Keep going
+              </button>
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setConfirmCancel(true)}
+              className="rounded-lg border border-border-default px-3 py-1 text-xs font-medium text-text-secondary hover:text-danger"
+            >
+              Cancel
+            </button>
+          )
+        ) : null}
       </div>
+      {confirmCancel && cancellable ? (
+        <p className="mt-2 text-xs text-text-tertiary">Stops within a few seconds and refunds the credits.</p>
+      ) : null}
 
       {stuck ? (
         <p className="mt-3 text-xs text-warning">
