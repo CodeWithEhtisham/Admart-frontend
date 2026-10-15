@@ -181,6 +181,37 @@ export default function AgentStylePicker({ agent, value, onChange }) {
               })}
             </div>
           </Group>
+          <Group label="Caption style">
+            <div className="flex flex-wrap gap-1.5">
+              {agent.captionStyles.map((c) => {
+                const [name, hint] = c.label.split(' · ')
+                const on = (value.captionStyle || 'classic') === c.id
+                return (
+                  <button key={c.id} type="button" aria-pressed={on} title={hint} onClick={() => onChange({ captionStyle: c.id })} className={chip(on)}>
+                    {name}
+                  </button>
+                )
+              })}
+            </div>
+            <p className="mt-1 text-xs text-text-tertiary">
+              {(agent.captionStyles.find((c) => c.id === (value.captionStyle || 'classic'))?.label || '').split(' · ')[1]}
+            </p>
+          </Group>
+          <Group label="Pace">
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                [false, 'As spoken'],
+                [true, 'Tighten'],
+              ].map(([on, name]) => (
+                <button key={name} type="button" aria-pressed={Boolean(value.tighten) === on} onClick={() => onChange({ tighten: on })} className={chip(Boolean(value.tighten) === on)}>
+                  {name}
+                </button>
+              ))}
+            </div>
+            <p className="mt-1 text-xs text-text-tertiary">
+              {value.tighten ? 'Cuts long pauses and um/uh inside each clip; captions follow.' : 'Keeps every pause, exactly as said.'}
+            </p>
+          </Group>
           <Group label="Framing">
             <div className="grid gap-2 sm:grid-cols-2">
               {agent.layouts.map((l) => {

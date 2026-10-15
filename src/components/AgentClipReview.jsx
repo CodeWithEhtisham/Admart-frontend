@@ -30,9 +30,10 @@ export function ClipPicker({ run, busy, onContinue, onDiscard }) {
   const player = useRef(null)
   const stopAt = useRef(null)
   const [items, setItems] = useState(() =>
-    run.moments.map((m, index) => ({ index, keep: m.keep !== false, start: m.start, end: m.end, hook: m.hook || '' })),
+    run.moments.map((m, index) => ({ index, keep: m.keep !== false, start: m.start, end: m.end, hook: m.hook || '', captions: m.text })),
   )
   const [playing, setPlaying] = useState(null)
+  const [editing, setEditing] = useState(null)
   const set = (index, patch) => setItems((prev) => prev.map((it) => (it.index === index ? { ...it, ...patch } : it)))
   const chosen = items.filter((it) => it.keep).length
   const invalid = items.some((it) => it.keep && !(it.end - it.start >= 3 && it.end - it.start <= 180 && it.start >= 0))
@@ -99,7 +100,27 @@ export function ClipPicker({ run, busy, onContinue, onDiscard }) {
                   <p className="mt-0.5 text-xs text-text-tertiary">
                     {clock(it.start)}–{clock(it.end)} · {Math.round(it.end - it.start)}s{m.reason ? ` · ${m.reason}` : ''}
                   </p>
-                  <p className="mt-2 line-clamp-3 text-text-secondary">“{m.text}”</p>
+                  {editing === it.index ? (
+                    <label className="mt-2 block text-xs text-text-tertiary">
+                      Captions: fix any misheard word. Timing stays matched to the speech.
+                      <textarea
+                        rows={4}
+                        maxLength={5000}
+                        value={it.captions}
+                        onChange={(e) => set(it.index, { captions: e.target.value })}
+                        className={`mt-1 ${input}`}
+                      />
+                    </label>
+                  ) : (
+                    <p className="mt-2 line-clamp-3 text-text-secondary">“{it.captions}”</p>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setEditing(editing === it.index ? null : it.index)}
+                    className="mt-1 text-xs font-medium text-text-secondary hover:text-text-primary"
+                  >
+                    {editing === it.index ? 'Done editing captions' : 'Edit captions'}
+                  </button>
 
                   <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto_auto]">
                     <label className="block text-xs text-text-tertiary">
@@ -150,7 +171,11 @@ export function ClipPicker({ run, busy, onContinue, onDiscard }) {
         <button
           type="button"
           disabled={busy || !chosen || invalid}
-          onClick={() => onContinue({ clips: items })}
+          onClick={() =>
+            onContinue({
+              clips: items.map(({ captions, ...it }) => (captions.trim() && captions !== run.moments[it.index].text ? { ...it, captions } : it)),
+            })
+          }
           className="rounded-xl gradient-bg px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-accent-blue/25 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {chosen === 1 ? 'Make 1 clip' : `Make ${chosen} clips`}
