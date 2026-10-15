@@ -184,7 +184,7 @@ export default function AgentStylePicker({ agent, value, onChange }) {
           <Group label="Framing">
             <div className="grid gap-2 sm:grid-cols-2">
               {agent.layouts.map((l) => {
-                const on = (value.layout || 'crop') === l.id
+                const on = (value.layout || 'auto') === l.id
                 const [name, use] = l.label.split(' (')
                 return (
                   <button
