@@ -6,6 +6,8 @@ const ACCESS_KEY = 'accessToken'
 const REFRESH_KEY = 'refreshToken'
 const USER_KEY = 'user'
 const GOOGLE_STATE_KEY = 'admart.googleOAuthState'
+// The active project belongs to one user: it is forgotten whenever the session ends or the user changes.
+export const ACTIVE_PROJECT_KEY = 'admart_activeProject'
 
 export const AUTH_CHANGE_EVENT = 'admart:auth-change'
 
@@ -62,6 +64,10 @@ export function persistSession(data) {
   const refresh = data.refreshToken || data.refresh
   if (!access) throw new Error('No access token returned.')
 
+  const previous = getStoredUser()
+  if (data.user && (previous?.id ?? previous?.email) !== (data.user.id ?? data.user.email)) {
+    window.localStorage.removeItem(ACTIVE_PROJECT_KEY)
+  }
   window.localStorage.setItem(ACCESS_KEY, access)
   if (refresh) window.localStorage.setItem(REFRESH_KEY, refresh)
   if (data.user) window.localStorage.setItem(USER_KEY, JSON.stringify(data.user))
@@ -72,6 +78,7 @@ export function clearSession() {
   window.localStorage.removeItem(ACCESS_KEY)
   window.localStorage.removeItem(REFRESH_KEY)
   window.localStorage.removeItem(USER_KEY)
+  window.localStorage.removeItem(ACTIVE_PROJECT_KEY)
   notifyAuthChanged()
 }
 
