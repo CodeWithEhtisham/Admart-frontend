@@ -26,6 +26,7 @@ export default function AgentVideoPicker({ agent, config, projectId, busy, pause
   const [selected, setSelected] = useState('')
   const [seconds, setSeconds] = useState({})
   const [uploading, setUploading] = useState(false)
+  const [progress, setProgress] = useState(null)
   const [error, setError] = useState('')
   const fileInput = useRef(null)
   const max = typeof agent.maxSeconds === 'number' ? agent.maxSeconds : null // the Video Editor's limit
@@ -48,7 +49,7 @@ export default function AgentVideoPicker({ agent, config, projectId, busy, pause
     }
     setUploading(true)
     try {
-      const asset = await uploadLibraryMedia(file, projectId)
+      const asset = await uploadLibraryMedia(file, projectId, setProgress)
       setVideos((prev) => [asset, ...(prev || [])])
       setSelected(asset.id)
       if (length) setSeconds((prev) => ({ ...prev, [asset.id]: length }))
@@ -56,6 +57,7 @@ export default function AgentVideoPicker({ agent, config, projectId, busy, pause
       setError(err.response?.data?.message || 'Could not upload the video.')
     } finally {
       setUploading(false)
+      setProgress(null)
       if (fileInput.current) fileInput.current.value = ''
     }
   }
@@ -94,7 +96,7 @@ export default function AgentVideoPicker({ agent, config, projectId, busy, pause
           htmlFor="agent-video-upload"
           className={`cursor-pointer rounded-xl border border-border-default px-3 py-2 text-sm font-medium text-text-secondary hover:text-text-primary ${uploading ? 'pointer-events-none opacity-50' : ''}`}
         >
-          {uploading ? 'Uploading…' : '↑ Upload a video'}
+          {uploading ? (progress != null ? `Uploading… ${Math.floor(progress * 100)}%` : 'Uploading…') : '↑ Upload a video'}
         </label>
       </div>
 

@@ -137,10 +137,57 @@ export function libraryUploadAccept() {
 /**
  * POST /api/projects/:projectId/library/uploads — user image or video.
  */
-export async function uploadLibraryMedia(file, projectId) {
+const LARGE_VIDEO_BYTES = 100 * 1024 * 1024
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+/**
+ * Long videos: resumable upload in chunks (start → PUT chunks → finish). A dropped connection is
+ * retried and continues from the last chunk the server has. onProgress gets 0..1.
+ */
+async function uploadLargeVideo(file, pid, onProgress) {
+  const base = `/api/projects/${pid}/library/uploads/large`
+  const { data: session } = await api.post(base, { fileName: file.name, size: file.size, contentType: file.type || 'video/mp4' })
+  let pos = session.received
+  let failures = 0
+  while (pos < file.size) {
+    const end = Math.min(pos + session.chunkBytes, file.size)
+    try {
+      const { data } = await api.put(`${base}/${session.id}`, file.slice(pos, end), {
+        headers: { 'Content-Type': 'application/octet-stream', 'Content-Range': `bytes ${pos}-${end - 1}/${file.size}` },
+      })
+      pos = data.received
+      failures = 0
+      onProgress?.(pos / file.size)
+    } catch (err) {
+      if (err.response?.status === 409) {
+        pos = err.response.data.received // the server already has more (or less): continue from there
+        continue
+      }
+      if (err.response && err.response.status < 500) throw err
+      failures += 1
+      if (failures > 6) throw err
+      await wait(Math.min(30000, 1000 * 2 ** failures)) // network hiccup: wait, then ask where to continue
+      try {
+        pos = (await api.get(`${base}/${session.id}`)).data.received
+      } catch {
+        // still offline: the loop retries
+      }
+    }
+  }
+  const { data } = await api.post(`${base}/${session.id}/finish`)
+  return data
+}
+
+export async function uploadLibraryMedia(file, projectId, onProgress) {
   const pid = projectId || getCachedActiveProject()?.id
   if (!pid) throw new Error('No active project.')
   if (!file) throw new Error('Choose an image or video file.')
+
+  if (file.type?.startsWith('video/') && file.size > LARGE_VIDEO_BYTES) {
+    const asset = normalizeLibraryAsset(await uploadLargeVideo(file, pid, onProgress))
+    notifyLibraryChanged({ projectId: pid, action: 'upload', assetId: asset?.id })
+    return asset
+  }
 
   const form = new FormData()
   form.append('file', file)
