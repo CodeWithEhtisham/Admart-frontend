@@ -51,6 +51,24 @@ export function formatDuration(seconds) {
   return `${m}:${String(r).padStart(2, '0')}`
 }
 
+/** Seconds of a local video file, read by the browser before uploading (null if unknown). */
+export function videoFileSeconds(file) {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file)
+    const video = document.createElement('video')
+    video.preload = 'metadata'
+    video.onloadedmetadata = () => {
+      URL.revokeObjectURL(url)
+      resolve(Number.isFinite(video.duration) ? video.duration : null)
+    }
+    video.onerror = () => {
+      URL.revokeObjectURL(url)
+      resolve(null)
+    }
+    video.src = url
+  })
+}
+
 function normalizeStatus(status) {
   const s = String(status || 'ready').toLowerCase()
   if (s === 'succeeded' || s === 'completed') return 'ready'

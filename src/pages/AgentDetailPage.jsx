@@ -5,7 +5,7 @@ import Topbar from '../components/Topbar'
 import AgentAutopilot from '../components/AgentAutopilot.jsx'
 import AgentSettingsDialog from '../components/AgentSettingsDialog.jsx'
 import AgentVideoPicker from '../components/AgentVideoPicker.jsx'
-import AgentClipSource from '../components/AgentClipSource.jsx'
+import AgentClipMaker from '../components/AgentClipMaker.jsx'
 import AgentReportSchedule from '../components/AgentReportSchedule.jsx'
 import { AgentIcon, KindBadge, StatusBadge } from '../components/AgentBits.jsx'
 import AgentWorkflow, { HowItWorks } from '../components/AgentWorkflow.jsx'
@@ -95,11 +95,14 @@ export default function AgentDetailPage() {
         agent.formats?.length ||
         agent.clipLengths?.length),
   )
-  const selected =
-    runs.find((r) => r.id === searchParams.get('run')) ||
+  const clipMaker = Boolean(agent?.clipLengths?.length)
+  const fresh = searchParams.get('run') === 'new' // the Clip Maker's start screen
+  const selected = fresh
+    ? null
+    : runs.find((r) => r.id === searchParams.get('run')) ||
     runs.find((r) => r.status === 'needs_review') ||
     runs.find((r) => OPEN.includes(r.status) && !isScheduled(r)) ||
-    runs[0]
+    (clipMaker ? null : runs[0])
   const select = (id) => setSearchParams({ run: id }, { replace: true })
 
   const run = (e) => {
@@ -114,6 +117,7 @@ export default function AgentDetailPage() {
       const created = await startRun(projectId, deploymentId, payload)
       setRuns((prev) => [created, ...prev])
       select(created.id)
+      if (clipMaker) window.scrollTo({ top: 0, behavior: 'smooth' })
       setValue('')
       getCredits().then(notifyCreditsChanged).catch(() => {})
     } catch (err) {
@@ -181,7 +185,7 @@ export default function AgentDetailPage() {
     <AppLayout>
       <div className="flex min-h-screen flex-col">
         <Topbar title={deployment?.name || 'Agent'} />
-        <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-5xl flex-1 space-y-6 p-4 text-text-primary sm:p-7">
+        <main id="main-content" tabIndex={-1} className={`mx-auto w-full ${clipMaker ? 'max-w-7xl' : 'max-w-5xl'} flex-1 space-y-6 p-4 text-text-primary sm:p-7`}>
           <Link to="/agents" className="text-sm text-text-secondary hover:text-text-primary">
             ← All agents
           </Link>
@@ -255,19 +259,25 @@ export default function AgentDetailPage() {
             </p>
           ) : null}
 
-          {deployment ? (
+          {deployment && clipMaker ? (
+            <AgentClipMaker
+              key={selected?.id || 'new'}
+              deployment={deployment}
+              runs={runs}
+              run={selected}
+              busy={busy}
+              now={now}
+              projectId={projectId}
+              onSelect={select}
+              onNew={() => select('new')}
+              onStart={start}
+              onAction={act}
+              onSaveConfig={async (config) => setDeployment(await updateDeployment(projectId, deploymentId, { config }))}
+            />
+          ) : deployment ? (
             <div className="grid items-start gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
               <aside className="space-y-4">
-              {agent?.clipLengths?.length ? (
-                <AgentClipSource
-                  agent={agent}
-                  config={deployment.config}
-                  projectId={projectId}
-                  busy={busy}
-                  paused={deployment.status !== 'active'}
-                  onStart={start}
-                />
-              ) : agent?.inputKind === 'report' ? (
+              {agent?.inputKind === 'report' ? (
                 <section className="rounded-2xl border border-border-default bg-surface p-4">
                   <h2 className="font-heading text-[1rem] font-semibold">Get a report now</h2>
                   <p className="mt-1 text-sm text-text-tertiary">

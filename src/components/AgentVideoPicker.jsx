@@ -1,24 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { formatCredits } from '../utils/credits'
-import { formatDuration, listLibraryAssets, uploadLibraryMedia } from '../utils/library'
-
-/** Seconds of a local video file, read by the browser before uploading (null if unknown). */
-function fileSeconds(file) {
-  return new Promise((resolve) => {
-    const url = URL.createObjectURL(file)
-    const video = document.createElement('video')
-    video.preload = 'metadata'
-    video.onloadedmetadata = () => {
-      URL.revokeObjectURL(url)
-      resolve(Number.isFinite(video.duration) ? video.duration : null)
-    }
-    video.onerror = () => {
-      URL.revokeObjectURL(url)
-      resolve(null)
-    }
-    video.src = url
-  })
-}
+import { formatDuration, listLibraryAssets, uploadLibraryMedia, videoFileSeconds } from '../utils/library'
 
 /** "Make a video": pick a library video or upload one, then start the Video Editor on it. */
 export default function AgentVideoPicker({ agent, config, projectId, busy, paused, onStart, title, action }) {
@@ -42,7 +24,7 @@ export default function AgentVideoPicker({ agent, config, projectId, busy, pause
   const upload = async (file) => {
     if (!file) return
     setError('')
-    const length = await fileSeconds(file)
+    const length = await videoFileSeconds(file)
     if (max && length && length > max + 1) {
       setError(`This video is ${formatDuration(length)} long. The Video Editor takes videos up to ${max / 60} minutes.`)
       return
