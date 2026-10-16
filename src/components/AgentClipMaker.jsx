@@ -92,6 +92,12 @@ function Progress({ run, agent, config, now, busy, act, onNew }) {
     ['Captions', optionName(agent?.captionStyles, config?.captionStyle || 'classic')],
     ['Framing', optionName(agent?.layouts, config?.layout || 'auto')],
     ['Pace', config?.tighten ? 'Tightened' : 'As spoken'],
+    [
+      'Language',
+      run.language
+        ? `${agent?.clipLanguages?.find((l) => l.id === run.language)?.label || run.language}${(config?.language || 'auto') === 'auto' ? ' (detected)' : ''}`
+        : agent?.clipLanguages?.find((l) => l.id === (config?.language || 'auto'))?.label || 'Detect automatically',
+    ],
   ]
 
   return (

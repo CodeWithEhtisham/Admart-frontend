@@ -14,7 +14,7 @@ const card = (on) =>
   `rounded-xl border text-left transition focus-visible:ring-2 focus-visible:ring-accent-blue ${
     on ? 'border-accent-blue bg-accent-blue/10' : 'border-border-default bg-input hover:border-accent-blue/40'
   }`
-const SETTING_KEYS = ['clipLength', 'clipCount', 'captionStyle', 'layout', 'tighten']
+const SETTING_DEFAULTS = { clipLength: 'medium', clipCount: 5, captionStyle: 'classic', layout: 'auto', tighten: false, language: 'auto' }
 const TABS = [
   ['link', 'YouTube link'],
   ['upload', 'Upload from computer'],
@@ -95,6 +95,7 @@ export default function AgentClipSource({ agent, config, projectId, runs, busy, 
     captionStyle: config?.captionStyle || 'classic',
     layout: config?.layout || 'auto',
     tighten: Boolean(config?.tighten),
+    language: config?.language || 'auto',
   }))
   const fileInput = useRef(null)
   const set = (patch) => setSettings((prev) => ({ ...prev, ...patch }))
@@ -136,7 +137,9 @@ export default function AgentClipSource({ agent, config, projectId, runs, busy, 
   const submit = async (e) => {
     e.preventDefault()
     setError('')
-    const changed = SETTING_KEYS.some((k) => (k === 'clipCount' ? Number(config?.[k] || 5) : config?.[k]) !== settings[k])
+    const changed = Object.entries(SETTING_DEFAULTS).some(
+      ([k, fallback]) => (k === 'clipCount' ? Number(config?.[k] || fallback) : (config?.[k] ?? fallback)) !== settings[k],
+    )
     if (changed) {
       try {
         await onSaveConfig({ ...(config || {}), ...settings })
@@ -289,6 +292,23 @@ export default function AgentClipSource({ agent, config, projectId, runs, busy, 
               </div>
             </Setting>
           </div>
+
+          {agent.clipLanguages?.length ? (
+            <Setting label="Spoken language" hint="The language people speak in the video. The captions are written in it.">
+              <select
+                aria-label="Spoken language"
+                value={settings.language}
+                onChange={(e) => set({ language: e.target.value })}
+                className="w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-sm focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue sm:max-w-xs"
+              >
+                {agent.clipLanguages.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.label}
+                  </option>
+                ))}
+              </select>
+            </Setting>
+          ) : null}
 
           <Setting label="Caption style" hint={optionHint(agent.captionStyles, settings.captionStyle)}>
             <div className="grid grid-cols-4 gap-2 sm:max-w-md">
