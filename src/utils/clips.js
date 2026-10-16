@@ -55,6 +55,12 @@ export function etaText(eta) {
   return eta < 90 ? `about ${Math.max(1, Math.round(eta))}s left` : `about ${Math.round(eta / 60)} min left`
 }
 
+/** "64% · about 8 min left" for the Get video step while it downloads. */
+export function downloadNote(download) {
+  if (!download) return ''
+  return [`${download.percent}%`, etaText(download.eta)].filter(Boolean).join(' · ')
+}
+
 /** Under 256 KB/s a long video takes a while: worth suggesting an upload instead. */
 export const isSlow = (download) => Boolean(download?.speed) && download.speed < 256 * 1024
 

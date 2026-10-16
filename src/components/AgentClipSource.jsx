@@ -21,7 +21,10 @@ const TABS = [
   ['library', 'From Library'],
 ]
 
-/** What each caption style looks like, drawn on a small vertical frame. */
+// A person talking to camera, so the caption previews look like a real clip.
+const SAMPLE_FRAME = '/leonardo-media/posters/StoryKling2.jpg'
+
+/** What each caption style looks like, on a small vertical frame. */
 function CaptionSample({ id }) {
   const hit = <span className="text-accent-blue">hit</span>
   const text = {
@@ -37,11 +40,13 @@ function CaptionSample({ id }) {
   return (
     <span
       aria-hidden
-      className={`relative flex aspect-[9/16] w-full justify-center overflow-hidden rounded-lg bg-gradient-to-b from-slate-600 via-slate-800 to-slate-950 px-1 text-center ${
+      className={`relative flex aspect-[9/16] w-full justify-center overflow-hidden rounded-lg bg-slate-800 px-1 text-center ${
         id === 'minimal' ? 'items-end pb-3' : 'items-end pb-6'
       }`}
     >
-      {text || <span className="text-[11px] text-white">what a hit</span>}
+      <img src={SAMPLE_FRAME} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+      <span className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
+      <span className="relative">{text || <span className="text-[11px] text-white">what a hit</span>}</span>
     </span>
   )
 }

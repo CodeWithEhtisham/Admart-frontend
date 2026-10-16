@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { runStatusText, runTitle } from '../utils/agents'
 import { formatCredits } from '../utils/credits'
-import { CLIP_STAGES, clipScreen, clock, etaText, isSlow, optionName, rateText, stageStates } from '../utils/clips'
+import { CLIP_STAGES, clipScreen, clock, downloadNote, etaText, isSlow, optionName, rateText, stageStates } from '../utils/clips'
 import AgentClipSource from './AgentClipSource.jsx'
 import { ClipPicker, ClipResults } from './AgentClipReview.jsx'
 
@@ -65,6 +65,9 @@ function Stepper({ run }) {
               }
             >
               {label}
+              {state === 'current' && id === 'get_video' && run.status === 'running' && run.download?.eta != null ? (
+                <span className="ml-1.5 text-xs font-medium tabular-nums">{etaText(run.download.eta)}</span>
+              ) : null}
               <span className="sr-only">{{ done: ' (done)', current: ' (now)', failed: ' (failed)', stopped: ' (stopped)' }[state] || ''}</span>
             </span>
           </li>
@@ -179,7 +182,9 @@ function Progress({ run, agent, config, now, busy, act, onNew }) {
                 : id === 'review_clips' && !review
                   ? 'skipped'
                   : state === 'current' && run.status === 'running'
-                    ? 'now'
+                    ? id === 'get_video'
+                      ? downloadNote(download) || 'starting…'
+                      : 'now'
                     : STAGE_ESTIMATE[id] || ''
             return (
               <li key={id} className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm ${state === 'current' ? 'bg-elevated' : ''}`}>
@@ -192,7 +197,7 @@ function Progress({ run, agent, config, now, busy, act, onNew }) {
                   {state === 'done' ? '✓' : state === 'failed' ? '!' : i + 1}
                 </span>
                 <span className={`min-w-0 flex-1 ${state === 'todo' ? 'text-text-tertiary' : ''}`}>{STAGE_TEXT[id]}</span>
-                <span className="text-xs text-text-tertiary">{note}</span>
+                <span className={`text-xs tabular-nums ${state === 'current' ? 'font-medium text-link' : 'text-text-tertiary'}`}>{note}</span>
               </li>
             )
           })}
