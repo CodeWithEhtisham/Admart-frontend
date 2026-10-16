@@ -50,6 +50,12 @@ const Icons = {
       <rect x="13" y="13" width="8" height="8" rx="1.5" />
     </Icon>
   ),
+  publish: (
+    <Icon>
+      <path d="M12 15V4M7.5 8.5L12 4l4.5 4.5" />
+      <path d="M4 14v4.5A1.5 1.5 0 005.5 20h13a1.5 1.5 0 001.5-1.5V14" />
+    </Icon>
+  ),
   calendar: (
     <Icon>
       <rect x="3" y="4.5" width="18" height="16" rx="2" />
@@ -65,6 +71,13 @@ const Icons = {
       <circle cx="5" cy="17" r="2" />
       <circle cx="19" cy="17" r="2" />
       <path d="M7 8.2l2.5 2.2M14.5 10.4L17 8.2M7 15.8l2.5-2.2M14.5 13.6L17 15.8" />
+    </Icon>
+  ),
+  agents: (
+    <Icon>
+      <rect x="5" y="8" width="14" height="11" rx="3" />
+      <path d="M12 8V4.5M9.5 13h.01M14.5 13h.01M9.5 16.5h5" />
+      <circle cx="12" cy="3.5" r="1" />
     </Icon>
   ),
   analytics: (
@@ -123,11 +136,13 @@ const NAV_SECTIONS = [
       { to: '/video-gen', label: 'AI Video Gen', icon: Icons.createVideo },
       { to: '/library', label: 'Library', icon: Icons.library },
       { to: '/templates', label: 'Templates', icon: Icons.templates },
+      { to: '/agents', label: 'Agents', icon: Icons.agents },
     ],
   },
   {
     label: 'Publish',
     items: [
+      { to: '/publish', label: 'Publish', icon: Icons.publish },
       { to: '/calendar', label: 'Calendar', icon: Icons.calendar },
       { to: '/social', label: 'Social Accounts', icon: Icons.social },
     ],

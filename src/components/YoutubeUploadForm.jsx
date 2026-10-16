@@ -126,13 +126,14 @@ export default function YoutubeUploadForm({
   videoUrl,
   initialTitle,
   initialDescription,
+  initialTags,
   initialThumbnail,
   onPayloadChange,
   onError,
 }) {
   const [title, setTitle] = useState((initialTitle || '').slice(0, 100))
   const [description, setDescription] = useState(initialDescription || '')
-  const [tags, setTags] = useState('')
+  const [tags, setTags] = useState((initialTags || '').slice(0, 500))
   const [privacy, setPrivacy] = useState('public')
   const [category, setCategory] = useState('22')
   const [thumbnail, setThumbnail] = useState(initialThumbnail && initialThumbnail !== videoUrl ? initialThumbnail : '')

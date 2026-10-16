@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { formatCredits, getPlans } from '../utils/credits'
 import { isAuthenticated } from '../utils/auth'
-import { SUPPORT_EMAIL } from '../utils/site'
-import BrandGlyph from '../components/BrandGlyph'
+import { PillButton, SiteFooter, SiteHeader } from '../components/SiteChrome'
+import { SECTIONS } from '../utils/site'
 
 const lm = (file) => `/leonardo-media/${file}`
 const posterOf = (video) =>
@@ -233,56 +233,6 @@ const heroMarquee = [
   { ...media.cinematicVeo, caption: 'Cinematic brand film, 24fps look' },
 ]
 
-function LogoMark({ className = '' }) {
-  return (
-    <Link to="/" aria-label="Admart home" className={`flex items-center gap-2.5 ${className}`}>
-      <span aria-hidden className="flex h-9 w-9 items-center justify-center rounded-lg gradient-bg font-heading text-lg font-bold text-white shadow-lg gradient-glow">
-        <BrandGlyph />
-      </span>
-      <span aria-hidden className="font-heading text-xl font-semibold tracking-tight text-white">
-        Admart
-      </span>
-    </Link>
-  )
-}
-
-function PillButton({ children, variant = 'primary', className = '', ...props }) {
-  if (variant === 'ring') {
-    return (
-      <span className={`inline-flex w-fit transition-transform duration-300 ease-out active:scale-95 ${className}`}>
-        <a
-          {...props}
-          className="relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full px-5 py-3 text-sm font-semibold text-white transition-colors duration-300"
-        >
-          <span
-            className="pointer-events-none absolute inset-0 rounded-full"
-            style={{
-              background:
-                'conic-gradient(from 140deg at 50% 50%, rgba(255,255,255,0.35) 0deg, rgba(255,255,255,0.05) 90deg, rgba(255,255,255,0.35) 180deg, rgba(255,255,255,0.05) 270deg, rgba(255,255,255,0.35) 360deg)',
-              mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-              maskComposite: 'exclude',
-              WebkitMaskComposite: 'xor',
-              padding: '2px',
-            }}
-            aria-hidden
-          />
-          <span className="relative z-10">{children}</span>
-        </a>
-      </span>
-    )
-  }
-  return (
-    <span className={`inline-flex w-fit transition-transform duration-300 ease-out active:scale-95 ${className}`}>
-      <a
-        {...props}
-        className="inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-white px-5 py-3 text-sm font-semibold text-black transition-colors duration-300 hover:bg-[#ededed]"
-      >
-        {children}
-      </a>
-    </span>
-  )
-}
-
 function SectionHead({ eyebrow, children, sub }) {
   return (
     <div className="rv rv-up mb-8 flex flex-col items-center px-3 text-center sm:mb-12">
@@ -406,21 +356,12 @@ export default function LandingPage() {
   const [activeSection, setActiveSection] = useState('product')
   const [billing, setBilling] = useState('monthly')
   const [openFaq, setOpenFaq] = useState(0)
-  const [scrolled, setScrolled] = useState(false)
   const [plans, setPlans] = useState([])
   const [planError, setPlanError] = useState('')
   const authenticated = isAuthenticated()
 
-  const navSections = [
-    { id: 'product', label: 'Product' },
-    { id: 'features', label: 'Features' },
-    { id: 'pricing', label: 'Pricing' },
-    { id: 'showcase', label: 'Showcase' },
-    { id: 'faq', label: 'FAQ' },
-  ]
-
   useEffect(() => {
-    const sections = navSections
+    const sections = SECTIONS
       .map((s) => document.getElementById(s.id))
       .filter(Boolean)
     const io = new IntersectionObserver(
@@ -433,7 +374,7 @@ export default function LandingPage() {
     )
     sections.forEach((s) => io.observe(s))
     return () => io.disconnect()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     let mounted = true
@@ -451,13 +392,6 @@ export default function LandingPage() {
     return () => {
       mounted = false
     }
-  }, [])
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   useEffect(() => {
@@ -498,46 +432,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-black font-body text-white">
-      {/* ─── Header ──────────────────────────────────────────────── */}
-      <header
-        className={`fixed top-0 left-0 z-50 w-full transition-all duration-500 ${
-          scrolled ? 'bg-black/70 backdrop-blur-xl' : 'bg-transparent'
-        }`}
-      >
-        <div className="mx-auto flex h-16 max-w-[1600px] items-center justify-between px-3 sm:px-6 xl:px-10">
-          <LogoMark />
-          <nav className="hidden items-center gap-8 xl:flex">
-            {navSections.map((s) => (
-              <a
-                key={s.id}
-                href={`#${s.id}`}
-                aria-current={activeSection === s.id ? 'true' : undefined}
-                className={`inline-block py-1.5 text-sm transition duration-300 ${
-                  activeSection === s.id
-                    ? 'font-semibold text-[#3B82F6] [text-shadow:0_0_14px_rgba(59,130,246,0.75)]'
-                    : 'text-white/80 hover:text-white'
-                }`}
-              >
-                {s.label}
-              </a>
-            ))}
-          </nav>
-          <div className="flex items-center gap-3">
-            {authenticated ? (
-              <PillButton href="/dashboard" variant="ring">
-                Go to Dashboard
-              </PillButton>
-            ) : (
-              <>
-                <PillButton href="/auth" variant="ring" className="hidden sm:inline-flex">
-                  Log in
-                </PillButton>
-                <PillButton href="/auth">Get Started Free</PillButton>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
+      <SiteHeader active={activeSection} base="" />
 
       <main id="main-content">
 
@@ -1033,72 +928,7 @@ export default function LandingPage() {
 
       </main>
 
-      {/* ─── Footer ──────────────────────────────────────────────── */}
-      <footer className="bg-black px-3 pb-4 pt-8 text-white sm:px-6 xl:px-10">
-        <div className="mx-auto grid max-w-[1600px] gap-10 md:grid-cols-2 lg:grid-cols-5">
-          <div className="lg:col-span-2">
-            <LogoMark />
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/60">
-              Your AI social media handler — professional AI images and videos, published wherever
-              and whenever you want.
-            </p>
-          </div>
-          {/* Only links that lead somewhere real. */}
-          {[
-            {
-              heading: 'Product',
-              links: [
-                ['Features', '#features'],
-                ['Pricing', '#pricing'],
-                ['Examples', '#showcase'],
-                ['FAQ', '#faq'],
-              ],
-            },
-            {
-              heading: 'Legal',
-              links: [
-                ['Privacy Policy', '/privacy'],
-                ['Terms of Service', '/terms'],
-                ['Data deletion', '/privacy#data-deletion'],
-              ],
-            },
-            {
-              heading: 'Support',
-              links: SUPPORT_EMAIL ? [['Email us', `mailto:${SUPPORT_EMAIL}`]] : [],
-            },
-          ].map((col) => (
-            <div key={col.heading}>
-              <h3 className="font-heading text-sm font-bold uppercase text-white">{col.heading}</h3>
-              <ul className="mt-4 space-y-3">
-                {col.links.map(([label, href]) => (
-                  <li key={label}>
-                    {href.startsWith('/') ? (
-                      <Link to={href} className="inline-block py-1 text-sm text-white/70 transition hover:text-white">
-                        {label}
-                      </Link>
-                    ) : (
-                      <a href={href} className="inline-block py-1 text-sm text-white/70 transition hover:text-white">
-                        {label}
-                      </a>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-        <div className="mx-auto mt-12 flex max-w-[1600px] flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row">
-          <p className="text-xs text-white/70">© 2026 Admart. All rights reserved.</p>
-          <div className="flex gap-6">
-            <Link to="/privacy" className="inline-block py-1.5 text-xs text-white/70 transition hover:text-white">
-              Privacy
-            </Link>
-            <Link to="/terms" className="inline-block py-1.5 text-xs text-white/70 transition hover:text-white">
-              Terms
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

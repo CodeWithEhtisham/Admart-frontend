@@ -1,9 +1,8 @@
 import api from './api'
-import { isAuthenticated } from './auth'
+import { ACTIVE_PROJECT_KEY as ACTIVE_KEY, isAuthenticated } from './auth'
 
 // Broadcast when the active project changes so any component can react.
 export const PROJECT_CHANGE_EVENT = 'admart:project-change'
-const ACTIVE_KEY = 'admart_activeProject'
 
 // Sensible visual fallbacks for projects the backend created without icon/color.
 export const DEFAULT_PROJECT_COLOR = '#5b7cfa'
