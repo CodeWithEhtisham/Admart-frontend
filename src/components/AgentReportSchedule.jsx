@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { formatCredits } from '../utils/credits'
+import { primaryButton } from './AgentBits.jsx'
 import { Glyphs } from './glyphs'
 import { Icon } from './icons'
 
@@ -22,7 +23,7 @@ const CHANNELS = [
   ['Slack', Glyphs.message],
 ]
 const field =
-  'w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue'
+  'min-h-[44px] w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue'
 
 function browserZone() {
   try {
@@ -32,7 +33,7 @@ function browserZone() {
   }
 }
 
-/** When the Growth Report runs, what it plans for, and where it's sent. */
+/** When the Growth Report runs, what it plans for, and where it's sent. Shown in the Schedule dialog. */
 export default function AgentReportSchedule({ deployment, agent, onSave }) {
   const config = deployment.config || {}
   const schedule = deployment.schedule || {}
@@ -83,18 +84,20 @@ export default function AgentReportSchedule({ deployment, agent, onSave }) {
   const nextRun = deployment.autopilot && deployment.nextRunAt ? new Date(deployment.nextRunAt) : null
 
   return (
-    <section className="rounded-2xl border border-border-default bg-surface p-5">
-      <div className="flex flex-wrap items-start gap-3">
+    <section aria-labelledby="schedule-title">
+      <div className="flex flex-wrap items-start gap-3 pr-12">
         <div className="min-w-0 flex-1">
-          <h2 className="font-heading text-[1rem] font-semibold">Report schedule</h2>
+          <h2 id="schedule-title" className="font-heading text-lg font-semibold">
+            Report schedule
+          </h2>
           <p className="mt-1 text-sm text-text-secondary">
             {enabled && nextRun
               ? `Next report: ${nextRun.toLocaleString(undefined, { weekday: 'long', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })}`
               : 'Get a report on a schedule, with a plan for the next period.'}
           </p>
         </div>
-        <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={enabled} disabled={busy} onChange={(e) => save(e.target.checked)} />
+        <label className="flex min-h-[44px] cursor-pointer items-center gap-2 text-sm font-medium">
+          <input type="checkbox" checked={enabled} disabled={busy} onChange={(e) => save(e.target.checked)} className="h-5 w-5 accent-accent-violet" />
           {enabled ? 'On' : 'Off'}
         </label>
       </div>
@@ -160,7 +163,8 @@ export default function AgentReportSchedule({ deployment, agent, onSave }) {
         <p className="text-text-tertiary">Send it to</p>
         <div className="mt-2 flex flex-wrap gap-2">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-success/40 bg-success/15 px-3 py-1 text-xs font-semibold text-success-text">
-            ✓ Email
+            <Icon className="h-3.5 w-3.5">{Glyphs.check}</Icon>
+            Email
           </span>
           {CHANNELS.map(([name, glyph]) => (
             <span
@@ -189,7 +193,7 @@ export default function AgentReportSchedule({ deployment, agent, onSave }) {
           type="button"
           onClick={() => save()}
           disabled={busy}
-          className="rounded-xl gradient-bg px-5 py-2 text-sm font-semibold text-white disabled:opacity-50"
+          className={primaryButton}
         >
           {busy ? 'Saving…' : 'Save'}
         </button>

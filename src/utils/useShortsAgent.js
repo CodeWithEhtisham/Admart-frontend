@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { listDeployments, startRun, updateDeployment } from './agents'
+import { deployAgent, listDeployments, startRun, updateDeployment } from './agents'
 import { getCredits, notifyCreditsChanged } from './credits'
 import { getCachedActiveProject } from './projects'
 
@@ -24,6 +24,20 @@ export default function useShortsAgent() {
 
   const queued = new Set(shorts?.topicQueue || [])
 
+  // Sets up the Shorts Creator the first time a trend needs it; false (with an error shown) if that fails.
+  const ensureShorts = async () => {
+    if (shorts) return shorts
+    setError('')
+    try {
+      const created = await deployAgent(projectId, { agentType: 'youtube-shorts', config: {} })
+      setShorts(created)
+      return created
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not set up the YouTube Shorts Creator.')
+      return false
+    }
+  }
+
   const makeShort = async (topic) => {
     setBusy(topic)
     setError('')
@@ -43,7 +57,9 @@ export default function useShortsAgent() {
     setBusy(fresh[0])
     setError('')
     try {
-      setShorts(await updateDeployment(projectId, shorts.id, { topicQueue: [...(shorts.topicQueue || []), ...fresh] }))
+      const agent = await ensureShorts()
+      if (!agent) return
+      setShorts(await updateDeployment(projectId, agent.id, { topicQueue: [...(agent.topicQueue || []), ...fresh] }))
     } catch (err) {
       setError(err.response?.data?.message || 'Could not add it to Autopilot.')
     } finally {
@@ -51,5 +67,8 @@ export default function useShortsAgent() {
     }
   }
 
-  return { shorts, queued, busy, error, makeShort, addToAutopilot }
+  const saveModels = async (models) =>
+    setShorts(await updateDeployment(projectId, shorts.id, { config: { ...(shorts.config || {}), models } }))
+
+  return { shorts, queued, busy, error, ensureShorts, makeShort, addToAutopilot, saveModels }
 }

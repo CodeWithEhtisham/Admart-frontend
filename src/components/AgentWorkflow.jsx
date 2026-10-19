@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AGENT_STEPS as STEPS, PLATFORM_NAMES, isScheduled, runStatusText, runTitle, whenText } from '../utils/agents'
+import { AGENT_STEPS as STEPS, PLATFORM_NAMES, isScheduled, runStatusText, runTitle, waitingText, whenText } from '../utils/agents'
 import { formatCredits } from '../utils/credits'
 import {
   ConceptPicker,
@@ -18,6 +18,10 @@ import AgentPostReview from './AgentPostReview.jsx'
 import AgentTrendList from './AgentTrendList.jsx'
 import { ClipPicker, ClipResults } from './AgentClipReview.jsx'
 import AgentReport from './AgentReport.jsx'
+import AgentStepTracker from './AgentStepTracker.jsx'
+import { LiveDot, dangerButton, secondaryButton } from './AgentBits.jsx'
+import { Glyphs } from './glyphs'
+import { Icon } from './icons'
 
 const SERVICES = {
   openrouter: 'OpenRouter',
@@ -157,13 +161,13 @@ function meta(entry) {
 }
 
 const DOT = {
-  done: 'border-success bg-success text-white',
-  working: 'border-accent-blue text-link animate-pulse',
-  waiting: 'border-accent-blue bg-accent-blue text-white',
-  failed: 'border-error bg-error text-white',
-  queued: 'border-border-default text-text-tertiary',
-  stopped: 'border-border-default text-text-tertiary',
-  todo: 'border-border-default text-text-tertiary',
+  done: 'ai-gradient text-white',
+  working: 'border-2 border-accent-violet bg-panel ai-node-working',
+  waiting: 'ai-gradient ai-glow text-white',
+  failed: 'bg-error text-white',
+  queued: 'border border-dashed border-accent-violet/60 bg-panel text-text-tertiary',
+  stopped: 'border border-border-default bg-elevated text-text-tertiary',
+  todo: 'border border-border-default bg-panel text-text-tertiary',
 }
 const STATE_TEXT = {
   working: 'Working on it…',
@@ -460,12 +464,24 @@ function hasDetails(step, run) {
   return step === 'finish'
 }
 
-function StepRow({ step, state, run, agent, entry, busy, act, onApprove }) {
+// Steps whose output is a link or a hand-off, not something to preview.
+const NOT_A_RESULT = ['finish', 'finish_clips', 'deliver', 'wait']
+
+/** The step shown big on the canvas: what needs you now, else the finished result. Null while it works. */
+function focusStep(run, steps, states) {
+  const waiting = steps.find((s) => states[s] === 'waiting')
+  if (waiting) return waiting
+  if (!['succeeded', 'approved'].includes(run.status)) return null
+  if (steps.includes('review') && run.videoUrl) return 'review'
+  return [...steps].reverse().find((s) => states[s] === 'done' && !NOT_A_RESULT.includes(s) && hasDetails(s, run)) || null
+}
+
+function StepRow({ step, state, run, agent, entry, busy, act, onApprove, shownAbove }) {
   const auto = state === 'waiting' || (step === 'review' && run.status === 'needs_review')
   const [open, setOpen] = useState(auto || ['trends', 'analyze'].includes(step)) // the result itself
   const [label, help] = STEPS[step] || [step, '']
   const reached = state !== 'todo' && state !== 'queued'
-  const expandable = reached && hasDetails(step, run)
+  const expandable = reached && hasDetails(step, run) && !shownAbove
   const shown = expandable && (open || auto)
   const note =
     state === 'done'
@@ -481,20 +497,30 @@ function StepRow({ step, state, run, agent, entry, busy, act, onApprove }) {
         : ''
 
   return (
-    <li className="group relative pb-5 pl-10 last:pb-0">
-      <span aria-hidden className="absolute bottom-0 left-[13px] top-7 w-px bg-border-default group-last:hidden" />
+    <li className="group relative pb-4 pl-11 last:pb-0">
+      <span aria-hidden className="absolute bottom-0 left-[13px] top-8 w-px bg-border-default group-last:hidden" />
       <span
         aria-hidden
-        className={`absolute left-0 top-0 flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-bold ${DOT[state]}`}
+        className={`absolute left-0 top-0.5 flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${DOT[state]}`}
       >
-        {state === 'done' ? '✓' : state === 'failed' ? '!' : state === 'waiting' ? '•' : ''}
+        {state === 'done' ? (
+          <Icon className="h-3.5 w-3.5">{Glyphs.check}</Icon>
+        ) : state === 'failed' ? (
+          '!'
+        ) : state === 'waiting' ? (
+          <Icon className="h-3.5 w-3.5">{Glyphs.user}</Icon>
+        ) : state === 'working' ? (
+          <span className="ai-live-dot" />
+        ) : (
+          ''
+        )}
       </span>
       <button
         type="button"
         disabled={!expandable || auto}
         onClick={() => setOpen((v) => !v)}
         aria-expanded={expandable ? shown : undefined}
-        className="flex w-full flex-wrap items-baseline gap-x-3 gap-y-0.5 text-left disabled:cursor-default"
+        className="flex min-h-[44px] w-full cursor-pointer flex-wrap items-center gap-x-3 gap-y-0.5 rounded-xl px-3 py-1.5 text-left transition-colors duration-200 enabled:hover:bg-elevated/70 disabled:cursor-default"
       >
         <span className={`font-semibold ${reached ? 'text-text-primary' : 'text-text-tertiary'}`}>{label}</span>
         <span className={`min-w-0 flex-1 text-sm ${state === 'waiting' ? 'font-medium text-link' : state === 'failed' ? 'text-danger' : 'text-text-secondary'}`}>
@@ -502,10 +528,16 @@ function StepRow({ step, state, run, agent, entry, busy, act, onApprove }) {
           {extra ? ` (${extra})` : ''}
         </span>
         {entry ? <span className="text-xs text-text-tertiary">{meta(entry)}</span> : null}
-        {expandable && !auto ? <span className="text-xs font-medium text-link">{shown ? 'Hide' : 'Show'}</span> : null}
+        {shownAbove ? <span className="text-xs font-medium text-violet-text">Shown above</span> : null}
+        {expandable && !auto ? (
+          <span className="inline-flex items-center gap-1 text-xs font-medium text-link">
+            {shown ? 'Hide' : 'Show'}
+            <Icon className={`h-3.5 w-3.5 transition-transform duration-200 ${shown ? 'rotate-180' : ''}`}>{Glyphs.chevronDown}</Icon>
+          </span>
+        ) : null}
       </button>
       {shown ? (
-        <div className="mt-3">
+        <div className="mt-2 px-3 pb-1">
           <Details step={step} run={run} agent={agent} waiting={state === 'waiting'} busy={busy} act={act} onApprove={onApprove} />
         </div>
       ) : null}
@@ -513,134 +545,200 @@ function StepRow({ step, state, run, agent, entry, busy, act, onApprove }) {
   )
 }
 
+/** The big area under the tracker: what the agent made (or what it needs from you), else what it is doing now. */
+function Stage({ run, agent, steps, states, focus, busy, act, onApprove }) {
+  if (focus) {
+    const waiting = states[focus] === 'waiting'
+    const [label] = STEPS[focus] || [focus]
+    return (
+      <section
+        aria-labelledby={`stage-${run.id}`}
+        className={`rounded-2xl border p-4 sm:p-5 ${waiting ? 'border-accent-violet/50 bg-accent-violet/5 ai-glow' : 'border-border-default bg-base/40'}`}
+      >
+        <h3 id={`stage-${run.id}`} className="flex flex-wrap items-center gap-2 font-heading text-base font-semibold text-text-primary">
+          {waiting ? (
+            <span className="inline-flex items-center gap-1.5 rounded-full ai-gradient px-2.5 py-0.5 text-xs font-semibold text-white">
+              <Icon className="h-3.5 w-3.5">{Glyphs.user}</Icon>
+              Your turn
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-success/40 bg-success/15 px-2.5 py-0.5 text-xs font-semibold text-success-text">
+              <Icon className="h-3.5 w-3.5">{Glyphs.check}</Icon>
+              Result
+            </span>
+          )}
+          {label}
+        </h3>
+        <div className="mt-4">
+          <Details step={focus} run={run} agent={agent} waiting={waiting} busy={busy} act={act} onApprove={onApprove} />
+        </div>
+      </section>
+    )
+  }
+  const current = steps.find((s) => states[s] === 'working')
+  if (!current) return null
+  const [label, help] = STEPS[current] || [current, '']
+  const extra =
+    ['voice', 'visuals'].includes(current) ? summary(current, run) : current === 'get_video' && run.download ? downloadText(run.download) : ''
+  return (
+    <section className="relative overflow-hidden rounded-2xl border border-accent-violet/40 bg-accent-violet/5 p-5 sm:p-6">
+      <div aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full ai-gradient-soft opacity-20 blur-3xl" />
+      <div className="relative flex items-start gap-4">
+        <span aria-hidden className="ai-node-working flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-accent-violet bg-panel">
+          <span className="ai-live-dot" />
+        </span>
+        <div className="min-w-0" role="status">
+          <p className="font-heading text-base font-semibold">{label}: working on it…</p>
+          <p className="mt-1 text-sm text-text-secondary">{help}</p>
+          {extra ? <p className="mt-1 text-xs tabular-nums text-violet-text">{extra}</p> : null}
+          <p className="mt-2 text-xs text-text-tertiary">You can leave this page. It keeps going, and the bell tells you when it needs you.</p>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 /** One run as a workflow: every step, what it made, and which service made it. */
-export default function AgentWorkflow({ run, agent, busy, now, onAction, onApprove }) {
+export default function AgentWorkflow({ run, agent, busy, now, runnerOnline, onAction, onApprove }) {
   const steps = [...(agent?.steps || []), ...(agent?.review ? ['review'] : [])]
   const states = stepStates(run, steps)
   const act = (action, payload) => onAction(run, action, payload)
   const stuck = run.status === 'queued' && !isScheduled(run) && now - new Date(run.updatedAt || run.createdAt).getTime() > STUCK_MS
+  const waitNote = waitingText(run, runnerOnline, stuck)
   const [confirmCancel, setConfirmCancel] = useState(false)
   // A job that is waiting or working can be stopped, except while it is posting.
   const cancellable = ['queued', 'running'].includes(run.status) && !isScheduled(run) && !(run.status === 'running' && run.step === 'post')
+  const focus = focusStep(run, steps, states)
 
   return (
-    <article className="rounded-2xl border border-border-default bg-surface p-5">
+    <article className="glass-card space-y-5 rounded-2xl p-4 sm:p-6">
       <div className="flex flex-wrap items-start gap-3">
         <div className="min-w-0 flex-1">
-          <h2 className="font-heading text-lg font-bold">{runTitle(run)}</h2>
-          <p className="text-xs text-text-tertiary">
+          <h2 className="font-heading text-lg font-bold sm:text-xl">{runTitle(run)}</h2>
+          <p className="mt-0.5 text-xs text-text-tertiary">
             {run.input.topic && run.title && run.input.topic !== run.title ? `Topic: ${run.input.topic} · ` : ''}
             {new Date(run.createdAt).toLocaleString()} · {formatCredits(run.credits)} credits
           </p>
         </div>
-        <span className="rounded-full border border-border-default px-2.5 py-0.5 text-xs font-semibold text-text-secondary">{runStatusText(run)}</span>
+        <span
+          className={`inline-flex min-h-[32px] items-center gap-2 rounded-full border px-3 text-xs font-semibold ${
+            run.status === 'running' ? 'border-accent-violet/50 bg-accent-violet/10 text-violet-text' : 'border-border-default text-text-secondary'
+          }`}
+        >
+          {run.status === 'running' ? <LiveDot /> : null}
+          {runStatusText(run)}
+        </span>
         {cancellable ? (
           confirmCancel ? (
-            <span className="flex items-center gap-2">
-              <button
-                type="button"
-                disabled={busy}
-                onClick={() => act('discard')}
-                className="rounded-lg border border-error/50 px-3 py-1 text-xs font-semibold text-danger hover:bg-error/10 disabled:opacity-50"
-              >
+            <span className="flex flex-wrap items-center gap-2">
+              <button type="button" disabled={busy} onClick={() => act('discard')} className={`${dangerButton} font-semibold`}>
                 Yes, stop it
               </button>
-              <button type="button" onClick={() => setConfirmCancel(false)} className="text-xs text-text-secondary hover:text-text-primary">
+              <button type="button" onClick={() => setConfirmCancel(false)} className={secondaryButton}>
                 Keep going
               </button>
             </span>
           ) : (
-            <button
-              type="button"
-              onClick={() => setConfirmCancel(true)}
-              className="rounded-lg border border-border-default px-3 py-1 text-xs font-medium text-text-secondary hover:text-danger"
-            >
+            <button type="button" onClick={() => setConfirmCancel(true)} className={`${secondaryButton} hover:text-danger`}>
               Cancel
             </button>
           )
         ) : null}
       </div>
-      {confirmCancel && cancellable ? (
-        <p className="mt-2 text-xs text-text-tertiary">Stops within a few seconds and refunds the credits.</p>
-      ) : null}
+      {confirmCancel && cancellable ? <p className="-mt-3 text-xs text-text-tertiary">Stops within a few seconds and refunds the credits.</p> : null}
 
-      {stuck ? (
-        <p className="mt-3 text-xs text-warning">
-          Still waiting to start. The agents worker may not be running. Your credits are refunded if it fails.
-        </p>
-      ) : null}
+      <div className="rounded-2xl border border-border-default bg-base/40 px-2 py-4 sm:px-4">
+        <AgentStepTracker label="Progress" steps={steps.map((step) => ({ id: step, label: STEPS[step]?.[0] || step, state: states[step] }))} />
+      </div>
+
+      {waitNote ? <p className="text-xs text-warning-text">{waitNote}</p> : null}
 
       {isScheduled(run) ? (
-        <div className="mt-3 flex flex-col gap-3 rounded-xl border border-accent-blue/40 bg-accent-blue/5 px-4 py-3 sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-3 rounded-xl border border-accent-blue/40 bg-accent-blue/5 px-4 py-3 sm:flex-row sm:items-center">
           <p className="min-w-0 flex-1 text-sm">
             Scheduled for <span className="font-semibold">{whenText(run.postAt)}</span>. The posts go out by themselves then.
           </p>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => act('discard')}
-            className="self-start rounded-xl border border-border-default bg-surface px-4 py-2 text-sm font-medium text-text-secondary hover:text-danger disabled:opacity-50"
-          >
+          <button type="button" disabled={busy} onClick={() => act('discard')} className={`${secondaryButton} self-start hover:text-danger`}>
             Cancel (credits refunded)
           </button>
         </div>
       ) : null}
 
       {run.status === 'failed' ? (
-        <div className="mt-3 flex flex-col gap-3 rounded-xl border border-error/40 bg-error/10 px-4 py-3 sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-3 rounded-xl border border-error/40 bg-error/10 px-4 py-3 sm:flex-row sm:items-center">
           <p role="alert" className="min-w-0 flex-1 text-sm text-danger">
             {run.error}
           </p>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => act('retry')}
-            className="self-start rounded-xl border border-border-default bg-surface px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary disabled:opacity-50"
-          >
+          <button type="button" disabled={busy} onClick={() => act('retry')} className={`${secondaryButton} self-start`}>
             Try again from here ({formatCredits(run.credits)} credits)
           </button>
         </div>
       ) : null}
 
-      <ol className="mt-5" aria-label="Workflow">
-        {steps.map((step) => (
-          <StepRow
-            key={`${step}-${states[step]}`}
-            step={step}
-            state={states[step]}
-            run={run}
-            agent={agent}
-            entry={run.log?.[step]}
-            busy={busy}
-            act={act}
-            onApprove={() => onApprove(run)}
-          />
-        ))}
-      </ol>
+      <Stage run={run} agent={agent} steps={steps} states={states} focus={focus} busy={busy} act={act} onApprove={() => onApprove(run)} />
+
+      <section aria-labelledby={`steps-${run.id}`}>
+        <h3 id={`steps-${run.id}`} className="px-1 text-xs font-semibold uppercase tracking-wide text-text-tertiary">
+          Step by step
+        </h3>
+        <ol className="mt-3" aria-label="Workflow">
+          {steps.map((step) => (
+            <StepRow
+              key={`${step}-${states[step]}-${step === focus}`}
+              step={step}
+              state={states[step]}
+              run={run}
+              agent={agent}
+              entry={run.log?.[step]}
+              busy={busy}
+              act={act}
+              onApprove={() => onApprove(run)}
+              shownAbove={step === focus}
+            />
+          ))}
+        </ol>
+      </section>
     </article>
   )
 }
 
-/** Before the first run: what the agent will do, step by step. */
+/** Before the first run: what the agent will do, as a flow of steps. */
 export function HowItWorks({ agent }) {
   const steps = [...(agent?.steps || []), ...(agent?.review ? ['review'] : [])]
   return (
-    <section className="rounded-2xl border border-border-default bg-surface p-5">
-      <h2 className="font-heading text-lg font-bold">How this agent works</h2>
-      <p className="mt-1 text-sm text-text-secondary">Start a run and watch each step fill in here. Click any finished step to see what it made.</p>
-      <ol className="mt-5 space-y-3">
-        {steps.map((step, i) => (
-          <li key={step} className="flex gap-3 text-sm">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border-default text-xs text-text-tertiary">
-              {i + 1}
-            </span>
-            <span>
-              <span className="block font-semibold">{STEPS[step]?.[0] || step}</span>
-              <span className="text-text-secondary">{STEPS[step]?.[1]}</span>
-            </span>
-          </li>
-        ))}
-      </ol>
+    <section aria-labelledby="how-it-works" className="glass-card relative overflow-hidden rounded-2xl p-5 sm:p-8">
+      <div aria-hidden className="pointer-events-none absolute -top-28 left-1/2 h-56 w-2/3 -translate-x-1/2 rounded-full ai-gradient-soft opacity-15 blur-3xl" />
+      <div className="relative">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-accent-violet/40 bg-accent-violet/10 px-3 py-1 text-xs font-semibold text-violet-text">
+          <Icon className="h-3.5 w-3.5">{Glyphs.sparkles}</Icon>
+          {steps.length} step{steps.length === 1 ? '' : 's'}
+        </span>
+        <h2 id="how-it-works" className="mt-3 font-heading text-xl font-bold sm:text-2xl">
+          How this agent works
+        </h2>
+        {agent?.description ? <p className="mt-2 max-w-2xl text-sm text-text-secondary">{agent.description}</p> : null}
+
+        {steps.length > 1 ? (
+          <div className="mt-6 rounded-2xl border border-border-default bg-base/40 px-2 py-4 sm:px-4">
+            <AgentStepTracker label="The steps" steps={steps.map((step) => ({ id: step, label: STEPS[step]?.[0] || step, state: 'todo' }))} />
+          </div>
+        ) : null}
+
+        <ol className="mt-4 grid gap-3 sm:grid-cols-2 2xl:grid-cols-3">
+          {steps.map((step, i) => (
+            <li key={step} className="flex gap-3 rounded-xl border border-border-default bg-elevated/50 p-4 text-sm transition-colors duration-200 hover:border-accent-violet/40">
+              <span aria-hidden className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full ai-gradient text-xs font-bold text-white">
+                {i + 1}
+              </span>
+              <span className="min-w-0">
+                <span className="block font-semibold">{STEPS[step]?.[0] || step}</span>
+                <span className="text-text-secondary">{STEPS[step]?.[1]}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
+        <p className="mt-6 text-sm text-text-secondary">Start a run and watch each step light up here. Click any finished step to see what it made.</p>
+      </div>
     </section>
   )
 }

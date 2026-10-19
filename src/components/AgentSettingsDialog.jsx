@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
 import AgentStylePicker from './AgentStylePicker.jsx'
+import ModelPicker from './ModelPicker.jsx'
+import { primaryButton, secondaryButton } from './AgentBits.jsx'
+import { formatCredits } from '../utils/credits'
+import { creditUnitText } from '../utils/agentSchedule'
 
 const field =
   'mt-1 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-sm text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue'
@@ -12,6 +16,13 @@ export default function AgentSettingsDialog({ deployment, onClose, onSave }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const set = (patch) => setConfig((prev) => ({ ...prev, ...patch }))
+  const choices = deployment.modelChoices || {}
+  const modelKeys = [
+    ['text', 'Writing model'],
+    ['image', 'Image model'],
+  ].filter(([key]) => choices[key]?.length)
+  const [models, setModels] = useState(() => ({ ...(deployment.models || {}) }))
+  const costUnit = creditUnitText(agent?.creditUnit)
 
   useEffect(() => {
     const onKey = (e) => e.key === 'Escape' && onClose()
@@ -23,7 +34,13 @@ export default function AgentSettingsDialog({ deployment, onClose, onSave }) {
     setBusy(true)
     setError('')
     try {
-      await onSave({ config: { ...config, niche: (config.niche || '').trim() } })
+      await onSave({
+        config: {
+          ...config,
+          niche: (config.niche || '').trim(),
+          ...(modelKeys.length ? { models } : {}),
+        },
+      })
       onClose()
     } catch (err) {
       setError(err.response?.data?.message || 'Could not save the settings.')
@@ -37,7 +54,7 @@ export default function AgentSettingsDialog({ deployment, onClose, onSave }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="settings-title"
-        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-border-default bg-panel p-6 shadow-2xl"
+        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-border-default bg-panel p-5 shadow-2xl sm:p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 id="settings-title" className="font-heading text-lg font-semibold">
@@ -55,9 +72,36 @@ export default function AgentSettingsDialog({ deployment, onClose, onSave }) {
 
           <AgentStylePicker agent={agent || {}} value={config} onChange={set} />
 
+          {modelKeys.length ? (
+            <div className="space-y-3">
+              {modelKeys.map(([key, title]) => (
+                <div key={key}>
+                  <span className="text-text-tertiary">{title}</span>
+                  <div className="mt-1">
+                    <ModelPicker
+                      label={title}
+                      models={choices[key]}
+                      value={models[key]}
+                      onChange={(id) => setModels((prev) => ({ ...prev, [key]: id }))}
+                      costsByModel={Object.fromEntries(choices[key].map((m) => [m.id, { credits: m.creditsPerRun }]))}
+                      formatCost={(credits) => `~${formatCredits(credits)} cr ${costUnit}`}
+                    />
+                  </div>
+                </div>
+              ))}
+              <p className="text-xs text-text-tertiary">
+                Pricier models write better but use more credits.
+                {deployment.estimatedCredits != null && deployment.estimatedCredits !== ''
+                  ? ` Saved choice: about ${formatCredits(deployment.estimatedCredits)} credits ${costUnit}.`
+                  : ''}
+              </p>
+            </div>
+          ) : null}
+
           {agent?.clipLengths?.length ? (
-            <label className="flex items-center gap-2">
+            <label className="flex min-h-[44px] cursor-pointer items-center gap-3">
               <input
+                className="h-5 w-5 shrink-0 accent-accent-violet"
                 type="checkbox"
                 checked={(config.checkpoints || 'all') === 'all'}
                 onChange={(e) => set({ checkpoints: e.target.checked ? 'all' : 'final' })}
@@ -68,8 +112,9 @@ export default function AgentSettingsDialog({ deployment, onClose, onSave }) {
 
           {agent?.review ? (
             <div className="space-y-2">
-              <label className="flex items-center gap-2">
+              <label className="flex min-h-[44px] cursor-pointer items-center gap-3">
                 <input
+                  className="h-5 w-5 shrink-0 accent-accent-violet"
                   type="checkbox"
                   checked={(config.checkpoints || 'all') === 'all'}
                   onChange={(e) => set({ checkpoints: e.target.checked ? 'all' : 'final' })}
@@ -77,13 +122,14 @@ export default function AgentSettingsDialog({ deployment, onClose, onSave }) {
                 {video ? 'Let me review the cuts before the video is made' : 'Let me check each step (idea, script, pictures)'}
               </label>
               {video ? (
-                <label className="flex items-center gap-2">
-                  <input type="checkbox" checked={config.captions !== false} onChange={(e) => set({ captions: e.target.checked })} />
+                <label className="flex min-h-[44px] cursor-pointer items-center gap-3">
+                  <input className="h-5 w-5 shrink-0 accent-accent-violet" type="checkbox" checked={config.captions !== false} onChange={(e) => set({ captions: e.target.checked })} />
                   Burn in captions
                 </label>
               ) : null}
-              <label className="flex items-center gap-2">
+              <label className="flex min-h-[44px] cursor-pointer items-center gap-3">
                 <input
+                  className="h-5 w-5 shrink-0 accent-accent-violet"
                   type="checkbox"
                   checked={video ? Boolean(config.music) : config.music !== false}
                   onChange={(e) => set({ music: e.target.checked })}
@@ -91,8 +137,8 @@ export default function AgentSettingsDialog({ deployment, onClose, onSave }) {
                 Background music
               </label>
               {agent.styles?.length ? (
-                <label className="flex items-center gap-2">
-                  <input type="checkbox" checked={config.stock !== false} onChange={(e) => set({ stock: e.target.checked })} />
+                <label className="flex min-h-[44px] cursor-pointer items-center gap-3">
+                  <input className="h-5 w-5 shrink-0 accent-accent-violet" type="checkbox" checked={config.stock !== false} onChange={(e) => set({ stock: e.target.checked })} />
                   Use free stock video where it fits
                 </label>
               ) : null}
@@ -107,15 +153,10 @@ export default function AgentSettingsDialog({ deployment, onClose, onSave }) {
         </div>
 
         <div className="mt-6 flex justify-end gap-2">
-          <button type="button" onClick={onClose} className="rounded-lg border border-border-default px-4 py-2 text-sm font-medium text-text-secondary">
+          <button type="button" onClick={onClose} className={secondaryButton}>
             Cancel
           </button>
-          <button
-            type="button"
-            onClick={save}
-            disabled={busy}
-            className="rounded-lg gradient-bg px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
-          >
+          <button type="button" onClick={save} disabled={busy} className={primaryButton}>
             {busy ? 'Saving…' : 'Save'}
           </button>
         </div>

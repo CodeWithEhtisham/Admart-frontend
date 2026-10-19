@@ -1,18 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
-import { runStatusText, runTitle } from '../utils/agents'
 import { formatCredits } from '../utils/credits'
 import { clipCredits, clock, optionHint, optionName } from '../utils/clips'
 import { listLibraryAssets, uploadLibraryMedia, videoFileSeconds } from '../utils/library'
+import { primaryButton } from './AgentBits.jsx'
+import { Glyphs } from './glyphs'
+import { Icon } from './icons'
 
 const field =
-  'mt-1.5 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-sm focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue'
+  'mt-1.5 min-h-[44px] w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-sm focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue'
 const chip = (on) =>
-  `min-w-12 rounded-lg px-3 py-1.5 text-sm font-medium tabular-nums transition focus-visible:ring-2 focus-visible:ring-accent-blue ${
-    on ? 'bg-accent-blue text-white' : 'border border-border-default bg-elevated text-text-secondary hover:text-text-primary'
+  `min-h-[44px] min-w-12 cursor-pointer rounded-lg px-3 text-sm font-medium tabular-nums transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-accent-blue ${
+    on ? 'ai-gradient text-white' : 'border border-border-default bg-elevated text-text-secondary hover:border-accent-violet/50 hover:text-text-primary'
   }`
 const card = (on) =>
-  `rounded-xl border text-left transition focus-visible:ring-2 focus-visible:ring-accent-blue ${
-    on ? 'border-accent-blue bg-accent-blue/10' : 'border-border-default bg-input hover:border-accent-blue/40'
+  `cursor-pointer rounded-xl border text-left transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-accent-blue ${
+    on ? 'border-accent-violet bg-accent-violet/10 ai-glow' : 'border-border-default bg-input hover:border-accent-violet/40'
   }`
 const SETTING_DEFAULTS = { clipLength: 'medium', clipCount: 5, captionStyle: 'classic', layout: 'auto', tighten: false, language: 'auto' }
 const TABS = [
@@ -80,10 +82,9 @@ function Setting({ label, hint, children }) {
 }
 
 /** Clip Maker start screen: the video (YouTube link, upload or Library), the clip settings and the cost. */
-export default function AgentClipSource({ agent, config, projectId, runs, busy, paused, onStart, onSaveConfig, onSelectRun }) {
+export default function AgentClipSource({ agent, config, projectId, busy, paused, onStart, onSaveConfig, modelLine }) {
   const [tab, setTab] = useState('link')
   const [url, setUrl] = useState('')
-  const [rights, setRights] = useState(false)
   const [videos, setVideos] = useState(null)
   const [picked, setPicked] = useState(null) // { id, title, seconds }
   const [uploading, setUploading] = useState(false)
@@ -127,7 +128,7 @@ export default function AgentClipSource({ agent, config, projectId, runs, busy, 
   }
 
   const fromLink = tab === 'link'
-  const ready = fromLink ? Boolean(url.trim()) && rights : Boolean(picked) && !uploading
+  const ready = fromLink ? Boolean(url.trim()) : Boolean(picked) && !uploading
   const credits = fromLink ? null : clipCredits(agent, picked?.seconds)
   const cost =
     credits != null
@@ -148,17 +149,16 @@ export default function AgentClipSource({ agent, config, projectId, runs, busy, 
         return
       }
     }
-    onStart(fromLink ? { url: url.trim(), rights } : { assetId: picked.id })
+    onStart(fromLink ? { url: url.trim() } : { assetId: picked.id })
   }
 
-  const recent = runs.slice(0, 5)
   const review = (config?.checkpoints || 'all') === 'all'
 
   return (
-    <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
-      <form onSubmit={submit} aria-label="Make clips" className="min-w-0 space-y-6 rounded-2xl border border-border-default bg-surface p-5 sm:p-6">
+    <div className="grid grid-cols-1 items-start gap-5 2xl:grid-cols-[minmax(0,1fr)_280px]">
+      <form onSubmit={submit} aria-label="Make clips" className="glass-card min-w-0 space-y-6 rounded-2xl p-5 sm:p-6">
         <div>
-          <h2 className="font-heading text-lg font-bold">Make clips</h2>
+          <h2 className="font-heading text-lg font-bold sm:text-xl">Make clips</h2>
           <p className="mt-1 text-sm text-text-secondary">
             Give it a long video. It finds the best moments and turns them into vertical clips with captions.
           </p>
@@ -176,8 +176,8 @@ export default function AgentClipSource({ agent, config, projectId, runs, busy, 
                 setError('')
                 if (id === 'link') setPicked(null)
               }}
-              className={`rounded-lg px-3 py-2 text-sm font-medium transition focus-visible:ring-2 focus-visible:ring-accent-blue ${
-                tab === id ? 'bg-accent-blue text-white shadow' : 'text-text-secondary hover:text-text-primary'
+              className={`min-h-[44px] cursor-pointer rounded-lg px-3 text-sm font-medium transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-accent-blue ${
+                tab === id ? 'ai-gradient text-white shadow' : 'text-text-secondary hover:text-text-primary'
               }`}
             >
               {label}
@@ -202,10 +202,6 @@ export default function AgentClipSource({ agent, config, projectId, runs, busy, 
             <p className="text-xs text-text-tertiary">
               Slow connection? Uploading the video file from your computer is usually faster than downloading it from YouTube.
             </p>
-            <label className="flex items-start gap-2 text-sm">
-              <input type="checkbox" className="mt-0.5 h-4 w-4" checked={rights} onChange={(e) => setRights(e.target.checked)} />
-              <span className="text-text-secondary">I own this video or have the rights to use it.</span>
-            </label>
           </div>
         ) : tab === 'upload' ? (
           <div>
@@ -213,16 +209,17 @@ export default function AgentClipSource({ agent, config, projectId, runs, busy, 
               ref={fileInput}
               type="file"
               accept="video/mp4,video/quicktime,video/webm"
-              className="sr-only"
+              className="peer sr-only"
               id="clip-upload"
               onChange={(e) => upload(e.target.files?.[0])}
             />
             <label
               htmlFor="clip-upload"
-              className={`flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-border-default bg-input px-4 py-8 text-center text-sm hover:border-accent-blue/60 has-[:focus-visible]:ring-2 ${
+              className={`flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-border-default bg-input px-4 py-8 text-center text-sm transition-colors duration-200 hover:border-accent-violet/60 peer-focus-visible:ring-2 peer-focus-visible:ring-accent-blue ${
                 uploading ? 'pointer-events-none opacity-60' : ''
               }`}
             >
+              <Icon className="h-6 w-6 text-violet-text">{Glyphs.upload}</Icon>
               <span className="font-medium text-text-primary">
                 {uploading ? (progress != null ? `Uploading… ${Math.floor(progress * 100)}%` : 'Uploading…') : 'Choose a video file'}
               </span>
@@ -230,7 +227,7 @@ export default function AgentClipSource({ agent, config, projectId, runs, busy, 
             </label>
             {uploading && progress != null ? (
               <div role="progressbar" aria-label="Upload" aria-valuenow={Math.floor(progress * 100)} aria-valuemin={0} aria-valuemax={100} className="mt-3 h-1.5 overflow-hidden rounded-full bg-elevated">
-                <div className="h-full rounded-full bg-accent-blue transition-all" style={{ width: `${progress * 100}%` }} />
+                <div className="h-full rounded-full ai-gradient-soft transition-all" style={{ width: `${progress * 100}%` }} />
               </div>
             ) : null}
           </div>
@@ -247,8 +244,8 @@ export default function AgentClipSource({ agent, config, projectId, runs, busy, 
                       onClick={() => setPicked({ id: v.id, title: v.title, seconds: v.durationSeconds })}
                       aria-pressed={picked?.id === v.id}
                       title={v.title}
-                      className={`block w-full overflow-hidden rounded-lg border text-left focus-visible:ring-2 focus-visible:ring-accent-blue ${
-                        picked?.id === v.id ? 'border-accent-blue ring-2 ring-accent-blue' : 'border-border-default'
+                      className={`block w-full cursor-pointer overflow-hidden rounded-lg border text-left transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-accent-blue ${
+                        picked?.id === v.id ? 'border-accent-violet ring-2 ring-accent-violet' : 'border-border-default hover:border-accent-violet/50'
                       }`}
                     >
                       <video src={v.sourceUrl} preload="metadata" muted playsInline className="aspect-video w-full bg-black object-cover" />
@@ -354,7 +351,7 @@ export default function AgentClipSource({ agent, config, projectId, runs, busy, 
               aria-checked={settings.tighten}
               aria-labelledby="tighten-label"
               onClick={() => set({ tighten: !settings.tighten })}
-              className={`relative h-6 w-11 shrink-0 rounded-full transition focus-visible:ring-2 focus-visible:ring-accent-blue ${settings.tighten ? 'bg-accent-blue' : 'bg-elevated border border-border-default'}`}
+              className={`relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors duration-200 before:absolute before:-inset-2.5 before:content-[''] focus-visible:ring-2 focus-visible:ring-accent-blue ${settings.tighten ? 'ai-gradient' : 'bg-elevated border border-border-default'}`}
             >
               <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${settings.tighten ? 'left-[22px]' : 'left-0.5'}`} />
             </button>
@@ -367,20 +364,19 @@ export default function AgentClipSource({ agent, config, projectId, runs, busy, 
           </p>
         ) : null}
 
+        {modelLine}
+
         <div className="flex flex-wrap items-center gap-3 border-t border-border-default pt-5">
-          <button
-            type="submit"
-            disabled={busy || paused || !ready}
-            className="rounded-xl gradient-bg px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-accent-blue/25 disabled:cursor-not-allowed disabled:opacity-50"
-          >
+          <button type="submit" disabled={busy || paused || !ready} className={`${primaryButton} px-6`}>
             {busy ? 'Checking the video…' : 'Find the best clips'}
+            {busy ? null : <Icon className="h-4 w-4">{Glyphs.arrowRight}</Icon>}
           </button>
           <span className="text-xs text-text-tertiary">{paused ? 'This agent is paused. Resume it to run.' : `${cost} Refunded if it fails.`}</span>
         </div>
       </form>
 
       <aside className="space-y-4">
-        <section className="rounded-2xl border border-border-default bg-surface p-5">
+        <section className="glass-card rounded-2xl p-5">
           <h3 className="font-heading text-[1rem] font-semibold">What happens next</h3>
           <ol className="mt-3 space-y-3 text-sm">
             {[
@@ -390,7 +386,7 @@ export default function AgentClipSource({ agent, config, projectId, runs, busy, 
               ['Makes the vertical clips and saves them to your Library'],
             ].map(([text, note], i) => (
               <li key={text} className="flex gap-3">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border-default text-xs text-text-tertiary">{i + 1}</span>
+                <span aria-hidden className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full ai-gradient text-xs font-bold text-white">{i + 1}</span>
                 <span>
                   <span className="block">{text}</span>
                   {note ? <span className="block text-xs text-link">{note}</span> : null}
@@ -399,24 +395,6 @@ export default function AgentClipSource({ agent, config, projectId, runs, busy, 
             ))}
           </ol>
         </section>
-
-        {recent.length ? (
-          <nav aria-label="Recent runs" className="overflow-hidden rounded-2xl border border-border-default bg-surface">
-            <h3 className="px-5 pb-2 pt-4 font-heading text-[1rem] font-semibold">Recent runs</h3>
-            <ul className="divide-y divide-border-default">
-              {recent.map((r) => (
-                <li key={r.id}>
-                  <button type="button" onClick={() => onSelectRun(r.id)} className="block w-full px-5 py-3 text-left transition hover:bg-elevated focus-visible:bg-elevated">
-                    <span className="block truncate text-sm font-medium">{runTitle(r)}</span>
-                    <span className={`mt-0.5 block text-xs ${r.status === 'needs_review' ? 'font-semibold text-link' : r.status === 'failed' ? 'text-danger' : 'text-text-tertiary'}`}>
-                      {runStatusText(r)} · {new Date(r.createdAt).toLocaleDateString()}
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        ) : null}
       </aside>
     </div>
   )

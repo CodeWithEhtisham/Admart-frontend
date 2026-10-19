@@ -1,14 +1,9 @@
 import { useState } from 'react'
 import { formatCredits } from '../utils/credits'
+import { dangerButton as dangerBtn, primaryButton as primaryBtn, secondaryButton as secondaryBtn } from './AgentBits.jsx'
 
 const field =
   'w-full rounded-lg border border-border-default bg-input px-3 py-2 text-sm text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue'
-const primaryBtn =
-  'rounded-xl gradient-bg px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50'
-const secondaryBtn =
-  'rounded-xl border border-border-default px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary disabled:opacity-50'
-const dangerBtn =
-  'rounded-xl border border-error/50 px-4 py-2 text-sm font-medium text-danger hover:bg-error/10 disabled:opacity-50'
 
 const BAND_STYLE = {
   STRONG: 'border-success/40 bg-success/15 text-success-text',
@@ -39,7 +34,7 @@ export function TitleCheck({ run }) {
     <ul className="space-y-0.5 text-xs text-text-secondary" aria-label="Title tips">
       {run.titleCheck.map((tip) => (
         <li key={tip}>
-          <span aria-hidden className="text-warning">▲</span> {tip}
+          <span aria-hidden className="text-warning-text">▲</span> {tip}
         </li>
       ))}
     </ul>
@@ -50,7 +45,7 @@ export function Research({ research, open = false }) {
   if (!research?.notes) return null
   return (
     <details open={open} className="rounded-xl border border-border-default bg-input px-4 py-3 text-sm">
-      <summary className="cursor-pointer font-medium">Research notes</summary>
+      <summary className="flex min-h-[32px] cursor-pointer items-center font-medium">Research notes</summary>
       <p className="mt-2 whitespace-pre-line text-text-secondary">{research.notes}</p>
       {research.sources?.length ? (
         <ul className="mt-2 space-y-1 text-xs">
@@ -85,8 +80,8 @@ export function ConceptPicker({ run, styles, busy, onContinue, onDiscard }) {
         {run.concepts.map((c, i) => (
           <label
             key={i}
-            className={`cursor-pointer rounded-xl border p-4 text-sm ${
-              index === i ? 'border-accent-blue bg-accent-blue/10' : 'border-border-default bg-input'
+            className={`cursor-pointer rounded-xl border p-4 text-sm transition-colors duration-200 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent-violet ${
+              index === i ? 'border-accent-violet bg-accent-violet/10 ai-glow' : 'border-border-default bg-input hover:border-accent-violet/40'
             }`}
           >
             <input type="radio" name={`concept-${run.id}`} checked={index === i} onChange={() => choose(i)} className="sr-only" />
@@ -285,7 +280,7 @@ function RedoForm({ scene, index, busy, redoCredits, onRegenerate }) {
           type="button"
           disabled={busy}
           onClick={() => onRegenerate({ scene: index, visual, prompt, query })}
-          className="rounded-lg gradient-bg px-3 py-1.5 font-semibold text-white disabled:opacity-50"
+          className="cursor-pointer rounded-lg ai-gradient px-3 py-1.5 font-semibold text-white disabled:opacity-50"
         >
           Redo
         </button>
@@ -334,10 +329,10 @@ export function FinalReview({ run, busy, onApprove, onDiscard }) {
         poster={run.thumbnailUrl || undefined}
         controls
         playsInline
-        className="aspect-[9/16] w-full max-w-[260px] shrink-0 rounded-xl bg-black object-contain"
+        className="aspect-[9/16] w-full max-w-[320px] shrink-0 self-center rounded-2xl bg-black object-contain shadow-2xl shadow-black/40 sm:w-[300px] sm:self-start"
       />
       <div className="min-w-0 flex-1 space-y-2 text-sm">
-        <p className="font-heading text-[1rem] font-semibold">{run.title}</p>
+        <p className="font-heading text-lg font-semibold">{run.title}</p>
         <p className="whitespace-pre-line text-text-secondary">{run.description}</p>
         {run.tags.length ? <p className="text-xs text-text-tertiary">Tags: {run.tags.join(', ')}</p> : null}
         {run.checks.length ? (
@@ -397,7 +392,7 @@ export function ScriptView({ run }) {
       <button
         type="button"
         onClick={() => navigator.clipboard?.writeText(text)}
-        className="rounded-lg border border-border-default px-3 py-1.5 text-xs font-semibold text-text-secondary hover:text-text-primary"
+        className={secondaryBtn}
       >
         Copy script
       </button>

@@ -11,11 +11,19 @@ const AGENT_GLYPHS = {
   'growth-report': Glyphs.chart,
 }
 
-export function AgentIcon({ slug, kind }) {
+// Shared studio button looks (agent detail page and its panels). 44px tall for touch.
+export const primaryButton =
+  'inline-flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-xl ai-gradient px-5 text-sm font-semibold text-white shadow-lg shadow-accent-violet/25 transition duration-200 hover:shadow-accent-violet/45 hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none disabled:hover:brightness-100'
+export const secondaryButton =
+  'inline-flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-xl border border-border-default bg-elevated/60 px-4 text-sm font-medium text-text-secondary transition-colors duration-200 hover:border-accent-violet/50 hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50'
+export const dangerButton =
+  'inline-flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-xl border border-error/50 px-4 text-sm font-medium text-danger transition-colors duration-200 hover:bg-error/10 disabled:cursor-not-allowed disabled:opacity-50'
+
+export function AgentIcon({ slug, kind, size = 'md' }) {
   return (
     <span
-      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white ${
-        kind === 'large' ? 'gradient-bg' : 'bg-accent-violet'
+      className={`flex shrink-0 items-center justify-center rounded-xl text-white ${size === 'sm' ? 'h-10 w-10' : 'h-11 w-11'} ${
+        kind === 'large' ? 'ai-gradient ai-glow' : 'bg-accent-violet'
       }`}
       aria-hidden
     >
@@ -47,4 +55,9 @@ const RUN_STATUS = {
 export function StatusBadge({ status }) {
   const [label, cls] = RUN_STATUS[status] || [status, RUN_STATUS.queued[1]]
   return <span className={`rounded-full border px-2 py-0.5 text-xs font-semibold ${cls}`}>{label}</span>
+}
+
+/** The "agent is working" pulse. Decorative: pair it with words. */
+export function LiveDot() {
+  return <span aria-hidden className="ai-live-dot" />
 }

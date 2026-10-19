@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
-import { AgentIcon, KindBadge, StatusBadge } from '../components/AgentBits.jsx'
+import { AgentIcon, KindBadge, StatusBadge, primaryButton, secondaryButton } from '../components/AgentBits.jsx'
 import AgentStylePicker from '../components/AgentStylePicker.jsx'
 import { costText, deployAgent, getAgentCatalog, getInbox, listDeployments, PLATFORM_NAMES } from '../utils/agents'
 import { formatCredits } from '../utils/credits'
@@ -302,12 +302,12 @@ export default function AgentsPage() {
               <h2 id="waiting-title" className="font-heading text-lg font-bold">
                 Waiting for you ({waiting.length})
               </h2>
-              <ul className="divide-y divide-border-default overflow-hidden rounded-2xl border border-accent-blue/40 bg-surface">
+              <ul className="glass-card ai-glow divide-y divide-border-default overflow-hidden rounded-2xl">
                 {waiting.map((item) => (
                   <li key={item.runId}>
                     <Link
                       to={`/agents/${item.deploymentId}?run=${item.runId}`}
-                      className="flex flex-wrap items-center gap-3 px-5 py-3 transition hover:bg-elevated"
+                      className="flex min-h-[44px] flex-wrap items-center gap-3 px-5 py-3 transition-colors duration-200 hover:bg-elevated/70"
                     >
                       <span className="min-w-0 flex-1">
                         <span className="block truncate font-medium">{item.title}</span>
@@ -328,12 +328,12 @@ export default function AgentsPage() {
           {deployments.length ? (
             <section className="space-y-3">
               <h2 className="font-heading text-lg font-bold">My agents</h2>
-              <div className="divide-y divide-border-default overflow-hidden rounded-2xl border border-border-default bg-surface">
+              <div className="glass-card divide-y divide-border-default overflow-hidden rounded-2xl">
                 {deployments.map((d) => (
                   <Link
                     key={d.id}
                     to={`/agents/${d.id}`}
-                    className="flex flex-wrap items-center gap-3 px-5 py-4 transition hover:bg-elevated"
+                    className="flex flex-wrap items-center gap-3 px-5 py-4 transition-colors duration-200 hover:bg-elevated/70"
                   >
                     <AgentIcon slug={d.agentType} kind={d.kind} />
                     <div className="min-w-0 flex-1">
@@ -383,7 +383,10 @@ export default function AgentsPage() {
               {shown.map((agent) => {
                 const deployed = deployedBySlug[agent.slug]
                 return (
-                  <article key={agent.slug} className="flex flex-col rounded-2xl border border-border-default bg-surface p-5">
+                  <article
+                    key={agent.slug}
+                    className="glass-card flex flex-col rounded-2xl p-5 transition-[border-color,box-shadow] duration-200 hover:border-accent-violet/40 hover:ai-glow"
+                  >
                     <div className="flex items-start gap-3">
                       <AgentIcon slug={agent.slug} kind={agent.kind} />
                       <div className="min-w-0">
@@ -415,7 +418,7 @@ export default function AgentsPage() {
                     {deployed ? (
                       <Link
                         to={`/agents/${deployed.id}`}
-                        className="mt-5 rounded-xl border border-border-default px-4 py-2 text-center text-sm font-semibold text-text-secondary hover:text-text-primary"
+                        className={`${secondaryButton} mt-5 font-semibold`}
                       >
                         Open
                       </Link>
@@ -424,7 +427,7 @@ export default function AgentsPage() {
                         type="button"
                         onClick={() => setDeploying(agent)}
                         disabled={!project?.id}
-                        className="mt-5 rounded-xl gradient-bg px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                        className={`${primaryButton} mt-5`}
                       >
                         Start
                       </button>

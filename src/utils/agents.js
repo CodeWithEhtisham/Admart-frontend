@@ -102,6 +102,14 @@ export function runTitle(run) {
 /** A Cross-poster run waiting for its scheduled time. */
 export const isScheduled = (run) => run.status === 'queued' && run.step === 'wait'
 
+/** Why a queued run hasn't started, from the real runner status; null when there is nothing worth saying yet. */
+export function waitingText(run, runnerOnline, stuck) {
+  if (run.status !== 'queued' || isScheduled(run)) return null
+  if (runnerOnline === false) return 'The agent runner is offline, so this run will wait until it starts. Your credits are refunded if it fails.'
+  if (runnerOnline && stuck) return 'The agent runner is busy with other runs. This one starts as soon as it is free.'
+  return null
+}
+
 export const whenText = (iso) =>
   new Date(iso).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
 

@@ -23,6 +23,11 @@
   --color-accent-violet: #7C3AED; /* white text on it: 5.7:1 */
   --color-success: #22C55E;
   --color-warning: #EAB308;
+  --color-warning-text: #FACC15; /* warning as TEXT: >= 4.5:1 on dark panels; darker in light theme */
+
+  /* Decorative glow accents (dots, connectors, rings). Never used for text. */
+  --color-glow-violet: #8B5CF6;
+  --color-glow-cyan: #22D3EE;
   --color-error: #EF4444;
 
   --color-border: rgba(255, 255, 255, 0.08);
@@ -63,12 +68,31 @@
   --color-text-tertiary: #5d6477;
   --color-text-muted: #62697c;
   --color-link: #1D4ED8;
-  --color-danger: #DC2626;
+  --color-danger: #B91C1C; /* red-700: >= 4.5:1 on white and on the red-tinted error boxes */
   --color-success-text: #166534;
   --color-violet-text: #6D28D9;
+  --color-warning-text: #92400E;
 
   --color-border: rgba(15, 23, 42, 0.08);
   --color-border-default: rgba(15, 23, 42, 0.12);
+}
+
+/* Glass surface tokens (dark default). Fill stays dark enough that every text token keeps >= 4.5:1. */
+:root {
+  --glass-fill: rgba(30, 41, 59, 0.72);
+  --glass-tint: rgba(139, 92, 246, 0.06);
+  --glass-edge: rgba(255, 255, 255, 0.09);
+  --glass-highlight: rgba(255, 255, 255, 0.06);
+  --glass-shadow: 0 16px 40px -20px rgba(0, 0, 0, 0.6);
+  --glow-strength: 0.45;
+}
+html[data-theme='light'] {
+  --glass-fill: rgba(255, 255, 255, 0.82);
+  --glass-tint: rgba(124, 58, 237, 0.035);
+  --glass-edge: rgba(15, 23, 42, 0.1);
+  --glass-highlight: rgba(255, 255, 255, 0.9);
+  --glass-shadow: 0 10px 28px -16px rgba(15, 23, 42, 0.22);
+  --glow-strength: 0.28;
 }
 
 html {
@@ -154,6 +178,73 @@ body {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--color-border-default);
+}
+
+/* ─── Agent studio: "AI-native glow" ─────────────────────────────── */
+@layer components {
+/* Glassy card: translucent theme-aware fill, a faint violet tint, a 1px light edge and a soft shadow. */
+.glass-card {
+  background-color: var(--glass-fill);
+  background-image: linear-gradient(160deg, var(--glass-tint), transparent 45%);
+  border: 1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow);
+}
+/* Same surface, frosted: for the sticky header and composer that content scrolls under. */
+.glass-card-blur {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* Primary actions. Every stop keeps white text >= 4.5:1 (violet-600 5.7, indigo-600 6.3, cyan-700 5.4). */
+.ai-gradient {
+  background: linear-gradient(120deg, #7C3AED 0%, #4F46E5 50%, #0E7490 100%);
+}
+/* Decorative only (connectors, dots, rings): never put text on it. */
+.ai-gradient-soft {
+  background: linear-gradient(90deg, var(--color-glow-violet), var(--color-glow-cyan));
+}
+
+/* Pulsing "working" dot: a solid core plus an expanding ring. Reduced motion leaves the core only. */
+.ai-live-dot {
+  position: relative;
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, var(--color-glow-violet), var(--color-glow-cyan));
+}
+.ai-live-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  border: 2px solid var(--color-glow-violet);
+  opacity: 0;
+  animation: aiPing 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes aiPing {
+  0% { transform: scale(0.6); opacity: 0.8; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+/* The current step node breathes while the agent works. */
+.ai-node-working {
+  animation: aiBreathe 2s ease-in-out infinite;
+}
+@keyframes aiBreathe {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18), 0 0 14px -2px rgba(34, 211, 238, var(--glow-strength)); }
+  50% { box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.1), 0 0 26px 0 rgba(139, 92, 246, var(--glow-strength)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-live-dot::after { animation: none; }
+  .ai-node-working { animation: none; box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25); }
+}
+}
+
+/* Glow ring for active/primary items; a utility so variants like focus-within: work. */
+@utility ai-glow {
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.35), 0 8px 28px -8px rgba(124, 58, 237, var(--glow-strength)),
+    0 6px 22px -10px rgba(34, 211, 238, var(--glow-strength));
 }
 
 /* ─── Animations ─────────────────────────────────────────────────── */

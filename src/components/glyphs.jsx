@@ -91,4 +91,17 @@ export const Glyphs = {
   send: <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />,
   trash: <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6" />,
   volume: <path d="M11 5L6 9H2v6h4l5 4V5zM15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14" />,
+  check: <path d="M20 6L9 17l-5-5" />,
+  x: <path d="M18 6L6 18M6 6l12 12" />,
+  more: <path d="M5 12h.01M12 12h.01M19 12h.01" strokeWidth="3" />,
+  pause: <path d="M8 5v14M16 5v14" />,
+  arrowRight: <path d="M5 12h14M13 6l6 6-6 6" />,
+  upload: <path d="M12 16V4M7 9l5-5 5 5M4 20h16" />,
+  chevronDown: <path d="M6 9l6 6 6-6" />,
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </>
+  ),
 }
