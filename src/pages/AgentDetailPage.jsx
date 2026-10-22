@@ -4,6 +4,8 @@ import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
 import AgentSchedule from '../components/AgentSchedule.jsx'
 import AgentModelSelect from '../components/AgentModelSelect.jsx'
+import AgentLanguageSelect from '../components/AgentLanguageSelect.jsx'
+import AgentCaptionsSelect from '../components/AgentCaptionsSelect.jsx'
 import AgentTrendSetup from '../components/AgentTrendSetup.jsx'
 import AgentSettingsDialog from '../components/AgentSettingsDialog.jsx'
 import AgentVideoPicker from '../components/AgentVideoPicker.jsx'
@@ -84,6 +86,7 @@ function MoreMenu({ onRemove }) {
           {confirm ? (
             <div className="space-y-3 p-2">
               <p className="text-sm font-medium">Remove this agent?</p>
+              <p className="text-xs text-text-tertiary">Any job it hasn't finished is cancelled and its credits refunded.</p>
               <div className="flex gap-2">
                 <button
                   type="button"
@@ -290,7 +293,13 @@ export default function AgentDetailPage() {
   const running = runs.some((r) => r.status === 'running')
   const active = deployment?.status === 'active'
   const estimate = active ? `About ${formatCredits(agent?.estimatedCredits)} credits. Refunded if it fails.` : 'This agent is paused. Resume it to run.'
-  const modelSelect = deployment ? <AgentModelSelect compact deployment={deployment} onSave={saveModels} /> : null
+  const modelSelect = deployment ? (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+      <AgentModelSelect compact deployment={deployment} onSave={saveModels} />
+      <AgentLanguageSelect deployment={deployment} onSave={saveTrendChoices} />
+      <AgentCaptionsSelect deployment={deployment} onSave={saveTrendChoices} />
+    </div>
+  ) : null
   const field =
     'mt-2 w-full rounded-xl border border-border-default bg-input px-4 text-[15px] text-text-primary transition-colors duration-200 placeholder:text-text-muted focus:border-accent-violet focus:outline-none focus:ring-1 focus:ring-accent-violet'
 

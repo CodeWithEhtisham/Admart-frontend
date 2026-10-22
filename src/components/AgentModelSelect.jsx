@@ -12,7 +12,15 @@ const TITLES = { text: 'AI model', image: 'Image model' }
 export default function AgentModelSelect({ deployment, onSave, compact = false }) {
   const [saving, setSaving] = useState('')
   const [error, setError] = useState('')
-  const choices = deployment?.modelChoices || {}
+  // Writers show their price group: fast ones are included in the run, smarter ones add a flat fee.
+  const choices = Object.fromEntries(
+    Object.entries(deployment?.modelChoices || {}).map(([key, list]) => [
+      key,
+      key === 'text'
+        ? list.map((m) => ({ ...m, strength: [m.strength, Number(m.fee) > 0 ? `+${formatCredits(m.fee)} cr` : 'included'].filter(Boolean).join(' · ') }))
+        : list,
+    ]),
+  )
   const keys = Object.keys(TITLES).filter((key) => choices[key]?.length)
   if (!keys.length) return null
   const unit = creditUnitText(deployment.agent?.creditUnit)

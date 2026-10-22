@@ -39,6 +39,7 @@ import {
   modelsForCapability,
   pollVideoJob,
   promptStats,
+  resolutionAllowed,
   uploadVideoFrame,
   validationMessage,
 } from '../utils/videoGeneration.js'
@@ -56,15 +57,19 @@ function Label({ children }) {
   )
 }
 
-function Chip({ active, onClick, children, className = '' }) {
+function Chip({ active, onClick, children, className = '', disabled = false, title }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
+      title={title}
       className={`rounded-xl border px-3 py-2 text-center text-sm font-medium transition ${
-        active
-          ? 'border-accent-blue bg-accent-blue/10 text-link'
-          : 'border-border-default bg-surface text-text-secondary hover:border-white/10 hover:text-text-primary'
+        disabled
+          ? 'cursor-not-allowed border-border-default bg-surface text-text-tertiary opacity-60'
+          : active
+            ? 'border-accent-blue bg-accent-blue/10 text-link'
+            : 'border-border-default bg-surface text-text-secondary hover:border-white/10 hover:text-text-primary'
       } ${className}`}
     >
       {children}
@@ -366,9 +371,11 @@ export default function VideoGenPage() {
     const resos = fieldOptions(entry, 'resolution')
     setDuration((prev) => (durs?.includes(prev) ? prev : durs?.[0] || ''))
     setAspectRatio((prev) => (aspects?.includes(prev) ? prev : aspects?.[0] || ''))
-    setResolution((prev) => (resos?.includes(prev) ? prev : resos?.[0] || ''))
+    const maxRes = catalog?._plan?.videoMaxResolution
+    const allowedResos = resos?.filter((r) => resolutionAllowed(r, maxRes))
+    setResolution((prev) => (allowedResos?.includes(prev) ? prev : allowedResos?.[0] || ''))
     setGenerateAudio(Boolean(entry.fields?.generateAudio))
-  }, [entry])
+  }, [entry, catalog])
 
   const reloadGallery = useCallback(async () => {
     const pid = project?.id
@@ -748,11 +755,21 @@ export default function VideoGenPage() {
             <div>
               <Label>Resolution</Label>
               <div className="flex flex-wrap gap-2">
-                {resolutions.map((r) => (
-                  <Chip key={r} active={resolution === r} onClick={() => setResolution(r)}>
-                    {r}
-                  </Chip>
-                ))}
+                {resolutions.map((r) => {
+                  const allowed = resolutionAllowed(r, catalog?._plan?.videoMaxResolution)
+                  return (
+                    <Chip
+                      key={r}
+                      active={resolution === r}
+                      disabled={!allowed}
+                      title={allowed ? undefined : 'Needs a higher plan'}
+                      onClick={() => setResolution(r)}
+                    >
+                      {r}
+                      {allowed ? null : <span className="sr-only"> (needs a higher plan)</span>}
+                    </Chip>
+                  )
+                })}
               </div>
             </div>
           ) : null}

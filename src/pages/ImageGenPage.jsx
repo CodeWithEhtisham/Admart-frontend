@@ -62,15 +62,19 @@ function Label({ children }) {
   )
 }
 
-function Chip({ active, onClick, children, className = '' }) {
+function Chip({ active, onClick, children, className = '', disabled = false, title }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
+      title={title}
       className={`rounded-xl border px-3 py-2 text-center text-sm font-medium transition ${
-        active
-          ? 'border-accent-blue bg-accent-blue/10 text-link'
-          : 'border-border-default bg-surface text-text-secondary hover:border-white/10 hover:text-text-primary'
+        disabled
+          ? 'cursor-not-allowed border-border-default bg-surface text-text-tertiary opacity-60'
+          : active
+            ? 'border-accent-blue bg-accent-blue/10 text-link'
+            : 'border-border-default bg-surface text-text-secondary hover:border-white/10 hover:text-text-primary'
       } ${className}`}
     >
       {children}
@@ -908,16 +912,23 @@ export default function ImageGenPage() {
                 <div>
                   <Label>Resolution</Label>
                   <div className="flex gap-2">
-                    {['0.5K', '1K', '2K', '4K'].map((r) => (
-                      <Chip
-                        key={r}
-                        active={resolution === r}
-                        onClick={() => setResolution(r)}
-                        className="flex-1"
-                      >
-                        {r}
-                      </Chip>
-                    ))}
+                    {['0.5K', '1K', '2K', '4K'].map((r) => {
+                      // 4K images are on the Pro plan (imageCatalog._plan comes from the backend).
+                      const locked = r === '4K' && imageCatalog?._plan?.imageMaxResolution === '2k'
+                      return (
+                        <Chip
+                          key={r}
+                          active={resolution === r}
+                          disabled={locked}
+                          title={locked ? 'Needs the Pro plan' : undefined}
+                          onClick={() => setResolution(r)}
+                          className="flex-1"
+                        >
+                          {r}
+                          {locked ? <span className="sr-only"> (needs the Pro plan)</span> : null}
+                        </Chip>
+                      )
+                    })}
                   </div>
                 </div>
               )}

@@ -92,6 +92,16 @@ export function estimateJobCost(byCapability, capability, numImages = 1) {
   return Number(unit)
 }
 
+/** 1536 → "2 KB", 5.3e9 → "4.9 GB" (binary units, like the server's limits). */
+export function formatBytes(bytes) {
+  const n = Number(bytes)
+  if (!Number.isFinite(n) || n <= 0) return '0 GB'
+  const gb = n / 1024 ** 3
+  if (gb >= 1) return `${gb >= 100 ? Math.round(gb) : gb.toFixed(1).replace(/\.0$/, '')} GB`
+  const mb = n / 1024 ** 2
+  return mb >= 1 ? `${Math.round(mb)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`
+}
+
 export function formatPlanName(plan) {
   if (!plan) return '—'
   return String(plan).charAt(0).toUpperCase() + String(plan).slice(1)

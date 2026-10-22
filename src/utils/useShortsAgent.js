@@ -67,8 +67,9 @@ export default function useShortsAgent() {
     }
   }
 
-  const saveModels = async (models) =>
-    setShorts(await updateDeployment(projectId, shorts.id, { config: { ...(shorts.config || {}), models } }))
+  const saveConfig = async (patch) =>
+    setShorts(await updateDeployment(projectId, shorts.id, { config: { ...(shorts.config || {}), ...patch } }))
+  const saveModels = (models) => saveConfig({ models })
 
-  return { shorts, queued, busy, error, ensureShorts, makeShort, addToAutopilot, saveModels }
+  return { shorts, queued, busy, error, ensureShorts, makeShort, addToAutopilot, saveModels, saveConfig }
 }

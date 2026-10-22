@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import useShortsAgent from '../utils/useShortsAgent'
 import { HookScore } from './AgentRunViews.jsx'
+import AgentMakeShort from './AgentMakeShort.jsx'
 
 const btn =
   'rounded-lg border border-border-default px-3 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50'
@@ -50,7 +52,8 @@ function List({ title, items }) {
 
 /** A Growth Report: verdict, numbers vs the previous period, what worked, and the next-period plan. */
 export default function AgentReport({ run }) {
-  const { shorts, queued, busy, error, makeShort, addToAutopilot } = useShortsAgent()
+  const { shorts, queued, busy, error, makeShort, addToAutopilot, saveModels, saveConfig } = useShortsAgent()
+  const [confirming, setConfirming] = useState('')
   const report = run.report
   const numbers = run.numbers || {}
   if (!report) return null
@@ -190,7 +193,13 @@ export default function AgentReport({ run }) {
               {p.why ? <p className="mt-1 text-xs text-text-tertiary">Why: {p.why}</p> : null}
               {shorts ? (
                 <div className="mt-2 flex flex-wrap gap-2">
-                  <button type="button" className={btn} disabled={Boolean(busy)} onClick={() => makeShort(p.topic)}>
+                  <button
+                    type="button"
+                    className={btn}
+                    disabled={Boolean(busy)}
+                    aria-expanded={confirming === p.topic}
+                    onClick={() => setConfirming(confirming === p.topic ? '' : p.topic)}
+                  >
                     {busy === p.topic ? 'Working…' : 'Make a Short'}
                   </button>
                   <button
@@ -202,6 +211,17 @@ export default function AgentReport({ run }) {
                     {queued.has(p.topic) ? '✓ In Autopilot queue' : 'Add to Autopilot'}
                   </button>
                 </div>
+              ) : null}
+              {shorts && confirming === p.topic ? (
+                <AgentMakeShort
+                  shorts={shorts}
+                  topic={p.topic}
+                  busy={busy}
+                  onStart={makeShort}
+                  onCancel={() => setConfirming('')}
+                  saveModels={saveModels}
+                  saveConfig={saveConfig}
+                />
               ) : null}
             </li>
           ))}

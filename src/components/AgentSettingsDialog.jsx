@@ -119,7 +119,7 @@ export default function AgentSettingsDialog({ deployment, onClose, onSave }) {
                   checked={(config.checkpoints || 'all') === 'all'}
                   onChange={(e) => set({ checkpoints: e.target.checked ? 'all' : 'final' })}
                 />
-                {video ? 'Let me review the cuts before the video is made' : 'Let me check each step (idea, script, pictures)'}
+                {video ? 'Let me review the cuts before the video is made' : 'Let me check the script first (scheduled runs skip this)'}
               </label>
               {video ? (
                 <label className="flex min-h-[44px] cursor-pointer items-center gap-3">

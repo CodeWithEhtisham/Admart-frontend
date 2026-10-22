@@ -2,9 +2,8 @@ import { useState } from 'react'
 import useShortsAgent from '../utils/useShortsAgent'
 import { HookScore } from './AgentRunViews.jsx'
 import { trendSummary } from '../utils/trends'
-import { formatCredits } from '../utils/credits'
-import AgentModelSelect from './AgentModelSelect.jsx'
-import { primaryButton, secondaryButton as btn } from './AgentBits.jsx'
+import AgentMakeShort from './AgentMakeShort.jsx'
+import { secondaryButton as btn } from './AgentBits.jsx'
 
 const MOMENTUM = {
   rising: { label: 'Rising', glyph: '↗', tone: 'bg-success/10 text-success-text' },
@@ -21,7 +20,7 @@ const hostname = (uri) => {
 
 /** Trend Finder results: each trend can start a Short or join the Shorts agent's Autopilot queue. */
 export default function AgentTrendList({ run }) {
-  const { shorts, queued, busy, error, ensureShorts, makeShort, addToAutopilot, saveModels } = useShortsAgent()
+  const { shorts, queued, busy, error, ensureShorts, makeShort, addToAutopilot, saveModels, saveConfig } = useShortsAgent()
   const [confirming, setConfirming] = useState('')
   const summary = trendSummary(run)
 
@@ -90,28 +89,15 @@ export default function AgentTrendList({ run }) {
               ) : null}
             </div>
             {confirming === t.topic && shorts ? (
-              <div className="mt-3 space-y-3 rounded-xl border border-accent-violet/40 bg-accent-violet/5 p-3">
-                <p className="text-sm font-medium">Make a Short about this</p>
-                <AgentModelSelect deployment={shorts} onSave={saveModels} />
-                <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    className={primaryButton}
-                    disabled={Boolean(busy)}
-                    onClick={() => makeShort(t.topic)}
-                  >
-                    {busy === t.topic ? 'Starting…' : 'Start the Short'}
-                  </button>
-                  <button type="button" className={btn} disabled={Boolean(busy)} onClick={() => setConfirming('')}>
-                    Cancel
-                  </button>
-                  {shorts.estimatedCredits ? (
-                    <span className="text-xs text-text-tertiary">
-                      About {formatCredits(shorts.estimatedCredits)} credits. Refunded if it fails.
-                    </span>
-                  ) : null}
-                </div>
-              </div>
+              <AgentMakeShort
+                shorts={shorts}
+                topic={t.topic}
+                busy={busy}
+                onStart={makeShort}
+                onCancel={() => setConfirming('')}
+                saveModels={saveModels}
+                saveConfig={saveConfig}
+              />
             ) : null}
             {t.sources?.length ? (
               <div className="mt-3 text-xs">

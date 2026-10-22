@@ -2,17 +2,10 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout.jsx'
 import Topbar from '../components/Topbar'
-import { AgentIcon, KindBadge, StatusBadge, primaryButton, secondaryButton } from '../components/AgentBits.jsx'
+import { AgentIcon, LiveDot } from '../components/AgentBits.jsx'
 import AgentStylePicker from '../components/AgentStylePicker.jsx'
-import { costText, deployAgent, getAgentCatalog, getInbox, listDeployments, PLATFORM_NAMES } from '../utils/agents'
-import { formatCredits } from '../utils/credits'
+import { AGENT_STEPS, costText, deployAgent, getAgentCatalog, getInbox, listDeployments, PLATFORM_NAMES, whenText } from '../utils/agents'
 import { getCachedActiveProject, listSocialAccounts, PROJECT_CHANGE_EVENT } from '../utils/projects'
-
-const TABS = [
-  ['all', 'All'],
-  ['small', 'Single tasks'],
-  ['large', 'Full automations'],
-]
 
 const fieldClass =
   'mt-1 w-full rounded-xl border border-border-default bg-input px-3 py-2.5 text-sm text-text-primary focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue'
@@ -154,11 +147,11 @@ function DeployDialog({ agent, projectId, onClose, onDeployed }) {
                       onChange={(e) => setCheckpoints(e.target.checked ? 'all' : 'final')}
                     />
                     <span>
-                      <span className="block">{video ? 'Let me review the cuts' : 'Let me check each step'}</span>
+                      <span className="block">{video ? 'Let me review the cuts' : 'Let me check the script first'}</span>
                       <span className="text-xs text-text-tertiary">
                         {video
                           ? 'See what will be cut and fix caption spelling before the video is made.'
-                          : 'Pick the concept, edit the script and check the pictures before the video is made.'}
+                          : 'See the idea, script and caption, change them or pick another idea, before the video is made. Scheduled runs skip this.'}
                       </span>
                     </span>
                   </label>
@@ -227,13 +220,127 @@ function DeployDialog({ agent, projectId, onClose, onDeployed }) {
   )
 }
 
+// The catalog grouped by what people want done, instead of by how the agent is built.
+const GOALS = [
+  { id: 'videos', title: 'Make videos', hint: 'From an idea or a trending topic to a finished Short.', slugs: ['youtube-shorts', 'trend-finder', 'script-writer', 'voiceover'] },
+  { id: 'repurpose', title: 'Edit and reuse your videos', hint: 'Clean up, cut into clips, or post one video everywhere.', slugs: ['video-editor', 'clip-maker', 'cross-poster'] },
+  { id: 'grow', title: 'Grow your channels', hint: 'See what worked and what to do next.', slugs: ['growth-report'] },
+]
+
+const TONES = {
+  working: 'border-accent-blue/40 bg-accent-blue/15 text-link',
+  waiting: 'border-warning/50 bg-warning/15 text-warning-text',
+  scheduled: 'border-accent-violet/40 bg-accent-violet/15 text-violet-text',
+  failed: 'border-error/40 bg-error/10 text-danger',
+  ready: 'border-success/40 bg-success/15 text-success-text',
+  off: 'border-border-default bg-elevated text-text-tertiary',
+}
+
+/** What an added agent is doing right now, in plain words, and the one thing to do about it. */
+function agentState(d) {
+  const run = d.latestRun
+  const open = `/agents/${d.id}`
+  if (d.status === 'paused') return { tone: 'off', label: 'Paused', text: 'Switched off. It will not run until you turn it back on.', action: 'Open', to: open }
+  if (run?.status === 'needs_review')
+    return { tone: 'waiting', label: 'Waiting for you', text: `${run.title || 'Your result'} is ready. Check it before anything is posted.`, action: 'Review now', to: `${open}?run=${run.id}` }
+  if (run?.status === 'running')
+    return { tone: 'working', live: true, label: 'Working now', text: `${AGENT_STEPS[run.step]?.[1] || 'Getting started.'}`, action: 'Watch progress', to: `${open}?run=${run.id}` }
+  if (run?.status === 'queued' && run.step === 'wait')
+    return { tone: 'scheduled', label: 'Post scheduled', text: `${run.title || 'Your post'} goes out at the time you picked.`, action: 'Open', to: `${open}?run=${run.id}` }
+  if (run?.status === 'queued') return { tone: 'working', label: 'Starting', text: 'It starts in a moment.', action: 'Watch progress', to: `${open}?run=${run.id}` }
+  if (d.autopilot && d.nextRunAt)
+    return { tone: 'scheduled', label: 'On Autopilot', text: `Next run ${whenText(d.nextRunAt)}. It runs by itself; you approve before it posts.`, action: 'Open', to: open }
+  if (run?.status === 'failed') return { tone: 'failed', label: 'Last run failed', text: 'Open it to see what went wrong and try again. Credits for a failed run are refunded.', action: 'Open', to: `${open}?run=${run.id}` }
+  return {
+    tone: 'ready',
+    label: 'Ready',
+    text: run ? `Not running now. Last result: ${run.title || 'done'}.` : 'Not used yet. Start your first run.',
+    action: 'Start a run',
+    to: open,
+  }
+}
+
+function StatePill({ state }) {
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${TONES[state.tone]}`}>
+      {state.live ? <LiveDot /> : <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-current" />}
+      {state.label}
+    </span>
+  )
+}
+
+const smallButton =
+  'inline-flex min-h-[36px] shrink-0 cursor-pointer items-center justify-center rounded-lg px-3 text-xs font-semibold transition duration-200 disabled:cursor-not-allowed disabled:opacity-50'
+
+/** One compact row per added agent: name, what it is doing now, and the one thing to do. */
+function MyAgentCard({ d }) {
+  const state = agentState(d)
+  return (
+    <article className="glass-card flex items-center gap-3 rounded-2xl p-3.5">
+      <AgentIcon slug={d.agentType} kind={d.kind} size="sm" />
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <h3 className="truncate text-sm font-bold">{d.name}</h3>
+          <StatePill state={state} />
+        </div>
+        <p className="mt-0.5 line-clamp-2 text-xs text-text-tertiary" title={state.text}>
+          {state.text}
+        </p>
+      </div>
+      <Link
+        to={state.to}
+        className={`${smallButton} ${
+          state.tone === 'waiting'
+            ? 'ai-gradient text-white'
+            : 'border border-border-default bg-elevated/60 text-text-secondary hover:border-accent-violet/50 hover:text-text-primary'
+        }`}
+      >
+        {state.action}
+      </Link>
+    </article>
+  )
+}
+
+/** One line per agent you can add; the full description is one hover or focus away. */
+function CatalogRow({ agent, disabled, onAdd }) {
+  const extra = [costText(agent), agent.needs.length ? `posts to ${agent.needs.map((p) => PLATFORM_NAMES[p] || p).join(', ')}` : '']
+    .filter(Boolean)
+    .join(' · ')
+  return (
+    <li className="flex items-center gap-3 px-3.5 py-3">
+      <AgentIcon slug={agent.slug} kind={agent.kind} size="sm" />
+      <div className="min-w-0 flex-1" title={`${agent.description}\n\n${extra}`}>
+        <p className="truncate text-sm font-semibold">{agent.name}</p>
+        <p className="line-clamp-2 text-xs text-text-tertiary">{agent.description}</p>
+      </div>
+      {agent.requiredPlan ? (
+        <Link
+          to="/billing"
+          className={`${smallButton} border border-border-default text-text-secondary hover:text-text-primary`}
+        >
+          Upgrade
+        </Link>
+      ) : (
+        <button
+          type="button"
+          onClick={() => onAdd(agent)}
+          disabled={disabled}
+          aria-label={`Add ${agent.name}`}
+          className={`${smallButton} border border-accent-violet/50 bg-accent-violet/15 text-text-primary hover:bg-accent-violet/30`}
+        >
+          + Add
+        </button>
+      )}
+    </li>
+  )
+}
+
 export default function AgentsPage() {
   const navigate = useNavigate()
   const [project, setProject] = useState(() => getCachedActiveProject())
   const [catalog, setCatalog] = useState([])
   const [deployments, setDeployments] = useState([])
   const [waiting, setWaiting] = useState([])
-  const [tab, setTab] = useState('all')
   const [deploying, setDeploying] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -265,20 +372,23 @@ export default function AgentsPage() {
     return () => window.removeEventListener(PROJECT_CHANGE_EVENT, load)
   }, [load])
 
-  // Full automations first: the Shorts agent is the main thing people come here for.
-  const shown = catalog
-    .filter((a) => tab === 'all' || a.kind === tab)
-    .sort((a, b) => (a.kind === 'large' ? 0 : 1) - (b.kind === 'large' ? 0 : 1))
   const deployedBySlug = Object.fromEntries(deployments.map((d) => [d.agentType, d]))
+  const grouped = new Set(GOALS.flatMap((g) => g.slugs))
+  // Agents already added live under "My agents", so the catalog only offers the rest.
+  const available = catalog.filter((a) => !deployedBySlug[a.slug])
+  const goals = [
+    ...GOALS.map((g) => ({ ...g, agents: g.slugs.map((slug) => available.find((a) => a.slug === slug)).filter(Boolean) })),
+    { id: 'more', title: 'More agents', hint: '', agents: available.filter((a) => !grouped.has(a.slug)) },
+  ].filter((g) => g.agents.length)
 
   return (
     <AppLayout>
       <div className="flex min-h-screen flex-col">
         <Topbar title="Agents" />
-        <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-6xl flex-1 space-y-8 p-4 text-text-primary sm:p-7">
+        <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-6xl flex-1 space-y-6 p-4 text-text-primary sm:p-6">
           <p className="max-w-2xl text-sm text-text-secondary">
-            Agents do the work for you. Single-task agents do one job. Full automations chain several jobs into a
-            finished result, and always ask for your approval before anything is posted.
+            Agents work for you in the background. Add one, give it a topic or a video, and it does the job. You
+            always approve before anything is posted.
           </p>
 
           {error ? (
@@ -300,22 +410,22 @@ export default function AgentsPage() {
           {waiting.length ? (
             <section className="space-y-3" aria-labelledby="waiting-title">
               <h2 id="waiting-title" className="font-heading text-lg font-bold">
-                Waiting for you ({waiting.length})
+                Needs you ({waiting.length})
               </h2>
-              <ul className="glass-card ai-glow divide-y divide-border-default overflow-hidden rounded-2xl">
+              <ul className="divide-y divide-warning/20 overflow-hidden rounded-2xl border border-warning/40 bg-warning/5">
                 {waiting.map((item) => (
                   <li key={item.runId}>
                     <Link
                       to={`/agents/${item.deploymentId}?run=${item.runId}`}
-                      className="flex min-h-[44px] flex-wrap items-center gap-3 px-5 py-3 transition-colors duration-200 hover:bg-elevated/70"
+                      className="flex min-h-[44px] flex-wrap items-center gap-3 px-5 py-3 transition-colors duration-200 hover:bg-warning/10"
                     >
                       <span className="min-w-0 flex-1">
                         <span className="block truncate font-medium">{item.title}</span>
-                        <span className="block text-xs text-text-tertiary">{item.agent}</span>
+                        <span className="block text-xs text-text-tertiary">{item.agent} finished this and is waiting for your OK</span>
                       </span>
-                      <span className="text-sm font-medium text-link">
-                        {{ concept: 'Pick a concept', script: 'Review script', storyboard: 'Review storyboard' }[item.step] ||
-                          'Review Short'}{' '}
+                      <span className="text-sm font-semibold text-warning-text">
+                        {{ concept: 'Pick an idea', script: 'Check the script', storyboard: 'Check the pictures' }[item.step] ||
+                          'Review now'}{' '}
                         →
                       </span>
                     </Link>
@@ -326,117 +436,38 @@ export default function AgentsPage() {
           ) : null}
 
           {deployments.length ? (
-            <section className="space-y-3">
-              <h2 className="font-heading text-lg font-bold">My agents</h2>
-              <div className="glass-card divide-y divide-border-default overflow-hidden rounded-2xl">
+            <section className="space-y-3" aria-labelledby="mine-title">
+              <h2 id="mine-title" className="font-heading text-lg font-bold">
+                My agents
+              </h2>
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                 {deployments.map((d) => (
-                  <Link
-                    key={d.id}
-                    to={`/agents/${d.id}`}
-                    className="flex flex-wrap items-center gap-3 px-5 py-4 transition-colors duration-200 hover:bg-elevated/70"
-                  >
-                    <AgentIcon slug={d.agentType} kind={d.kind} />
-                    <div className="min-w-0 flex-1">
-                      <p className="font-medium">{d.name}</p>
-                      <p className="text-xs text-text-tertiary">
-                        {formatCredits(d.creditsThisMonth)} credits this month
-                        {d.monthlyCreditLimit ? ` of ${formatCredits(d.monthlyCreditLimit)}` : ''}
-                      </p>
-                    </div>
-                    {d.autopilot ? (
-                      <span className="rounded-full border border-accent-blue/60 bg-accent-blue/15 px-2 py-0.5 text-xs font-semibold text-text-primary">
-                        Autopilot
-                      </span>
-                    ) : null}
-                    <StatusBadge status={d.status} />
-                    <span className="text-sm font-medium text-link">Open →</span>
-                  </Link>
+                  <MyAgentCard key={d.id} d={d} />
                 ))}
               </div>
             </section>
           ) : null}
 
-          <section className="space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="font-heading text-lg font-bold">Agent catalog</h2>
-              <div role="tablist" aria-label="Agent type" className="flex gap-1 rounded-xl border border-border-default bg-input p-1">
-                {TABS.map(([id, label]) => (
-                  <button
-                    key={id}
-                    type="button"
-                    role="tab"
-                    aria-selected={tab === id}
-                    onClick={() => setTab(id)}
-                    className={`rounded-lg px-3 py-1.5 text-sm font-semibold ${
-                      tab === id ? 'bg-elevated text-text-primary' : 'text-text-tertiary hover:text-text-primary'
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
+          <section className="space-y-3" aria-labelledby="add-title">
+            <h2 id="add-title" className="font-heading text-lg font-bold">
+              {deployments.length ? 'Add another agent' : 'Add your first agent'}
+            </h2>
             {loading ? <p className="text-sm text-text-tertiary">Loading agents…</p> : null}
-
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {shown.map((agent) => {
-                const deployed = deployedBySlug[agent.slug]
-                return (
-                  <article
-                    key={agent.slug}
-                    className="glass-card flex flex-col rounded-2xl p-5 transition-[border-color,box-shadow] duration-200 hover:border-accent-violet/40 hover:ai-glow"
-                  >
-                    <div className="flex items-start gap-3">
-                      <AgentIcon slug={agent.slug} kind={agent.kind} />
-                      <div className="min-w-0">
-                        <h3 className="font-heading font-bold">{agent.name}</h3>
-                        <div className="mt-1">
-                          <KindBadge kind={agent.kind} />
-                        </div>
-                      </div>
-                    </div>
-                    <p className="mt-3 flex-1 text-sm text-text-secondary">{agent.description}</p>
-                    <dl className="mt-4 space-y-1 text-xs text-text-tertiary">
-                      {agent.uses.length ? (
-                        <div>
-                          <dt className="inline">Built from: </dt>
-                          <dd className="inline">{agent.uses.join(', ')}</dd>
-                        </div>
-                      ) : null}
-                      {agent.needs.length ? (
-                        <div>
-                          <dt className="inline">Needs: </dt>
-                          <dd className="inline">{agent.needs.map((p) => PLATFORM_NAMES[p] || p).join(', ')}</dd>
-                        </div>
-                      ) : null}
-                      <div>
-                        <dt className="inline">Cost: </dt>
-                        <dd className="inline">{costText(agent)}</dd>
-                      </div>
-                    </dl>
-                    {deployed ? (
-                      <Link
-                        to={`/agents/${deployed.id}`}
-                        className={`${secondaryButton} mt-5 font-semibold`}
-                      >
-                        Open
-                      </Link>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => setDeploying(agent)}
-                        disabled={!project?.id}
-                        className={`${primaryButton} mt-5`}
-                      >
-                        Start
-                      </button>
-                    )}
-                  </article>
-                )
-              })}
+            <div className="grid items-start gap-4 lg:grid-cols-3">
+              {goals.map((goal) => (
+                <div key={goal.id} className="glass-card overflow-hidden rounded-2xl">
+                  <div className="border-b border-border-default px-3.5 py-3">
+                    <h3 className="text-sm font-semibold">{goal.title}</h3>
+                    {goal.hint ? <p className="text-xs text-text-tertiary">{goal.hint}</p> : null}
+                  </div>
+                  <ul className="divide-y divide-border-default">
+                    {goal.agents.map((agent) => (
+                      <CatalogRow key={agent.slug} agent={agent} disabled={!project?.id} onAdd={setDeploying} />
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
-            {!loading ? <p className="text-sm text-text-tertiary">More agents are on the way.</p> : null}
           </section>
         </main>
       </div>

@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { formatCredits, getPlans } from '../utils/credits'
 import { isAuthenticated } from '../utils/auth'
 import { PillButton, SiteFooter, SiteHeader } from '../components/SiteChrome'
 import { SECTIONS } from '../utils/site'
+
+const AgentLineFigure = lazy(() => import('../components/agentLine/AgentLineFigure'))
 
 const lm = (file) => `/leonardo-media/${file}`
 const posterOf = (video) =>
@@ -654,6 +656,21 @@ export default function LandingPage() {
           <PillButton href="#showcase" variant="ring">
             View all models →
           </PillButton>
+        </div>
+      </section>
+
+      {/* ─── Agents ──────────────────────────────────────────────── */}
+      <section id="agents" className="scroll-mt-20 bg-black px-3 py-24 sm:px-6 xl:px-8">
+        <SectionHead
+          eyebrow="Agents"
+          sub="Set a schedule once. Each run writes, voices, illustrates and renders a video, waits for your OK, then posts it everywhere you're connected."
+        >
+          From idea to every feed
+        </SectionHead>
+        <div className="rv rv-up mx-auto max-w-[1100px]">
+          <Suspense fallback={<div className="aspect-[16/11] w-full rounded-2xl bg-[#131313]" />}>
+            <AgentLineFigure />
+          </Suspense>
         </div>
       </section>
 

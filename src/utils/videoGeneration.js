@@ -881,7 +881,17 @@ export function modelsForCapability(capability, catalog = getVideoCatalog()) {
 
 export function defaultModel(capability, catalog = getVideoCatalog()) {
   const models = modelsForCapability(capability, catalog)
-  return models.find((m) => m.default)?.id || models[0]?.id
+  const open = models.filter((m) => !m.requiredPlan) // models the user's plan includes
+  return (open.find((m) => m.default) || open[0] || models.find((m) => m.default) || models[0])?.id
+}
+
+// Output quality, lowest first (same order as the backend's users/entitlements.py).
+const RESOLUTION_RANK = { '360p': 0, '480p': 1, '540p': 1, '720p': 2, '768p': 2, '1080p': 3, '2k': 4, '1440p': 4, '4k': 5 }
+
+/** Whether the plan's quality cap (catalog._plan.videoMaxResolution) allows this resolution. */
+export function resolutionAllowed(resolution, max) {
+  if (!max) return true
+  return (RESOLUTION_RANK[String(resolution).toLowerCase()] ?? 0) <= (RESOLUTION_RANK[String(max).toLowerCase()] ?? 5)
 }
 
 export function getModelEntry(capability, modelId, catalog = getVideoCatalog()) {

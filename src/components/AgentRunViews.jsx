@@ -143,8 +143,36 @@ export function ScriptEditor({ run, busy, onContinue, onDiscard }) {
   const words = scenes.reduce((n, s) => n + s.narration.split(/\s+/).filter(Boolean).length, 0)
   const valid = scenes.length >= MIN_SCENES && scenes.every((s) => s.narration.trim() && s.image_prompt.trim())
 
+  const others = (run.concepts || []).map((c, i) => ({ ...c, i })).filter((c) => c.title !== run.concept?.title)
+
   return (
     <div className="space-y-4">
+      {run.concept ? (
+        <div className="rounded-xl border border-border-default bg-input p-3 text-sm">
+          <p className="text-xs text-text-tertiary">Idea</p>
+          <p className="font-semibold">{run.concept.title}</p>
+          {run.concept.hook ? <p className="mt-1 text-text-secondary">“{run.concept.hook}”</p> : null}
+          <div className="mt-2">
+            <HookScore concept={run.concept} />
+          </div>
+          {others.length ? (
+            <details className="mt-3">
+              <summary className="cursor-pointer text-xs font-medium text-link">Other ideas ({others.length})</summary>
+              <ul className="mt-2 space-y-2">
+                {others.map((c) => (
+                  <li key={c.i} className="rounded-lg border border-border-default p-3">
+                    <p className="font-medium">{c.title}</p>
+                    {c.hook ? <p className="mt-1 text-text-secondary">“{c.hook}”</p> : null}
+                    <button type="button" disabled={busy} onClick={() => onContinue({ concept: c.i })} className={`mt-2 ${secondaryBtn}`}>
+                      Use this idea instead
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          ) : null}
+        </div>
+      ) : null}
       <p className="text-sm text-text-secondary">
         Edit anything before the voice and visuals are made. About {words} words ≈ {Math.round(words / 2.6)} seconds.
       </p>

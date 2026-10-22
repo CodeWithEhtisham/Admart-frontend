@@ -5,6 +5,7 @@ import Topbar from '../components/Topbar'
 import { SUPPORT_EMAIL } from '../utils/site'
 import {
   CAPABILITY_LABELS,
+  formatBytes,
   formatCredits,
   formatCreditDate,
   formatPlanName,
@@ -73,6 +74,7 @@ export default function BillingPage() {
   const [myPayments, setMyPayments] = useState([])
   const [selectedPlanId, setSelectedPlanId] = useState(null)
   const [selectedPackId, setSelectedPackId] = useState(null)
+  const [storageSelected, setStorageSelected] = useState(false)
   const [screenshot, setScreenshot] = useState(null)
   const [transactionId, setTransactionId] = useState('')
   const [note, setNote] = useState('')
@@ -129,15 +131,20 @@ export default function BillingPage() {
   const lastRejected = myPayments.find((p) => p.status === 'failed') || null
   const selectedPlan = plans.find((p) => p.id === selectedPlanId) || null
   const selectedPack = topupPacks.find((p) => p.id === selectedPackId) || null
+  const storage = balance?.storage || null
+  const storageAddon = storage?.addon || null
   const selectedTarget = selectedPlan
     ? { type: 'subscription', ...selectedPlan, title: selectedPlan.name }
     : selectedPack
       ? { type: 'topup', ...selectedPack, title: selectedPack.name }
-      : null
+      : storageSelected && storageAddon
+        ? { type: 'storage', ...storageAddon, name: `${storageAddon.name} (+${storageAddon.gb} GB)` }
+        : null
 
   const handleSelectPlan = useCallback((planId) => {
     setSelectedPlanId(planId)
     setSelectedPackId(null)
+    setStorageSelected(false)
     setScreenshot(null)
     setTransactionId('')
     setNote('')
@@ -148,6 +155,18 @@ export default function BillingPage() {
   const handleSelectPack = useCallback((packId) => {
     setSelectedPackId(packId)
     setSelectedPlanId(null)
+    setStorageSelected(false)
+    setScreenshot(null)
+    setTransactionId('')
+    setNote('')
+    setSubmitError(null)
+    document.getElementById('payment-section')?.scrollIntoView({ behavior: 'smooth' })
+  }, [])
+
+  const handleSelectStorage = useCallback(() => {
+    setStorageSelected(true)
+    setSelectedPlanId(null)
+    setSelectedPackId(null)
     setScreenshot(null)
     setTransactionId('')
     setNote('')
@@ -178,6 +197,8 @@ export default function BillingPage() {
       if (selectedTarget.type === 'topup') {
         form.append('paymentType', 'topup')
         form.append('pack', selectedTarget.id)
+      } else if (selectedTarget.type === 'storage') {
+        form.append('paymentType', 'storage')
       } else {
         form.append('paymentType', 'subscription')
         form.append('plan', selectedTarget.id)
@@ -193,8 +214,10 @@ export default function BillingPage() {
         setNote('')
         setSelectedPlanId(null)
         setSelectedPackId(null)
+        setStorageSelected(false)
         await load()
-        document.getElementById(selectedTarget.type === 'topup' ? 'billing-topups' : 'billing-plans')?.scrollIntoView({ behavior: 'smooth' })
+        const section = { topup: 'billing-topups', storage: 'billing-storage' }[selectedTarget.type] || 'billing-plans'
+        document.getElementById(section)?.scrollIntoView({ behavior: 'smooth' })
       } catch (err) {
         const data = err?.response?.data
         const message =
@@ -228,6 +251,9 @@ export default function BillingPage() {
   const resetLabel = balance?.creditsResetAt ? formatCreditDate(balance.creditsResetAt) : ''
   const hasActivePaidPlan =
     planKey !== 'free' && Boolean(balance?.creditsResetAt) && new Date(balance.creditsResetAt) > new Date()
+  const storagePct = storage?.limitBytes > 0 ? Math.min(100, (storage.usedBytes / storage.limitBytes) * 100) : 0
+  const storageLow = storagePct >= 90
+  const storageInProcess = pendingPayment?.paymentType === 'storage'
 
   return (
     <AppLayout>
@@ -354,9 +380,10 @@ export default function BillingPage() {
             </div>
           )}
 
-          <div className="mt-5 grid gap-4 md:grid-cols-3">
+          <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {plans.map((plan) => {
               const active = plan.id === planKey
+              const free = Number(plan.priceUsd) === 0 // Starter: nothing to buy
               const inProcess = pendingPayment?.plan === plan.id
               const blockedByPending = Boolean(pendingPayment) && !inProcess
               const isSelected = selectedPlanId === plan.id
@@ -378,12 +405,12 @@ export default function BillingPage() {
                   )}
                   <p className="font-heading text-2xl font-bold text-text-primary">{plan.name}</p>
                   <p className="mt-1 text-sm text-text-tertiary">{plan.description}</p>
-                  <p className="mt-4 text-2xl font-semibold text-text-primary">${plan.priceUsd} / month</p>
+                  <p className="mt-4 text-2xl font-semibold text-text-primary">{free ? 'Free' : `$${plan.priceUsd} / month`}</p>
                   <p className="mt-1 text-sm text-text-tertiary">
-                    PKR {Number(plan.pricePkr || 0).toLocaleString()} approx
+                    {free ? 'No card needed' : `PKR ${Number(plan.pricePkr || 0).toLocaleString()} approx`}
                   </p>
                   <p className="mt-3 rounded-xl border border-border bg-panel px-3 py-2 font-mono text-sm font-semibold text-link">
-                    {formatCredits(plan.monthlyCredits)} credits monthly
+                    {free ? 'Trial credits on signup' : `${formatCredits(plan.monthlyCredits)} credits monthly`}
                   </p>
                   <ul className="mt-5 flex-1 space-y-2 text-sm text-text-secondary">
                     {(plan.features || []).map((feature) => (
@@ -393,6 +420,7 @@ export default function BillingPage() {
                       </li>
                     ))}
                   </ul>
+                  {free && !active ? null : (
                   <button
                     type="button"
                     onClick={() => handleSelectPlan(plan.id)}
@@ -424,6 +452,7 @@ export default function BillingPage() {
                             ? 'Selected'
                             : 'Subscribe'}
                   </button>
+                  )}
                 </div>
               )
             })}
@@ -512,17 +541,126 @@ export default function BillingPage() {
           </div>
         </section>
 
+        {storage && (
+          <section id="billing-storage">
+            <h2 className="font-heading text-xl font-bold text-text-primary">Storage</h2>
+            <p className="mt-1 text-sm text-text-tertiary">
+              Room for your uploads, AI images and videos, and agent files. Deleting items from your Library frees
+              space. Clip Maker source videos are removed automatically a few days after the clips are made.
+            </p>
+            <div className="mt-5 grid gap-4 lg:grid-cols-2">
+              <div className="rounded-2xl border border-border-default bg-panel p-6">
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="font-heading text-3xl font-bold text-text-primary">{formatBytes(storage.usedBytes)}</p>
+                  <p className="text-sm text-text-secondary">of {formatBytes(storage.limitBytes)} used</p>
+                </div>
+                <div
+                  role="meter"
+                  aria-label="Storage used"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={Math.round(storagePct)}
+                  className="mt-4 h-2 overflow-hidden rounded-full bg-elevated"
+                >
+                  <div
+                    className={`h-full rounded-full transition-all ${
+                      storageLow ? 'bg-error' : 'bg-gradient-to-r from-accent-blue to-accent-violet'
+                    }`}
+                    style={{ width: `${Math.max(storagePct, storage.usedBytes > 0 ? 1 : 0)}%` }}
+                  />
+                </div>
+                {storage.full ? (
+                  <p className="mt-3 rounded-xl border border-error/30 bg-error/10 px-3.5 py-2.5 text-sm text-danger">
+                    Your storage is full. You can't upload or create new images and videos until you delete files from
+                    your <Link to="/library" className="font-semibold underline">Library</Link> or add more storage.
+                  </p>
+                ) : storageLow ? (
+                  <p className="mt-3 text-sm text-danger">Almost full: {formatBytes(storage.limitBytes - storage.usedBytes)} left.</p>
+                ) : (
+                  <p className="mt-3 text-sm text-text-tertiary">{formatBytes(storage.limitBytes - storage.usedBytes)} free</p>
+                )}
+                <dl className="mt-5 grid grid-cols-2 gap-3 text-sm">
+                  <div className="rounded-xl border border-border bg-surface px-3 py-3">
+                    <dt className="text-xs text-text-tertiary">{formatPlanName(currentPlan?.name || balance?.plan)} plan</dt>
+                    <dd className="font-mono text-lg font-semibold text-text-primary">{formatBytes(storage.planBytes)}</dd>
+                  </div>
+                  <div className="rounded-xl border border-border bg-surface px-3 py-3">
+                    <dt className="text-xs text-text-tertiary">Extra storage</dt>
+                    <dd className="font-mono text-lg font-semibold text-text-primary">
+                      {storage.extraBytes > 0 ? `+${formatBytes(storage.extraBytes)}` : 'None'}
+                    </dd>
+                    {storage.extraUntil && (
+                      <dd className="text-xs text-text-tertiary">Until {formatCreditDate(storage.extraUntil)}</dd>
+                    )}
+                  </div>
+                </dl>
+              </div>
+
+              {storageAddon && (
+                <div
+                  className={`flex flex-col rounded-2xl border p-6 ${
+                    storageSelected
+                      ? 'border-success bg-surface shadow-lg shadow-success/15 ring-2 ring-success/30'
+                      : 'border-border-default bg-surface'
+                  }`}
+                >
+                  <p className="font-heading text-2xl font-bold text-text-primary">+{storageAddon.gb} GB storage</p>
+                  <p className="mt-1 text-sm text-text-tertiary">
+                    Extra room on top of your plan for {storageAddon.days} days. Buy again to extend it. For much more
+                    space, a bigger plan gives you more storage and credits.
+                  </p>
+                  <p className="mt-4 text-2xl font-semibold text-text-primary">
+                    ${storageAddon.priceUsd} / {storageAddon.days} days
+                  </p>
+                  <p className="mt-1 text-sm text-text-tertiary">
+                    PKR {Number(storageAddon.pricePkr || 0).toLocaleString()} approx
+                  </p>
+                  <p className="mt-4 flex-1 text-sm text-text-secondary">
+                    Your files are never deleted if the extra storage ends. You just can't add new ones until you're back
+                    under your limit.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleSelectStorage}
+                    disabled={Boolean(pendingPayment)}
+                    title={pendingPayment && !storageInProcess ? 'You already have a payment under review.' : undefined}
+                    className={`mt-5 min-h-[44px] w-full rounded-xl py-2.5 text-sm font-semibold transition ${
+                      storageInProcess
+                        ? 'cursor-not-allowed border border-warning/40 bg-warning/10 text-warning'
+                        : pendingPayment
+                          ? 'cursor-not-allowed border border-border-default bg-elevated text-text-muted'
+                          : storageSelected
+                            ? 'border border-success bg-success text-white'
+                            : 'border border-success/40 bg-success/10 text-success-text hover:bg-success hover:text-white'
+                    }`}
+                  >
+                    {storageInProcess
+                      ? 'In process'
+                      : pendingPayment
+                        ? 'In process (another request)'
+                        : storageSelected
+                          ? 'Selected'
+                          : storage.extraUntil
+                            ? 'Extend extra storage'
+                            : 'Add extra storage'}
+                  </button>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
         {selectedTarget && !pendingPayment && (
           <section id="payment-section" className="rounded-2xl border border-border-default bg-surface p-6">
             <div className="flex items-center gap-2">
               <span
                 className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                  selectedTarget.type === 'topup'
-                    ? 'border border-success/30 bg-success/15 text-success-text'
-                    : 'border border-accent-blue/30 bg-accent-blue/15 text-link'
+                  selectedTarget.type === 'subscription'
+                    ? 'border border-accent-blue/30 bg-accent-blue/15 text-link'
+                    : 'border border-success/30 bg-success/15 text-success-text'
                 }`}
               >
-                {selectedTarget.type === 'topup' ? 'Credit Top-up' : 'Plan Subscription'}
+                {{ topup: 'Credit Top-up', storage: 'Extra Storage' }[selectedTarget.type] || 'Plan Subscription'}
               </span>
             </div>
             <h2 className="mt-2 font-heading text-xl font-bold text-text-primary">
@@ -536,9 +674,13 @@ export default function BillingPage() {
               to the EasyPaisa account below, then attach the payment screenshot.{' '}
               {selectedTarget.type === 'topup'
                 ? `An admin will review it and your +${formatCredits(selectedTarget.credits)} credits will be added directly to your balance.`
-                : 'An admin will review it and your monthly plan credits will be activated automatically.'}
+                : selectedTarget.type === 'storage'
+                  ? `An admin will review it and +${selectedTarget.gb} GB will be added to your storage for ${selectedTarget.days} days.${
+                      storage?.extraUntil ? ` Buying now adds ${selectedTarget.days} days after your current extra storage ends.` : ''
+                    }`
+                  : 'An admin will review it and your monthly plan credits will be activated automatically.'}
             </p>
-            {selectedTarget.type !== 'topup' && hasActivePaidPlan && (
+            {selectedTarget.type === 'subscription' && hasActivePaidPlan && (
               <p className="mt-3 rounded-xl border border-border-default bg-surface px-3.5 py-2.5 text-sm text-text-secondary">
                 {selectedTarget.id === planKey
                   ? `Renewing early adds 30 days after your current period ends (${resetLabel}), and the new credits are added to your balance.`
@@ -619,6 +761,7 @@ export default function BillingPage() {
                     onClick={() => {
                       setSelectedPlanId(null)
                       setSelectedPackId(null)
+                      setStorageSelected(false)
                     }}
                     className="text-sm font-medium text-text-tertiary hover:text-text-secondary"
                   >
@@ -714,9 +857,9 @@ export default function BillingPage() {
                       <td className="px-6 py-3 text-text-primary">
                         <div className="flex items-center gap-2">
                           <span className="font-medium">{p.planName}</span>
-                          {p.paymentType === 'topup' && (
+                          {(p.paymentType === 'topup' || p.paymentType === 'storage') && (
                             <span className="rounded-full border border-success/30 bg-success/15 px-2 py-0.5 text-[10px] font-semibold text-success-text">
-                              Top-up
+                              {p.paymentType === 'storage' ? 'Storage' : 'Top-up'}
                             </span>
                           )}
                         </div>

@@ -320,6 +320,7 @@ export function imageApiError(err) {
       ? `Insufficient credits (${left} remaining). Buy more on Billing.`
       : 'Insufficient credits. Buy more on Billing, then try again.'
   }
+  if (data?.code === 'STORAGE_FULL') return data.message
   if (status === 401) return 'Session expired. Please sign in again.'
   if (status === 404) return 'Project or job not found. Select a project and try again.'
   if (status === 413) return 'File too large. Max 15 MB per image.'

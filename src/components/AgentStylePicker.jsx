@@ -38,13 +38,34 @@ export default function AgentStylePicker({ agent, value, onChange }) {
     setPlaying(id)
   }
 
-  const voice = value.voice || agent.voices?.[0]?.id
+  // Only the voices of the chosen language are offered; switching language picks that language's first voice.
+  const language = agent.languages?.some((l) => l.id === value.language) ? value.language : 'en'
+  const voices = (agent.voices || []).filter((v) => (v.language || 'en') === language)
+  const voice = voices.some((v) => v.id === value.voice) ? value.voice : voices[0]?.id
   return (
     <div className="space-y-4">
-      {agent.voices?.length ? (
+      {agent.languages?.length > 1 ? (
+        <Group label="Language">
+          <div className="flex flex-wrap gap-1.5">
+            {agent.languages.map((l) => (
+              <button
+                key={l.id}
+                type="button"
+                aria-pressed={language === l.id}
+                onClick={() => onChange({ language: l.id, voice: agent.voices.find((v) => (v.language || 'en') === l.id)?.id })}
+                className={chip(language === l.id)}
+              >
+                {l.id === 'ur' ? 'اردو Urdu' : l.label}
+              </button>
+            ))}
+          </div>
+        </Group>
+      ) : null}
+
+      {voices.length ? (
         <Group label="Voice">
           <div className="grid gap-2 sm:grid-cols-2">
-            {agent.voices.map((v) => {
+            {voices.map((v) => {
               const [name, kind] = v.label.split(': ')
               return (
                 <div
@@ -71,6 +92,27 @@ export default function AgentStylePicker({ agent, value, onChange }) {
                 </div>
               )
             })}
+          </div>
+        </Group>
+      ) : null}
+
+      {agent.steps?.includes('captions') ? (
+        <Group label="Subtitles">
+          <div className="flex flex-wrap gap-1.5">
+            {[
+              [true, 'On'],
+              [false, 'Off'],
+            ].map(([on, label]) => (
+              <button
+                key={label}
+                type="button"
+                aria-pressed={(value.captions !== false) === on}
+                onClick={() => onChange({ captions: on })}
+                className={chip((value.captions !== false) === on)}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         </Group>
       ) : null}

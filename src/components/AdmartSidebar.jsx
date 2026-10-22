@@ -7,9 +7,11 @@ import { isAuthenticated } from '../utils/auth'
 import BrandGlyph from './BrandGlyph'
 import {
   CREDITS_CHANGE_EVENT,
+  formatBytes,
   formatCredits,
   getCredits,
 } from '../utils/credits.js'
+import { LIBRARY_CHANGE_EVENT } from '../utils/library.js'
 
 const Icons = {
   dashboard: (
@@ -209,32 +211,41 @@ export default function AdmartSidebar() {
   }, [mobileOpen])
   const [remaining, setRemaining] = useState(null)
   const [total, setTotal] = useState(null)
+  const [storage, setStorage] = useState(null)
 
+  // Refetched on every page change and library change, so storage use stays current.
   useEffect(() => {
     if (!isAuthenticated()) {
       setRemaining(null)
       setTotal(null)
+      setStorage(null)
       return undefined
     }
     let cancelled = false
-    getCredits()
-      .then((bal) => {
-        if (cancelled || !bal) return
-        setRemaining(bal.creditsRemaining)
-        setTotal(bal.creditsTotal)
-      })
-      .catch(() => {})
+    const refresh = () =>
+      getCredits()
+        .then((bal) => {
+          if (cancelled || !bal) return
+          setRemaining(bal.creditsRemaining)
+          setTotal(bal.creditsTotal)
+          setStorage(bal.storage ?? null)
+        })
+        .catch(() => {})
+    refresh()
     const onChange = (e) => {
       const d = e.detail
       if (d?.creditsRemaining != null) setRemaining(d.creditsRemaining)
       if (d?.creditsTotal != null) setTotal(d.creditsTotal)
+      if (d?.storage) setStorage(d.storage)
     }
     window.addEventListener(CREDITS_CHANGE_EVENT, onChange)
+    window.addEventListener(LIBRARY_CHANGE_EVENT, refresh)
     return () => {
       cancelled = true
       window.removeEventListener(CREDITS_CHANGE_EVENT, onChange)
+      window.removeEventListener(LIBRARY_CHANGE_EVENT, refresh)
     }
-  }, [])
+  }, [pathname])
 
   const rem = formatCredits(remaining)
   const tot = formatCredits(total)
@@ -244,6 +255,8 @@ export default function AdmartSidebar() {
     Number.isFinite(remainingNumber) && Number.isFinite(totalNumber) && totalNumber > 0
       ? Math.min(100, Math.round((remainingNumber / totalNumber) * 100))
       : 0
+  const storagePct = storage?.limitBytes > 0 ? Math.min(100, (storage.usedBytes / storage.limitBytes) * 100) : 0
+  const storageLow = storagePct >= 90
 
   return (
     <>
@@ -338,6 +351,30 @@ export default function AdmartSidebar() {
                 </span>
                 <span className="gradient-text font-semibold">Top up</span>
               </p>
+              {storage && (
+                <div className="mt-3 border-t border-border pt-2.5">
+                  <div className="mb-1.5 flex items-center justify-between text-xs">
+                    <span className="text-text-secondary">Storage</span>
+                    <span className={`font-mono ${storageLow ? 'font-semibold text-danger' : 'text-text-tertiary'}`}>
+                      {formatBytes(storage.usedBytes)} / {formatBytes(storage.limitBytes)}
+                    </span>
+                  </div>
+                  <div
+                    role="meter"
+                    aria-label="Storage used"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={Math.round(storagePct)}
+                    className="h-1 overflow-hidden rounded-full bg-elevated ring-1 ring-inset ring-white/5"
+                  >
+                    <div
+                      className={`h-full rounded-full transition-all ${storageLow ? 'bg-error' : 'bg-accent-blue'}`}
+                      style={{ width: `${Math.max(storagePct, storage.usedBytes > 0 ? 2 : 0)}%` }}
+                    />
+                  </div>
+                  {storage.full && <p className="mt-1.5 text-xs font-semibold text-danger">Storage full</p>}
+                </div>
+              )}
             </>
           ) : (
             <>

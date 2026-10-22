@@ -107,18 +107,23 @@ export default function ModelPicker({ models, value, onChange, costsByModel = {}
           {models.map((m) => {
             const active = m.id === value
             const isNew = m.isNew || m.source === 'provider'
+            const locked = m.requiredPlan // { id, name }: the plan that unlocks this model
             return (
-              <li key={m.id} role="option" aria-selected={active}>
+              <li key={m.id} role="option" aria-selected={active} aria-disabled={locked ? 'true' : undefined}>
                 <button
                   type="button"
+                  disabled={Boolean(locked)}
+                  title={locked ? `Needs the ${locked.name} plan` : undefined}
                   onClick={() => {
                     onChange(m.id)
                     setOpen(false)
                   }}
-                  className={`flex w-full cursor-pointer items-start gap-2 rounded-lg px-3 py-2.5 text-left transition-colors duration-150 ${
-                    active
-                      ? 'bg-accent-blue/15 text-link'
-                      : 'text-text-secondary hover:bg-elevated hover:text-text-primary'
+                  className={`flex w-full items-start gap-2 rounded-lg px-3 py-2.5 text-left transition-colors duration-150 ${
+                    locked
+                      ? 'cursor-not-allowed text-text-tertiary'
+                      : active
+                        ? 'cursor-pointer bg-accent-blue/15 text-link'
+                        : 'cursor-pointer text-text-secondary hover:bg-elevated hover:text-text-primary'
                   }`}
                 >
                   <span
@@ -132,6 +137,15 @@ export default function ModelPicker({ models, value, onChange, costsByModel = {}
                       {isNew ? (
                         <span className="rounded bg-accent-blue/20 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-link">
                           New
+                        </span>
+                      ) : null}
+                      {locked ? (
+                        <span className="inline-flex items-center gap-1 rounded border border-border-default px-1.5 py-0.5 text-[10px] font-semibold text-text-secondary">
+                          <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                            <rect x="5" y="11" width="14" height="10" rx="2" />
+                            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+                          </svg>
+                          {locked.name} plan
                         </span>
                       ) : null}
                     </span>
