@@ -27,7 +27,7 @@ import NotificationsPage from './pages/NotificationsPage'
 import ImageGenPage from './pages/ImageGenPage'
 import VideoGenPage from './pages/VideoGenPage'
 import NotFoundPage from './pages/NotFoundPage'
-import { isAuthenticated } from './utils/auth'
+import { getStoredUser, isAuthenticated } from './utils/auth'
 
 function ProtectedRoute() {
   const location = useLocation()
@@ -35,6 +35,10 @@ function ProtectedRoute() {
   if (!isAuthenticated()) {
     const next = `${location.pathname}${location.search}`
     return <Navigate to={`/auth?redirect_url=${encodeURIComponent(next)}`} replace />
+  }
+  // A new account names its first project before anything else.
+  if (getStoredUser()?.projectCount === 0 && location.pathname !== '/onboarding') {
+    return <Navigate to="/onboarding" replace />
   }
 
   return <Outlet />

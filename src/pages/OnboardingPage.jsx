@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { getStoredUser } from '../utils/auth'
 import { createProject, setActiveProject } from '../utils/projects'
 
 const PRESET_COLORS = ['#5b7cfa', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#ec4899']
 
 const PROJECT_ICONS = ['▶', '✦', '◇', '☀', '⚡', '◎', '◈', '✸']
-
-const DEFAULT_PROJECT_NAME = 'My First Project'
 
 /** Keep the cached user in sync so routing/refresh don't bounce back to onboarding. */
 function markUserHasProject(activeProjectId) {
@@ -29,15 +28,18 @@ export default function OnboardingPage() {
   const [projectName, setProjectName] = useState('')
   const [projectIcon, setProjectIcon] = useState(PROJECT_ICONS[0])
   const [projectColor, setProjectColor] = useState(PRESET_COLORS[0])
+  // A new account must name its first project (there is no skipping it); "New project" from the
+  // project menu can be cancelled.
+  const first = !(getStoredUser()?.projectCount > 0)
 
-  // A user needs at least one project to enter the workspace, so "Skip" still
-  // creates a sensibly-named default project rather than leaving them with none.
-  const finish = async ({ withProject }) => {
+  const finish = async (e) => {
+    e.preventDefault()
+    if (!projectName.trim()) return
     setSaving(true)
     setError('')
     try {
       const project = await createProject({
-        name: withProject ? projectName.trim() || DEFAULT_PROJECT_NAME : DEFAULT_PROJECT_NAME,
+        name: projectName.trim(),
         icon: projectIcon,
         color: projectColor,
         org: 'Personal',
@@ -65,25 +67,19 @@ export default function OnboardingPage() {
         >
           <span className="gradient-text animate-float inline-block">Admart</span>
         </Link>
-        <button
-          type="button"
-          onClick={() => finish({ withProject: false })}
-          disabled={saving}
-          className="font-mono text-sm text-text-tertiary transition hover:text-text-secondary disabled:opacity-50"
-        >
-          Skip for now
-        </button>
       </header>
 
       <main className="flex min-h-screen flex-col items-center justify-center px-4 pb-16 pt-24">
         <div className="w-full max-w-[640px] animate-slide-up rounded-[20px] border border-border-default bg-panel p-10 shadow-xl shadow-black/20">
-          <div className="space-y-8">
+          <form className="space-y-8" onSubmit={finish}>
             <div>
               <h1 className="font-heading text-2xl font-bold text-text-primary">
-                Create your first project
+                {first ? 'Name your first project' : 'Create a new project'}
               </h1>
               <p className="mt-2 text-text-secondary">
-                Projects keep your videos, assets, and brand kit organized. You can create more later — or skip and do it anytime.
+                {first
+                  ? 'A project keeps the videos, images, agents and brand kit for one brand or channel together. Give it a name to get started; you can add more projects later.'
+                  : 'Projects keep the videos, images, agents and brand kit for each brand or channel separate.'}
               </p>
             </div>
 
@@ -94,9 +90,12 @@ export default function OnboardingPage() {
               <input
                 id="project-name"
                 type="text"
+                required
+                autoFocus
+                maxLength={80}
                 value={projectName}
                 onChange={(e) => setProjectName(e.target.value)}
-                placeholder="e.g. Summer Campaign"
+                placeholder="e.g. Bean Co, or My Cooking Channel"
                 className="w-full rounded-xl border border-border-default bg-input px-4 py-3 text-text-primary placeholder:text-text-muted focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
               />
             </div>
@@ -160,24 +159,25 @@ export default function OnboardingPage() {
             )}
 
             <div className="flex flex-wrap justify-end gap-3 pt-2">
+              {first ? null : (
+                <button
+                  type="button"
+                  onClick={() => navigate(-1)}
+                  disabled={saving}
+                  className="rounded-xl px-5 py-2.5 text-sm font-medium text-text-tertiary hover:text-text-secondary disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+              )}
               <button
-                type="button"
-                onClick={() => finish({ withProject: false })}
-                disabled={saving}
-                className="rounded-xl px-5 py-2.5 text-sm font-medium text-text-tertiary hover:text-text-secondary disabled:opacity-50"
-              >
-                Skip
-              </button>
-              <button
-                type="button"
-                onClick={() => finish({ withProject: true })}
+                type="submit"
                 disabled={saving || !projectName.trim()}
                 className="rounded-xl bg-accent-blue px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-accent-blue/25 transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
               >
                 {saving ? 'Creating…' : 'Create Project'}
               </button>
             </div>
-          </div>
+          </form>
         </div>
       </main>
     </div>
