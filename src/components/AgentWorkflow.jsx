@@ -653,6 +653,16 @@ export default function AgentWorkflow({ run, agent, busy, now, runnerOnline, onA
 
       {waitNote ? <p className="text-xs text-warning-text">{waitNote}</p> : null}
 
+      {['approved', 'succeeded'].includes(run.status) || (run.status === 'needs_review' && run.videoUrl) ? (
+        <p role="status" className="flex items-center gap-2 rounded-xl border border-success/40 bg-success/10 px-4 py-3 text-sm text-success-text">
+          <Icon className="h-4 w-4 shrink-0">{Glyphs.check}</Icon>
+          <span>
+            Done. This {agent?.slug === 'youtube-shorts' ? 'Short' : 'run'} cost{' '}
+            <span className="font-semibold">{formatCredits(run.credits)} credits</span>.
+          </span>
+        </p>
+      ) : null}
+
       {isScheduled(run) ? (
         <div className="flex flex-col gap-3 rounded-xl border border-accent-blue/40 bg-accent-blue/5 px-4 py-3 sm:flex-row sm:items-center">
           <p className="min-w-0 flex-1 text-sm">

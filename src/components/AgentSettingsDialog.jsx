@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import AgentStylePicker from './AgentStylePicker.jsx'
 import ModelPicker from './ModelPicker.jsx'
+import { modelCostFormatter } from '../utils/agents'
 import { primaryButton, secondaryButton } from './AgentBits.jsx'
 import { formatCredits } from '../utils/credits'
 import { creditUnitText } from '../utils/agentSchedule'
@@ -23,6 +24,7 @@ export default function AgentSettingsDialog({ deployment, onClose, onSave }) {
   ].filter(([key]) => choices[key]?.length)
   const [models, setModels] = useState(() => ({ ...(deployment.models || {}) }))
   const costUnit = creditUnitText(agent?.creditUnit)
+  const costs = (key) => Object.fromEntries(choices[key].map((m) => [m.id, { credits: m.creditsPerRun }]))
 
   useEffect(() => {
     const onKey = (e) => e.key === 'Escape' && onClose()
@@ -83,8 +85,8 @@ export default function AgentSettingsDialog({ deployment, onClose, onSave }) {
                       models={choices[key]}
                       value={models[key]}
                       onChange={(id) => setModels((prev) => ({ ...prev, [key]: id }))}
-                      costsByModel={Object.fromEntries(choices[key].map((m) => [m.id, { credits: m.creditsPerRun }]))}
-                      formatCost={(credits) => `~${formatCredits(credits)} cr ${costUnit}`}
+                      costsByModel={costs(key)}
+                      formatCost={modelCostFormatter(costs(key), models[key] || choices[key][0].id, costUnit)}
                     />
                   </div>
                 </div>

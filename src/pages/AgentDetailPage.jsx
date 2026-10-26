@@ -5,6 +5,7 @@ import Topbar from '../components/Topbar'
 import AgentSchedule from '../components/AgentSchedule.jsx'
 import AgentModelSelect from '../components/AgentModelSelect.jsx'
 import AgentLanguageSelect from '../components/AgentLanguageSelect.jsx'
+import AgentLengthVoiceSelect from '../components/AgentLengthVoiceSelect.jsx'
 import AgentCaptionsSelect from '../components/AgentCaptionsSelect.jsx'
 import AgentTrendSetup from '../components/AgentTrendSetup.jsx'
 import AgentSettingsDialog from '../components/AgentSettingsDialog.jsx'
@@ -298,6 +299,7 @@ export default function AgentDetailPage() {
       <AgentModelSelect compact deployment={deployment} onSave={saveModels} />
       <AgentLanguageSelect deployment={deployment} onSave={saveTrendChoices} />
       <AgentCaptionsSelect deployment={deployment} onSave={saveTrendChoices} />
+      <AgentLengthVoiceSelect deployment={deployment} onSave={saveTrendChoices} />
     </div>
   ) : null
   const field =

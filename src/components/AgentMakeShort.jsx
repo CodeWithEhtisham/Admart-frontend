@@ -1,10 +1,11 @@
 import { formatCredits } from '../utils/credits'
 import AgentCaptionsSelect from './AgentCaptionsSelect.jsx'
 import AgentLanguageSelect from './AgentLanguageSelect.jsx'
+import AgentLengthVoiceSelect from './AgentLengthVoiceSelect.jsx'
 import AgentModelSelect from './AgentModelSelect.jsx'
 import { primaryButton, secondaryButton } from './AgentBits.jsx'
 
-/** "Make a Short about this": the Shorts agent's models, language and subtitles, then start. Used by Trend Finder and the Growth Report. */
+/** "Make a Short about this": the Shorts agent's models, language, subtitles, length and voice, then start. Used by Trend Finder and the Growth Report. */
 export default function AgentMakeShort({ shorts, topic, busy, onStart, onCancel, saveModels, saveConfig }) {
   return (
     <div className="mt-3 space-y-3 rounded-xl border border-accent-violet/40 bg-accent-violet/5 p-3">
@@ -13,6 +14,7 @@ export default function AgentMakeShort({ shorts, topic, busy, onStart, onCancel,
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <AgentLanguageSelect deployment={shorts} onSave={saveConfig} />
         <AgentCaptionsSelect deployment={shorts} onSave={saveConfig} />
+        <AgentLengthVoiceSelect deployment={shorts} onSave={saveConfig} />
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <button type="button" className={primaryButton} disabled={Boolean(busy)} onClick={() => onStart(topic)}>

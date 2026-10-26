@@ -124,3 +124,16 @@ export function costText(agent) {
   const unit = { minute: 'minute of video', hour: 'hour of video' }[agent?.creditUnit] || 'run'
   return `about ${formatCredits(agent?.estimatedCredits)} credits per ${unit}`
 }
+
+/**
+ * Each option's price is the whole run's with that model: the chosen one shows that total, the others
+ * how much more or less the run would cost with them (not the model's own price).
+ */
+export function modelCostFormatter(costs, selectedId, unit) {
+  const total = Number(costs[selectedId]?.credits)
+  return (credits, id) => {
+    if (id === selectedId || !Number.isFinite(total)) return `Total ~${formatCredits(credits)} cr ${unit}`
+    const diff = Number(credits) - total
+    return diff === 0 ? 'Same total' : `${diff > 0 ? '+' : '−'}${formatCredits(Math.abs(diff))} cr`
+  }
+}

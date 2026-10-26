@@ -2,6 +2,7 @@ import { useState } from 'react'
 import ModelPicker from './ModelPicker.jsx'
 import { formatCredits } from '../utils/credits'
 import { creditUnitText } from '../utils/agentSchedule'
+import { modelCostFormatter } from '../utils/agents'
 
 const TITLES = { text: 'AI model', image: 'Image model' }
 
@@ -39,7 +40,7 @@ export default function AgentModelSelect({ deployment, onSave, compact = false }
   }
 
   const costs = (key) => Object.fromEntries(choices[key].map((m) => [m.id, { credits: m.creditsPerRun }]))
-  const format = (credits) => `~${formatCredits(credits)} cr ${unit}`
+  const format = (key) => modelCostFormatter(costs(key), deployment.models?.[key] || choices[key][0].id, unit)
 
   if (compact) {
     return (
@@ -54,7 +55,7 @@ export default function AgentModelSelect({ deployment, onSave, compact = false }
               value={deployment.models?.[key]}
               onChange={(id) => pick(key, id)}
               costsByModel={costs(key)}
-              formatCost={format}
+              formatCost={format(key)}
             />
           </div>
         ))}
@@ -87,7 +88,7 @@ export default function AgentModelSelect({ deployment, onSave, compact = false }
               value={deployment.models?.[key]}
               onChange={(id) => pick(key, id)}
               costsByModel={costs(key)}
-              formatCost={format}
+              formatCost={format(key)}
             />
           </div>
         </div>

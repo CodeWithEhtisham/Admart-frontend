@@ -19,7 +19,7 @@ function ChevronDown({ open }) {
 const defaultCost = (credits) => `From ${formatCredits(credits)} cr`
 
 /**
- * Model dropdown with credits per option.
+ * Model dropdown with credits per option. formatCost gets (credits, model id).
  * compact: one short trigger (title + cost on top, model name below) for toolbars; title is the visible caption.
  * dropUp: on lg screens the list opens upwards (for a bar pinned to the bottom of the screen).
  */
@@ -71,7 +71,7 @@ export default function ModelPicker({ models, value, onChange, costsByModel = {}
           <div className="min-w-0 flex-1 leading-tight">
             <p className="truncate text-xs text-text-tertiary">
               {label}
-              {costsByModel[selected?.id]?.credits ? ` · ${formatCost(costsByModel[selected.id].credits)}` : ''}
+              {costsByModel[selected?.id]?.credits ? ` · ${formatCost(costsByModel[selected.id].credits, selected.id)}` : ''}
             </p>
             <p className="truncate text-sm font-semibold text-text-primary">{selected?.label || 'Select model'}</p>
           </div>
@@ -89,7 +89,7 @@ export default function ModelPicker({ models, value, onChange, costsByModel = {}
           ) : null}
           {costsByModel[selected?.id]?.credits ? (
             <p className="mt-0.5 text-[11px] text-text-tertiary">
-              {formatCost(costsByModel[selected.id].credits)}
+              {formatCost(costsByModel[selected.id].credits, selected.id)}
             </p>
           ) : null}
         </div>
@@ -164,7 +164,7 @@ export default function ModelPicker({ models, value, onChange, costsByModel = {}
                           active ? 'text-link/80' : 'text-text-tertiary'
                         }`}
                       >
-                        {formatCost(costsByModel[m.id].credits)}
+                        {formatCost(costsByModel[m.id].credits, m.id)}
                       </span>
                     ) : m.pricing?.admartUnitPrice ? (
                       <span className="mt-1 block font-mono text-[11px] text-text-muted">

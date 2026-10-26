@@ -568,3 +568,5 @@ fabric.properties
 ### AndroidStudio Patch ###
 
 !/gradle/wrapper/gradle-wrapper.jar
+# Superdesign scratch files
+.superdesign/tmp/

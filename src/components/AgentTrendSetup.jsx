@@ -97,7 +97,9 @@ export default function AgentTrendSetup({ deployment, agent, busy, onSaveConfig,
       label="Find trends"
       onSubmit={(e) => {
         e.preventDefault()
-        if (canRun) onStart({ window: range })
+        if (!canRun) return
+        setShowSetup(false) // out of the way of the results
+        onStart({ window: range })
       }}
       panelOpen={showSetup}
       panelId="trend-setup-panel"
