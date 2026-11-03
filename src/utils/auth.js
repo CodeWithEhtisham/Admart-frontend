@@ -145,13 +145,16 @@ export function isNoAccountError(err) {
   const text = String(data.detail || data.message || '').toLowerCase()
   if (code === 'user_not_found' || code === 'no_account') return true
   if (status === 404) return true
-  return /not found|no account|does not exist|unknown user|please sign up|no user|no active account/.test(
-    text,
-  )
+  // "No active account found with the given credentials" is the wrong-password reply, not a missing account.
+  return /not found|no account|does not exist|unknown user|please sign up|no user/.test(text) && !/credentials/.test(text)
 }
+
+export const WRONG_PASSWORD_MESSAGE = 'Incorrect password. Try again, or use "Forgot password?" to reset it.'
 
 export function formatAuthError(err, { isSignUp = false } = {}) {
   if (!isSignUp && isNoAccountError(err)) return NO_ACCOUNT_MESSAGE
+  // Unknown emails get 404 no_account above, so a 401 from login means the password is wrong.
+  if (!isSignUp && err?.response?.status === 401) return WRONG_PASSWORD_MESSAGE
   const data = err?.response?.data
   const msg =
     data?.detail ||
